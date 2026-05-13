@@ -754,7 +754,7 @@ export function AppShellHeader({
                           type="button"
                           variant="outline"
                           disabled
-                          className={`h-12 w-full rounded-2xl px-5 py-4 text-sm font-semibold ${darkMode ? "border-white/10 bg-white/5 text-slate-400" : "border-slate-200/70 bg-slate-100/70 text-slate-500"}`}
+                          className="h-12 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-5 py-4 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                         >
                           Current Workspace
                         </Button>
@@ -762,7 +762,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className={`h-12 w-full rounded-2xl border px-5 py-4 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}
+                          className="h-12 w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                         >
                           Open Vessel
                         </Button>
@@ -1045,7 +1045,7 @@ export function AppShellHeader({
                           type="button"
                           variant="outline"
                           disabled
-                          className={`h-12 w-full rounded-2xl px-4 py-3 text-sm font-semibold ${darkMode ? "border-white/10 bg-white/5 text-slate-400" : "border-slate-200/70 bg-slate-100/80 text-slate-500"}`}
+                          className="h-12 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                         >
                           Current Workspace
                         </Button>
@@ -1053,7 +1053,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className="button-vessel-primary h-12 w-full rounded-2xl px-4 py-3 text-sm font-semibold text-white"
+                          className="h-12 w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                         >
                           Open Vessel
                         </Button>

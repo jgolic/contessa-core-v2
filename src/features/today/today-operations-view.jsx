@@ -945,7 +945,7 @@ export function TodayOperationsView({
                             type="button"
                             variant="outline"
                             disabled
-                            className={`h-11 w-full rounded-2xl px-4 ${darkMode ? "border-white/10 bg-white/5 text-slate-400" : "border-slate-200/70 bg-slate-100/70 text-slate-500"}`}
+                            className="h-11 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                           >
                             Current Workspace
                           </Button>
@@ -953,7 +953,7 @@ export function TodayOperationsView({
                           <Button
                             type="button"
                             onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                            className="button-vessel-primary h-11 w-full rounded-2xl px-4 text-white"
+                            className="h-11 w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 text-sm font-semibold text-slate-900 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                           >
                             Open Vessel
                           </Button>
