@@ -1141,6 +1141,38 @@ export function normalizeFleetState(vessels = [], fallback = null) {
   });
 }
 
+export function getVesselCounts(vessel = {}) {
+  const items = Array.isArray(vessel?.items) ? vessel.items : [];
+  const tasks = Array.isArray(vessel?.tasks) ? vessel.tasks : [];
+  const maintenanceItems = Array.isArray(vessel?.maintenanceItems) ? vessel.maintenanceItems : [];
+  const alerts = Array.isArray(vessel?.alerts) ? vessel.alerts : [];
+  const notifications = Array.isArray(vessel?.notifications) ? vessel.notifications : [];
+
+  const taskCount = tasks.length || items.filter((item) => ["task", "maintenance"].includes(item?.type)).length;
+  const highPriorityTasks = tasks.filter((task) => ["high", "urgent", "critical"].includes(String(task?.priority || "").toLowerCase()));
+  const overdueTasks = tasks.filter((task) => {
+    const remaining = daysUntil(task?.dueDate);
+    return remaining !== null && remaining < 0;
+  });
+  const dueMaintenanceAlerts = maintenanceItems.filter((item) => {
+    const remaining = daysUntil(item?.nextDueDate);
+    return remaining !== null && remaining <= 2;
+  });
+  const itemAlerts = items.filter((item) => {
+    const priority = String(item?.priority || "").toLowerCase();
+    const status = String(item?.status || "").toLowerCase();
+    return item?.type === "alert" || ["high", "critical", "urgent"].includes(priority) || status === "overdue";
+  });
+  const notificationAlerts = notifications.filter((item) => ["critical", "warning"].includes(String(item?.level || "").toLowerCase()));
+
+  const alertCount = alerts.length || itemAlerts.length || notificationAlerts.length || (highPriorityTasks.length + overdueTasks.length + dueMaintenanceAlerts.length);
+
+  return {
+    taskCount,
+    alertCount,
+  };
+}
+
 export function getVesselMetrics(vesselId, vessels = []) {
   const vessel = Array.isArray(vessels)
     ? vessels.find((item) => item?.id === vesselId)
@@ -1190,7 +1222,10 @@ export function getVesselMetrics(vesselId, vessels = []) {
   });
   const quoteCount = tasks.reduce((sum, task) => sum + (Array.isArray(task.quotes) ? task.quotes.length : 0), 0);
   const approvalCount = notifications.filter((item) => item.section === "expenses").length;
-  const alertCount = notifications.filter((item) => item.level === "critical" || item.level === "warning").length;
+  const counts = getVesselCounts({
+    ...normalizedVessel,
+    notifications,
+  });
   const activeModules = [
     tasks.length > 0,
     crewProfiles.length > 0,
@@ -1202,7 +1237,7 @@ export function getVesselMetrics(vesselId, vessels = []) {
   ].filter(Boolean).length;
 
   return {
-    taskCount: tasks.length,
+    taskCount: counts.taskCount,
     crewCount: crewProfiles.length,
     certificateDue: certificateAlerts.length,
     documentCount: documents.length,
@@ -1212,7 +1247,7 @@ export function getVesselMetrics(vesselId, vessels = []) {
     notificationCount: notifications.length,
     routeWaypoints: routePlanning.waypoints?.length || 0,
     routeDistanceNm: routeSummary.totalDistanceNm || 0,
-    alertCount,
+    alertCount: counts.alertCount,
     activeModules,
     workerCount: workers.length,
     status: normalizedVessel.details?.status || "Operational",
