@@ -30,9 +30,7 @@ import {
   hasConnectedDepthLayer,
 } from "../../lib/route_planning.mjs";
 
-const BASEMAP_NOTICE = "Base map is not a certified nautical chart. Official nautical chart data required for real navigation.";
 const MAP_LOAD_FAILURE_MESSAGE = "Map could not load. Check internet connection or tile style URL.";
-const SATELLITE_PLACEHOLDER_NOTICE = "Satellite map source not configured. Planning base map remains visible until a real satellite source is connected.";
 const DEPTH_LAYER_UNAVAILABLE_MESSAGE = "Depth-based route highlighting requires nautical chart or bathymetry data.";
 const ACTIVE_OVERLAY_KEYS = ["depth", "depthShading", "shallow", "restricted", "hazards", "speedZones", "weather", "ais"];
 
@@ -151,17 +149,6 @@ function ParameterBracket({
   );
 }
 
-function LegendItem({ darkMode = false, iconClassName = "", iconLabel, label }) {
-  const theme = themeClasses(darkMode);
-
-  return (
-    <div className="flex items-center gap-3">
-      <div className={`route-legend-chip ${darkMode ? "route-legend-chip-dark" : ""} ${iconClassName}`}>{iconLabel}</div>
-      <div className={`text-sm leading-5 ${theme.textSecondary}`}>{label}</div>
-    </div>
-  );
-}
-
 function getDepthSourcePresentation(depthLayer = {}) {
   const label = depthLayer?.sourceLabel || "No depth data available";
 
@@ -234,7 +221,6 @@ export function RoutePlanningView({
   const [geolocationMessage, setGeolocationMessage] = useState("Attempting to locate the vessel from this device.");
   const [currentPosition, setCurrentPosition] = useState(null);
   const [isAddWaypointMode, setIsAddWaypointMode] = useState(false);
-  const [mapMode, setMapMode] = useState("planning");
   const [overlayToggles, setOverlayToggles] = useState(() => createDefaultRouteOverlayToggles());
   const [publicDepthLayer, setPublicDepthLayer] = useState(null);
   const [depthSourceLoading, setDepthSourceLoading] = useState(false);
@@ -1499,73 +1485,60 @@ export function RoutePlanningView({
         <div className="grid gap-4">
           <Card className={`app-panel app-panel-soft rounded-[26px] md:rounded-[24px] ${theme.card}`}>
             <CardContent className="p-4 md:p-5">
-              <div className="mb-3 flex flex-col gap-3">
+              <div className="mb-4 flex flex-col gap-3">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                   <div>
-                    <div className="app-kicker">Map</div>
-                    <div className={`mt-1 text-lg font-semibold ${theme.textPrimary}`}>Route chart</div>
+                    <div className="app-kicker">Marine Chart</div>
+                    <div className={`mt-1 text-xl font-semibold ${theme.textPrimary}`}>Route planning chart</div>
+                    <div className={`mt-1 text-sm ${theme.textSecondary}`}>Clean planning surface with route, waypoints, vessel position, and depth context.</div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 lg:justify-end">
                     {canEdit ? (
                       <Button
                         type="button"
                         onClick={() => setIsAddWaypointMode(true)}
                         disabled={isAddWaypointMode}
-                        className={`h-12 rounded-2xl px-5 text-sm font-semibold md:h-14 md:rounded-xl md:px-6 md:text-base ${isAddWaypointMode ? darkMode ? "bg-[#8b6a1d] text-[#fff7de]" : "bg-[#f2cb6d] text-[#62420d]" : "button-vessel-primary"}`}
+                        className={`h-11 rounded-2xl px-4 text-sm font-semibold md:rounded-xl ${isAddWaypointMode ? darkMode ? "bg-[#8b6a1d] text-[#fff7de]" : "bg-[#f2cb6d] text-[#62420d]" : "button-vessel-primary"}`}
                       >
                         {!isAddWaypointMode ? <Plus className="mr-2 h-4 w-4" /> : null}
-                        {isAddWaypointMode ? "Click map to place waypoint" : "+ Add Waypoint"}
+                        {isAddWaypointMode ? "Place waypoint" : "Add waypoint"}
                       </Button>
                     ) : (
                       <Badge className={neutralBadgeClass(darkMode)}>View-only access</Badge>
                     )}
 
                     {isAddWaypointMode ? (
-                      <Button type="button" variant="outline" onClick={() => setIsAddWaypointMode(false)} className="vessel-outline-button h-12 rounded-2xl px-4 text-sm md:h-14 md:rounded-xl">
+                      <Button type="button" variant="outline" onClick={() => setIsAddWaypointMode(false)} className="vessel-outline-button h-11 rounded-2xl px-4 text-sm md:rounded-xl">
                         Cancel
                       </Button>
                     ) : null}
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-                  <div className={`inline-flex rounded-[20px] border p-1 md:rounded-xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
+                <div className={`flex gap-2 overflow-x-auto rounded-[22px] border p-2 md:flex-wrap md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
+                  {[
+                    { key: "planning", label: "Route", active: overlayToggles.route, onClick: () => toggleOverlay("route") },
+                    { key: "depthShading", label: "Depth", active: overlayToggles.depthShading, onClick: () => toggleOverlay("depthShading") },
+                    { key: "weather", label: "Weather", active: overlayToggles.weather, onClick: () => toggleOverlay("weather") },
+                    { key: "waypoints", label: "Waypoints", active: overlayToggles.waypoints, onClick: () => toggleOverlay("waypoints") },
+                    { key: "follow", label: "Follow", active: followVesselPosition, onClick: () => setFollowVesselPosition((value) => !value) },
+                  ].map((control) => (
                     <Button
+                      key={control.key}
                       type="button"
-                      onClick={() => setMapMode("planning")}
-                      className={`rounded-2xl px-4 py-2 text-sm md:rounded-xl ${mapMode === "planning" ? "vessel-active" : darkMode ? "text-[#dce9e1]" : "text-[#365248]"}`}
+                      onClick={control.onClick}
+                      className={`h-10 shrink-0 rounded-2xl px-4 text-sm font-medium md:rounded-xl ${control.active ? "vessel-active" : darkMode ? "text-[#dce9e1] hover:bg-white/5" : "text-[#365248] hover:bg-white/80"}`}
                     >
-                      Planning Chart
+                      {control.label}
                     </Button>
-                    <Button
-                      type="button"
-                      onClick={() => setMapMode("satellite")}
-                      className={`rounded-2xl px-4 py-2 text-sm md:rounded-xl ${mapMode === "satellite" ? "vessel-active" : darkMode ? "text-[#dce9e1]" : "text-[#365248]"}`}
-                    >
-                      Satellite Map
-                    </Button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="vessel-pill">{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</Badge>
-                    <Badge className="vessel-pill">{vesselPosition ? (vesselPosition.source === "live-gps" ? "Current position shown" : "Estimated vessel position shown") : "Current position unavailable"}</Badge>
-                    <Badge className={routeCrossesUnsafeShallowWater ? darkMode ? "bg-[#381d1f] text-[#ffd8dc]" : "bg-[#ffe0e0] text-[#8a1f2b]" : neutralBadgeClass(darkMode)}>
-                      Min Safe Depth {minimumSafeDepth.toFixed(1)} m
-                    </Badge>
-                    <Badge className={depthSourcePresentation.badgeClass}>
-                      Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
+                  ))}
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleFitRoute}
                     disabled={!waypoints.length}
-                    className="vessel-outline-button h-11 rounded-2xl px-4 text-sm md:rounded-xl"
+                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
                   >
                     Fit Route
                   </Button>
@@ -1574,7 +1547,7 @@ export function RoutePlanningView({
                     variant="outline"
                     onClick={handleCenterVessel}
                     disabled={!vesselPosition}
-                    className="vessel-outline-button h-11 rounded-2xl px-4 text-sm md:rounded-xl"
+                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
                   >
                     Center Vessel
                   </Button>
@@ -1582,7 +1555,7 @@ export function RoutePlanningView({
                     type="button"
                     variant="outline"
                     onClick={handleToggleMapLock}
-                    className={`h-11 rounded-2xl px-4 text-sm md:rounded-xl ${isMapLocked ? darkMode ? "border-[#5a4820] bg-[#2f2611] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]" : "vessel-outline-button"}`}
+                    className={`h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl ${isMapLocked ? darkMode ? "border-[#5a4820] bg-[#2f2611] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]" : "vessel-outline-button"}`}
                   >
                     {isMapLocked ? "Unlock Map" : "Lock Map"}
                   </Button>
@@ -1590,7 +1563,7 @@ export function RoutePlanningView({
                     type="button"
                     variant="outline"
                     onClick={() => setShowMapLayerPanel((value) => !value)}
-                    className="vessel-outline-button h-11 rounded-2xl px-4 text-sm md:rounded-xl"
+                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
                   >
                     {showMapLayerPanel ? "Hide Layers" : "Layers"}
                   </Button>
@@ -1598,7 +1571,7 @@ export function RoutePlanningView({
                     type="button"
                     variant="outline"
                     onClick={handleToggleFullscreen}
-                    className="vessel-outline-button h-11 rounded-2xl px-4 text-sm md:rounded-xl"
+                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
                   >
                     {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   </Button>
@@ -1622,187 +1595,11 @@ export function RoutePlanningView({
                   </div>
                 ) : null}
 
-                <div className="route-map-mobile-controls absolute left-4 top-4 z-20 flex max-w-[calc(100%-8rem)] flex-wrap gap-2 md:left-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleFitRoute}
-                    disabled={!waypoints.length}
-                    className="vessel-outline-button h-10 rounded-2xl px-3 text-xs md:hidden"
-                  >
-                    Fit Route
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCenterVessel}
-                    disabled={!vesselPosition}
-                    className="vessel-outline-button h-10 rounded-2xl px-3 text-xs md:hidden"
-                  >
-                    Center
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleToggleMapLock}
-                    className={`h-10 rounded-2xl px-3 text-xs md:hidden ${isMapLocked ? darkMode ? "border-[#5a4820] bg-[#2f2611] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]" : "vessel-outline-button"}`}
-                  >
-                    {isMapLocked ? "Unlock" : "Lock"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowMapLayerPanel((value) => !value)}
-                    className="vessel-outline-button h-10 rounded-2xl px-3 text-xs md:hidden"
-                  >
-                    Layers
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleToggleFullscreen}
-                    className="vessel-outline-button h-10 rounded-2xl px-3 text-xs md:hidden"
-                  >
-                    Full
-                  </Button>
-                </div>
-
-                {showMapLayerPanel ? (
-                <div className={`route-map-layer-panel absolute right-4 top-16 z-20 hidden w-[min(292px,calc(100%-2rem))] rounded-[22px] border px-4 py-4 text-xs md:right-6 md:top-4 md:block md:w-[288px] md:rounded-xl ${darkMode ? "border-[#2b4048] bg-[#0d1519]/92 text-[#dce9e1] shadow-[0_26px_48px_-28px_rgba(0,0,0,0.78)]" : "border-white/84 bg-white/92 text-[#365248] shadow-[0_18px_34px_-24px_rgba(18,47,40,0.22)]"}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="app-kicker">Map Layers</div>
-                      <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>Planning controls</div>
-                    </div>
-                    <Badge className={depthDataConnected ? successBadgeClass(darkMode) : bathymetryShading.isDemo ? warningBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                      {depthSourceLoading ? "Loading" : depthDataConnected ? "NOAA / GEBCO" : bathymetryShading.isDemo ? "Estimated" : "Offline"}
-                    </Badge>
-                  </div>
-                  <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}</div>
-
-                  <div className="mt-4 grid grid-cols-2 gap-2">
-                    {[
-                      ["depthShading", "Depth Shading"],
-                      ["depthContours", "Depth Contours"],
-                      ["route", "Route"],
-                      ["waypoints", "Waypoints"],
-                      ["legend", "Legend"],
-                    ].map(([key, label]) => (
-                      <Button
-                        key={key}
-                        type="button"
-                        variant="outline"
-                        onClick={() => toggleOverlay(key)}
-                        className={`justify-between rounded-2xl px-3 py-2 text-xs md:rounded-xl ${overlayToggles[key] ? "vessel-pill-strong border-vessel" : "vessel-outline-button"}`}
-                      >
-                        <span>{label}</span>
-                        <span>{overlayToggles[key] ? "On" : "Off"}</span>
-                      </Button>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 rounded-[18px] border border-white/10 px-3 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="app-kicker">Depth opacity</div>
-                    <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
-                    </div>
-                    <input
-                      type="range"
-                      min="20"
-                      max="100"
-                      step="5"
-                      value={Math.round(depthShadingOpacity * 100)}
-                      onChange={(event) => setDepthShadingOpacity(Number(event.target.value) / 100)}
-                      className="mt-3 w-full accent-cyan-500"
-                    />
-                  </div>
-                  <div className="mt-4 rounded-[18px] border border-white/10 px-3 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="app-kicker">Follow vessel position</div>
-                      <Badge className={followVesselPosition ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                        {followVesselPosition ? "On" : "Off"}
-                      </Badge>
-                    </div>
-                    <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>
-                      When off, current vessel GPS never recenters the chart automatically.
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setFollowVesselPosition((value) => !value)}
-                      className="vessel-outline-button mt-3 w-full rounded-2xl px-3 py-2 text-xs md:rounded-xl"
-                    >
-                      {followVesselPosition ? "Disable Follow" : "Enable Follow"}
-                    </Button>
-                  </div>
-                </div>
-                ) : null}
-
-                {overlayToggles.legend ? (
-                <div className={`pointer-events-none absolute bottom-24 right-4 z-20 hidden max-w-[250px] rounded-[22px] border px-4 py-3 text-xs leading-5 md:right-6 md:rounded-xl lg:block ${darkMode ? "border-[#2b4048] bg-[#0d1519]/82 text-[#dce9e1] shadow-[0_22px_42px_-28px_rgba(0,0,0,0.78)]" : "border-white/84 bg-white/84 text-[#365248] shadow-[0_18px_34px_-24px_rgba(18,47,40,0.22)]"}`}>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="app-kicker">Legend</div>
-                    <Badge className={warningBadgeClass(darkMode)}>Support only</Badge>
-                  </div>
-                  <div className={`mt-3 space-y-2.5 ${theme.textSecondary}`}>
-                    <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--line" iconLabel="---" label="Route = blue / amber / red by depth" />
-                    <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--waypoint" iconLabel="1" label="Waypoint markers = route control points" />
-                    {(overlayToggles.depth || overlayToggles.depthShading || overlayToggles.depthContours) ? (
-                      <>
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--depth" iconLabel="" label="Deep water > 50 m" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--depth" iconLabel="" label="Safe > 15 m" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--caution" iconLabel="" label="Caution 5-15 m" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--shallow" iconLabel="" label="Unsafe / shallow < 5 m" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--restricted" iconLabel="5" label="Contour labels = estimated depth contours" />
-                      </>
-                    ) : (
-                      <>
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--shallow" iconLabel="" label="Red overlay = shallow warning placeholder" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--caution" iconLabel="" label="Yellow overlay = caution placeholder" />
-                        <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--restricted" iconLabel="..." label="Dashed area = restricted area placeholder" />
-                      </>
-                    )}
-                  </div>
-                </div>
-                ) : null}
-
-                {mapMode === "satellite" ? (
-                  <div className="absolute left-4 right-4 top-20 z-20 md:left-6 md:right-6">
-                    <div className={`rounded-[22px] border px-4 py-3 text-sm leading-6 md:rounded-xl ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#d7ebff]" : "border-white/84 bg-white/92 text-[#24445c]"}`}>
-                      {SATELLITE_PLACEHOLDER_NOTICE}
-                    </div>
-                  </div>
-                ) : null}
-
-                {(overlayToggles.weather || overlayToggles.ais) ? (
-                  <div className="absolute bottom-20 left-4 z-20 space-y-2 md:bottom-24 md:left-6">
-                    {overlayToggles.weather ? (
-                      <div className={`rounded-[20px] border px-4 py-3 text-sm md:rounded-xl ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#d7ebff]" : "border-white/80 bg-white/92 text-[#24445c]"}`}>
-                        Weather / wind overlay - Data source required
-                      </div>
-                    ) : null}
-                    {overlayToggles.ais ? (
-                      <div className={`rounded-[20px] border px-4 py-3 text-sm md:rounded-xl ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#d7ebff]" : "border-white/80 bg-white/92 text-[#24445c]"}`}>
-                        AIS traffic overlay - Data source required
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {overlayToggles.depth && !depthDataConnected ? (
-                  <div className="pointer-events-none absolute left-4 top-20 z-20 md:left-6">
-                    <div className={`rounded-[20px] border px-4 py-3 text-sm md:rounded-xl ${darkMode ? "border-[#5a4820] bg-[#2f2611]/94 text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de]/94 text-[#7a5416]"}`}>
-                      Depth data unavailable
-                      <div className="mt-1 text-xs opacity-90">{DEPTH_LAYER_UNAVAILABLE_MESSAGE}</div>
-                    </div>
-                  </div>
-                ) : null}
-
-                <div className={`pointer-events-none absolute bottom-4 left-4 right-4 z-20 hidden rounded-[22px] border px-4 py-3 text-sm leading-6 md:bottom-6 md:left-6 md:right-auto md:block md:max-w-[520px] md:rounded-xl ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#dce9e1]" : "border-white/84 bg-white/92 text-[#365248]"}`}>
-                  {BASEMAP_NOTICE}
-                  <div className="mt-1">
-                    Depth data is planning support only and must be verified against official charts and onboard instruments.
-                  </div>
+                <div className="pointer-events-none absolute bottom-4 left-4 z-20 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
+                  <Badge className="vessel-pill">{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</Badge>
+                  <Badge className={routeCrossesUnsafeShallowWater ? darkMode ? "bg-[#381d1f] text-[#ffd8dc]" : "bg-[#ffe0e0] text-[#8a1f2b]" : neutralBadgeClass(darkMode)}>
+                    Min depth {minimumSafeDepth.toFixed(1)} m
+                  </Badge>
                 </div>
 
                 {!mapReady && !mapError ? (
@@ -1822,24 +1619,29 @@ export function RoutePlanningView({
                 ) : null}
               </div>
 
-              <div className="mt-3 grid gap-3 md:hidden">
+              <div className="mt-3 grid gap-3">
                 {showMapLayerPanel ? (
                   <div className={`app-panel app-panel-soft rounded-[24px] border px-4 py-4 text-xs ${darkMode ? "border-[#2b4048] bg-[#0d1519]/92 text-[#dce9e1]" : "border-white/84 bg-white/92 text-[#365248]"}`}>
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                       <div>
-                        <div className="app-kicker">Map Layers</div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>Planning controls</div>
+                        <div className="app-kicker">Layers</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>Advanced chart controls</div>
                       </div>
-                      <Badge className={depthDataConnected ? successBadgeClass(darkMode) : bathymetryShading.isDemo ? warningBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                        {depthSourceLoading ? "Loading" : depthDataConnected ? "NOAA / GEBCO" : bathymetryShading.isDemo ? "Estimated" : "Offline"}
-                      </Badge>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className={depthDataConnected ? successBadgeClass(darkMode) : bathymetryShading.isDemo ? warningBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
+                          {depthSourceLoading ? "Loading" : depthDataConnected ? "NOAA / GEBCO" : bathymetryShading.isDemo ? "Estimated" : "Offline"}
+                        </Badge>
+                        <Badge className={followVesselPosition ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
+                          Follow {followVesselPosition ? "on" : "off"}
+                        </Badge>
+                      </div>
                     </div>
                     <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}</div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-2">
+                    <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-5">
                       {[
-                        ["depthShading", "Depth Shading"],
-                        ["depthContours", "Depth Contours"],
+                        ["depthShading", "Shading"],
+                        ["depthContours", "Contours"],
                         ["route", "Route"],
                         ["waypoints", "Waypoints"],
                         ["legend", "Legend"],
@@ -1852,12 +1654,12 @@ export function RoutePlanningView({
                           className={`justify-between rounded-2xl px-3 py-2 text-xs ${overlayToggles[key] ? "vessel-pill-strong border-vessel" : "vessel-outline-button"}`}
                         >
                           <span>{label}</span>
-                          <span>{overlayToggles[key] ? "On" : "Off"}</span>
                         </Button>
                       ))}
                     </div>
 
-                    <div className="mt-4 rounded-[18px] border border-white/10 px-3 py-3">
+                    <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.7fr)]">
+                    <div className="rounded-[18px] border border-white/10 px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="app-kicker">Depth opacity</div>
                         <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
@@ -1873,24 +1675,20 @@ export function RoutePlanningView({
                       />
                     </div>
 
-                    <div className="mt-4 rounded-[18px] border border-white/10 px-3 py-3">
+                    <div className="rounded-[18px] border border-white/10 px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
-                        <div className="app-kicker">Follow vessel position</div>
-                        <Badge className={followVesselPosition ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                          {followVesselPosition ? "On" : "Off"}
-                        </Badge>
+                        <div className="app-kicker">Follow vessel</div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setFollowVesselPosition((value) => !value)}
+                          className="vessel-outline-button rounded-2xl px-3 py-2 text-xs"
+                        >
+                          {followVesselPosition ? "Disable" : "Enable"}
+                        </Button>
                       </div>
-                      <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>
-                        When off, current vessel GPS never recenters the chart automatically.
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setFollowVesselPosition((value) => !value)}
-                        className="vessel-outline-button mt-3 w-full rounded-2xl px-3 py-2 text-xs"
-                      >
-                        {followVesselPosition ? "Disable Follow" : "Enable Follow"}
-                      </Button>
+                      <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>When off, GPS never recenters the chart automatically.</div>
+                    </div>
                     </div>
                   </div>
                 ) : null}
@@ -1902,39 +1700,8 @@ export function RoutePlanningView({
                   </div>
                 ) : null}
 
-                {overlayToggles.legend ? (
-                  <div className={`rounded-[22px] border px-4 py-3 text-xs leading-5 ${darkMode ? "border-[#2b4048] bg-[#0d1519]/82 text-[#dce9e1]" : "border-white/84 bg-white/84 text-[#365248]"}`}>
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="app-kicker">Legend</div>
-                      <Badge className={warningBadgeClass(darkMode)}>Support only</Badge>
-                    </div>
-                    <div className={`mt-3 space-y-2.5 ${theme.textSecondary}`}>
-                      <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--line" iconLabel="---" label="Route = blue / amber / red by depth" />
-                      <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--waypoint" iconLabel="1" label="Waypoint markers = route control points" />
-                      {(overlayToggles.depth || overlayToggles.depthShading || overlayToggles.depthContours) ? (
-                        <>
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--depth" iconLabel="" label="Deep water > 50 m" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--depth" iconLabel="" label="Safe > 15 m" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--caution" iconLabel="" label="Caution 5-15 m" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--shallow" iconLabel="" label="Unsafe / shallow < 5 m" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--restricted" iconLabel="5" label="Contour labels = estimated depth contours" />
-                        </>
-                      ) : (
-                        <>
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--shallow" iconLabel="" label="Red overlay = shallow warning placeholder" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--caution" iconLabel="" label="Yellow overlay = caution placeholder" />
-                          <LegendItem darkMode={darkMode} iconClassName="route-legend-chip--restricted" iconLabel="..." label="Dashed area = restricted area placeholder" />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
-
                 <div className={`rounded-[22px] border px-4 py-3 text-sm leading-6 ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#dce9e1]" : "border-white/84 bg-white/92 text-[#365248]"}`}>
-                  {BASEMAP_NOTICE}
-                  <div className="mt-1">
-                    Depth data is planning support only and must be verified against official charts and onboard instruments.
-                  </div>
+                  Planning aid only. Verify route against official charts and onboard instruments.
                 </div>
               </div>
 
@@ -1947,28 +1714,28 @@ export function RoutePlanningView({
                 </div>
               ) : null}
 
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                <div className={`app-panel app-panel-soft rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+              <div className="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-5">
+                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                   <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Distance</div>
                   <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{passageSummary.totalLegs} leg{passageSummary.totalLegs === 1 ? "" : "s"}</div>
                 </div>
-                <div className={`app-panel app-panel-soft rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                   <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>ETA</div>
                   <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Cruising speed planning</div>
                 </div>
-                <div className={`app-panel app-panel-soft rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                   <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Fuel</div>
                   <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Estimated route demand</div>
                 </div>
-                <div className={`app-panel app-panel-soft rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                   <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Min Depth</div>
                   <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{`${minimumSafeDepth.toFixed(1)} m`}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target"}</div>
                 </div>
-                <div className={`app-panel app-panel-soft rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                   <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Reserve</div>
                   <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatPercentValue(vesselProfile.fuelReservePercentage || 0)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target"}</div>
