@@ -709,7 +709,7 @@ export function AppShellHeader({
             ) : null}
 
             <div className={`min-h-0 ${fleetVessels.length > 4 ? "md:max-h-[52vh] md:overflow-y-auto md:pr-1" : ""}`}>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {fleetVessels.map((vessel) => {
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
                 const crewCount = Number(vessel?.details?.crewNumber ?? vessel?.crewProfiles?.length ?? 0) || 0;
@@ -717,44 +717,44 @@ export function AppShellHeader({
                 const isActive = vessel?.id === activeVesselId;
 
                 return (
-                  <div key={vessel.id} className={`flex h-full flex-col gap-3 rounded-[28px] border p-4 shadow-sm backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "border-vessel bg-[var(--vessel-primary-soft-dark)] shadow-vessel-glow" : "border-vessel bg-[rgba(var(--vessel-primary-rgb),0.08)] shadow-[0_18px_34px_-28px_rgba(35,103,84,0.18)]") : darkMode ? "vessel-card-dark hover:-translate-y-0.5 hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.70)] hover:-translate-y-0.5 hover:bg-[rgba(255,255,255,0.82)]"}`}>
-                    <div className="flex items-start justify-between gap-3">
+                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-3 shadow-sm backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_16px_32px_-26px_var(--vessel-glow-dark)]" : "border-vessel bg-[rgba(var(--vessel-primary-rgb),0.07)] shadow-[0_16px_32px_-28px_rgba(35,103,84,0.16)]") : darkMode ? "vessel-card-dark hover:-translate-y-0.5 hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/70 hover:-translate-y-0.5 hover:bg-white/82"}`}>
+                    <div className="flex items-start justify-between gap-2.5">
                       <div>
                         <div className="app-kicker">Vessel</div>
-                        <div className={`mt-1 text-lg font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
+                        <div className={`mt-0.5 text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
                       </div>
-                      {isActive ? <Badge className={darkMode ? "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.18)] text-vessel-accent" : "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.10)] text-vessel-accent"}>Current workspace</Badge> : null}
+                      {isActive ? <Badge className={`px-2 py-0.5 text-[10px] ${darkMode ? "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.18)] text-vessel-accent" : "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.10)] text-vessel-accent"}`}>Current</Badge> : null}
                     </div>
-                    <div className={`grid gap-1.5 text-sm ${theme.textSecondary}`}>
+                    <div className={`grid gap-1 text-xs ${theme.textSecondary}`}>
                       <div className="flex items-center justify-between gap-3"><span>Status</span><span className={theme.textPrimary}>{statusLabel}</span></div>
                       <div className="flex items-center justify-between gap-3"><span>Crew</span><span className={theme.textPrimary}>{crewCount}</span></div>
                       <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className={`min-h-[72px] rounded-2xl border p-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                        <div className="app-kicker">Tasks</div>
-                        <div className={`mt-1.5 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Tasks</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`min-h-[72px] rounded-2xl border p-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                        <div className="app-kicker">Alerts</div>
-                        <div className={`mt-1.5 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Alerts</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
-                      <div className={`min-h-[72px] rounded-2xl border p-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                        <div className="app-kicker">Approvals</div>
-                        <div className={`mt-1.5 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Approvals</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
                       </div>
-                      <div className={`min-h-[72px] rounded-2xl border p-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                        <div className="app-kicker">Route</div>
-                        <div className={`mt-1.5 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Route</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
                       </div>
                     </div>
-                    <div className="mt-auto pt-3">
+                    <div className="mt-auto pt-1">
                       {isActive ? (
                         <Button
                           type="button"
                           variant="outline"
                           disabled
-                          className="h-12 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-5 py-4 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                          className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                         >
                           Current Workspace
                         </Button>
@@ -762,7 +762,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className="h-12 w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                          className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                         >
                           Open Vessel
                         </Button>
@@ -988,24 +988,24 @@ export function AppShellHeader({
               </span>
             </ShellControlButton>
           </div>
-          <div className={`mt-3 rounded-[24px] border p-4 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)]"}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className={`mt-3 rounded-[22px] border p-3 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)]"}`}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="app-kicker">Fleet Switcher</div>
-                <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>
+                <div className={`mt-1 max-w-xl text-xs leading-5 ${theme.textSecondary}`}>
                   Keep vessel identity explicit. Open the other workspace directly from here without losing the current command layout.
                 </div>
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className={`min-h-[46px] rounded-2xl px-4 py-3 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+                className={`h-9 rounded-xl px-3 py-2 text-xs font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}
                 onClick={openFleetPanel}
               >
-                Manage Fleet
+                Manage
               </Button>
             </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <div className="mt-3 grid gap-2.5 md:grid-cols-2">
               {fleetWorkspaceCards.map((vessel) => {
                 const isCurrent = vessel.id === activeVesselId;
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
@@ -1013,39 +1013,39 @@ export function AppShellHeader({
                 return (
                   <div
                     key={`fleet-switcher-${vessel.id}`}
-                    className={`flex h-full flex-col rounded-[22px] border p-4 transition-all duration-200 ${isCurrent ? (darkMode ? "border-vessel bg-[var(--vessel-primary-soft-dark)] shadow-[0_14px_36px_-28px_var(--vessel-glow-dark)]" : "border-vessel bg-[rgba(var(--vessel-primary-rgb),0.08)] shadow-[0_14px_36px_-28px_rgba(35,103,84,0.16)]") : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.66)] hover:border-[var(--vessel-border)] hover:bg-[rgba(255,255,255,0.82)]"}`}
+                    className={`flex h-full flex-col rounded-[18px] border p-3 transition-all duration-200 ${isCurrent ? (darkMode ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_12px_28px_-24px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[rgba(var(--vessel-primary-rgb),0.07)] shadow-[0_12px_28px_-24px_rgba(35,103,84,0.14)]") : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/60 hover:border-[var(--vessel-border)] hover:bg-white/78"}`}
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-2.5">
                       <div className="min-w-0">
-                        <div className="text-premium-label text-[11px] font-semibold uppercase tracking-[0.18em]">
+                        <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">
                           Vessel
                         </div>
-                        <div className={`mt-1 truncate text-lg font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
-                        <div className={`mt-1 text-sm ${theme.textSecondary}`}>
+                        <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
+                        <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>
                           {vessel?.details?.status || "Operational"} · {vessel?.details?.homePort || "Home port not set"}
                         </div>
                       </div>
-                      <Badge className={isCurrent ? "vessel-pill" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-600"}>
+                      <Badge className={`px-2 py-0.5 text-[10px] ${isCurrent ? "vessel-pill" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-600"}`}>
                         {isCurrent ? "Current" : "Available"}
                       </Badge>
                     </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <div className={`rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                        <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.18em]">Tasks</div>
-                        <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
+                    <div className="mt-2.5 grid grid-cols-2 gap-2">
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Tasks</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                        <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.18em]">Alerts</div>
-                        <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
+                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Alerts</div>
+                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
                     </div>
-                    <div className="mt-4 pt-1">
+                    <div className="mt-3">
                       {isCurrent ? (
                         <Button
                           type="button"
                           variant="outline"
                           disabled
-                          className="h-12 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                          className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                         >
                           Current Workspace
                         </Button>
@@ -1053,7 +1053,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className="h-12 w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                          className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                         >
                           Open Vessel
                         </Button>
