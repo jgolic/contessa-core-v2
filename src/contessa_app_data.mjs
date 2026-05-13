@@ -826,10 +826,10 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       status: "ongoing",
       priority: "high",
       dueDate: todayDateString(),
-      approvalStatus: "pending",
+      approvalStatus: "approved",
       notes: "Adrian reported hydraulic residue near the tender davit. Confirm source, photograph residue, and check seal kit requirements.",
       quotes: [
-        { id: "OCT-Q-001", supplier: "Tender davit hydraulic seal kit", amount: 1240, currency: "USD", status: "requested", includeInSummary: true, requestedBy: "Adrian Cole" },
+        { id: "OCT-Q-001", supplier: "Tender davit hydraulic seal kit", amount: 1240, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Adrian Cole" },
       ],
     },
     {
@@ -841,7 +841,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       status: "pending",
       priority: "medium",
       dueDate: dateStringFromNow(1),
-      approvalStatus: "pending",
+      approvalStatus: "approved",
       notes: "Polish stainless around aft deck railings before guest arrival setup begins.",
       quotes: [
         { id: "OCT-Q-002", supplier: "Stainless polish supplies", amount: 220, currency: "USD", status: "requested", includeInSummary: true, requestedBy: "Tomas Reed" },
@@ -856,7 +856,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       status: "pending",
       priority: "low",
       dueDate: dateStringFromNow(7),
-      approvalStatus: "pending",
+      approvalStatus: "approved",
       notes: "Count snorkel sets, fins, masks, paddleboards, and tender safety gear for Oracabessa guest program.",
     },
     {
@@ -868,10 +868,10 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       status: "pending",
       priority: "high",
       dueDate: todayDateString(),
-      approvalStatus: "pending",
+      approvalStatus: "approved",
       notes: "Guest welcome setup needs final approval before provisioning is confirmed.",
       quotes: [
-        { id: "OCT-Q-003", supplier: "Guest welcome provisions", amount: 680, currency: "USD", status: "requested", includeInSummary: true, requestedBy: "Mia Laurent" },
+        { id: "OCT-Q-003", supplier: "Guest welcome provisions", amount: 680, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Mia Laurent" },
       ],
     },
     {
@@ -883,16 +883,12 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       status: "pending",
       priority: "high",
       dueDate: todayDateString(),
-      approvalStatus: "pending",
+      approvalStatus: "approved",
       notes: "Generator coolant inspection added for today after engineering morning check.",
     },
   ].map((task) => normalizeTask(task));
 
-  const crewExpenses = [
-    { id: "OCT-EXP-001", title: "Tender davit hydraulic seal kit", amount: 1240, currency: "USD", status: "requested", requestedBy: "Adrian Cole", attachments: [] },
-    { id: "OCT-EXP-002", title: "Guest welcome provisions", amount: 680, currency: "USD", status: "requested", requestedBy: "Mia Laurent", attachments: [] },
-    { id: "OCT-EXP-003", title: "Stainless polish supplies", amount: 220, currency: "USD", status: "requested", requestedBy: "Tomas Reed", attachments: [] },
-  ].map(normalizeCrewExpense);
+  const crewExpenses = [];
 
   const workers = [
     { id: "OCT-WRK-001", fullName: "Hydraulic Technician", rank: "Contractor", department: "Engineering", notes: "Seal kit quote requested" },
@@ -917,6 +913,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       frequencyMonths: 1,
       nextDueDate: todayDateString(),
       responsiblePerson: "Adrian Cole",
+      statusLabel: "Due Today",
       notes: "Due Today. Confirm coolant level and log condition before evening standby.",
       alertEnabled: true,
     },
@@ -927,6 +924,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       frequencyMonths: 1,
       nextDueDate: todayDateString(),
       responsiblePerson: "Adrian Cole",
+      statusLabel: "In Progress",
       notes: "In Progress. Trace hydraulic residue and confirm seal kit requirement.",
       alertEnabled: true,
     },
@@ -937,6 +935,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       frequencyMonths: 3,
       nextDueDate: dateStringFromNow(2),
       responsiblePerson: "Leo Grant",
+      statusLabel: "Due in 2 days",
       notes: "Due in 2 days. Check chilled water filter after guest cabin load test.",
       alertEnabled: true,
     },
@@ -947,6 +946,7 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       frequencyMonths: 1,
       nextDueDate: dateStringFromNow(5),
       responsiblePerson: "Nina Hayes",
+      statusLabel: "Scheduled",
       notes: "Scheduled. Complete pre-departure navigation light test.",
       alertEnabled: true,
     },
@@ -2250,6 +2250,7 @@ function inferMaintenanceLead(item = {}) {
 }
 
 function getMaintenanceStatus(item = {}) {
+  if (item.statusLabel) return item.statusLabel;
   const remaining = daysUntil(item.nextDueDate);
   if (remaining === null) return "Unscheduled";
   if (remaining < 0) return "Overdue";
@@ -2313,7 +2314,7 @@ export function buildTodayOperationsSnapshot({
         amount: item.amount ?? 0,
         currency: item.currency || "USD",
         requestedBy: item.requestedBy || item.taskName || item.taskId || "Operations",
-        approvalStatus: item.status || item.approval || "requested",
+        approvalStatus: item.displayStatus || item.status || item.approval || "requested",
       })),
     ...crewExpenses
       .filter((item) => ["requested", "received"].includes(item.status) || item.approval === "pending")
@@ -2325,7 +2326,7 @@ export function buildTodayOperationsSnapshot({
         amount: item.amount ?? 0,
         currency: item.currency || "USD",
         requestedBy: item.requestedBy || "Crew",
-        approvalStatus: item.status || item.approval || "requested",
+        approvalStatus: item.displayStatus || item.status || item.approval || "requested",
       })),
     ...tasks
       .filter((task) => task.approvalStatus === "pending" || (task.requiresApproval && !task.approvalStatus))
