@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select.jsx";
-import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { AlertCircle, CheckCircle2, LayoutDashboard, Moon, Plus, Receipt, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
   ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
@@ -51,7 +51,7 @@ import {
   titleCase,
   warningBadgeClass,
 } from "./contessa_app_data.mjs";
-import { ConfirmActionDialog, QuoteRow, ShareAppButton, TaskListItem } from "./contessa_app_components.jsx";
+import { ConfirmActionDialog, QuoteRow, ShareAppButton } from "./contessa_app_components.jsx";
 import { AlertInboxButton, BottomNavButton, SectionNavCard, ShellControlButton } from "./components/app_shell_primitives.jsx";
 import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
@@ -220,6 +220,35 @@ export function ObjectivesView({
     onSelectTask(taskId);
     setMobileTaskPane("details");
   };
+  const getTaskBoardStatus = (task = {}) => {
+    if (task.status === "completed") return "done";
+    if (task.status === "approved" || task.quotes?.some((quote) => ["requested", "received"].includes(quote.status))) return "waiting-approval";
+    if (task.status === "ongoing") return "in-progress";
+    return "todo";
+  };
+  const taskBoardColumns = [
+    {
+      key: "todo",
+      label: "To Do",
+      empty: "No tasks waiting to start.",
+    },
+    {
+      key: "in-progress",
+      label: "In Progress",
+      empty: "No tasks currently in progress.",
+    },
+    {
+      key: "waiting-approval",
+      label: "Waiting Approval",
+      empty: "No tasks waiting for approval.",
+    },
+    {
+      key: "done",
+      label: "Done",
+      empty: "No completed tasks in this view.",
+    },
+  ];
+  const visibleTasks = Array.isArray(filteredTasks) ? filteredTasks : [];
 
   return (
     <>
@@ -340,35 +369,68 @@ export function ObjectivesView({
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-[320px_1fr] xl:grid-cols-[340px_1fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
         <Card className={`app-panel app-panel-soft shadow-md ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
           <CardContent className="p-4">
-            <div className="mb-4 space-y-3">
-              <div className={`app-data-label ${theme.textSecondary}`}>Task List</div>
+            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="app-kicker">Tasks</div>
+                <div className={`mt-1 text-sm ${theme.textSecondary}`}>Simple board: start work, track progress, wait for approval, then close it.</div>
+              </div>
               <Input
                 placeholder="Search tasks..."
                 value={search}
                 onChange={(event) => onSearchChange(event.target.value)}
-                className={`rounded-lg h-12 ${theme.input}`}
+                className={`h-12 rounded-2xl md:max-w-xs ${theme.input}`}
               />
             </div>
-            {filteredTasks.length === 0 ? (
+            {visibleTasks.length === 0 ? (
               <div className={`app-empty-state rounded-xl border border-dashed text-center text-sm ${theme.textSecondary} ${darkMode ? "border-[#31443a] bg-[#0e171c]" : "border-[#c9ded3] bg-[#f7faf8]"}`}>
-                No tasks match the current filter. Try clearing the search or switching back to `All`.
+                No tasks match this view.
               </div>
             ) : (
-              <div className="space-y-3">
-                {filteredTasks.map((task) => (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    isSelected={selectedId === task.id}
-                    onSelect={() => handleSelectTask(task.id)}
-                    canEdit={canEdit}
-                    onStatusChange={(status) => onUpdateTaskStatus(task.id, status)}
-                    darkMode={darkMode}
-                  />
-                ))}
+              <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+                {taskBoardColumns.map((column) => {
+                  const columnTasks = visibleTasks.filter((task) => getTaskBoardStatus(task) === column.key);
+                  return (
+                    <div key={column.key} className={`rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="app-kicker">{column.label}</div>
+                        <Badge className={neutralBadgeClass(darkMode)}>{columnTasks.length}</Badge>
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {columnTasks.length ? columnTasks.map((task) => (
+                          <button
+                            key={task.id}
+                            type="button"
+                            onClick={() => handleSelectTask(task.id)}
+                            className={`rounded-2xl border p-3 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
+                          >
+                            <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{task.name}</div>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
+                              <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(task.status)}</Badge>
+                            </div>
+                            <div className={`mt-3 grid gap-1 text-xs ${theme.textSecondary}`}>
+                              <div className="flex justify-between gap-2">
+                                <span>Assigned</span>
+                                <span className={`truncate text-right font-medium ${theme.textPrimary}`}>{task.assignee || "Unassigned"}</span>
+                              </div>
+                              <div className="flex justify-between gap-2">
+                                <span>Due</span>
+                                <span className={`text-right font-medium ${theme.textPrimary}`}>{task.dueDate || "Not set"}</span>
+                              </div>
+                            </div>
+                          </button>
+                        )) : (
+                          <div className={`rounded-2xl border border-dashed p-3 text-sm ${theme.textSecondary} ${darkMode ? "border-white/10 bg-white/[0.02]" : "border-slate-200/70 bg-white/50"}`}>
+                            {column.empty}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -495,13 +557,11 @@ export function AppShellHeader({
     return () => clearInterval(interval);
   }, []);
   const visibleModuleLabels = [
-    visibleModuleKeys.includes("today") ? { key: "today", label: "Command Center" } : null,
-    visibleModuleKeys.includes("route") ? { key: "route", label: "Route Planning" } : null,
-    visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance") ? { key: "tasks-maintenance", label: "Tasks & Maintenance" } : null,
-    visibleModuleKeys.includes("expenses") ? { key: "expenses", label: "Expenses & Approvals" } : null,
-    visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates") ? { key: "crew-certificates", label: "Certificates & Crew" } : null,
+    visibleModuleKeys.includes("today") ? { key: "today", label: "Dashboard" } : null,
+    visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance") ? { key: "tasks-maintenance", label: "Tasks" } : null,
+    visibleModuleKeys.includes("expenses") ? { key: "expenses", label: "Approvals" } : null,
+    visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates") ? { key: "crew-certificates", label: "Crew" } : null,
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents" } : null,
-    visibleModuleKeys.includes("settings") ? { key: "settings", label: "Settings" } : null,
   ].filter(Boolean);
   const fleetWorkspaceCards = [...fleetVessels]
     .filter(Boolean)
@@ -522,9 +582,9 @@ export function AppShellHeader({
       rows: [
         { label: "Home port", value: activeFleetVessel?.details?.homePort || "Not set" },
         { label: "Crew onboard", value: `${currentVesselMetrics.crewCount || stats.crewProfiles || 0}` },
-        { label: "Live modules", value: `${currentVesselMetrics.activeModules || visibleModuleLabels.length || 0}` },
+        { label: "Main sections", value: `${visibleModuleLabels.length || 0}` },
       ],
-      actionLabel: "Open command",
+      actionLabel: "Open dashboard",
       onAction: onOpenCommand,
     },
     {
@@ -539,7 +599,7 @@ export function AppShellHeader({
       ],
       actionLabel: "Open tasks",
       onAction: onOpenTasksMaintenance,
-      secondaryActionLabel: "Open route",
+      secondaryActionLabel: "View route",
       onSecondaryAction: onOpenRoute,
     },
     {
@@ -559,13 +619,13 @@ export function AppShellHeader({
     },
     {
       key: "spend-activity",
-      title: "Spend & Activity",
+      title: "Approvals & Activity",
       badge: `${currentVesselMetrics.quoteCount || 0} quotes`,
       accent: "neutral",
       rows: [
         { label: "Open expenses", value: `${currentVesselMetrics.expenseCount || 0}` },
         { label: "Approvals waiting", value: `${stats.pendingApprovals || 0}` },
-        { label: "Spend exposed", value: formatMoney(stats.totalExpenses || 0, currency) },
+        { label: "Pending spend", value: formatMoney(stats.totalExpenses || 0, currency) },
       ],
       activity: recentHeaderHistory[0] || null,
       actionLabel: "Open approvals",
@@ -874,7 +934,7 @@ export function AppShellHeader({
               {visibleModuleLabels.length} active modules
             </Badge>
             <Badge className={darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]"}>
-              Strategic daily view
+              Today
             </Badge>
           </div>
         </div>
@@ -1159,7 +1219,7 @@ export function AppShellHeader({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="app-kicker">{card.title}</div>
-                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{card.title === "Crew Readiness" ? `${currentVesselName} readiness` : card.title === "Priority Queue" ? "What needs action now" : card.title === "Spend & Activity" ? "Financial exposure and recent movement" : `${currentVesselName} operating snapshot`}</div>
+                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{card.title === "Crew Readiness" ? `${currentVesselName} readiness` : card.title === "Priority Queue" ? "What needs action now" : card.title === "Approvals & Activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
               </div>
               <Badge className={intelBadgeClass(card.accent)}>{card.badge}</Badge>
             </div>
@@ -1255,32 +1315,28 @@ export function AppSectionCards({
   onShowFleet,
 }) {
   const crewAndCertificatesVisible = visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates");
+  const tasksVisible = visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance");
+  const approvalsVisible = visibleModuleKeys.includes("expenses");
   const desktopItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", label: "Command Center", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
-    { key: "tasks-maintenance", label: "Tasks & Maintenance", value: `${stats.totalObjectives} tasks · ${stats.maintenanceDue} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance },
-    visibleModuleKeys.includes("route") ? { key: "route", label: "Route Planning", value: stats.routeWaypoints ? (stats.routeDistanceNm > 0 ? `${stats.routeDistanceNm.toFixed(1)} nm` : `${stats.routeWaypoints} wpts`) : "Plan route", icon: Compass, active: expenseView === "route", onClick: onShowRoute } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approvals", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? {
       key: "crew-certificates",
-      label: "Certificates & Crew",
+      label: "Crew",
       value: `${stats.crewProfiles || 0} crew · ${stats.certificateDue || 0} due`,
       icon: Users,
       active: expenseView === "crew-certificates",
       onClick: onShowCrewCertificates,
     } : null,
-    { key: "expenses-approvals", label: "Expenses & Approvals", value: formatMoney(stats.totalExpenses, currency), icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses },
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
-    onShowFleet ? { key: "fleet", label: "Fleet", value: `${fleetCount} vessel${fleetCount === 1 ? "" : "s"}`, icon: Users, active: false, onClick: onShowFleet } : null,
-    visibleModuleKeys.includes("settings") ? { key: "settings", label: "Settings", value: "System", icon: LayoutDashboard, active: expenseView === "settings", onClick: onShowSettings } : null,
   ].filter(Boolean);
   const mobileItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", label: "Command", value: String(stats.todayAttentionCount || 0), onClick: onShowCommand } : null,
-    { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives}`, onClick: onShowTasksMaintenance },
-    visibleModuleKeys.includes("route") ? { key: "route", label: "Route", value: stats.routeWaypoints ? (stats.routeDistanceNm > 0 ? `${stats.routeDistanceNm.toFixed(1)} nm` : `${stats.routeWaypoints}`) : "Plan", onClick: onShowRoute } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: String(stats.todayAttentionCount || 0), onClick: onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, onClick: onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approvals", value: `${stats.pendingApprovals || 0}`, onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0} · ${stats.certificateDue || 0} due`, onClick: onShowCrewCertificates } : null,
-    { key: "expenses-approvals", label: "Approvals", value: formatMoney(stats.totalExpenses, currency), onClick: onShowExpenses },
-    onShowFleet ? { key: "fleet", label: "Fleet", value: `${fleetCount}`, onClick: onShowFleet } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, onClick: onShowDocuments } : null,
-    visibleModuleKeys.includes("settings") ? { key: "settings", label: "Settings", value: "System", onClick: onShowSettings } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents", value: `${stats.documentCount || 0}`, onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileNavItems = mobileItems;
 
@@ -1856,9 +1912,9 @@ export function TaskMaintenanceWorkspace({
         <CardContent className="p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="app-kicker">Tasks & Maintenance</div>
-              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Operational execution, upkeep, and follow-through.</h2>
-              <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>One operating surface for active work, vessel care, approvals, and linked spend.</p>
+              <div className="app-kicker">Tasks</div>
+              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Simple work board for daily vessel jobs.</h2>
+              <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Track what needs doing, what is in progress, what needs approval, and what is done.</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <WorkspaceSegmentButton active={activePanel === "tasks"} onClick={() => onChangePanel("tasks")} darkMode={darkMode}>Tasks</WorkspaceSegmentButton>
@@ -1886,8 +1942,8 @@ export function CrewCertificatesWorkspace({
         <CardContent className="p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="app-kicker">Certificates & Crew</div>
-              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Crew readiness, compliance, and document confidence.</h2>
+              <div className="app-kicker">Crew</div>
+              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Crew readiness, roles, and certificate warnings.</h2>
               <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Profiles and certificate risk live together so captains and managers see people and compliance in one place.</p>
             </div>
             <div className="flex flex-wrap gap-2">

@@ -178,7 +178,7 @@ export function DetailDrawer({
       <div className={`absolute inset-x-3 bottom-3 top-auto max-h-[78vh] overflow-y-auto rounded-[28px] border p-4 shadow-[0_24px_70px_-28px_rgba(0,0,0,0.48)] md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[480px] md:rounded-[30px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.92)] text-slate-800"}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="app-kicker">Inspector</div>
+            <div className="app-kicker">Details</div>
             <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{title}</div>
             {subtitle ? <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div> : null}
           </div>

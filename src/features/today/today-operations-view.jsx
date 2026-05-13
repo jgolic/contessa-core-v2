@@ -277,12 +277,12 @@ function DetailPanelBody({
   const checklist = Array.isArray(item.checklist) ? item.checklist.filter(Boolean) : [];
 
   const primaryAction = (() => {
-    if (item.type === "task") return { label: "Open Tasks", onClick: onNavigateToTasks };
-    if (item.type === "maintenance") return { label: "Open Maintenance", onClick: onNavigateToMaintenance };
-    if (item.type === "certificate") return { label: "Open Crew & Certificates", onClick: onNavigateToCertificates };
-    if (item.type === "approval" || item.type === "quote") return { label: "Open Approvals", onClick: onNavigateToApprovals };
-    if (item.type === "alert" || item.type === "route") return { label: "Open Route Planning", onClick: onNavigateToRoute };
-    return { label: "Open Alerts", onClick: onNavigateToAlerts };
+    if (item.type === "task") return { label: "View tasks", onClick: onNavigateToTasks };
+    if (item.type === "maintenance") return { label: "View maintenance", onClick: onNavigateToMaintenance };
+    if (item.type === "certificate") return { label: "View crew", onClick: onNavigateToCertificates };
+    if (item.type === "approval" || item.type === "quote") return { label: "View approvals", onClick: onNavigateToApprovals };
+    if (item.type === "alert" || item.type === "route") return { label: "View route", onClick: onNavigateToRoute };
+    return { label: "View alerts", onClick: onNavigateToAlerts };
   })();
 
   return (
@@ -431,7 +431,7 @@ export function TodayOperationsView({
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [commandClock, setCommandClock] = useState(() => new Date());
   const [expandedSections, setExpandedSections] = useState({
-    tasksMaintenance: true,
+    tasksMaintenance: false,
     expensesApprovals: false,
     certificatesCrew: false,
     documents: false,
@@ -531,39 +531,39 @@ export function TodayOperationsView({
 
   const statusTiles = [
     {
-      label: "Active tasks",
+      label: "Urgent today",
       value: currentVessel?.metrics?.activeTasks ?? stats.totalObjectives ?? 0,
       note: `${stats.overdueTasks || 0} overdue`,
       tone: (stats.overdueTasks || 0) > 0 ? "critical" : "neutral",
     },
     {
-      label: "Alerts",
-      value: currentVessel?.metrics?.alerts ?? routeAlerts.length,
-      note: routeAlerts.length ? `${routeAlerts.length} route review` : "No critical alerts",
-      tone: routeAlerts.length ? "warning" : "success",
-    },
-    {
-      label: "Pending approvals",
+      label: "Waiting approval",
       value: currentVessel?.metrics?.pendingApprovals ?? todayOperations?.pendingApprovals?.length ?? 0,
       note: `${approvalItems.length} live queue`,
       tone: approvalItems.length ? "warning" : "neutral",
     },
     {
-      label: "Crew readiness",
-      value: currentVessel?.metrics?.crewReady ?? "100%",
-      note: `${stats.certificateDue || 0} certs due`,
-      tone: (stats.certificateDue || 0) > 0 ? "warning" : "success",
+      label: "Overdue",
+      value: stats.overdueTasks || 0,
+      note: (stats.overdueTasks || 0) > 0 ? "Needs attention" : "None today",
+      tone: (stats.overdueTasks || 0) > 0 ? "critical" : "success",
     },
     {
-      label: "Certs expiring",
-      value: currentVessel?.metrics?.certificatesExpiring ?? stats.certificateDue ?? 0,
-      note: `${stats.crewProfiles || 0} crew tracked`,
-      tone: (stats.certificateDue || 0) > 0 ? "warning" : "neutral",
+      label: "Changed recently",
+      value: activityItems.length,
+      note: "Latest updates",
+      tone: activityItems.length ? "neutral" : "success",
     },
     {
-      label: "Open exposure",
+      label: "Vessel status",
+      value: currentVessel?.status || "Operational",
+      note: currentVessel?.syncStatus || "Live",
+      tone: isOffline ? "warning" : "success",
+    },
+    {
+      label: "Pending spend",
       value: currentVessel?.metrics?.openExposure ?? formatMoney(stats.totalExpenses || 0, currency),
-      note: `${stats.pendingApprovals || 0} approvals exposed`,
+      note: `${stats.pendingApprovals || 0} approvals waiting`,
       tone: (stats.pendingApprovals || 0) > 0 ? "warning" : "neutral",
     },
   ];
@@ -601,7 +601,7 @@ export function TodayOperationsView({
           <CardContent className="p-4 md:p-5">
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
               <div className="min-w-0">
-                <div className="app-kicker">Command Center</div>
+                <div className="app-kicker">Dashboard</div>
                 <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-2">
                   <h2 className={`text-[1.7rem] font-semibold tracking-tight md:text-[2.15rem] ${theme.textPrimary}`}>{currentVessel?.name || currentVesselName}</h2>
                   <div className={`pb-1 text-sm ${theme.textSecondary}`}>{currentVessel?.location || "Home port not set"}</div>
@@ -621,7 +621,7 @@ export function TodayOperationsView({
                     {canEdit ? "Editor Mode" : "View Mode"}
                   </Badge>
                 </div>
-                <p className={`mt-3 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>{commandPanelConfig.summary}</p>
+                <p className={`mt-3 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>Today, approvals, overdue work, recent changes, and vessel status in one calm view.</p>
               </div>
 
               <div className={`rounded-[24px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.72)]"}`}>
@@ -642,7 +642,7 @@ export function TodayOperationsView({
                 </div>
                 <div className="mt-4 grid gap-2 sm:grid-cols-2">
                   <Button type="button" onClick={onOpenFleet} className="button-vessel-primary rounded-2xl px-4 py-3 text-white">
-                    Fleet Switcher
+                    Fleet
                   </Button>
                   <Button
                     type="button"
@@ -680,16 +680,16 @@ export function TodayOperationsView({
               <CardContent className="p-4 md:p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="app-kicker">Today's Priorities</div>
-                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>Only the next high-value actions stay open by default.</div>
+                    <div className="app-kicker">Today</div>
+                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>Only urgent, waiting, or overdue work is shown here.</div>
                   </div>
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={onNavigateToRoute}
+                    onClick={onNavigateToTasks}
                     className={`rounded-2xl px-3 py-2 text-sm ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
                   >
-                    Open route
+                    View tasks
                   </Button>
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -707,10 +707,10 @@ export function TodayOperationsView({
                     <div className="md:col-span-2">
                       <DashboardEmptyState
                         darkMode={darkMode}
-                        title="No urgent blockers"
-                        message="The vessel is stable right now. Use route planning, crew readiness, or approvals to stay ahead of the next operational decision."
-                        actionLabel="Open route"
-                        onAction={onNavigateToRoute}
+                        title="No urgent tasks today."
+                        message="The vessel is stable right now. Approvals, crew documents, and route warnings will appear here only when they need attention."
+                        actionLabel="View tasks"
+                        onAction={onNavigateToTasks}
                       />
                     </div>
                   )}
@@ -720,7 +720,7 @@ export function TodayOperationsView({
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Tasks & Maintenance"
+              title="Tasks"
               subtitle="Compact queue of work orders, overdue actions, and due-today upkeep."
               count={taskItems.length + maintenanceItems.length}
               tone={taskItems.length || maintenanceItems.length ? "warning" : "neutral"}
@@ -755,8 +755,8 @@ export function TodayOperationsView({
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Expenses & Approvals"
-              subtitle="Quotes, spend exposure, and approval decisions stay folded until selected."
+              title="Approvals"
+              subtitle="Quotes, expenses, and service decisions stay folded until selected."
               count={approvalItems.length}
               tone={approvalItems.length ? "warning" : "neutral"}
               isOpen={expandedSections.expensesApprovals}
@@ -780,17 +780,17 @@ export function TodayOperationsView({
                 <DashboardEmptyState
                   darkMode={darkMode}
                   title="No approvals waiting"
-                    message="No spend or quote decision is waiting at the moment. Open approvals to review the wider expense board."
-                    actionLabel="Open approvals"
+                    message="No spend or quote decision is waiting at the moment. Open approvals to review the wider board."
+                    actionLabel="View approvals"
                     onAction={onNavigateToApprovals}
-                    secondaryContent={<div className={`text-xs ${theme.textSecondary}`}>Current exposure: {currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)}</div>}
+                    secondaryContent={<div className={`text-xs ${theme.textSecondary}`}>Pending spend: {currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)}</div>}
                   />
                 )}
             </SectionAccordion>
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Certificates & Crew"
+              title="Crew"
               subtitle="Crew readiness stays collapsed until documentation or review is needed."
               count={certificateItems.length}
               tone={certificateItems.length ? "warning" : "neutral"}
@@ -816,7 +816,7 @@ export function TodayOperationsView({
                   darkMode={darkMode}
                   title="Crew compliance looks clear"
                   message="No crew certificates are near expiry today. Open the crew and certificates workspace for the full roster and records."
-                  actionLabel="Open crew"
+                  actionLabel="View crew"
                   onAction={onNavigateToCertificates}
                 />
               )}
@@ -1029,15 +1029,15 @@ export function TodayOperationsView({
 
             <IntelligencePanel
               darkMode={darkMode}
-              title="Financial Snapshot"
-              subtitle="Open exposure, approvals, and spend posture stay visible without opening the whole expense module."
-              actionLabel="Open approvals"
+              title="Approvals Snapshot"
+              subtitle="Pending spend, approvals, and decisions stay visible without opening the whole approvals module."
+              actionLabel="View approvals"
               onAction={onNavigateToApprovals}
             >
               <div className="grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
                   <MetricTile darkMode={darkMode} label="Pending" value={stats.pendingApprovals || 0} note="Approvals" tone={(stats.pendingApprovals || 0) > 0 ? "warning" : "neutral"} />
-                  <MetricTile darkMode={darkMode} label="Exposure" value={currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)} note="Open spend" />
+                  <MetricTile darkMode={darkMode} label="Pending spend" value={currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)} note="Open spend" />
                   <MetricTile darkMode={darkMode} label="Quotes" value={approvalItems.filter((item) => item.type === "quote").length} note="Live quote items" />
                   <MetricTile darkMode={darkMode} label="Crew spend" value={formatMoney(stats.crewTotal || 0, currency)} note="Crew expenses" />
                 </div>
