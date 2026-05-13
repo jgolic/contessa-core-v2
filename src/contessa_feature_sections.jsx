@@ -253,7 +253,7 @@ export function ObjectivesView({
   return (
     <>
       <div className={`app-panel app-panel-soft mb-4 rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {filterTabs.map((tab) => (
             <button
               key={tab.value}
