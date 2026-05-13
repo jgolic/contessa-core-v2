@@ -253,15 +253,15 @@ export function ObjectivesView({
   return (
     <>
       <div className={`app-panel app-panel-soft mb-4 rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <div className="flex flex-wrap items-center gap-2">
           {filterTabs.map((tab) => (
             <button
               key={tab.value}
               type="button"
               onClick={() => onStatusFilterChange(tab.value)}
-              className={`flex min-h-[72px] min-w-0 items-center justify-center rounded-2xl border px-4 py-3 text-center text-sm font-semibold transition md:px-5 md:py-4 ${tab.active ? "vessel-active border-[var(--vessel-border)] dark:border-[var(--vessel-border-dark)]" : darkMode ? "border-white/10 bg-[#172228] text-[#dce9e1] hover:border-[var(--vessel-border-dark)] hover:bg-[#22323a]" : "border-slate-200/70 bg-[#eef3f0] text-[#40534a] hover:border-[var(--vessel-border)] hover:bg-[#dfe9e3]"}`}
+              className={`inline-flex min-h-[38px] items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${tab.active ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_10px_28px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_10px_24px_rgba(15,118,110,0.10)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/55 text-slate-600 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
             >
-              <span className="truncate">{tab.label} {tab.count}</span>
+              <span className="whitespace-nowrap">{tab.label} <span className="opacity-70">({tab.count})</span></span>
             </button>
           ))}
         </div>
