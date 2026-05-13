@@ -1,0 +1,98 @@
+{
+  "app": "M/Y Contessa",
+  "version": 1,
+  "exportedAt": "2026-04-20T12:00:00.000Z",
+  "state": {
+    "darkMode": false,
+    "currency": "USD",
+    "actorName": "Captain",
+    "history": [
+      {
+        "id": "H-100",
+        "at": "2026-04-20T11:45:00.000Z",
+        "by": "Captain",
+        "section": "Objectives",
+        "action": "Task added",
+        "detail": "Inspect passerelle added in Stern."
+      }
+    ],
+    "declinedTasks": [
+      {
+        "id": "CT-099",
+        "name": "Old vendor follow-up",
+        "area": "Office",
+        "status": "declined",
+        "priority": "low",
+        "assignee": "Captain",
+        "dueDate": "",
+        "notes": "Archived sample task.",
+        "photos": [],
+        "expenses": [],
+        "quotes": [],
+        "declinedAt": "2026-04-20T10:00:00.000Z"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "CT-001",
+        "name": "Inspect passerelle",
+        "area": "Stern",
+        "status": "pending",
+        "priority": "high",
+        "assignee": "Chief Mate",
+        "dueDate": "2026-04-22",
+        "notes": "Check extension and hydraulic response.",
+        "photos": [],
+        "expenses": [],
+        "quotes": [
+          {
+            "id": "Q-1001",
+            "supplier": "Deck Systems",
+            "amount": 1850,
+            "currency": "USD",
+            "approval": "pending",
+            "payment": "unpaid",
+            "rejectedAt": null,
+            "receipts": []
+          }
+        ]
+      },
+      {
+        "id": "CT-002",
+        "name": "Polish stainless rails",
+        "area": "Main Deck",
+        "status": "ongoing",
+        "priority": "medium",
+        "assignee": "Captain",
+        "dueDate": "2026-04-24",
+        "notes": "Test recurring objective import.",
+        "photos": [],
+        "expenses": [],
+        "quotes": []
+      }
+    ],
+    "crewExpenses": [
+      {
+        "id": "CE-1001",
+        "title": "Provisioning taxi",
+        "amount": 64,
+        "currency": "USD",
+        "payment": "paid"
+      }
+    ],
+    "maintenanceItems": [
+      {
+        "id": "MI-1001",
+        "title": "Generator service",
+        "area": "Engine Room",
+        "frequencyMonths": 3,
+        "nextDueDate": "2026-04-21",
+        "notes": "Replace oil and filters.",
+        "alertEnabled": true,
+        "extensionUsed": false,
+        "logs": [],
+        "removedLogs": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+@import "../src/tailwind.css";
+@import "../src/styles.css";
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
