@@ -253,15 +253,15 @@ export function ObjectivesView({
   return (
     <>
       <div className={`app-panel app-panel-soft mb-4 rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
           {filterTabs.map((tab) => (
             <button
               key={tab.value}
               type="button"
               onClick={() => onStatusFilterChange(tab.value)}
-              className={`min-h-[48px] rounded-xl px-3 py-3 text-sm font-semibold transition md:rounded-lg ${tab.active ? "vessel-active" : darkMode ? "bg-[#172228] text-[#dce9e1] hover:bg-[#22323a]" : "bg-[#eef3f0] text-[#40534a] hover:bg-[#dfe9e3]"}`}
+              className={`flex min-h-[72px] min-w-0 items-center justify-center rounded-2xl border px-4 py-3 text-center text-sm font-semibold transition md:px-5 md:py-4 ${tab.active ? "vessel-active border-[var(--vessel-border)] dark:border-[var(--vessel-border-dark)]" : darkMode ? "border-white/10 bg-[#172228] text-[#dce9e1] hover:border-[var(--vessel-border-dark)] hover:bg-[#22323a]" : "border-slate-200/70 bg-[#eef3f0] text-[#40534a] hover:border-[var(--vessel-border)] hover:bg-[#dfe9e3]"}`}
             >
-              {tab.label} {tab.count}
+              <span className="truncate">{tab.label} {tab.count}</span>
             </button>
           ))}
         </div>
