@@ -16,6 +16,23 @@ function toneBadgeClass(darkMode, tone = "neutral") {
   return darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600";
 }
 
+function toneRailClass(tone = "neutral") {
+  if (tone === "critical") return "from-[#b45309] via-[#ef4444] to-[#f59e0b]";
+  if (tone === "warning") return "from-[#d6a94f] via-[#f59e0b] to-[#f7d38a]";
+  if (tone === "success") return "from-[#0f766e] via-[#14b8a6] to-[#86efac]";
+  return "from-[var(--vessel-primary)] via-[var(--vessel-accent)] to-[var(--vessel-primary)]";
+}
+
+function initialsFromName(name = "Ops") {
+  return String(name || "Ops")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "OP";
+}
+
 export function SectionAccordion({
   darkMode = false,
   title,
@@ -81,12 +98,15 @@ export function CompactItemCard({
 }) {
   const theme = themeClasses(darkMode);
   const badgeClass = toneBadgeClass(darkMode, item?.tone || "neutral");
+  const owner = item?.assignedTo || item?.requester || "Operations";
+  const dueMeta = item?.meta?.find((entry) => ["Due", "Expiry"].includes(entry?.label));
+  const statusMeta = item?.meta?.find((entry) => ["Status", "Decision"].includes(entry?.label));
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`app-card-hover app-panel w-full rounded-[20px] border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
+      className={`app-card-hover app-panel group relative w-full overflow-hidden rounded-[22px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
         selected
           ? darkMode
             ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-card-dark-strong)] shadow-[0_18px_36px_-26px_var(--vessel-glow-dark)]"
@@ -96,30 +116,39 @@ export function CompactItemCard({
             : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.72)]"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className={`truncate text-base font-semibold ${theme.textPrimary}`}>{item?.title}</div>
-          {item?.subtitle ? <div className={`mt-1 text-sm ${theme.textSecondary}`}>{item.subtitle}</div> : null}
-        </div>
-        {item?.badge ? <Badge className={badgeClass}>{item.badge}</Badge> : null}
-      </div>
-      <div className={`mt-3 grid gap-1 text-sm ${theme.textSecondary}`}>
-        {item?.meta?.filter(Boolean).slice(0, 3).map((entry) => (
-          <div key={`${item?.id}-${entry.label}`} className="flex items-center justify-between gap-3">
-            <span>{entry.label}</span>
-            <span className={`text-right font-medium ${theme.textPrimary}`}>{entry.value}</span>
+      <div className={`absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b ${toneRailClass(item?.tone)}`} />
+      <div className="p-4 pl-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className={`truncate text-[0.98rem] font-semibold tracking-[-0.01em] ${theme.textPrimary}`}>{item?.title}</div>
+            {item?.subtitle ? <div className={`mt-1 line-clamp-2 text-sm leading-5 ${theme.textSecondary}`}>{item.subtitle}</div> : null}
           </div>
-        ))}
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          {item?.chips?.filter(Boolean).slice(0, 3).map((chip) => (
-            <Badge key={`${item?.id}-${chip}`} className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
-              {chip}
-            </Badge>
-          ))}
+          {item?.badge ? <Badge className={`${badgeClass} shrink-0`}>{item.badge}</Badge> : null}
         </div>
-        <span className="text-vessel-accent text-xs font-semibold uppercase tracking-[0.16em]">{actionLabel}</span>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ${darkMode ? "border-white/10 bg-white/[0.07] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-700"}`}>
+            {initialsFromName(owner)}
+          </span>
+          <Badge className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
+            {owner}
+          </Badge>
+          {dueMeta?.value ? <Badge className={toneBadgeClass(darkMode, item?.tone === "critical" ? "warning" : "neutral")}>{dueMeta.value}</Badge> : null}
+          {statusMeta?.value ? <Badge className={badgeClass}>{statusMeta.value}</Badge> : null}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap gap-2">
+            {item?.chips?.filter(Boolean).slice(0, 3).map((chip) => (
+              <Badge key={`${item?.id}-${chip}`} className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
+                {chip}
+              </Badge>
+            ))}
+          </div>
+          <span className={`inline-flex shrink-0 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
+            {actionLabel}
+          </span>
+        </div>
       </div>
     </button>
   );
@@ -136,7 +165,7 @@ export function DashboardEmptyState({
   const theme = themeClasses(darkMode);
 
   return (
-    <div className={`rounded-[20px] border border-dashed p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.14)] bg-[rgba(255,255,255,0.56)]"}`}>
+    <div className={`rounded-[22px] border border-dashed p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))]" : "border-[rgba(15,80,70,0.14)] bg-[linear-gradient(135deg,rgba(255,255,255,0.78),rgba(242,250,246,0.58))]"}`}>
       <div className={`text-sm font-semibold ${theme.textPrimary}`}>{title}</div>
       <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{message}</div>
       {secondaryContent ? <div className="mt-3">{secondaryContent}</div> : null}
@@ -145,7 +174,7 @@ export function DashboardEmptyState({
           type="button"
           variant="outline"
           onClick={onAction}
-          className={`mt-3 min-h-[40px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+          className="button-vessel-primary mt-3 min-h-[40px] rounded-2xl px-3 py-2 text-sm font-semibold text-white"
         >
           {actionLabel}
         </Button>
@@ -175,10 +204,11 @@ export function DetailDrawer({
         onClick={onClose}
         aria-label="Close detail drawer"
       />
-      <div className={`absolute inset-x-3 bottom-3 top-auto max-h-[78vh] overflow-y-auto rounded-[28px] border p-4 shadow-[0_24px_70px_-28px_rgba(0,0,0,0.48)] md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[480px] md:rounded-[30px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.92)] text-slate-800"}`}>
+      <div className={`absolute inset-x-3 bottom-3 top-auto max-h-[82vh] overflow-y-auto rounded-[30px] border p-4 shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
+        <div className={`rounded-[24px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,var(--vessel-primary-soft-dark),rgba(255,255,255,0.025))]" : "border-[var(--vessel-border)] bg-[linear-gradient(135deg,var(--vessel-primary-soft),rgba(255,255,255,0.74))]"}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="app-kicker">Details</div>
+            <div className="app-kicker">Operational Details</div>
             <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{title}</div>
             {subtitle ? <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div> : null}
           </div>
@@ -191,12 +221,13 @@ export function DetailDrawer({
             Close
           </Button>
         </div>
+        </div>
         {meta?.filter(Boolean).length ? (
-          <div className="mt-4 grid gap-2">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {meta.filter(Boolean).map((entry) => (
-              <div key={`${title}-${entry.label}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                <span className={theme.textSecondary}>{entry.label}</span>
-                <span className={`text-right font-semibold ${theme.textPrimary}`}>{entry.value}</span>
+              <div key={`${title}-${entry.label}`} className={`rounded-2xl border px-3 py-2.5 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+                <div className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>{entry.label}</div>
+                <div className={`mt-1 truncate font-semibold ${theme.textPrimary}`}>{entry.value}</div>
               </div>
             ))}
           </div>

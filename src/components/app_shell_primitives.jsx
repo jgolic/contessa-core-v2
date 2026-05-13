@@ -65,22 +65,22 @@ export function SectionNavCard({
   const theme = themeClasses(darkMode);
 
   return (
-    <Card className={`app-card-hover app-panel h-full min-h-[124px] overflow-hidden rounded-[24px] transition md:rounded-[24px] ${theme.card} ${active ? `app-panel-active ${theme.ring}` : "app-panel-soft"}`}>
-      <CardContent className="relative flex h-full flex-col justify-between gap-4 overflow-hidden p-4">
-        <div className={`absolute inset-x-0 top-0 h-px ${darkMode ? "bg-white/10" : "bg-[rgba(var(--vessel-primary-rgb),0.12)]"}`} />
-        <div className="flex items-start justify-between gap-3">
-          <div className={`app-data-label ${theme.textSecondary}`}>{label}</div>
+    <Card className={`app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] transition md:rounded-[22px] ${active ? darkMode ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_16px_34px_-28px_var(--vessel-glow-dark)]" : "app-panel-active border-[var(--vessel-border)] bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.94),rgba(var(--vessel-secondary-rgb),0.86))] text-white shadow-[0_16px_34px_-26px_rgba(var(--vessel-primary-rgb),0.22)]" : `${theme.card} app-panel-soft`}`}>
+      <CardContent className="relative flex h-full items-center justify-between gap-3 overflow-hidden p-3.5">
+        <div className={`absolute inset-x-4 bottom-0 h-px ${active ? "bg-current/[0.24]" : darkMode ? "bg-white/[0.08]" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
+        <div className="min-w-0">
+          <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${active ? "text-current/[0.78]" : theme.textSecondary}`}>{label}</div>
+          <div className={`mt-1 truncate text-sm font-semibold ${active ? "text-current" : theme.textPrimary}`}>{value}</div>
+        </div>
+        <div className="flex items-center gap-2">
           {Icon ? (
-            <div className="vessel-icon-chip inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px]">
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? "bg-white/[0.14] text-current" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-        </div>
-        <div className="space-y-2">
-          <div className={`app-metric-value flex min-h-0 items-end gap-2 ${theme.textPrimary}`}>
-            <span className="block min-w-0 break-words">{value}</span>
+          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] xl:block ${active ? "bg-white/[0.14] text-current" : darkMode ? "bg-white/5 text-slate-400" : "bg-white/60 text-slate-500"}`}>
+            {active ? "Active" : "Open"}
           </div>
-          <div className={`app-helper-text text-xs ${theme.textSecondary}`}>{active ? "Currently in focus" : "Tap to open module"}</div>
         </div>
       </CardContent>
     </Card>
