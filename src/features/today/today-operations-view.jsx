@@ -260,6 +260,7 @@ export function CommandJumpBar({
       const target = event.target;
       const tagName = String(target?.tagName || "").toLowerCase();
       if (tagName === "input" || tagName === "textarea" || target?.isContentEditable) return;
+      if (!inputRef.current || inputRef.current.offsetParent === null) return;
       event.preventDefault();
       inputRef.current?.focus();
       setOpen(Boolean(query.trim()));
@@ -307,7 +308,7 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div id="dashboard-section" className="search-command-card relative z-50 min-w-0 flex-1 md:max-w-[680px]">
+      <div className="search-command-card relative z-50 min-w-0 flex-1 md:max-w-[680px]">
         <div className={`group flex min-h-[54px] items-center gap-3 rounded-3xl border px-4 py-2.5 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:px-5 ${darkMode ? "border-cyan-300/20 bg-slate-950/70 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/70 bg-white/85 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
           <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border text-lg ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200/80 bg-blue-50 text-blue-700"}`} aria-hidden="true">⌕</span>
           <input

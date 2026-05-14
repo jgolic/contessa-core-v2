@@ -809,7 +809,7 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute -left-10 top-1 h-32 w-32 rounded-full blur-3xl ${darkMode ? "bg-[rgba(var(--vessel-primary-rgb),0.12)]" : "bg-[rgba(var(--vessel-primary-rgb),0.14)]"}`} />
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="relative grid gap-3 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
+      <div id="dashboard-section" className="relative grid gap-3 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
         <div className="min-w-0">
           <div className="md:hidden">
             <div className="brand-hero relative flex flex-col items-center text-center">
@@ -880,6 +880,11 @@ export function AppShellHeader({
                     Add task
                   </Button>
                 </div>
+                {commandSearchView ? (
+                  <div className="relative z-[70] mt-3 w-full">
+                    {commandSearchView}
+                  </div>
+                ) : null}
               </div>
 
               <div className="mt-4 w-full max-w-[340px]">
@@ -986,6 +991,11 @@ export function AppShellHeader({
                     Open alerts
                   </Button>
                 </div>
+                {commandSearchView ? (
+                  <div className="relative z-[70] mt-3 w-full">
+                    {commandSearchView}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -1001,11 +1011,6 @@ export function AppShellHeader({
             <Badge className={darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]"}>
               Today
             </Badge>
-            {commandSearchView ? (
-              <div className="min-w-[min(100%,360px)] flex-1 md:max-w-[680px]">
-                {commandSearchView}
-              </div>
-            ) : null}
           </div>
         </div>
 
