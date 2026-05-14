@@ -23,7 +23,7 @@ export function NotificationsView({
                 <div className="app-kicker">Notifications</div>
                 <div className="mt-3 flex items-center gap-3">
                   <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[var(--vessel-primary)] shadow-[0_0_0_5px_rgba(var(--vessel-primary-rgb),0.10)]" />
-                  <span className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${theme.textSecondary}`}>Live alert intelligence</span>
+                  <span className={`app-compact-label ${theme.textSecondary}`}>Live alert intelligence</span>
                 </div>
                 <h2 className={`mt-4 max-w-2xl text-[2rem] font-semibold leading-[1.04] tracking-[-0.04em] md:text-[3.2rem] ${theme.textPrimary}`}>Operational awareness. Prioritized.</h2>
                 <p className={`mt-3 max-w-[42rem] text-sm leading-6 md:text-[15px] ${theme.textSecondary}`}>Centralized oversight for maintenance, approvals, compliance, and operational risk across the vessel.</p>
@@ -41,15 +41,15 @@ export function NotificationsView({
                 <div className={`my-4 h-px ${darkMode ? "bg-white/8" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
                 <div className="grid gap-0 sm:grid-cols-3">
                   <div className="px-1 py-1.5 sm:px-2">
-                    <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${theme.textSecondary}`}>Critical</div>
+                    <div className={`app-compact-label ${theme.textSecondary}`}>Critical</div>
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{criticalCount}</div>
                   </div>
                   <div className={`px-1 py-1.5 sm:px-2 ${darkMode ? "sm:border-x sm:border-white/8" : "sm:border-x sm:border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
-                    <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${theme.textSecondary}`}>Warning</div>
+                    <div className={`app-compact-label ${theme.textSecondary}`}>Warning</div>
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{warningCount}</div>
                   </div>
                   <div className="px-1 py-1.5 sm:px-2">
-                    <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${theme.textSecondary}`}>Notice</div>
+                    <div className={`app-compact-label ${theme.textSecondary}`}>Notice</div>
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{noticeCount}</div>
                   </div>
                 </div>

@@ -98,7 +98,7 @@ const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
 function DeferredFeatureFallback() {
   return (
     <div className="app-panel app-panel-soft rounded-[26px] border border-slate-200/60 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60">
-      <div className="text-premium-label text-xs font-semibold uppercase tracking-[0.22em]">Loading</div>
+      <div className="app-compact-label text-xs font-semibold uppercase">Loading</div>
       <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">Preparing workspace...</div>
     </div>
   );
@@ -2310,7 +2310,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   return (
     <div
-      className={`min-h-screen overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-5 lg:px-8 xl:px-10 ${theme.page}`}
+      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-5 lg:px-8 xl:px-10 ${theme.page}`}
       style={vesselThemeVars}
     >
       <AppDialogs

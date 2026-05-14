@@ -74,10 +74,10 @@ export function SectionNavCard({
 
   return (
     <Card className={`${moduleCardBase} ${active ? moduleCardActive : moduleCardInactive}`}>
-      <CardContent className="relative z-10 flex h-full items-center justify-between gap-3 overflow-hidden p-3.5">
+      <CardContent className="relative z-10 flex h-full min-w-0 items-center justify-between gap-3 overflow-hidden p-3.5">
         <div className={`absolute inset-x-4 bottom-0 h-px ${active ? "bg-current/[0.24]" : darkMode ? "bg-white/[0.08]" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
         <div className="min-w-0">
-          <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${active ? darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]" : darkMode ? "text-slate-300" : theme.textSecondary}`}>{label}</div>
+          <div className={`app-compact-label ${active ? darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]" : darkMode ? "text-slate-300" : theme.textSecondary}`}>{label}</div>
           <div className={`mt-1 truncate text-sm font-semibold ${active ? darkMode ? "text-slate-50" : "text-slate-900" : darkMode ? "text-slate-100" : theme.textPrimary}`}>{value}</div>
         </div>
         <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export function SectionNavCard({
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] xl:block ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-white/[0.07] text-slate-200" : "bg-white/60 text-slate-500"}`}>
+          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-white/[0.07] text-slate-200" : "bg-white/60 text-slate-500"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
@@ -105,7 +105,7 @@ export function BottomNavButton({
   return (
     <button
       type="button"
-      className={`app-card-hover app-panel w-full min-w-0 rounded-[22px] border px-3 py-3 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition ${
+      className={`app-card-hover app-panel w-full min-w-0 overflow-hidden rounded-[22px] border px-2 py-3 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition sm:px-3 ${
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
@@ -117,8 +117,8 @@ export function BottomNavButton({
       aria-current={active ? "page" : undefined}
       {...props}
     >
-      <div className="text-[10px] font-semibold uppercase tracking-[0.18em]">{label}</div>
-      <div className="mt-1 text-xs opacity-80">{value}</div>
+      <div className="truncate text-[9px] font-semibold uppercase tracking-[0.06em] sm:text-[10px] sm:tracking-[0.1em]">{label}</div>
+      <div className="mt-1 truncate text-[11px] opacity-85 sm:text-xs">{value}</div>
     </button>
   );
 }

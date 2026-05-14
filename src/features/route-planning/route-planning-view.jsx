@@ -134,14 +134,14 @@ function ParameterBracket({
   const showUnit = valueText !== "Not set" && unit;
 
   return (
-    <div className={`app-panel ${tone !== "neutral" ? "app-panel-active" : "app-panel-soft"} rounded-[22px] border p-4 md:rounded-xl ${shellClass}`}>
+    <div className={`app-panel ${tone !== "neutral" ? "app-panel-active" : "app-panel-soft"} min-w-0 overflow-hidden rounded-[22px] border p-4 md:rounded-xl ${shellClass}`}>
       <div className="flex items-start justify-between gap-3">
-        <div className={`text-sm font-semibold ${theme.textPrimary}`}>{label}</div>
-        <Badge className={badgeClass}>{statusLabel}</Badge>
+        <div className={`min-w-0 break-words text-sm font-semibold ${theme.textPrimary}`}>{label}</div>
+        <Badge className={`${badgeClass} max-w-[44%] shrink-0 whitespace-normal break-words text-center leading-tight`}>{statusLabel}</Badge>
       </div>
-      <div className="mt-3 flex items-end gap-2">
-        <div className={`${valueText === "Not set" ? "text-lg" : "text-2xl"} font-semibold tracking-tight ${theme.textPrimary}`}>{valueText}</div>
-        {showUnit ? <div className={`pb-0.5 text-xs font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>{unit}</div> : null}
+      <div className="mt-3 flex min-w-0 flex-wrap items-end gap-2">
+        <div className={`${valueText === "Not set" ? "text-lg" : "text-2xl"} min-w-0 break-words font-semibold tracking-tight ${theme.textPrimary}`}>{valueText}</div>
+        {showUnit ? <div className={`app-compact-label pb-0.5 ${theme.textSecondary}`}>{unit}</div> : null}
       </div>
       <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>{helperText}</div>
       {children ? <div className="mt-4">{children}</div> : null}
@@ -1516,7 +1516,7 @@ export function RoutePlanningView({
                   </div>
                 </div>
 
-                <div className={`flex gap-2 overflow-x-auto rounded-[22px] border p-2 md:flex-wrap md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
+                <div className={`flex max-w-full gap-2 overflow-x-auto rounded-[22px] border p-2 md:flex-wrap md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
                   {[
                     { key: "planning", label: "Route", active: overlayToggles.route, onClick: () => toggleOverlay("route") },
                     { key: "depthShading", label: "Depth", active: overlayToggles.depthShading, onClick: () => toggleOverlay("depthShading") },
@@ -1578,7 +1578,7 @@ export function RoutePlanningView({
                 </div>
               </div>
 
-                <div className={`route-map-workspace order-1 app-panel relative overflow-hidden rounded-[30px] border shadow-[0_30px_70px_-34px_rgba(8,24,30,0.52)] xl:order-2 ${isFullscreen ? "route-map-workspace-fullscreen" : ""} ${darkMode ? "border-[#21343b] bg-[#091310] shadow-[0_30px_80px_-38px_rgba(0,0,0,0.72)]" : "border-[#d5e1da] bg-[#eef5f2] shadow-[0_26px_60px_-30px_rgba(18,47,40,0.2)]"}`}>
+                <div className={`route-map-workspace order-1 app-panel relative max-w-full overflow-hidden rounded-[30px] border shadow-[0_30px_70px_-34px_rgba(8,24,30,0.52)] xl:order-2 ${isFullscreen ? "route-map-workspace-fullscreen" : ""} ${darkMode ? "border-[#21343b] bg-[#091310] shadow-[0_30px_80px_-38px_rgba(0,0,0,0.72)]" : "border-[#d5e1da] bg-[#eef5f2] shadow-[0_26px_60px_-30px_rgba(18,47,40,0.2)]"}`}>
                 <div
                   ref={mapContainerRef}
                   className="route-map-frame route-map-frame-mobile w-full overflow-hidden rounded-[30px] md:h-[70vh] md:min-h-[650px] xl:max-h-[820px]"
@@ -1638,7 +1638,7 @@ export function RoutePlanningView({
                     </div>
                     <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}</div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-5">
+                    <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 md:grid-cols-5">
                       {[
                         ["depthShading", "Shading"],
                         ["depthContours", "Contours"],
@@ -1651,7 +1651,7 @@ export function RoutePlanningView({
                           type="button"
                           variant="outline"
                           onClick={() => toggleOverlay(key)}
-                          className={`justify-between rounded-2xl px-3 py-2 text-xs ${overlayToggles[key] ? "vessel-pill-strong border-vessel" : "vessel-outline-button"}`}
+                          className={`min-h-11 justify-between rounded-2xl px-3 py-2 text-xs ${overlayToggles[key] ? "vessel-pill-strong border-vessel" : "vessel-outline-button"}`}
                         >
                           <span>{label}</span>
                         </Button>
@@ -1662,7 +1662,7 @@ export function RoutePlanningView({
                     <div className="rounded-[18px] border border-white/10 px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="app-kicker">Depth opacity</div>
-                        <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
+                        <div className={`app-compact-label ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
                       </div>
                       <input
                         type="range"
@@ -1714,30 +1714,30 @@ export function RoutePlanningView({
                 </div>
               ) : null}
 
-              <div className="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-5">
+              <div className="mt-3 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2 xl:grid-cols-5">
                 <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Distance</div>
-                  <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</div>
+                  <div className={`app-compact-label ${theme.textSecondary}`}>Distance</div>
+                  <div className={`mt-2 break-words text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{passageSummary.totalLegs} leg{passageSummary.totalLegs === 1 ? "" : "s"}</div>
                 </div>
                 <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>ETA</div>
-                  <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--"}</div>
+                  <div className={`app-compact-label ${theme.textSecondary}`}>ETA</div>
+                  <div className={`mt-2 break-words text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Cruising speed planning</div>
                 </div>
                 <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Fuel</div>
-                  <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--"}</div>
+                  <div className={`app-compact-label ${theme.textSecondary}`}>Fuel</div>
+                  <div className={`mt-2 break-words text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Estimated route demand</div>
                 </div>
                 <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Min Depth</div>
-                  <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{`${minimumSafeDepth.toFixed(1)} m`}</div>
+                  <div className={`app-compact-label ${theme.textSecondary}`}>Min Depth</div>
+                  <div className={`mt-2 break-words text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{`${minimumSafeDepth.toFixed(1)} m`}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target"}</div>
                 </div>
                 <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Reserve</div>
-                  <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatPercentValue(vesselProfile.fuelReservePercentage || 0)}</div>
+                  <div className={`app-compact-label ${theme.textSecondary}`}>Reserve</div>
+                  <div className={`mt-2 break-words text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatPercentValue(vesselProfile.fuelReservePercentage || 0)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target"}</div>
                 </div>
               </div>

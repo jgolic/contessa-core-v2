@@ -206,11 +206,11 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral" }) 
             : "border border-slate-200/70 bg-white/80 text-slate-600";
 
   return (
-    <div className={`rounded-[22px] border p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
-      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.18em]">{label}</div>
-      <div className={`mt-2 text-[1.2rem] font-semibold tracking-tight ${theme.textPrimary}`}>{value}</div>
+    <div className={`min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
+      <div className="app-compact-label">{label}</div>
+      <div className={`mt-2 break-words text-[1.1rem] font-semibold tracking-tight sm:text-[1.2rem] ${theme.textPrimary}`}>{value}</div>
       <div className="mt-2">
-        <Badge className={badgeClass}>{note}</Badge>
+        <Badge className={`${badgeClass} max-w-full whitespace-normal break-words leading-tight`}>{note}</Badge>
       </div>
     </div>
   );
@@ -227,9 +227,9 @@ function IntelligencePanel({
   const theme = themeClasses(darkMode);
 
   return (
-    <Card className={`app-panel app-panel-soft rounded-[24px] ${theme.card}`}>
+    <Card className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
       <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="app-kicker">{title}</div>
             {subtitle ? <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div> : null}
@@ -239,7 +239,7 @@ function IntelligencePanel({
               type="button"
               variant="outline"
               onClick={onAction}
-              className={`min-h-[40px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+              className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
             >
               {actionLabel}
             </Button>
@@ -728,9 +728,9 @@ export function TodayOperationsView({
 
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
-            <Card className={`app-panel app-panel-soft rounded-[24px] ${theme.card}`}>
+            <Card className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
               <CardContent className="p-4 md:p-5">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="app-kicker">Mission Cards</div>
                     <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>Urgent work, approvals, and risk items are surfaced first.</div>
@@ -738,7 +738,7 @@ export function TodayOperationsView({
                   <Button
                     type="button"
                     onClick={onNavigateToTasks}
-                    className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white"
+                    className="button-vessel-primary min-h-11 w-full rounded-2xl px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
                   >
                     View details
                   </Button>
@@ -982,11 +982,11 @@ export function TodayOperationsView({
                       </div>
                       <div className={`mt-2.5 grid grid-cols-2 gap-2 text-xs ${theme.textSecondary}`}>
                         <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
-                          <div>Tasks</div>
+                          <div className="app-compact-label">Tasks</div>
                           <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                         </div>
                         <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
-                          <div>Alerts</div>
+                          <div className="app-compact-label">Alerts</div>
                           <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                         </div>
                       </div>
@@ -1056,7 +1056,7 @@ export function TodayOperationsView({
               <div className="grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
                   <MetricTile darkMode={darkMode} label="Crew" value={stats.crewProfiles || 0} note="Profiles active" />
-                  <MetricTile darkMode={darkMode} label="Certificates" value={stats.certificateDue || 0} note="Due for review" tone={(stats.certificateDue || 0) > 0 ? "warning" : "neutral"} />
+                  <MetricTile darkMode={darkMode} label="Certs" value={stats.certificateDue || 0} note="Due for review" tone={(stats.certificateDue || 0) > 0 ? "warning" : "neutral"} />
                 </div>
                 {crewReadinessNote.length ? (
                   crewReadinessNote.map((item) => (

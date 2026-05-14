@@ -73,8 +73,8 @@ export function CertificatesView({
                 <div className="app-kicker">Alert Pressure</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
                   {CERTIFICATE_ALERT_WINDOWS.map((windowDays) => (
-                    <div key={windowDays}>
-                      <div className={`text-xs uppercase tracking-[0.18em] ${theme.textSecondary}`}>{windowDays} Days</div>
+                    <div key={windowDays} className="min-w-0">
+                      <div className={`app-compact-label ${theme.textSecondary}`}>{windowDays} Days</div>
                       <div className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>{withinWindowCount(windowDays)}</div>
                     </div>
                   ))}

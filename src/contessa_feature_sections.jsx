@@ -252,14 +252,14 @@ export function ObjectivesView({
 
   return (
     <>
-      <div className={`app-panel app-panel-soft mb-4 rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className={`app-panel app-panel-soft mb-4 min-w-0 overflow-hidden rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap">
           {filterTabs.map((tab) => (
             <button
               key={tab.value}
               type="button"
               onClick={() => onStatusFilterChange(tab.value)}
-              className={`inline-flex min-h-[38px] items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${tab.active ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_10px_28px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_10px_24px_rgba(15,118,110,0.10)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/55 text-slate-600 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
+              className={`inline-flex min-h-[38px] shrink-0 items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${tab.active ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_10px_28px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_10px_24px_rgba(15,118,110,0.10)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/55 text-slate-600 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
             >
               <span className="whitespace-nowrap">{tab.label} <span className="opacity-70">({tab.count})</span></span>
             </button>
@@ -820,7 +820,7 @@ export function AppShellHeader({
                 >
                   <LayoutDashboard className="h-4 w-4" />
                 </button>
-                <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
+                <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
                   <span className={`inline-flex h-2 w-2 rounded-full ${isOffline ? "bg-[#d9a33e]" : "bg-[#2ea57d]"}`} />
                   {isOffline ? "Offline sync" : "Sync active"}
                 </div>
@@ -864,7 +864,7 @@ export function AppShellHeader({
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {heroMetrics.map((metric) => (
                     <div key={`mobile-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{metric.label}</div>
+                      <div className="app-compact-label">{metric.label}</div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
@@ -881,7 +881,7 @@ export function AppShellHeader({
               </div>
 
               <div className="mt-4 w-full max-w-[340px]">
-                <div className="text-premium-label mb-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em]">
+                <div className="app-compact-label mb-2 text-center">
                   Operating As
                 </div>
                 {onCurrentRoleChange ? (
@@ -917,13 +917,13 @@ export function AppShellHeader({
                   draggable="false"
                 />
                 <div className={`hidden h-4 w-px lg:block ${darkMode ? "bg-[#31443a]" : "bg-[#dbe7e0]"}`} />
-                <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
+                <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
                   <span className={`inline-flex h-2 w-2 rounded-full ${isOffline ? "bg-[#d9a33e]" : "bg-[#2ea57d]"}`} />
                   {isOffline ? "Offline sync" : "Sync active"}
                 </div>
                 <div className="app-kicker">{fleetWorkspaceLabel}</div>
                 <div className="flex w-full min-w-0 flex-col items-center gap-2 lg:min-w-[220px] lg:flex-1 lg:flex-row lg:items-center xl:max-w-[330px] xl:flex-none">
-                  <div className="text-premium-label text-[11px] font-semibold uppercase tracking-[0.18em]">
+                  <div className="app-compact-label">
                     Operating As
                   </div>
                   {onCurrentRoleChange ? (
@@ -1026,7 +1026,7 @@ export function AppShellHeader({
           <div className="app-glass-line my-3" />
           <div className="app-control-grid">
               <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
-                <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.24em]">Mode</div>
+                <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Mode</div>
                 <Select value={appMode} onValueChange={onAppModeChange}>
                 <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
                   <SelectValue />
@@ -1038,7 +1038,7 @@ export function AppShellHeader({
               </Select>
             </div>
             <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
-              <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.24em]">Status</div>
+              <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Status</div>
               <Badge className={canEditApp ? "w-full justify-center border border-[#d9bb70] bg-[#fff0cf]/92 text-[#7a5416]" : "w-full justify-center border border-slate-200/70 bg-[#eef3f7]/92 text-[#345064]"}>
                 {canEditApp ? "Editor Mode" : "View Mode"}
               </Badge>
@@ -1303,9 +1303,9 @@ export function AppShellHeader({
             {card.metrics ? (
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {card.metrics.map((metric) => (
-                  <div key={`${card.key}-${metric.label}`} className={`rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.18em]">{metric.label}</div>
-                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                  <div key={`${card.key}-${metric.label}`} className={`min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                    <div className="app-compact-label">{metric.label}</div>
+                    <div className={`mt-2 break-words text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                   </div>
                 ))}
               </div>
@@ -1322,7 +1322,7 @@ export function AppShellHeader({
             ) : null}
             {card.activity ? (
               <div className={`mt-4 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.18em]">Recent activity</div>
+                <div className="app-compact-label">Recent activity</div>
                 <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
                 <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
                 <div className={`mt-2 text-xs ${theme.textSecondary}`}>{formatHistoryTime(card.activity.at)}</div>
@@ -1435,7 +1435,7 @@ export function AppSectionCards({
           darkMode ? "vessel-card-dark text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.86)] text-[#13231d] backdrop-blur-2xl"
         }`}
       >
-        <div className="mx-auto grid max-w-6xl grid-cols-4 gap-2 pb-1 sm:grid-cols-5">
+        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1.5 pb-1 sm:gap-2">
           {mobileNavItems.map((item) => {
             const isActive = expenseView === item.key;
             return (
@@ -2058,7 +2058,7 @@ export function DocumentsView({ darkMode = false, documents = [], vesselName = "
                 <Badge className={darkMode ? "bg-[#183029] text-[#d7f6e9]" : "bg-[#ebf6f1] text-[#166155]"}>{document.status}</Badge>
               </div>
               <div className={`mt-4 text-sm leading-6 ${theme.textSecondary}`}>{document.notes}</div>
-              <div className={`mt-4 text-xs font-semibold uppercase tracking-[0.18em] ${theme.textSecondary}`}>Owner: {document.owner}</div>
+              <div className={`app-compact-label mt-4 ${theme.textSecondary}`}>Owner: {document.owner}</div>
             </CardContent>
           </Card>
         ))}
