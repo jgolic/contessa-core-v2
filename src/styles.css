@@ -246,6 +246,24 @@ body.dark-mode .shadow-vessel-glow {
   box-shadow: 0 0 24px var(--vessel-glow-dark, rgba(var(--vessel-accent-rgb), 0.08));
 }
 
+.search-command-card {
+  scroll-margin-top: 96px;
+}
+
+.search-jump-highlight {
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.55),
+    0 0 32px rgba(59, 130, 246, 0.25) !important;
+  transition: box-shadow 250ms ease;
+}
+
+body.dark-mode .search-jump-highlight,
+.dark .search-jump-highlight {
+  box-shadow:
+    0 0 0 2px rgba(34, 211, 238, 0.6),
+    0 0 32px rgba(34, 211, 238, 0.25) !important;
+}
+
 .button-vessel-primary {
   border: 1px solid rgba(var(--vessel-primary-rgb), 0.24);
   background: linear-gradient(135deg, rgba(var(--vessel-primary-rgb), 0.96), rgba(var(--vessel-secondary-rgb), 0.92));

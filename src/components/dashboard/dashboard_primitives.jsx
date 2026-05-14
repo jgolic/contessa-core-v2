@@ -34,6 +34,7 @@ function initialsFromName(name = "Ops") {
 }
 
 export function SectionAccordion({
+  id,
   darkMode = false,
   title,
   subtitle,
@@ -48,7 +49,7 @@ export function SectionAccordion({
   const theme = themeClasses(darkMode);
 
   return (
-    <Card className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] border ${theme.card}`}>
+    <Card id={id} className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] border ${theme.card}`}>
       <CardContent className="p-4 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <button
@@ -90,6 +91,7 @@ export function SectionAccordion({
 }
 
 export function CompactItemCard({
+  htmlId,
   darkMode = false,
   item,
   selected = false,
@@ -104,6 +106,7 @@ export function CompactItemCard({
 
   return (
     <button
+      id={htmlId}
       type="button"
       onClick={onClick}
       className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[22px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${

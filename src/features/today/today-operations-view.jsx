@@ -191,6 +191,180 @@ function buildDrawerMeta(item = {}) {
   ].filter(Boolean);
 }
 
+function compactTypeLabel(type = "Item") {
+  return titleCase(String(type || "Item").replace(/[-_]/g, " "));
+}
+
+function makeSearchText(parts = []) {
+  return parts
+    .flatMap((part) => {
+      if (Array.isArray(part)) return part;
+      return part;
+    })
+    .filter((part) => part !== null && part !== undefined)
+    .map((part) => String(part).toLowerCase())
+    .join(" ");
+}
+
+function itemSectionForSearch(item = {}) {
+  if (item.type === "task" || item.type === "maintenance") return "tasksMaintenance";
+  if (item.type === "approval" || item.type === "quote") return "expensesApprovals";
+  if (item.type === "certificate" || item.type === "crew") return "certificatesCrew";
+  if (item.type === "alert" || item.type === "route") return "routePlanning";
+  if (item.type === "activity") return "activity";
+  return "";
+}
+
+function itemTargetForSearch(item = {}, priorityIds = new Set()) {
+  const id = item?.id || `${item?.type || "item"}-${item?.title || "unknown"}`;
+  if (priorityIds.has(id)) return `item-${id}`;
+  if (item.type === "task" || item.type === "maintenance") return `queue-item-${id}`;
+  if (item.type === "approval" || item.type === "quote") return `approval-item-${id}`;
+  if (item.type === "certificate" || item.type === "crew") return `certificate-item-${id}`;
+  if (item.type === "alert" || item.type === "route") return `route-item-${id}`;
+  if (item.type === "activity") return `activity-item-${id}`;
+  return `item-${id}`;
+}
+
+function CommandJumpBar({
+  darkMode = false,
+  vesselName = "Vessel",
+  results = [],
+  onJump,
+}) {
+  const theme = themeClasses(darkMode);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredResults = useMemo(() => {
+    if (!normalizedQuery) return [];
+    return results
+      .filter((result) => result.searchText?.includes(normalizedQuery))
+      .slice(0, 9);
+  }, [normalizedQuery, results]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [normalizedQuery]);
+
+  function chooseResult(result) {
+    if (!result) return;
+    onJump?.(result);
+    setQuery("");
+    setOpen(false);
+    setActiveIndex(0);
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      setOpen(false);
+      return;
+    }
+
+    if (!filteredResults.length) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((index) => Math.min(index + 1, filteredResults.length - 1));
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((index) => Math.max(index - 1, 0));
+      return;
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      chooseResult(filteredResults[activeIndex] || filteredResults[0]);
+    }
+  }
+
+  return (
+    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="app-kicker">Command Search</div>
+          <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>
+            Jump across {vesselName} tasks, crew, approvals, route, certificates, and documents.
+          </div>
+        </div>
+        <div className="relative min-w-0 flex-1 lg:max-w-[620px]">
+          <div className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/45 text-slate-100 focus-within:border-[var(--vessel-primary-dark)]" : "border-slate-200/80 bg-white/82 text-slate-900 focus-within:border-blue-400"} shadow-sm transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]`}>
+            <span className={`text-base ${darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]"}`} aria-hidden="true">⌕</span>
+            <input
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setOpen(true);
+              }}
+              onFocus={() => setOpen(Boolean(query.trim()))}
+              onKeyDown={handleKeyDown}
+              placeholder="Search tasks, crew, approvals, documents..."
+              className={`h-11 min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-slate-400 ${darkMode ? "placeholder:text-slate-500" : ""}`}
+              aria-label="Search tasks, crew, approvals, documents"
+            />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setOpen(false);
+                }}
+                className={`rounded-xl px-2 py-1 text-xs font-semibold ${darkMode ? "text-slate-300 hover:bg-white/10" : "text-slate-500 hover:bg-slate-100"}`}
+              >
+                Esc
+              </button>
+            ) : null}
+          </div>
+
+          {open && normalizedQuery ? (
+            <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}>
+              {filteredResults.length ? (
+                <div className="grid gap-1.5">
+                  {filteredResults.map((result, index) => (
+                    <button
+                      key={result.id}
+                      type="button"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => chooseResult(result)}
+                      className={`flex min-w-0 items-start justify-between gap-3 rounded-2xl border px-3 py-2.5 text-left transition-all duration-200 ${
+                        index === activeIndex
+                          ? darkMode
+                            ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)]"
+                            : "border-blue-300 bg-blue-50"
+                          : darkMode
+                            ? "border-transparent bg-transparent hover:border-white/10 hover:bg-white/[0.04]"
+                            : "border-transparent bg-transparent hover:border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{result.title}</div>
+                        <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
+                      </div>
+                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.04] text-[var(--vessel-text-accent-dark)]" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
+                        {result.type}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className={`rounded-2xl border border-dashed px-4 py-5 text-center text-sm ${darkMode ? "border-white/10 text-slate-300" : "border-slate-200 text-slate-600"}`}>
+                  No matching command found.
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MetricTile({ darkMode = false, label, value, note, tone = "neutral", active = false }) {
   const theme = themeClasses(darkMode);
   const badgeClass =
@@ -513,6 +687,12 @@ export function TodayOperationsView({
       ...certificateItems,
     ]).slice(0, 4);
   }, [alertItems, taskItems, maintenanceItems, approvalItems, certificateItems]);
+  const priorityItemIds = useMemo(() => new Set(priorityItems.map((item) => item.id)), [priorityItems]);
+
+  const activeFleetVessel = useMemo(
+    () => (Array.isArray(fleetVessels) ? fleetVessels.find((vessel) => vessel?.id === activeVesselId) : null),
+    [fleetVessels, activeVesselId]
+  );
 
   const fleetEntries = useMemo(() => {
     return [...fleetVessels]
@@ -579,6 +759,107 @@ export function TodayOperationsView({
   const notificationsReady = notificationPermission === "granted";
   const notificationsUnsupported = notificationPermission === "unsupported";
 
+  const searchResults = useMemo(() => {
+    const makeSection = ({ id, title, type = "Section", context, targetId, moduleAction, sectionKey }) => ({
+      id,
+      type,
+      title,
+      context,
+      targetId,
+      moduleAction,
+      sectionKey,
+      searchText: makeSearchText([id, type, title, context]),
+    });
+
+    const sectionResults = [
+      makeSection({ id: "search-dashboard", title: "Dashboard", context: "Main command overview", targetId: "dashboard-section" }),
+      makeSection({ id: "search-mission-cards", title: "Mission Cards", context: "Urgent work, approvals, and risk items", targetId: "mission-cards-section" }),
+      makeSection({ id: "search-tasks", title: "Tasks", context: "Task board and maintenance queue", targetId: "tasks-section", moduleAction: onNavigateToTasks }),
+      makeSection({ id: "search-maintenance", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleAction: onNavigateToMaintenance }),
+      makeSection({ id: "search-approvals", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleAction: onNavigateToApprovals }),
+      makeSection({ id: "search-crew", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
+      makeSection({ id: "search-certificates", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleAction: onNavigateToCertificates }),
+      makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleAction: onNavigateToDocuments }),
+      makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
+      makeSection({ id: "search-alerts", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleAction: onNavigateToAlerts }),
+      makeSection({ id: "search-fleet", title: "Fleet Switcher", context: "Open another vessel workspace", targetId: "fleet-switcher-section" }),
+    ];
+
+    const itemResults = operationItems.map((item) => {
+      const sectionKey = itemSectionForSearch(item);
+      const targetId = itemTargetForSearch(item, priorityItemIds);
+      const context = [
+        currentVessel?.name || currentVesselName,
+        item.status,
+        item.assignedTo || item.requester,
+        item.dueDate,
+        item.amount,
+      ].filter(Boolean).join(" · ");
+
+      return {
+        id: `search-item-${item.id}`,
+        type: compactTypeLabel(item.type),
+        title: item.title,
+        context,
+        targetId,
+        sectionKey,
+        item,
+        searchText: makeSearchText([
+          item.id,
+          item.type,
+          item.title,
+          item.subtitle,
+          item.status,
+          item.priority,
+          item.assignedTo,
+          item.requester,
+          item.description,
+          item.dueDate,
+          item.amount,
+          item.checklist,
+          item.activity,
+          context,
+        ]),
+      };
+    });
+
+    const crewResults = (Array.isArray(activeFleetVessel?.crewProfiles) ? activeFleetVessel.crewProfiles : []).map((profile) => ({
+      id: `search-crew-${profile.id || profile.fullName}`,
+      type: "Crew",
+      title: profile.fullName || "Crew member",
+      context: [currentVessel?.name || currentVesselName, profile.rank, profile.department, `${profile.certificates?.length || 0} certificates`].filter(Boolean).join(" · "),
+      targetId: "crew-section",
+      moduleAction: onNavigateToCrew || onNavigateToCertificates,
+      searchText: makeSearchText([profile.id, profile.fullName, profile.rank, profile.department, profile.notes, currentVessel?.name, "crew readiness certificates"]),
+    }));
+
+    const documentResults = (Array.isArray(activeFleetVessel?.documents) ? activeFleetVessel.documents : []).map((document) => ({
+      id: `search-document-${document.id || document.name || document.title}`,
+      type: "Document",
+      title: document.name || document.title || "Vessel document",
+      context: [currentVessel?.name || currentVesselName, document.category || document.type || "Document vault", document.status].filter(Boolean).join(" · "),
+      targetId: "docs-section",
+      moduleAction: onNavigateToDocuments,
+      searchText: makeSearchText([document.id, document.name, document.title, document.category, document.type, document.status, "documents docs vault"]),
+    }));
+
+    return [...sectionResults, ...itemResults, ...crewResults, ...documentResults];
+  }, [
+    activeFleetVessel,
+    currentVessel,
+    currentVesselName,
+    operationItems,
+    priorityItemIds,
+    onNavigateToTasks,
+    onNavigateToMaintenance,
+    onNavigateToCrew,
+    onNavigateToCertificates,
+    onNavigateToApprovals,
+    onNavigateToDocuments,
+    onNavigateToRoute,
+    onNavigateToAlerts,
+  ]);
+
   function openInspector(item) {
     setSelectedItem(item);
     setIsInspectorOpen(true);
@@ -593,6 +874,37 @@ export function TodayOperationsView({
     setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
+  function highlightTarget(targetId) {
+    if (!targetId || typeof document === "undefined") return;
+    const element = document.getElementById(targetId);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.classList.add("search-jump-highlight");
+    window.setTimeout(() => {
+      element.classList.remove("search-jump-highlight");
+    }, 1400);
+  }
+
+  function jumpToResult(result) {
+    if (!result) return;
+
+    if (result.sectionKey) {
+      setExpandedSections((prev) => ({ ...prev, [result.sectionKey]: true }));
+    }
+
+    if (result.moduleAction) {
+      result.moduleAction();
+      window.setTimeout(() => highlightTarget(result.targetId), 260);
+      return;
+    }
+
+    window.setTimeout(() => highlightTarget(result.targetId), result.sectionKey ? 150 : 0);
+
+    if (result.item) {
+      openInspector(result.item);
+    }
+  }
+
   if (!currentVessel) {
     return (
       <div className="min-h-screen rounded-[28px] bg-slate-950 p-6 text-slate-100">
@@ -605,6 +917,13 @@ export function TodayOperationsView({
   return (
     <>
       <div className="grid gap-4 md:gap-5">
+        <CommandJumpBar
+          darkMode={darkMode}
+          vesselName={currentVessel?.name || currentVesselName}
+          results={searchResults}
+          onJump={jumpToResult}
+        />
+
         <Card className={`hidden app-panel app-panel-active relative overflow-hidden rounded-[30px] border ${darkMode ? "border-[var(--vessel-border-dark)] bg-[radial-gradient(circle_at_10%_0%,var(--vessel-primary-soft-dark),transparent_30%),radial-gradient(circle_at_90%_8%,rgba(212,175,55,0.08),transparent_24%),linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(6,12,18,0.92))]" : "border-[var(--vessel-border)] bg-[radial-gradient(circle_at_12%_0%,var(--vessel-primary-soft),transparent_30%),radial-gradient(circle_at_92%_8%,rgba(212,175,55,0.12),transparent_24%),linear-gradient(135deg,rgba(255,255,255,0.95),rgba(238,248,244,0.76))]"}`}>
           <div className={`pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full blur-3xl ${darkMode ? "bg-[var(--vessel-glow-dark)]" : "bg-[var(--vessel-primary-soft)]"}`} />
           <CardContent className="relative p-4 md:p-5">
@@ -733,7 +1052,7 @@ export function TodayOperationsView({
 
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
-            <Card className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
+            <Card id="mission-cards-section" className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
               <CardContent className="p-4 md:p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -752,6 +1071,7 @@ export function TodayOperationsView({
                   {priorityItems.length ? (
                     priorityItems.map((item) => (
                       <CompactItemCard
+                        htmlId={`item-${item.id}`}
                         key={item.id}
                         darkMode={darkMode}
                         item={item}
@@ -775,6 +1095,7 @@ export function TodayOperationsView({
             </Card>
 
             <SectionAccordion
+              id="tasks-dashboard-section"
               darkMode={darkMode}
               title="Tasks"
               subtitle="Compact queue of work orders, overdue actions, and due-today upkeep."
@@ -789,6 +1110,7 @@ export function TodayOperationsView({
                 <div className="grid gap-3 md:grid-cols-2">
                   {sortByPriority([...taskItems, ...maintenanceItems]).slice(0, 6).map((item) => (
                     <CompactItemCard
+                      htmlId={`queue-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -810,6 +1132,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
+              id="approvals-dashboard-section"
               darkMode={darkMode}
               title="Approval"
               subtitle="Quotes, expenses, and service decisions stay folded until selected."
@@ -824,6 +1147,7 @@ export function TodayOperationsView({
                 <div className="grid gap-3 md:grid-cols-2">
                   {approvalItems.slice(0, 6).map((item) => (
                     <CompactItemCard
+                      htmlId={`approval-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -845,6 +1169,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
+              id="crew-dashboard-section"
               darkMode={darkMode}
               title="Crew"
               subtitle="Crew readiness stays collapsed until documentation or review is needed."
@@ -859,6 +1184,7 @@ export function TodayOperationsView({
                 <div className="grid gap-3 md:grid-cols-2">
                   {certificateItems.slice(0, 4).map((item) => (
                     <CompactItemCard
+                      htmlId={`certificate-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -879,6 +1205,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
+              id="documents-dashboard-section"
               darkMode={darkMode}
               title="Docs"
               subtitle="Document controls stay collapsed until someone needs the vault."
@@ -907,6 +1234,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
+              id="route-dashboard-section"
               darkMode={darkMode}
               title="Route"
               subtitle="Navigation review stays concise until the bridge team needs detail."
@@ -920,6 +1248,7 @@ export function TodayOperationsView({
               <div className="grid gap-3 md:grid-cols-2">
                 {routeReviewItems.map((item) => (
                   <CompactItemCard
+                    htmlId={`route-item-${item.id}`}
                     key={item.id}
                     darkMode={darkMode}
                     item={item}
@@ -931,6 +1260,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
+              id="activity-dashboard-section"
               darkMode={darkMode}
               title="Activity"
               subtitle="A compact running log instead of a full-width empty history panel."
@@ -943,6 +1273,7 @@ export function TodayOperationsView({
                 <div className="grid gap-3">
                   {activityItems.slice(0, 5).map((item) => (
                     <CompactItemCard
+                      htmlId={`activity-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -969,7 +1300,7 @@ export function TodayOperationsView({
               actionLabel="Open fleet"
               onAction={onOpenFleet}
             >
-              <div className="grid gap-2.5">
+              <div id="fleet-switcher-section" className="grid gap-2.5">
                 {fleetEntries.map((vessel) => {
                   const isCurrent = vessel.id === activeVesselId;
                   const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
@@ -1036,6 +1367,7 @@ export function TodayOperationsView({
                 {alertItems.length ? (
                   alertItems.slice(0, 3).map((item) => (
                     <CompactItemCard
+                      htmlId={`alert-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -1070,6 +1402,7 @@ export function TodayOperationsView({
                 {crewReadinessNote.length ? (
                   crewReadinessNote.map((item) => (
                     <CompactItemCard
+                      htmlId={`crew-note-item-${item.id}`}
                       key={item.id}
                       darkMode={darkMode}
                       item={item}
@@ -1103,6 +1436,7 @@ export function TodayOperationsView({
                 </div>
                 {approvalItems.length ? (
                   <CompactItemCard
+                    htmlId={`approval-summary-item-${approvalItems[0].id}`}
                     darkMode={darkMode}
                     item={approvalItems[0]}
                     selected={selectedItem?.id === approvalItems[0].id}

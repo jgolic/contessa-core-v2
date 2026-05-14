@@ -2440,6 +2440,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onApprovalAction={handleTodayApprovalAction}
             onNavigateToTasks={() => navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" })}
             onNavigateToMaintenance={() => navigateToSection("maintenance-section", "tasks-maintenance", { panel: "maintenance" })}
+            onNavigateToCrew={() => navigateToSection("crew-section", "crew-certificates", { panel: "crew" })}
             onNavigateToCertificates={() => navigateToSection("certificates-section", "crew-certificates", { panel: "certificates" })}
             onNavigateToApprovals={() => navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" })}
             onNavigateToRoute={() => navigateToSection("route-section", "route")}
