@@ -72,6 +72,7 @@ import {
   AppSectionCards,
   AppShellHeader,
   CrewCertificatesWorkspace,
+  DashboardCommandSearch,
   DocumentsView,
   SettingsWorkspaceView,
   MaintenanceReminderModal,
@@ -94,6 +95,14 @@ import {
 } from "./lib/browser_storage.mjs";
 
 const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
+
+function buildCommandSearchText(parts = []) {
+  return (Array.isArray(parts) ? parts : [])
+    .reduce((list, part) => (Array.isArray(part) ? [...list, ...part] : [...list, part]), [])
+    .filter((part) => part !== null && part !== undefined)
+    .map((part) => String(part).toLowerCase())
+    .join(" ");
+}
 
 function DeferredFeatureFallback() {
   return (
@@ -943,6 +952,88 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       activateModuleForSection(moduleName, options);
     }
     setPendingSectionNavigation({ sectionId, moduleName, options, requestedAt: Date.now() });
+  };
+
+  const commandSearchResults = useMemo(() => {
+    const vesselName = activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME;
+    const sectionResults = [
+      { id: "section-dashboard", type: "Section", title: "Dashboard", context: "Main command overview", targetId: "dashboard-section", moduleName: "command" },
+      { id: "section-tasks", type: "Section", title: "Tasks", context: "Task board and active work", targetId: "tasks-section", moduleName: "tasks-maintenance", options: { panel: "tasks" } },
+      { id: "section-maintenance", type: "Section", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleName: "tasks-maintenance", options: { panel: "maintenance" } },
+      { id: "section-approvals", type: "Section", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleName: "expenses-approvals", options: { bucket: "boat" } },
+      { id: "section-crew", type: "Section", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" } },
+      { id: "section-certificates", type: "Section", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleName: "crew-certificates", options: { panel: "certificates" } },
+      { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleName: "documents" },
+      { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
+      { id: "section-alerts", type: "Section", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleName: "notifications" },
+    ];
+
+    const operationalItems = Array.isArray(vesselOperations?.items) ? vesselOperations.items : [];
+    const itemResults = operationalItems.map((item) => ({
+      id: `command-item-${item?.id || item?.title}`,
+      type: titleCase(item?.type || "Item"),
+      title: item?.title || "Untitled item",
+      context: [vesselName, item?.status, item?.assignedTo || item?.requester, item?.dueDate, item?.amount].filter(Boolean).join(" · "),
+      targetId: item?.id ? `item-${item.id}` : "dashboard-section",
+      item,
+      searchText: buildCommandSearchText([
+        item?.id,
+        item?.type,
+        item?.title,
+        item?.subtitle,
+        item?.status,
+        item?.priority,
+        item?.assignedTo,
+        item?.requester,
+        item?.description,
+        item?.dueDate,
+        item?.amount,
+        item?.checklist,
+        item?.activity,
+      ]),
+    }));
+
+    const crewResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => ({
+      id: `command-crew-${profile?.id || profile?.fullName}`,
+      type: "Crew",
+      title: profile?.fullName || "Crew member",
+      context: [vesselName, profile?.rank, profile?.department, `${profile?.certificates?.length || 0} certificates`].filter(Boolean).join(" · "),
+      targetId: "crew-section",
+      moduleName: "crew-certificates",
+      options: { panel: "crew" },
+      searchText: buildCommandSearchText([profile?.id, profile?.fullName, profile?.rank, profile?.department, profile?.notes, "crew readiness certificates"]),
+    }));
+
+    const documentResults = (Array.isArray(documents) ? documents : []).map((document) => ({
+      id: `command-document-${document?.id || document?.title}`,
+      type: "Document",
+      title: document?.title || document?.name || "Document",
+      context: [vesselName, document?.category || document?.type || "Document vault", document?.status].filter(Boolean).join(" · "),
+      targetId: "docs-section",
+      moduleName: "documents",
+      searchText: buildCommandSearchText([document?.id, document?.title, document?.name, document?.category, document?.type, document?.status, "documents docs vault"]),
+    }));
+
+    return [...sectionResults, ...itemResults, ...crewResults, ...documentResults].map((result) => ({
+      ...result,
+      searchText: result.searchText || buildCommandSearchText([result.id, result.type, result.title, result.context]),
+    }));
+  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents]);
+
+  const handleCommandSearchJump = (result) => {
+    if (!result) return;
+
+    if (result.item) {
+      setExpenseView("command");
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("contessa:open-command-item", { detail: { id: result.item.id } }));
+        }, 140);
+      }
+      return;
+    }
+
+    navigateToSection(result.targetId || "dashboard-section", result.moduleName || "", result.options || {});
   };
 
   useEffect(() => {
@@ -2386,6 +2477,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           onOpenSettingsWorkspace={() => navigateToSection("settings-section", "settings")}
           notificationCount={accessibleNotifications.length}
           onOpenNotifications={() => navigateToSection("alerts-section", "notifications")}
+          commandSearchView={
+            <DashboardCommandSearch
+              darkMode={darkMode}
+              currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
+              searchResults={commandSearchResults}
+              onJump={handleCommandSearchJump}
+            />
+          }
         />
 
         <AppSectionCards

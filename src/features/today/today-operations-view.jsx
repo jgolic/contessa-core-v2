@@ -227,11 +227,12 @@ function itemTargetForSearch(item = {}, priorityIds = new Set()) {
   return `item-${id}`;
 }
 
-function CommandJumpBar({
+export function CommandJumpBar({
   darkMode = false,
   vesselName = "Vessel",
   results = [],
   onJump,
+  compact = false,
 }) {
   const theme = themeClasses(darkMode);
   const [query, setQuery] = useState("");
@@ -284,6 +285,78 @@ function CommandJumpBar({
       event.preventDefault();
       chooseResult(filteredResults[activeIndex] || filteredResults[0]);
     }
+  }
+
+  if (compact) {
+    return (
+      <div id="dashboard-section" className="search-command-card relative z-50 min-w-[min(100%,280px)] flex-1 md:max-w-[520px]">
+        <div className={`flex min-h-10 items-center gap-2 rounded-2xl border px-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/55 text-slate-100 focus-within:border-[var(--vessel-primary-dark)]" : "border-slate-200/80 bg-white/88 text-slate-900 focus-within:border-blue-400"} shadow-sm transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]`}>
+          <span className={`text-sm ${darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]"}`} aria-hidden="true">⌕</span>
+          <input
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(Boolean(query.trim()))}
+            onKeyDown={handleKeyDown}
+            placeholder="Search tasks, crew, approvals, documents..."
+            className={`h-10 min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-slate-400 ${darkMode ? "placeholder:text-slate-500" : ""}`}
+            aria-label="Search tasks, crew, approvals, documents"
+          />
+          {query ? (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setOpen(false);
+              }}
+              className={`rounded-xl px-2 py-1 text-xs font-semibold ${darkMode ? "text-slate-300 hover:bg-white/10" : "text-slate-500 hover:bg-slate-100"}`}
+            >
+              Esc
+            </button>
+          ) : null}
+        </div>
+
+        {open && normalizedQuery ? (
+          <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-[9999] max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_28px_90px_-26px_rgba(0,0,0,0.55)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/96" : "border-slate-200/80 bg-white/98"}`}>
+            {filteredResults.length ? (
+              <div className="grid gap-1.5">
+                {filteredResults.map((result, index) => (
+                  <button
+                    key={result.id}
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => chooseResult(result)}
+                    className={`flex min-w-0 items-start justify-between gap-3 rounded-2xl border px-3 py-2.5 text-left transition-all duration-200 ${
+                      index === activeIndex
+                        ? darkMode
+                          ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)]"
+                          : "border-blue-300 bg-blue-50"
+                        : darkMode
+                          ? "border-transparent bg-transparent hover:border-white/10 hover:bg-white/[0.04]"
+                          : "border-transparent bg-transparent hover:border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{result.title}</div>
+                      <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
+                    </div>
+                    <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.04] text-[var(--vessel-text-accent-dark)]" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
+                      {result.type}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className={`rounded-2xl border border-dashed px-4 py-5 text-center text-sm ${darkMode ? "border-white/10 text-slate-300" : "border-slate-200 text-slate-600"}`}>
+                No matching command found.
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
+    );
   }
 
   return (
@@ -913,6 +986,27 @@ export function TodayOperationsView({
     }
   }
 
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const handleCommandItemOpen = (event) => {
+      const itemId = event?.detail?.id;
+      if (!itemId) return;
+      const item = operationItems.find((candidate) => candidate?.id === itemId);
+      if (!item) return;
+
+      const sectionKey = itemSectionForSearch(item);
+      if (sectionKey) {
+        setExpandedSections((prev) => ({ ...prev, [sectionKey]: true }));
+      }
+      openInspector(item);
+      window.setTimeout(() => highlightTarget(itemTargetForSearch(item, priorityItemIds)), sectionKey ? 180 : 80);
+    };
+
+    window.addEventListener("contessa:open-command-item", handleCommandItemOpen);
+    return () => window.removeEventListener("contessa:open-command-item", handleCommandItemOpen);
+  }, [operationItems, priorityItemIds]);
+
   if (!currentVessel) {
     return (
       <div className="min-h-screen rounded-[28px] bg-slate-950 p-6 text-slate-100">
@@ -925,13 +1019,6 @@ export function TodayOperationsView({
   return (
     <>
       <div className="grid gap-4 md:gap-5">
-        <CommandJumpBar
-          darkMode={darkMode}
-          vesselName={currentVessel?.name || currentVesselName}
-          results={searchResults}
-          onJump={jumpToResult}
-        />
-
         <Card className={`hidden app-panel app-panel-active relative overflow-hidden rounded-[30px] border ${darkMode ? "border-[var(--vessel-border-dark)] bg-[radial-gradient(circle_at_10%_0%,var(--vessel-primary-soft-dark),transparent_30%),radial-gradient(circle_at_90%_8%,rgba(212,175,55,0.08),transparent_24%),linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(6,12,18,0.92))]" : "border-[var(--vessel-border)] bg-[radial-gradient(circle_at_12%_0%,var(--vessel-primary-soft),transparent_30%),radial-gradient(circle_at_92%_8%,rgba(212,175,55,0.12),transparent_24%),linear-gradient(135deg,rgba(255,255,255,0.95),rgba(238,248,244,0.76))]"}`}>
           <div className={`pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full blur-3xl ${darkMode ? "bg-[var(--vessel-glow-dark)]" : "bg-[var(--vessel-primary-soft)]"}`} />
           <CardContent className="relative p-4 md:p-5">
@@ -1479,5 +1566,22 @@ export function TodayOperationsView({
         />
       </DetailDrawer>
     </>
+  );
+}
+
+export function DashboardCommandSearch({
+  darkMode = false,
+  currentVesselName = "Vessel",
+  searchResults = [],
+  onJump,
+}) {
+  return (
+    <CommandJumpBar
+      compact
+      darkMode={darkMode}
+      vesselName={currentVesselName}
+      results={searchResults}
+      onJump={onJump}
+    />
   );
 }

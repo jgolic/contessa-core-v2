@@ -517,6 +517,7 @@ export function AppShellHeader({
   onOpenSettingsWorkspace,
   notificationCount = 0,
   onOpenNotifications,
+  commandSearchView = null,
 }) {
   const theme = themeClasses(darkMode);
   const [legalOpen, setLegalOpen] = useState(false);
@@ -989,7 +990,7 @@ export function AppShellHeader({
             </div>
           </div>
 
-          <div className="mt-3 hidden flex-wrap items-center justify-center gap-2 md:flex lg:justify-start">
+          <div className="relative z-[60] mt-3 hidden flex-wrap items-center justify-center gap-2 md:flex lg:justify-start">
             <Badge className={isOffline ? "border border-[#ecd28c] bg-[#fff0cf]/92 text-[#7c5814]" : "vessel-pill"}>
               {isOffline ? <WifiOff className="mr-1 h-3.5 w-3.5" /> : <Wifi className="mr-1 h-3.5 w-3.5" />}
               {isOffline ? "Offline mode active" : "Live connection active"}
@@ -1000,6 +1001,11 @@ export function AppShellHeader({
             <Badge className={darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]"}>
               Today
             </Badge>
+            {commandSearchView ? (
+              <div className="min-w-[280px] flex-1 md:max-w-[520px]">
+                {commandSearchView}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -2156,7 +2162,7 @@ export { CrewView } from "./features/crew/crew-view.jsx";
 export { CertificatesView } from "./features/certificates/certificates-view.jsx";
 export { MaintenanceView } from "./features/maintenance/maintenance-view.jsx";
 export { NotificationsView } from "./features/notifications/notifications-view.jsx";
-export { TodayOperationsView } from "./features/today/today-operations-view.jsx";
+export { DashboardCommandSearch, TodayOperationsView } from "./features/today/today-operations-view.jsx";
 export { ExpensesView } from "./features/expenses/expenses-view.jsx";
 export { RoutePlanningView } from "./features/route-planning/route-planning-view.jsx";
 
