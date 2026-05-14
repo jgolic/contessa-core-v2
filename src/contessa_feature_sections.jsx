@@ -1002,7 +1002,7 @@ export function AppShellHeader({
               Today
             </Badge>
             {commandSearchView ? (
-              <div className="min-w-[280px] flex-1 md:max-w-[520px]">
+              <div className="min-w-[min(100%,360px)] flex-1 md:max-w-[680px]">
                 {commandSearchView}
               </div>
             ) : null}
