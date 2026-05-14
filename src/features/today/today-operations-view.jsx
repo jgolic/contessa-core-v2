@@ -435,6 +435,7 @@ function DetailPanelBody({
   onApprovalAction,
   onNavigateToTasks,
   onNavigateToMaintenance,
+  onNavigateToCrew,
   onNavigateToCertificates,
   onNavigateToApprovals,
   onNavigateToRoute,
