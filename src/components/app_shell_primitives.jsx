@@ -63,22 +63,30 @@ export function SectionNavCard({
   active = false,
 }) {
   const theme = themeClasses(darkMode);
+  const moduleCardBase =
+    "app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
+  const moduleCardInactive = darkMode
+    ? "app-panel-soft border-white/10 bg-white/[0.04] text-slate-100 hover:border-[var(--vessel-border-dark)] hover:bg-white/[0.06]"
+    : "app-panel-soft border-slate-200/70 bg-white/70 text-slate-900 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)]";
+  const moduleCardActive = darkMode
+    ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_0_24px_var(--vessel-glow-dark)]"
+    : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 shadow-[0_0_24px_rgba(var(--vessel-primary-rgb),0.12)]";
 
   return (
-    <Card className={`app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] transition md:rounded-[22px] ${active ? darkMode ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_16px_34px_-28px_var(--vessel-glow-dark)]" : "app-panel-active border-[var(--vessel-border)] bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.94),rgba(var(--vessel-secondary-rgb),0.86))] text-white shadow-[0_16px_34px_-26px_rgba(var(--vessel-primary-rgb),0.22)]" : `${theme.card} app-panel-soft`}`}>
+    <Card className={`${moduleCardBase} ${active ? moduleCardActive : moduleCardInactive}`}>
       <CardContent className="relative flex h-full items-center justify-between gap-3 overflow-hidden p-3.5">
         <div className={`absolute inset-x-4 bottom-0 h-px ${active ? "bg-current/[0.24]" : darkMode ? "bg-white/[0.08]" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
         <div className="min-w-0">
-          <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${active ? "text-current/[0.78]" : theme.textSecondary}`}>{label}</div>
-          <div className={`mt-1 truncate text-sm font-semibold ${active ? "text-current" : theme.textPrimary}`}>{value}</div>
+          <div className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${active ? darkMode ? "text-[var(--vessel-text-accent-dark)]/80" : "text-[var(--vessel-text-accent)]" : theme.textSecondary}`}>{label}</div>
+          <div className={`mt-1 truncate text-sm font-semibold ${active ? darkMode ? "text-slate-100" : "text-slate-900" : theme.textPrimary}`}>{value}</div>
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (
-            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? "bg-white/[0.14] text-current" : "vessel-icon-chip"}`}>
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] xl:block ${active ? "bg-white/[0.14] text-current" : darkMode ? "bg-white/5 text-slate-400" : "bg-white/60 text-slate-500"}`}>
+          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] xl:block ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "bg-white/5 text-slate-400" : "bg-white/60 text-slate-500"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
