@@ -227,6 +227,64 @@ function itemTargetForSearch(item = {}, priorityIds = new Set()) {
   return `item-${id}`;
 }
 
+function CommandSearchMark({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className={className}
+    >
+      <defs>
+        <linearGradient id="command-search-mark-stroke" x1="6" y1="5" x2="27" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.98" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0.62" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M13.8 5.7 21 12.9l-7.2 7.2-7.2-7.2 7.2-7.2Z"
+        fill="none"
+        stroke="url(#command-search-mark-stroke)"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.8 5.7v14.4M6.6 12.9H21M10 9.1l7.6 7.6"
+        fill="none"
+        stroke="currentColor"
+        strokeOpacity="0.42"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <circle
+        cx="15.2"
+        cy="14.3"
+        r="6.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        opacity="0.9"
+      />
+      <path
+        d="M20.1 19.2 26.1 25.2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.9 11.2c1.1-1.35 2.75-2.05 4.5-1.88"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.15"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
 export function CommandJumpBar({
   darkMode = false,
   vesselName = "Vessel",
@@ -310,7 +368,21 @@ export function CommandJumpBar({
     return (
       <div className="search-command-card relative z-50 min-w-0 flex-1 md:max-w-[680px]">
         <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/22 bg-slate-950/78 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/80 bg-white/88 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-[10px] font-bold uppercase tracking-[0.08em] md:h-9 md:w-9 md:rounded-2xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200/80 bg-blue-50 text-blue-700"}`} aria-hidden="true">Go</span>
+          <button
+            type="button"
+            onClick={() => {
+              inputRef.current?.focus();
+              setOpen(Boolean(query.trim()));
+            }}
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border shadow-[0_6px_24px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-200 hover:scale-[1.03] md:h-12 md:w-12 ${
+              darkMode
+                ? "border-cyan-300/20 bg-slate-900/70 text-cyan-100 hover:border-cyan-300/50 hover:shadow-[0_10px_30px_rgba(34,211,238,0.18)] focus:outline-none focus:ring-2 focus:ring-cyan-300/35"
+                : "border-blue-200/70 bg-white/70 text-blue-700 hover:border-blue-400 hover:shadow-[0_10px_30px_rgba(59,130,246,0.16)] focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+            }`}
+            aria-label="Focus command search"
+          >
+            <CommandSearchMark className="h-6 w-6 drop-shadow-[0_0_10px_rgba(59,130,246,0.22)] md:h-7 md:w-7" />
+          </button>
           <input
             ref={inputRef}
             value={query}
@@ -397,8 +469,23 @@ export function CommandJumpBar({
         </div>
         <div className="relative min-w-0 flex-1 lg:max-w-[620px]">
           <div className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/45 text-slate-100 focus-within:border-[var(--vessel-primary-dark)]" : "border-slate-200/80 bg-white/82 text-slate-900 focus-within:border-blue-400"} shadow-sm transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]`}>
-            <span className={`text-base ${darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]"}`} aria-hidden="true">⌕</span>
+            <button
+              type="button"
+              onClick={() => {
+                inputRef.current?.focus();
+                setOpen(Boolean(query.trim()));
+              }}
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_6px_20px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-200 hover:scale-[1.03] ${
+                darkMode
+                  ? "border-cyan-300/20 bg-slate-900/70 text-cyan-100 hover:border-cyan-300/50 hover:shadow-[0_10px_30px_rgba(34,211,238,0.16)] focus:outline-none focus:ring-2 focus:ring-cyan-300/35"
+                  : "border-blue-200/70 bg-white/80 text-blue-700 hover:border-blue-400 hover:shadow-[0_10px_30px_rgba(59,130,246,0.14)] focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+              }`}
+              aria-label="Focus command search"
+            >
+              <CommandSearchMark className="h-5 w-5" />
+            </button>
             <input
+              ref={inputRef}
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
