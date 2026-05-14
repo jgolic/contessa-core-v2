@@ -1,7 +1,7 @@
 ﻿export const STATUS_OPTIONS = ["pending", "ongoing", "completed"];
 export const TASK_STATUS_OPTIONS = [...STATUS_OPTIONS, "approved", "declined"];
 export const PRIORITY_OPTIONS = ["low", "medium", "high", "urgent"];
-export const ASSIGNEE_OPTIONS = ["Captain Luca Marin", "Chief Engineer Elena Voss", "First Mate Tomas Reed", "Bosun Nico Hale", "Chief Stewardess Sofia Vale", "Deckhand Leo Mercer"];
+export const ASSIGNEE_OPTIONS = ["Captain Graham Ellis", "Oliver Reed", "Marko Vukovic", "Daniel Price", "Elena Kovac", "Marcus Bell", "Nina Hayes", "Adrian Cole", "Leo Grant", "Mia Laurent", "Tomas Reed"];
 export const TASK_DEPARTMENT_OPTIONS = ["General", "Deck", "Engineering", "Interior", "Bridge", "Admin"];
 export const CREW_DEPARTMENT_OPTIONS = ["Deck", "Engineering", "Interior", "Bridge", "Admin"];
 export const CREW_RANK_OPTIONS = [
@@ -123,7 +123,8 @@ export const APP_LEGAL_SHORT_COPY = "© 2026 Josip Golic · Proprietary";
 export const APP_LEGAL_COPY = "This application, including its design, workflows, structure, content, and source code, is proprietary intellectual property of Josip Golic. Unauthorized copying, reproduction, modification, distribution, reverse engineering, or use is prohibited without prior written permission.";
 export const APP_FOOTER_NOTICE = "Proprietary software © 2026 Josip Golic";
 const DEFAULT_FLEET_VESSEL_ID = "contessa";
-const OCTOPUSSY_DEMO_SEED_VERSION = 3;
+const CONTESSA_DEMO_SEED_VERSION = 4;
+const OCTOPUSSY_DEMO_SEED_VERSION = 4;
 const VESSEL_THEME_PRESETS = {
   contessa: {
     name: "Contessa",
@@ -280,25 +281,26 @@ const ADDITIONAL_VESSEL_THEME_SEQUENCE = ["burgundy", "champagne", "violet"];
 const REQUIRED_FLEET_VESSELS = [
   {
     id: "contessa",
-    name: "Contessa",
+    name: "M/Y Contessa",
     details: {
       length: 32,
       vesselType: "Motor Yacht",
       flag: "Cayman Islands",
-      homePort: "Monaco",
-      status: "Operational",
+      homePort: "Fort Lauderdale / LMC Safe Harbor",
+      status: "Yard / Refit",
+      notes: "Independent Fort Lauderdale refit workspace.",
     },
   },
   {
     id: "octopussy",
-    name: "Octopussy",
+    name: "M/Y Octopussy",
     details: {
       length: 30,
       vesselType: "Motor Yacht",
       flag: "Cayman Islands",
-      homePort: "Oracabessa",
-      status: "Operational",
-      notes: "Independent Oracabessa demo workspace.",
+      homePort: "Oracabessa, Jamaica",
+      status: "Guest Ready",
+      notes: "Independent Jamaica guest-ready workspace.",
     },
   },
 ];
@@ -376,300 +378,203 @@ export function buildVesselThemeCssVars(theme = {}) {
   };
 }
 
-export const initialVesselProfile = normalizeVesselProfile({
-  vesselName: "Contessa",
-  draft: 2.3,
-  beam: 7.4,
-  cruisingSpeedKnots: 12,
-  fuelBurnPerHour: 245,
-  fuelCapacity: 18200,
-  fuelReservePercentage: 18,
-});
+function createFallbackVesselProfile(name = "Vessel") {
+  return normalizeVesselProfile({ vesselName: name });
+}
 
-export const initialDocuments = [
-  {
-    id: "DOC-REG-001",
-    title: "Vessel Registration",
-    category: "Registration",
-    status: "Current",
-    owner: "Owner Office",
-    notes: "Primary registration placeholder for investor demo.",
-  },
-  {
-    id: "DOC-INS-001",
-    title: "Hull & Machinery Insurance",
-    category: "Insurance",
-    status: "Review due in 14 days",
-    owner: "Manager",
-    notes: "Renewal workflow placeholder with linked broker file slot.",
-  },
-  {
-    id: "DOC-MAN-001",
-    title: "Engine Room Operating Manual",
-    category: "Manual",
-    status: "Available",
-    owner: "Chief Engineer",
-    notes: "Document upload placeholder for OEM and service references.",
-  },
-  {
-    id: "DOC-LEGAL-001",
-    title: "IP & Legal Notice",
-    category: "Legal",
-    status: "Active",
-    owner: "System",
-    notes: APP_LEGAL_COPY,
-  },
-];
+function buildContessaWorkspace(name = "M/Y Contessa") {
+  const vesselProfile = normalizeVesselProfile({
+    vesselName: name,
+    draft: 2.3,
+    beam: 7.4,
+    cruisingSpeedKnots: 16,
+    fuelBurnPerHour: 260,
+    fuelCapacity: 18200,
+    fuelReservePercentage: 18,
+  });
 
-export const initialTasks = [
-  {
-    id: "TASK-001",
-    name: "Starboard davit hydraulic seep",
-    area: "Aft Deck",
-    department: "Deck",
-    assignee: "Bosun Nico Hale",
-    status: "pending",
-    priority: "high",
-    dueDate: dateStringFromNow(-2),
-    approvalStatus: "pending",
-    notes: "Inspect seals before guest tender launch window.",
-    comments: [{ id: "COM-001", text: "Observed minor seep after washdown.", by: "Captain Luca Marin", at: new Date().toISOString() }],
-    quotes: [
-      { id: "Q-001", supplier: "Ocean Service SRL", amount: 1650, currency: "EUR", status: "received", includeInSummary: true },
-      { id: "Q-002", supplier: "Harbor Hydraulics", amount: 1420, currency: "EUR", status: "requested", includeInSummary: false },
+  const crewProfiles = [
+    {
+      id: "CON-CRW-001",
+      fullName: "Graham Ellis",
+      rank: "Captain",
+      department: "Bridge",
+      nationality: "British",
+      roleKey: "captain",
+      notes: "Captain overseeing Fort Lauderdale yard/refit decisions.",
+      certificates: [{ id: "CON-CERT-001", name: "Master 3000 GT", holderName: "Graham Ellis", issuingAuthority: "MCA", expiryDate: dateStringFromNow(84), issueDate: dateStringFromNow(-920) }],
+    },
+    {
+      id: "CON-CRW-002",
+      fullName: "Oliver Reed",
+      rank: "First Mate",
+      department: "Deck",
+      nationality: "British",
+      roleKey: "first_mate",
+      notes: "Deck lead for hull inspection, Bahamas departure prep, and yard coordination.",
+      certificates: [{ id: "CON-CERT-002", name: "STCW", holderName: "Oliver Reed", issuingAuthority: "RYA", expiryDate: dateStringFromNow(63), issueDate: dateStringFromNow(-760) }],
+    },
+    {
+      id: "CON-CRW-003",
+      fullName: "Marko Vukovic",
+      rank: "Chief Engineer",
+      department: "Engineering",
+      nationality: "Croatian",
+      roleKey: "engineer",
+      notes: "Engineering lead for generator load testing and shore power review.",
+      certificates: [{ id: "CON-CERT-003", name: "EOOW Unlimited", holderName: "Marko Vukovic", issuingAuthority: "Liberia", expiryDate: dateStringFromNow(118), issueDate: dateStringFromNow(-860) }],
+    },
+    {
+      id: "CON-CRW-004",
+      fullName: "Daniel Price",
+      rank: "Bosun",
+      department: "Deck",
+      nationality: "South African",
+      roleKey: "bosun",
+      notes: "Hull photo capture, bottom paint quality, and deck readiness.",
+      certificates: [{ id: "CON-CERT-004", name: "Powerboat Level 2", holderName: "Daniel Price", issuingAuthority: "RYA", expiryDate: dateStringFromNow(42), issueDate: dateStringFromNow(-510) }],
+    },
+    {
+      id: "CON-CRW-005",
+      fullName: "Elena Kovac",
+      rank: "Stewardess",
+      department: "Interior",
+      nationality: "Croatian",
+      roleKey: "stewardess",
+      notes: "Document folder preparation and interior departure support.",
+      certificates: [{ id: "CON-CERT-005", name: "ENG1", holderName: "Elena Kovac", issuingAuthority: "MCA", expiryDate: dateStringFromNow(25), issueDate: dateStringFromNow(-690) }],
+    },
+  ].map(normalizeCrewProfile);
+
+  const tasks = [
+    {
+      id: "CON-TASK-001",
+      name: "Inspect thruster tunnel coating",
+      area: "Thruster tunnel",
+      department: "Deck",
+      assignee: "Oliver Reed",
+      status: "pending",
+      priority: "urgent",
+      dueDate: todayDateString(),
+      approvalStatus: "pending",
+      notes: "Critical yard/refit decision. Confirm bow thruster tunnel coating quality before further coating work is accepted.",
+      comments: [{ id: "CON-COM-001", text: "Possible coating issue flagged during hull inspection.", by: "Oliver Reed", at: new Date().toISOString() }],
+    },
+    {
+      id: "CON-TASK-002",
+      name: "Photograph barnacle paint-over areas",
+      area: "Hull",
+      department: "Deck",
+      assignee: "Daniel Price",
+      status: "ongoing",
+      priority: "high",
+      dueDate: todayDateString(),
+      approvalStatus: "approved",
+      notes: "Document all barnacle paint-over areas with clear before/after reference photos for yard review.",
+    },
+    {
+      id: "CON-TASK-003",
+      name: "Review LMC waterline paint quote",
+      area: "Waterline",
+      department: "Admin",
+      assignee: "Captain Graham Ellis",
+      status: "pending",
+      priority: "high",
+      dueDate: dateStringFromNow(1),
+      approvalStatus: "pending",
+      notes: "Review LMC quote and prepare owner recommendation before approving yard scope.",
+      quotes: [{ id: "CON-Q-001", supplier: "LMC waterline paint quote", amount: 50000, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Graham Ellis" }],
+    },
+    {
+      id: "CON-TASK-004",
+      name: "Check shore power connection logs",
+      area: "Electrical room",
+      department: "Engineering",
+      assignee: "Marko Vukovic",
+      status: "pending",
+      priority: "medium",
+      dueDate: dateStringFromNow(7),
+      approvalStatus: "approved",
+      notes: "Review LMC Safe Harbor shore power logs for anomalies during yard period.",
+    },
+    {
+      id: "CON-TASK-005",
+      name: "Prepare Bahamas departure document folder",
+      area: "Bridge",
+      department: "Admin",
+      assignee: "Elena Kovac",
+      status: "pending",
+      priority: "medium",
+      dueDate: dateStringFromNow(4),
+      approvalStatus: "approved",
+      notes: "Prepare Bahamas clearance packet, crew documents, EPIRB registration, and route paperwork.",
+    },
+  ].map((task) => normalizeTask(task));
+
+  const crewExpenses = [
+    { id: "CON-EXP-001", title: "Yard daily labor access", amount: 1250, currency: "USD", status: "requested", requester: "Graham Ellis", reason: "Daily LMC access and coordination labor.", attachments: [] },
+    { id: "CON-EXP-002", title: "Paint inspection supplies", amount: 340, currency: "USD", status: "received", requester: "Daniel Price", reason: "Inspection tape, markers, lights, and photo labels.", attachments: [] },
+    { id: "CON-EXP-003", title: "Shore power usage", amount: 780, currency: "USD", status: "requested", requester: "Marko Vukovic", reason: "Yard shore power usage during refit period.", attachments: [] },
+  ].map(normalizeCrewExpense);
+
+  const workers = [
+    { id: "CON-WRK-001", fullName: "LMC Paint Supervisor", rank: "Contractor", department: "Deck", notes: "Waterline paint quote and rework decision." },
+    { id: "CON-WRK-002", fullName: "Thruster Coating Inspector", rank: "Surveyor", department: "Engineering", notes: "Bow thruster tunnel coating review." },
+    { id: "CON-WRK-003", fullName: "Electrical Yard Lead", rank: "Contractor", department: "Engineering", notes: "Shore power log support." },
+  ].map(normalizeCrewProfile);
+
+  const documents = [
+    { id: "CON-DOC-001", title: "Bahamas clearance packet", category: "Clearance", status: "Draft", owner: "Elena Kovac", notes: "Departure document folder for Fort Lauderdale to Nassau." },
+    { id: "CON-DOC-002", title: "Yard work order", category: "Yard", status: "Active", owner: "Graham Ellis", notes: "LMC Safe Harbor work order and scope reference." },
+    { id: "CON-DOC-003", title: "EPIRB registration", category: "Safety", status: "Review", owner: "Marko Vukovic", notes: "Registration check before Bahamas departure." },
+    { id: "CON-DOC-004", title: "Paint quote PDF", category: "Quote", status: "Waiting Approval", owner: "Graham Ellis", notes: "LMC waterline paint quote for owner approval." },
+  ].map(normalizeDocumentRecord);
+
+  const maintenanceItems = [
+    { id: "CON-MNT-001", title: "Bow thruster tunnel inspection", area: "Thruster tunnel", frequencyMonths: 12, nextDueDate: todayDateString(), responsiblePerson: "Oliver Reed", notes: "Critical coating inspection before yard sign-off.", alertEnabled: true },
+    { id: "CON-MNT-002", title: "Bottom paint quality review", area: "Hull", frequencyMonths: 12, nextDueDate: todayDateString(), responsiblePerson: "Daniel Price", notes: "Review barnacle paint-over areas and document defects.", alertEnabled: true },
+    { id: "CON-MNT-003", title: "Generator load test", area: "Engine room", frequencyMonths: 3, nextDueDate: dateStringFromNow(1), responsiblePerson: "Marko Vukovic", notes: "Warm-up and load test before departure planning.", alertEnabled: true },
+    { id: "CON-MNT-004", title: "Anchor chain paint marking", area: "Anchor locker", frequencyMonths: 6, nextDueDate: dateStringFromNow(5), responsiblePerson: "Daniel Price", notes: "Mark chain before Bahamas anchoring program.", alertEnabled: true },
+    { id: "CON-MNT-005", title: "EPIRB registration check", area: "Safety equipment", frequencyMonths: 12, nextDueDate: dateStringFromNow(2), responsiblePerson: "Elena Kovac", notes: "Confirm EPIRB registration and emergency contact details.", alertEnabled: true },
+  ].map(normalizeMaintenanceItem);
+
+  const routePlanning = normalizeRoutePlanningState({
+    vesselProfile,
+    safetyMargin: 1.2,
+    status: "Planning",
+    riskNote: "Gulf Stream weather window required",
+    depthLayer: { connected: false, provider: "", samples: [], zones: [] },
+    waypoints: [
+      { id: "CON-RWP-001", name: "Fort Lauderdale", lng: -80.1183, lat: 26.1224 },
+      { id: "CON-RWP-002", name: "Gulf Stream Weather Gate", lng: -79.6, lat: 26.35 },
+      { id: "CON-RWP-003", name: "Bimini weather check", lng: -79.28, lat: 25.73 },
+      { id: "CON-RWP-004", name: "Nassau, Bahamas", lng: -77.3554, lat: 25.0443 },
     ],
-  },
-  {
-    id: "TASK-002",
-    name: "Port generator raw-water impeller service",
-    area: "Engine Room",
-    department: "Engineering",
-    assignee: "Chief Engineer Elena Voss",
-    status: "ongoing",
-    priority: "urgent",
-    dueDate: dateStringFromNow(0),
-    approvalStatus: "approved",
-    notes: "Parts onboard. Complete before next guest transit.",
-  },
-  {
-    id: "TASK-003",
-    name: "Bridge VHF handheld battery rotation",
-    area: "Bridge",
-    department: "Bridge",
-    assignee: "First Mate Tomas Reed",
-    status: "pending",
-    priority: "medium",
-    dueDate: dateStringFromNow(1),
-    approvalStatus: "pending",
-    notes: "Rotate emergency handheld packs and update log.",
-  },
-  {
-    id: "TASK-004",
-    name: "Master shower mixer replacement",
-    area: "Master Cabin",
-    department: "Interior",
-    assignee: "Chief Stewardess Sofia Vale",
-    status: "completed",
-    priority: "medium",
-    dueDate: dateStringFromNow(-1),
-    approvalStatus: "approved",
-    notes: "Replacement fitted; awaiting captain approval close-out.",
-  },
-  {
-    id: "TASK-005",
-    name: "Foredeck teak seam inspection",
-    area: "Foredeck",
-    department: "Deck",
-    assignee: "Bosun Nico Hale",
-    status: "approved",
-    priority: "low",
-    dueDate: dateStringFromNow(-3),
-    approvalStatus: "approved",
-    notes: "Survey complete and logged for next yard period.",
-  },
-  {
-    id: "TASK-006",
-    name: "Crew provisioning variance review",
-    area: "Galley",
-    department: "Admin",
-    assignee: "Captain Luca Marin",
-    status: "pending",
-    priority: "medium",
-    dueDate: dateStringFromNow(2),
-    approvalStatus: "pending",
-    notes: "Review weekly provisioning overage before owner summary.",
-  },
-  {
-    id: "TASK-007",
-    name: "Nav light lens polish and seal check",
-    area: "Upper Deck",
-    department: "Deck",
-    assignee: "Deckhand Leo Mercer",
-    status: "ongoing",
-    priority: "high",
-    dueDate: dateStringFromNow(3),
-    approvalStatus: "pending",
-    notes: "Complete before coastal night passage.",
-  },
-  {
-    id: "TASK-008",
-    name: "AIS antenna connector inspection",
-    area: "Wheelhouse",
-    department: "Bridge",
-    assignee: "First Mate Tomas Reed",
-    status: "pending",
-    priority: "urgent",
-    dueDate: dateStringFromNow(0),
-    approvalStatus: "pending",
-    notes: "Intermittent target dropout reported in harbor.",
-    quotes: [
-      { id: "Q-003", supplier: "Bridge Tech Monaco", amount: 980, currency: "EUR", status: "requested", includeInSummary: true },
-    ],
-  },
-];
+  });
 
-export const initialCrewExpenses = [
-  {
-    id: "CRX-001",
-    title: "Crew transport reimbursement",
-    amount: 180,
-    currency: "EUR",
-    status: "approved",
-    attachments: [],
-  },
-];
+  const history = [
+    { id: "CON-HIS-001", at: new Date().toISOString(), section: "Maintenance", action: "Coating issue flagged", detail: "Oliver flagged possible coating issue in bow thruster tunnel." },
+    { id: "CON-HIS-002", at: new Date(Date.now() - 1000 * 60 * 43).toISOString(), section: "Tasks", action: "Hull photos uploaded", detail: "Daniel uploaded photos from hull inspection." },
+    { id: "CON-HIS-003", at: new Date(Date.now() - 1000 * 60 * 97).toISOString(), section: "Expenses and Quotations", action: "Paint quote review requested", detail: "Graham requested review of waterline paint quote." },
+    { id: "CON-HIS-004", at: new Date(Date.now() - 1000 * 60 * 148).toISOString(), section: "Maintenance", action: "Generator test completed", detail: "Marko completed generator warm-up test." },
+  ];
 
-export const initialCrewProfiles = [
-  {
-    id: "CRW-001",
-    fullName: "Captain Luca Marin",
-    rank: "Captain",
-    department: "Bridge",
-    nationality: "Italian",
-    roleKey: "captain",
-    notes: "Master of vessel and bridge lead.",
-    certificates: [{ id: "CERT-001", name: "Master 3000 GT", holderName: "Captain Luca Marin", issuingAuthority: "MCA", expiryDate: dateStringFromNow(24), issueDate: dateStringFromNow(-700), notes: "Renewal already planned." }],
-  },
-  {
-    id: "CRW-002",
-    fullName: "Elena Voss",
-    rank: "Chief Engineer",
-    department: "Engineering",
-    nationality: "German",
-    roleKey: "engineer",
-    notes: "Engineering lead and machinery approvals.",
-    certificates: [{ id: "CERT-002", name: "EOOW Unlimited", holderName: "Elena Voss", issuingAuthority: "Liberia", expiryDate: dateStringFromNow(78), issueDate: dateStringFromNow(-820) }],
-  },
-  {
-    id: "CRW-003",
-    fullName: "Tomas Reed",
-    rank: "First Mate",
-    department: "Deck",
-    nationality: "British",
-    roleKey: "first_mate",
-    notes: "Deck operations, bridge watch, and tender logistics.",
-    certificates: [{ id: "CERT-003", name: "GMDSS", holderName: "Tomas Reed", issuingAuthority: "UK MCA", expiryDate: dateStringFromNow(12), issueDate: dateStringFromNow(-540) }],
-  },
-  {
-    id: "CRW-004",
-    fullName: "Sofia Vale",
-    rank: "Chief Stewardess",
-    department: "Interior",
-    nationality: "Spanish",
-    roleKey: "stewardess",
-    notes: "Interior standards and guest readiness.",
-    certificates: [{ id: "CERT-004", name: "STCW Basic Safety", holderName: "Sofia Vale", issuingAuthority: "Marshall Islands", expiryDate: dateStringFromNow(110), issueDate: dateStringFromNow(-960) }],
-  },
-  {
-    id: "CRW-005",
-    fullName: "Nico Hale",
-    rank: "Bosun",
-    department: "Deck",
-    nationality: "South African",
-    roleKey: "bosun",
-    notes: "Deck maintenance lead.",
-    certificates: [{ id: "CERT-005", name: "Powerboat Level 2", holderName: "Nico Hale", issuingAuthority: "RYA", expiryDate: dateStringFromNow(-6), issueDate: dateStringFromNow(-430) }],
-  },
-  {
-    id: "CRW-006",
-    fullName: "Leo Mercer",
-    rank: "Deckhand",
-    department: "Deck",
-    nationality: "New Zealand",
-    roleKey: "deckhand",
-    notes: "Junior deck operator for exterior rounds.",
-    certificates: [],
-  },
-];
-
-export const initialMaintenanceItems = [
-  {
-    id: "MNT-001",
-    title: "Port generator sea strainer clean",
-    area: "Engine room",
-    frequencyMonths: 1,
-    nextDueDate: dateStringFromNow(0),
-    notes: "Required before next guest turnaround.",
-    alertEnabled: true,
-  },
-  {
-    id: "MNT-002",
-    title: "Life raft hydrostatic release inspection",
-    area: "Safety equipment",
-    frequencyMonths: 12,
-    nextDueDate: dateStringFromNow(7),
-    notes: "Class-critical safety inspection.",
-    alertEnabled: true,
-  },
-  {
-    id: "MNT-003",
-    title: "Anchor windlass grease and brake check",
-    area: "Foredeck",
-    frequencyMonths: 2,
-    nextDueDate: dateStringFromNow(-1),
-    notes: "Heavy recent use during charter turn.",
-    alertEnabled: true,
-  },
-];
-
-export const initialHistory = [
-  { id: "HIS-001", at: new Date().toISOString(), section: "Objectives", action: "Task escalated", detail: "AIS antenna connector inspection moved to critical." },
-  { id: "HIS-002", at: new Date(Date.now() - 1000 * 60 * 38).toISOString(), section: "Expenses and Quotations", action: "Quote selected", detail: "Ocean Service SRL now included in vessel spend summary." },
-  { id: "HIS-003", at: new Date(Date.now() - 1000 * 60 * 92).toISOString(), section: "Maintenance", action: "Maintenance due today", detail: "Port generator sea strainer clean flagged for command center." },
-  { id: "HIS-004", at: new Date(Date.now() - 1000 * 60 * 160).toISOString(), section: "Certificates", action: "Certificate risk", detail: "GMDSS for Tomas Reed is inside the 30-day warning window." },
-  { id: "HIS-005", at: new Date(Date.now() - 1000 * 60 * 245).toISOString(), section: "Route Planning", action: "Route updated", detail: "Monaco to St-Tropez passage recalculated with 12 kn cruise." },
-  { id: "HIS-006", at: new Date(Date.now() - 1000 * 60 * 310).toISOString(), section: "Crew", action: "Crew profile updated", detail: "Captain contact and vessel role details confirmed." },
-];
-
-export const initialRoutePlanning = normalizeRoutePlanningState({
-  vesselProfile: initialVesselProfile,
-  safetyMargin: 1.2,
-  depthLayer: {
-    connected: false,
-    provider: "",
-    samples: [],
-    zones: [],
-  },
-  waypoints: [
-    { id: "RWP-001", name: "Monaco Departure", lng: 7.4246, lat: 43.7384 },
-    { id: "RWP-002", name: "Cap Ferrat Clearance", lng: 7.3315, lat: 43.6854 },
-    { id: "RWP-003", name: "St-Tropez Approach", lng: 6.6402, lat: 43.2729 },
-  ],
-});
+  return {
+    history,
+    declinedTasks: [],
+    vesselProfile,
+    documents,
+    tasks,
+    crewExpenses,
+    crewProfiles,
+    workers,
+    maintenanceItems,
+    routePlanning,
+  };
+}
 
 function createDefaultWorkspaceData() {
-  return {
-    history: initialHistory,
-    declinedTasks: [],
-    vesselProfile: initialVesselProfile,
-    documents: initialDocuments.map(normalizeDocumentRecord),
-    tasks: initialTasks.map((task) => normalizeTask(task)),
-    crewExpenses: initialCrewExpenses.map(normalizeCrewExpense),
-    crewProfiles: initialCrewProfiles.map(normalizeCrewProfile),
-    workers: initialCrewProfiles.map(normalizeCrewProfile),
-    maintenanceItems: initialMaintenanceItems.map(normalizeMaintenanceItem),
-    routePlanning: initialRoutePlanning,
-  };
+  return buildContessaWorkspace();
 }
 
 function normalizeWorkspaceState(state = {}) {
@@ -683,7 +588,7 @@ function normalizeWorkspaceState(state = {}) {
       state.route?.vessel,
       state.vesselProfile,
       state.vessel,
-      initialVesselProfile
+      createFallbackVesselProfile()
     ),
   });
   const vesselProfile = normalizeVesselProfile(
@@ -694,14 +599,14 @@ function normalizeWorkspaceState(state = {}) {
         ? routePlanning.vesselProfile
         : null
     ) ||
-    initialVesselProfile
+    createFallbackVesselProfile()
   );
 
   return {
     history: Array.isArray(state.history) ? state.history : [],
     declinedTasks: Array.isArray(state.declinedTasks) ? state.declinedTasks.map((task) => normalizeTask(task)) : [],
     vesselProfile,
-    documents: Array.isArray(state.documents) ? state.documents.map(normalizeDocumentRecord) : initialDocuments.map(normalizeDocumentRecord),
+    documents: Array.isArray(state.documents) ? state.documents.map(normalizeDocumentRecord) : [],
     tasks: Array.isArray(state.tasks) ? state.tasks.map((task) => normalizeTask(task)) : [],
     crewExpenses: Array.isArray(state.crewExpenses) ? state.crewExpenses.map(normalizeCrewExpense) : [],
     crewProfiles: Array.isArray(state.crewProfiles) ? state.crewProfiles.map(normalizeCrewProfile) : [],
@@ -736,12 +641,12 @@ export function formatVesselNameFromId(vesselId = "") {
     .join(" ") || "Vessel";
 }
 
-function buildOctopussyWorkspace(name = "Octopussy") {
+function buildOctopussyWorkspace(name = "M/Y Octopussy") {
   const vesselProfile = normalizeVesselProfile({
     vesselName: name,
     draft: 2.1,
     beam: 6.7,
-    cruisingSpeedKnots: 19,
+    cruisingSpeedKnots: 16,
     fuelBurnPerHour: 339,
     fuelCapacity: 14200,
     fuelReservePercentage: 18,
@@ -819,32 +724,32 @@ function buildOctopussyWorkspace(name = "Octopussy") {
   const tasks = [
     {
       id: "OCT-TASK-001",
-      name: "Inspect tender davit hydraulic leak",
-      area: "Tender Garage",
-      department: "Engineering",
-      assignee: "Chief Engineer Adrian Cole",
-      status: "ongoing",
+      name: "Prepare guest welcome setup",
+      area: "Main Salon",
+      department: "Interior",
+      assignee: "Mia Laurent",
+      status: "pending",
       priority: "high",
       dueDate: todayDateString(),
-      approvalStatus: "approved",
-      notes: "Adrian reported hydraulic residue near the tender davit. Confirm source, photograph residue, and check seal kit requirements.",
+      approvalStatus: "pending",
+      notes: "Guest welcome setup needs final approval before provisioning is confirmed.",
       quotes: [
-        { id: "OCT-Q-001", supplier: "Tender davit hydraulic seal kit", amount: 1240, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Adrian Cole" },
+        { id: "OCT-Q-001", supplier: "Guest welcome provisions", amount: 680, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Mia Laurent" },
       ],
     },
     {
       id: "OCT-TASK-002",
-      name: "Polish stainless around aft deck railings",
-      area: "Aft Deck",
-      department: "Deck",
-      assignee: "Deckhand Tomas Reed",
-      status: "pending",
-      priority: "medium",
-      dueDate: dateStringFromNow(1),
-      approvalStatus: "approved",
-      notes: "Polish stainless around aft deck railings before guest arrival setup begins.",
+      name: "Inspect tender davit hydraulic leak",
+      area: "Tender Garage",
+      department: "Engineering",
+      assignee: "Adrian Cole",
+      status: "ongoing",
+      priority: "high",
+      dueDate: todayDateString(),
+      approvalStatus: "pending",
+      notes: "Adrian reported hydraulic residue near the tender davit. Confirm source, photograph residue, and check seal kit requirements.",
       quotes: [
-        { id: "OCT-Q-002", supplier: "Stainless polish supplies", amount: 220, currency: "USD", status: "requested", includeInSummary: true, requestedBy: "Tomas Reed" },
+        { id: "OCT-Q-002", supplier: "Tender davit hydraulic seal kit", amount: 1240, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Adrian Cole" },
       ],
     },
     {
@@ -852,43 +757,47 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       name: "Inventory snorkel and watersports equipment",
       area: "Watersports Locker",
       department: "Deck",
-      assignee: "Bosun Leo Grant",
+      assignee: "Leo Grant",
+      status: "pending",
+      priority: "medium",
+      dueDate: dateStringFromNow(1),
+      approvalStatus: "approved",
+      notes: "Count snorkel sets, fins, masks, paddleboards, and tender safety gear for Oracabessa guest program.",
+      quotes: [
+        { id: "OCT-Q-003", supplier: "Watersports replacement masks", amount: 360, currency: "USD", status: "requested", displayStatus: "Requested", includeInSummary: true, requestedBy: "Leo Grant" },
+      ],
+    },
+    {
+      id: "OCT-TASK-004",
+      name: "Polish aft deck stainless railings",
+      area: "Aft Deck",
+      department: "Deck",
+      assignee: "Tomas Reed",
       status: "pending",
       priority: "low",
       dueDate: dateStringFromNow(7),
       approvalStatus: "approved",
-      notes: "Count snorkel sets, fins, masks, paddleboards, and tender safety gear for Oracabessa guest program.",
-    },
-    {
-      id: "OCT-TASK-004",
-      name: "Prepare guest arrival welcome setup",
-      area: "Main Salon",
-      department: "Interior",
-      assignee: "Stewardess Mia Laurent",
-      status: "pending",
-      priority: "high",
-      dueDate: todayDateString(),
-      approvalStatus: "approved",
-      notes: "Guest welcome setup needs final approval before provisioning is confirmed.",
-      quotes: [
-        { id: "OCT-Q-003", supplier: "Guest welcome provisions", amount: 680, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Mia Laurent" },
-      ],
+      notes: "Polish aft deck stainless railings before guest arrival setup begins.",
     },
     {
       id: "OCT-TASK-005",
-      name: "Check generator coolant levels",
-      area: "Engine room",
-      department: "Engineering",
-      assignee: "Chief Engineer Adrian Cole",
+      name: "Confirm Port Antonio berth request",
+      area: "Bridge",
+      department: "Bridge",
+      assignee: "Nina Hayes",
       status: "pending",
-      priority: "high",
-      dueDate: todayDateString(),
+      priority: "medium",
+      dueDate: dateStringFromNow(1),
       approvalStatus: "approved",
-      notes: "Generator coolant inspection added for today after engineering morning check.",
+      notes: "Confirm Port Antonio berth request and arrival window with marina office.",
     },
   ].map((task) => normalizeTask(task));
 
-  const crewExpenses = [];
+  const crewExpenses = [
+    { id: "OCT-EXP-001", title: "Fresh provisioning", amount: 540, currency: "USD", status: "requested", requester: "Mia Laurent", reason: "Fresh produce and guest arrival supplies.", attachments: [] },
+    { id: "OCT-EXP-002", title: "Hydraulic oil and seals", amount: 310, currency: "USD", status: "requested", requester: "Adrian Cole", reason: "Tender davit hydraulic service support.", attachments: [] },
+    { id: "OCT-EXP-003", title: "Snorkel equipment replacement", amount: 360, currency: "USD", status: "requested", requester: "Leo Grant", reason: "Replacement masks for watersports inventory.", attachments: [] },
+  ].map(normalizeCrewExpense);
 
   const workers = [
     { id: "OCT-WRK-001", fullName: "Hydraulic Technician", rank: "Contractor", department: "Engineering", notes: "Seal kit quote requested" },
@@ -897,28 +806,15 @@ function buildOctopussyWorkspace(name = "Octopussy") {
   ].map(normalizeCrewProfile);
 
   const documents = [
-    { id: "OCT-DOC-001", title: "Vessel Registration", category: "Registration", status: "Current", owner: "Owner Office", notes: "Octopussy registry pack." },
-    { id: "OCT-DOC-002", title: "Insurance Binder", category: "Insurance", status: "Active", owner: "Manager", notes: "Annual cover confirmed." },
-    { id: "OCT-DOC-003", title: "Jamaica Cruising Permit", category: "Legal", status: "Review", owner: "Captain", notes: "Supporting Oracabessa operations and customs timing." },
-    { id: "OCT-DOC-004", title: "Engine Service Manual", category: "Manual", status: "Available", owner: "Engineer", notes: "Primary OEM service reference." },
-    { id: "OCT-DOC-005", title: "IP & Legal Notice", category: "Legal", status: "Active", owner: "System", notes: APP_LEGAL_COPY },
-    { id: "OCT-DOC-006", title: "Guest Tender Inventory", category: "Manual", status: "Updated", owner: "Deck", notes: "Seasonal watersports loadout confirmed." },
+    { id: "OCT-DOC-001", title: "Guest preference sheet", category: "Guest", status: "Active", owner: "Mia Laurent", notes: "Guest arrival preferences for Oracabessa program." },
+    { id: "OCT-DOC-002", title: "Jamaica cruising permit", category: "Permit", status: "Current", owner: "Marcus Bell", notes: "Jamaica cruising permit for local operations." },
+    { id: "OCT-DOC-003", title: "Port Antonio berth confirmation", category: "Route", status: "Requested", owner: "Nina Hayes", notes: "Berth request and marina timing." },
+    { id: "OCT-DOC-004", title: "Tender service log", category: "Maintenance", status: "Review", owner: "Adrian Cole", notes: "Tender davit and fuel line service notes." },
   ].map(normalizeDocumentRecord);
 
   const maintenanceItems = [
     {
       id: "OCT-MNT-001",
-      title: "Port generator coolant inspection",
-      area: "Engine room",
-      frequencyMonths: 1,
-      nextDueDate: todayDateString(),
-      responsiblePerson: "Adrian Cole",
-      statusLabel: "Due Today",
-      notes: "Due Today. Confirm coolant level and log condition before evening standby.",
-      alertEnabled: true,
-    },
-    {
-      id: "OCT-MNT-002",
       title: "Tender davit hydraulic service",
       area: "Tender Garage",
       frequencyMonths: 1,
@@ -926,6 +822,17 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       responsiblePerson: "Adrian Cole",
       statusLabel: "In Progress",
       notes: "In Progress. Trace hydraulic residue and confirm seal kit requirement.",
+      alertEnabled: true,
+    },
+    {
+      id: "OCT-MNT-002",
+      title: "Port generator coolant inspection",
+      area: "Engine room",
+      frequencyMonths: 1,
+      nextDueDate: todayDateString(),
+      responsiblePerson: "Adrian Cole",
+      statusLabel: "Due Today",
+      notes: "Due Today. Confirm coolant level and log condition before evening standby.",
       alertEnabled: true,
     },
     {
@@ -950,6 +857,17 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       notes: "Scheduled. Complete pre-departure navigation light test.",
       alertEnabled: true,
     },
+    {
+      id: "OCT-MNT-005",
+      title: "Tender fuel line inspection",
+      area: "Tender Garage",
+      frequencyMonths: 3,
+      nextDueDate: dateStringFromNow(3),
+      responsiblePerson: "Adrian Cole",
+      statusLabel: "Scheduled",
+      notes: "Inspect tender fuel line before guest watersports schedule.",
+      alertEnabled: true,
+    },
   ].map(normalizeMaintenanceItem);
 
   const routePlanning = normalizeRoutePlanningState({
@@ -961,11 +879,12 @@ function buildOctopussyWorkspace(name = "Octopussy") {
       samples: [],
       zones: [],
     },
-    status: "Review",
+    status: "Confirmed",
+    riskNote: "Afternoon squalls possible near coastline",
     waypoints: [
       { id: "OCT-RWP-001", name: "Oracabessa", lng: -76.9436, lat: 18.4031 },
-      { id: "OCT-RWP-002", name: "Port Antonio", lng: -76.4500, lat: 18.1830 },
-      { id: "OCT-RWP-003", name: "Montego Bay", lng: -77.9188, lat: 18.4762 },
+      { id: "OCT-RWP-002", name: "North coast squall watch", lng: -76.78, lat: 18.56 },
+      { id: "OCT-RWP-003", name: "Port Antonio", lng: -76.4500, lat: 18.1830 },
     ],
   });
 
@@ -998,36 +917,39 @@ export function createFleetVesselWorkspace({
   workspace = {},
   theme = null,
 } = {}) {
-  const isOctopussyPreset = id === "octopussy" || String(name || "").trim().toLowerCase() === "octopussy";
-  const presetWorkspace = isOctopussyPreset ? buildOctopussyWorkspace(name) : createDefaultWorkspaceData();
+  const normalizedName = String(name || "").trim().toLowerCase();
+  const isOctopussyPreset = id === "octopussy" || normalizedName === "octopussy" || normalizedName === "m/y octopussy";
+  const isContessaPreset = id === DEFAULT_FLEET_VESSEL_ID || normalizedName === "contessa" || normalizedName === "m/y contessa";
+  const displayName = isOctopussyPreset ? "M/Y Octopussy" : isContessaPreset ? "M/Y Contessa" : name;
+  const presetWorkspace = isOctopussyPreset ? buildOctopussyWorkspace(displayName) : isContessaPreset ? buildContessaWorkspace(displayName) : normalizeWorkspaceState(workspace);
   const normalizedProfile = normalizeVesselProfile({
-    ...(presetWorkspace.vesselProfile || initialVesselProfile),
-    ...workspace.vesselProfile,
-    vesselName: name,
+    ...(presetWorkspace.vesselProfile || normalizeVesselProfile({ vesselName: displayName })),
+    ...(workspace.vesselProfile || {}),
+    vesselName: displayName,
   });
   const normalizedWorkspace = normalizeWorkspaceState({
     ...presetWorkspace,
     ...workspace,
     vesselProfile: normalizedProfile,
     routePlanning: {
-      ...((workspace.routePlanning || presetWorkspace.routePlanning || initialRoutePlanning)),
+      ...((workspace.routePlanning || presetWorkspace.routePlanning || createEmptyRoutePlanningState())),
       vesselProfile: normalizedProfile,
     },
   });
 
   return {
     id,
-    name,
+    name: displayName,
     details: {
-      length: details.length ?? (isOctopussyPreset ? 30 : 32),
+      length: details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0),
       vesselType: details.vesselType || "Motor Yacht",
       flag: details.flag || "Cayman Islands",
-      homePort: details.homePort || (isOctopussyPreset ? "Oracabessa" : "Monaco"),
+      homePort: details.homePort || (isOctopussyPreset ? "Oracabessa, Jamaica" : isContessaPreset ? "Fort Lauderdale / LMC Safe Harbor" : ""),
       crewNumber: details.crewNumber ?? normalizedWorkspace.crewProfiles.length,
       notes: details.notes || "",
-      status: details.status || "Operational",
-      demoSeeded: isOctopussyPreset,
-      demoSeedVersion: isOctopussyPreset ? OCTOPUSSY_DEMO_SEED_VERSION : undefined,
+      status: details.status || (isOctopussyPreset ? "Guest Ready" : isContessaPreset ? "Yard / Refit" : "Operational"),
+      demoSeeded: isOctopussyPreset || isContessaPreset,
+      demoSeedVersion: isOctopussyPreset ? OCTOPUSSY_DEMO_SEED_VERSION : isContessaPreset ? CONTESSA_DEMO_SEED_VERSION : undefined,
     },
     theme: normalizeVesselTheme(theme || details.theme || {}, getImplicitThemeNameForVessel(id)),
     ...normalizedWorkspace,
@@ -1036,18 +958,19 @@ export function createFleetVesselWorkspace({
 
 export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VESSEL_ID) {
   const vesselId = vessel.id || fallbackId;
-  const name = vessel.name || vessel.vesselProfile?.vesselName || "Contessa";
+  const name = vessel.name || vessel.vesselProfile?.vesselName || (vesselId === "octopussy" ? "M/Y Octopussy" : "M/Y Contessa");
+  const isRequiredDemoVessel = vesselId === DEFAULT_FLEET_VESSEL_ID || vesselId === "octopussy";
+  const requiredSeedVersion = vesselId === "octopussy" ? OCTOPUSSY_DEMO_SEED_VERSION : CONTESSA_DEMO_SEED_VERSION;
   if (
-    vesselId === "octopussy" &&
-    (vessel.details?.demoSeeded !== true || vessel.details?.demoSeedVersion !== OCTOPUSSY_DEMO_SEED_VERSION)
+    isRequiredDemoVessel &&
+    (vessel.details?.demoSeeded !== true || vessel.details?.demoSeedVersion !== requiredSeedVersion)
   ) {
     return createFleetVesselWorkspace({
       id: vesselId,
-      name,
+      name: vesselId === "octopussy" ? "M/Y Octopussy" : "M/Y Contessa",
       details: {
-        ...vessel.details,
         demoSeeded: true,
-        demoSeedVersion: OCTOPUSSY_DEMO_SEED_VERSION,
+        demoSeedVersion: requiredSeedVersion,
       },
       workspace: {},
     });
@@ -1055,13 +978,13 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
   const normalizedWorkspace = normalizeWorkspaceState({
     ...vessel,
     vesselProfile: {
-      ...(vessel.vesselProfile || initialVesselProfile),
+      ...(vessel.vesselProfile || createFallbackVesselProfile(name)),
       vesselName: name,
     },
     routePlanning: {
       ...(vessel.routePlanning || vessel.routePlan || vessel.route || createEmptyRoutePlanningState()),
       vesselProfile: {
-        ...(vessel.routePlanning?.vesselProfile || vessel.routePlan?.vesselProfile || vessel.route?.vesselProfile || vessel.vesselProfile || initialVesselProfile),
+        ...(vessel.routePlanning?.vesselProfile || vessel.routePlan?.vesselProfile || vessel.route?.vesselProfile || vessel.vesselProfile || createFallbackVesselProfile(name)),
         vesselName: name,
       },
     },
@@ -1682,7 +1605,7 @@ export function createEmptyAppState(overrides = {}) {
   return {
     darkMode: false,
     currency: "USD",
-    actorName: "Captain Luca Marin",
+    actorName: "Captain Graham Ellis",
     currentRole: "captain",
     appMode: "editor",
     activeVesselId: activeVessel?.id || DEFAULT_FLEET_VESSEL_ID,

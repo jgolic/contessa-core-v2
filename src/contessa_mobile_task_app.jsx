@@ -140,23 +140,38 @@ const ExpensesView = dynamic(
 
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
   const initialAppState = useMemo(() => getInitialAppState(), []);
-  const [vessels, setVessels] = useState(initialAppState.vessels || []);
-  const [activeVesselId, setActiveVesselId] = useState(routeVesselId || initialAppState.activeVesselId || initialAppState.vessels?.[0]?.id || "contessa");
+  const initialFleet = useMemo(() => initialAppState.vessels || [], [initialAppState.vessels]);
+  const initialRouteVesselMissing = useMemo(
+    () => Boolean(routeVesselId && !initialFleet.some((vessel) => vessel?.id === routeVesselId)),
+    [initialFleet, routeVesselId]
+  );
+  const initialActiveVesselId = useMemo(() => {
+    const routeMatch = initialFleet.find((vessel) => vessel?.id === routeVesselId);
+    if (routeMatch) return routeVesselId;
+    return initialAppState.activeVesselId || initialFleet[0]?.id || "contessa";
+  }, [initialAppState.activeVesselId, initialFleet, routeVesselId]);
+  const initialActiveWorkspace = useMemo(() => {
+    const workspace = initialFleet.find((vessel) => vessel?.id === initialActiveVesselId) || initialFleet[0];
+    return normalizeFleetVessel(workspace, initialActiveVesselId);
+  }, [initialActiveVesselId, initialFleet]);
+  const [vessels, setVessels] = useState(initialFleet);
+  const [activeVesselId, setActiveVesselId] = useState(initialActiveVesselId);
+  const [routeNotFound, setRouteNotFound] = useState(initialRouteVesselMissing);
   const [fleetOpen, setFleetOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(initialAppState.darkMode);
   const [currency, setCurrency] = useState(initialAppState.currency);
   const [exchangeRates, setExchangeRates] = useState({ rates: FALLBACK_USD_RATES, date: "fallback", source: "fallback", live: false });
   const [isOffline, setIsOffline] = useState(false);
-  const [tasks, setTasks] = useState(initialAppState.tasks);
-  const [declinedTasks, setDeclinedTasks] = useState(initialAppState.declinedTasks);
-  const [crewExpenses, setCrewExpenses] = useState(initialAppState.crewExpenses);
-  const [crewProfiles, setCrewProfiles] = useState(initialAppState.crewProfiles || []);
-  const [maintenanceItems, setMaintenanceItems] = useState(initialAppState.maintenanceItems);
-  const [vesselProfile, setVesselProfile] = useState(initialAppState.vesselProfile || initialAppState.routePlanning?.vesselProfile || {});
-  const [documents, setDocuments] = useState(initialAppState.documents || []);
-  const [routePlanning, setRoutePlanning] = useState(initialAppState.routePlanning);
-  const [selectedId, setSelectedId] = useState(initialAppState.tasks[0]?.id ?? "");
-  const [selectedCrewId, setSelectedCrewId] = useState(initialAppState.crewProfiles?.[0]?.id ?? "");
+  const [tasks, setTasks] = useState(initialActiveWorkspace.tasks || []);
+  const [declinedTasks, setDeclinedTasks] = useState(initialActiveWorkspace.declinedTasks || []);
+  const [crewExpenses, setCrewExpenses] = useState(initialActiveWorkspace.crewExpenses || []);
+  const [crewProfiles, setCrewProfiles] = useState(initialActiveWorkspace.crewProfiles || []);
+  const [maintenanceItems, setMaintenanceItems] = useState(initialActiveWorkspace.maintenanceItems || []);
+  const [vesselProfile, setVesselProfile] = useState(initialActiveWorkspace.vesselProfile || initialActiveWorkspace.routePlanning?.vesselProfile || {});
+  const [documents, setDocuments] = useState(initialActiveWorkspace.documents || []);
+  const [routePlanning, setRoutePlanning] = useState(initialActiveWorkspace.routePlanning);
+  const [selectedId, setSelectedId] = useState(initialActiveWorkspace.tasks?.[0]?.id ?? "");
+  const [selectedCrewId, setSelectedCrewId] = useState(initialActiveWorkspace.crewProfiles?.[0]?.id ?? "");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [expenseView, setExpenseView] = useState("command");
@@ -178,11 +193,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [maintenanceError, setMaintenanceError] = useState("");
   const [appBanner, setAppBanner] = useState(null);
   const [newTask, setNewTask] = useState({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
-  const [newExpense, setNewExpense] = useState({ taskId: initialAppState.tasks[0]?.id ?? "", supplier: "", amount: 0, currency: initialAppState.currency, status: "requested" });
+  const [newExpense, setNewExpense] = useState({ taskId: initialActiveWorkspace.tasks?.[0]?.id ?? "", supplier: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewExpense, setNewCrewExpense] = useState({ title: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewProfile, setNewCrewProfile] = useState({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", roleKey: "captain", notes: "" });
   const [newCertificate, setNewCertificate] = useState(createEmptyCertificateDraft());
-  const [newCertificateCrewId, setNewCertificateCrewId] = useState(initialAppState.crewProfiles?.[0]?.id ?? "");
+  const [newCertificateCrewId, setNewCertificateCrewId] = useState(initialActiveWorkspace.crewProfiles?.[0]?.id ?? "");
   const [isExtractingCertificate, setIsExtractingCertificate] = useState(false);
   const [newMaintenance, setNewMaintenance] = useState({
     title: "",
@@ -529,45 +544,56 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!routeVesselId || routeVesselId === activeVesselId) return;
     const targetVessel = vesselsForPersistence.find((vessel) => vessel.id === routeVesselId);
     if (!targetVessel) {
-      const seededVessel = routeVesselId === "octopussy"
-        ? createFleetVesselWorkspace({
-          id: "octopussy",
-          name: "Octopussy",
-          details: {
-            length: 30,
-            vesselType: "Motor Yacht",
-            flag: "Cayman Islands",
-            homePort: "Fort Lauderdale",
-            crewNumber: 5,
-            notes: "Bahamas passage demo workspace.",
-            status: "Review",
-          },
-        })
-        : createFleetVesselWorkspace({
-          id: routeVesselId,
-          name: formatVesselNameFromId(routeVesselId),
-          details: {
-            status: "Operational",
-          },
-          workspace: {
-            history: [],
-            declinedTasks: [],
-            documents: [],
-            tasks: [],
-            crewExpenses: [],
-            crewProfiles: [],
-            workers: [],
-            maintenanceItems: [],
-            routePlanning: {},
-          },
+      const seededVessel =
+        routeVesselId === "contessa"
+          ? createFleetVesselWorkspace({
+            id: "contessa",
+            name: "M/Y Contessa",
+            details: {
+              length: 35,
+              vesselType: "Motor Yacht",
+              flag: "Cayman Islands",
+              homePort: "Fort Lauderdale / LMC Safe Harbor",
+              crewNumber: 5,
+              notes: "Independent yard and refit workspace.",
+              status: "Yard / Refit",
+            },
+          })
+          : routeVesselId === "octopussy"
+            ? createFleetVesselWorkspace({
+              id: "octopussy",
+              name: "M/Y Octopussy",
+              details: {
+                length: 30,
+                vesselType: "Motor Yacht",
+                flag: "Cayman Islands",
+                homePort: "Oracabessa, Jamaica",
+                crewNumber: 6,
+                notes: "Independent Jamaica guest-ready workspace.",
+                status: "Guest Ready",
+              },
+            })
+            : null;
+
+      if (!seededVessel) {
+        setRouteNotFound(true);
+        setAppBanner({
+          type: "error",
+          title: "Vessel not found",
+          message: `No vessel workspace exists for "${formatVesselNameFromId(routeVesselId)}". Choose an available vessel from Fleet.`,
         });
+        return;
+      }
+
       const nextFleet = [...vesselsForPersistence, seededVessel];
+      setRouteNotFound(false);
       setVessels(nextFleet);
       setActiveVesselId(seededVessel.id);
       loadVesselWorkspace(seededVessel, currency);
       return;
     }
 
+    setRouteNotFound(false);
     setVessels(vesselsForPersistence);
     setActiveVesselId(routeVesselId);
     loadVesselWorkspace(targetVessel, currency);
@@ -1148,6 +1174,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     setVessels(nextFleet);
     setActiveVesselId(vesselId);
+    setRouteNotFound(false);
     loadVesselWorkspace(nextVessel, currency);
     setFleetOpen(false);
     onNavigateVessel?.(vesselId);
@@ -2398,6 +2425,38 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       })
     );
   };
+
+  if (routeNotFound) {
+    return (
+      <div
+        className={`min-h-screen max-w-full overflow-x-hidden px-4 py-6 transition-colors sm:px-6 lg:px-8 ${theme.page}`}
+        style={vesselThemeVars}
+      >
+        <div className="mx-auto flex min-h-[80vh] max-w-2xl items-center justify-center">
+          <section className="w-full rounded-[28px] border border-slate-200/70 bg-white/80 p-6 text-center shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70">
+            <p className="app-compact-label text-blue-700 dark:text-cyan-200">Fleet</p>
+            <h1 className={`mt-3 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>Vessel not found</h1>
+            <p className={`mx-auto mt-2 max-w-lg text-sm leading-6 ${theme.textSecondary}`}>
+              No separate workspace exists for "{formatVesselNameFromId(routeVesselId || "vessel")}". Choose an available vessel below.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {vesselsForPersistence.map((vessel) => (
+                <button
+                  key={vessel.id}
+                  type="button"
+                  onClick={() => openVesselWorkspace(vessel.id)}
+                  className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10"
+                >
+                  <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{vessel.name}</span>
+                  <span className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{vessel.details?.status || "Operational"}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
