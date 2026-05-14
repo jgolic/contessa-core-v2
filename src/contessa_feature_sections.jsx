@@ -596,6 +596,15 @@ export function AppShellHeader({
   const heroSummary = (stats.overdueTasks || stats.pendingApprovals || routeWarningCount)
     ? `${stats.overdueTasks || 0} overdue, ${stats.pendingApprovals || 0} approval${stats.pendingApprovals === 1 ? "" : "s"} waiting, and ${routeWarningCount || 0} route review${routeWarningCount === 1 ? "" : "s"} need attention.`
     : "Vessel operations are calm. Crew readiness, approvals, and route status are available at a glance.";
+  const routeStatusLabel = activeFleetVessel?.routePlanning?.status || (routeWarningCount ? "Review" : "Confirmed");
+  const operationalSnapshot = [
+    { label: "Vessel", value: activeFleetVessel?.details?.status || currentVesselMetrics.status || "Operational", tone: "neutral" },
+    { label: "Route", value: routeStatusLabel, tone: routeWarningCount ? "warning" : "active" },
+    { label: "Approvals", value: `${stats.pendingApprovals || 0}`, tone: stats.pendingApprovals ? "warning" : "neutral" },
+    { label: "Crew", value: (stats.certificateDue || 0) > 0 ? `${stats.certificateDue} due` : "Stable", tone: (stats.certificateDue || 0) > 0 ? "warning" : "active" },
+    { label: "Weather", value: "Calm watch", tone: "neutral" },
+    { label: "Spend", value: formatMoney(stats.totalExpenses || 0, currency), tone: stats.totalExpenses ? "warning" : "neutral" },
+  ];
   const commandIntelCards = [
     {
       key: "vessel-status",
@@ -1007,23 +1016,34 @@ export function AppShellHeader({
         <div className={`app-panel app-panel-soft rounded-[28px] border p-4 shadow-[0_18px_48px_-36px_rgba(17,46,39,0.18)] md:p-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="app-kicker">Bridge State</div>
-              <div className={`mt-1 text-xs ${theme.textSecondary}`}>Mode, sync, vessel access, and critical actions.</div>
+              <div className="app-kicker">Operational Snapshot</div>
+              <div className={`mt-1 text-xs ${theme.textSecondary}`}>Compact vessel context without repeating time or sync.</div>
             </div>
           </div>
-          <div className={`mt-3 grid gap-2 rounded-[22px] border p-3 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-white/54"} ${theme.textSecondary}`}>
-            <div className="flex items-center justify-between gap-3">
-              <span>Time</span>
-              <span className={`font-semibold ${theme.textPrimary}`}>{headerClock.toLocaleDateString()} / {headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span>Sync</span>
-              <span className={`font-semibold ${theme.textPrimary}`}>{isOffline ? "Offline mode" : "Live connection"}</span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span>Next best action</span>
-              <span className={`text-right font-semibold ${theme.textPrimary}`}>{stats.pendingApprovals ? "Review approvals" : routeWarningCount ? "Review route" : "Monitor priorities"}</span>
-            </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {operationalSnapshot.map((item) => {
+              const toneClass = item.tone === "warning"
+                ? darkMode
+                  ? "border-amber-300/20 bg-amber-300/10 text-amber-100"
+                  : "border-amber-200 bg-amber-50/80 text-amber-800"
+                : item.tone === "active"
+                  ? darkMode
+                    ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
+                    : "border-blue-200 bg-blue-50/80 text-blue-800"
+                  : darkMode
+                    ? "border-white/10 bg-white/[0.035] text-slate-100"
+                    : "border-slate-200/70 bg-white/62 text-slate-800";
+
+              return (
+                <div
+                  key={`operational-snapshot-${item.label}`}
+                  className={`min-w-0 rounded-2xl border px-3 py-2.5 ${toneClass}`}
+                >
+                  <div className="app-compact-label text-current opacity-70"><SmartLabel label={item.label} /></div>
+                  <div className="mt-1 truncate text-sm font-semibold tracking-tight">{item.value}</div>
+                </div>
+              );
+            })}
           </div>
           <div className="app-glass-line my-3" />
           <div className="app-control-grid">
