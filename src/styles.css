@@ -80,6 +80,7 @@
 html {
   background: #eef5f1;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 *,
@@ -101,6 +102,7 @@ body {
   color: var(--app-sea-ink);
   line-height: 1.58;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 button,
@@ -849,6 +851,28 @@ body.dark-mode .app-panel-soft {
 }
 
 @media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .app-page-frame,
+  .app-panel,
+  .app-section-shell,
+  .app-section-shell-dark,
+  .app-card-grid,
+  .search-command-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .app-kicker,
   .text-premium-label,
   .app-data-label {
@@ -856,8 +880,13 @@ body.dark-mode .app-panel-soft {
     letter-spacing: 0.08em;
   }
 
+  .app-compact-label {
+    font-size: 9.5px;
+    letter-spacing: 0.055em;
+  }
+
   .app-section-grid {
-    gap: var(--app-space-4);
+    gap: 14px;
   }
 
   .app-hero-surface {
@@ -866,6 +895,19 @@ body.dark-mode .app-panel-soft {
 
   .app-control-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-empty-state {
+    padding: var(--app-space-4);
+  }
+
+  .search-command-card input {
+    min-width: 0;
+  }
+
+  .route-map-frame-mobile {
+    min-height: 440px;
+    max-height: calc(100dvh - 180px);
   }
 }
 

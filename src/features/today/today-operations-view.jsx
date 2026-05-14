@@ -309,8 +309,8 @@ export function CommandJumpBar({
   if (compact) {
     return (
       <div className="search-command-card relative z-50 min-w-0 flex-1 md:max-w-[680px]">
-        <div className={`group flex min-h-[54px] items-center gap-3 rounded-3xl border px-4 py-2.5 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:px-5 ${darkMode ? "border-cyan-300/20 bg-slate-950/70 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/70 bg-white/85 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
-          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border text-lg ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200/80 bg-blue-50 text-blue-700"}`} aria-hidden="true">⌕</span>
+        <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/22 bg-slate-950/78 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/80 bg-white/88 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-[10px] font-bold uppercase tracking-[0.08em] md:h-9 md:w-9 md:rounded-2xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200/80 bg-blue-50 text-blue-700"}`} aria-hidden="true">Go</span>
           <input
             ref={inputRef}
             value={query}
@@ -321,7 +321,7 @@ export function CommandJumpBar({
             onFocus={() => setOpen(Boolean(query.trim()))}
             onKeyDown={handleKeyDown}
             placeholder="Search tasks, crew, approvals, maintenance..."
-            className={`h-11 min-w-0 flex-1 bg-transparent text-base font-medium outline-none placeholder:text-slate-500 md:text-[15px] ${darkMode ? "placeholder:text-slate-400" : ""}`}
+            className={`h-11 min-w-0 flex-1 bg-transparent text-[15px] font-semibold outline-none placeholder:text-slate-500 md:text-[15px] ${darkMode ? "placeholder:text-slate-400" : ""}`}
             aria-label="Search tasks, crew, approvals, documents"
           />
           <div className={`hidden shrink-0 items-center gap-2 text-xs font-semibold lg:flex ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
@@ -343,7 +343,7 @@ export function CommandJumpBar({
         </div>
 
         {open && normalizedQuery ? (
-          <div className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[9999] max-h-[min(440px,70vh)] overflow-y-auto rounded-[26px] border p-2.5 shadow-[0_32px_100px_-24px_rgba(0,0,0,0.58)] backdrop-blur-xl ${darkMode ? "border-cyan-300/20 bg-slate-950/97" : "border-slate-200/90 bg-white/98"}`}>
+          <div className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[9999] max-h-[min(440px,70vh)] overflow-y-auto rounded-[24px] border p-2.5 shadow-[0_32px_100px_-24px_rgba(0,0,0,0.58)] backdrop-blur-xl ${darkMode ? "border-cyan-300/20 bg-slate-950/97" : "border-slate-200/90 bg-white/98"}`}>
             {filteredResults.length ? (
               <div className="grid gap-2">
                 {filteredResults.map((result, index) => (
@@ -370,7 +370,7 @@ export function CommandJumpBar({
                         <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
                           {result.type}
                         </span>
-                        <span className={`hidden text-xs font-semibold md:inline ${darkMode ? "text-slate-500" : "text-slate-400"}`}>↵</span>
+                        <span className={`hidden text-xs font-semibold md:inline ${darkMode ? "text-slate-500" : "text-slate-400"}`}>Enter</span>
                       </div>
                   </button>
                 ))}
@@ -649,20 +649,20 @@ function DetailPanelBody({
         </section>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Button type="button" onClick={primaryAction.onClick} className="button-vessel-primary rounded-2xl px-4 py-3 text-white">
+      <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5 shadow-[0_-18px_42px_-34px_rgba(0,0,0,0.46)] backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/82" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
+        <Button type="button" onClick={primaryAction.onClick} className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-white">
           {primaryAction.label}
         </Button>
-        <Button type="button" variant="outline" className={`rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
           Request update
         </Button>
-        <Button type="button" variant="outline" className={`rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
           Add comment
         </Button>
         <Button
           type="button"
           onClick={item.type === "approval" || item.type === "quote" ? () => onApprovalAction?.(item.raw || item, "approved") : undefined}
-          className={`rounded-2xl px-4 py-3 ${item.type === "approval" || item.type === "quote" ? "button-vessel-primary text-white" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-500"} disabled:cursor-not-allowed disabled:opacity-60`}
+          className={`min-h-11 rounded-2xl px-4 py-3 ${item.type === "approval" || item.type === "quote" ? "button-vessel-primary text-white" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-500"} disabled:cursor-not-allowed disabled:opacity-60`}
           disabled={!canEdit && (item.type === "approval" || item.type === "quote")}
         >
           {item.type === "approval" || item.type === "quote" ? "Approve" : "Mark reviewed"}

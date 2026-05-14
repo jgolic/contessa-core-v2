@@ -102,13 +102,14 @@ export function BottomNavButton({
   darkMode = false,
   label,
   value,
+  icon: Icon,
   active = false,
   ...props
 }) {
   return (
     <button
       type="button"
-      className={`group app-card-hover app-panel w-full min-w-0 overflow-hidden rounded-[22px] border px-2 py-3 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition sm:px-3 ${
+      className={`group app-card-hover app-panel flex min-h-[58px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] border px-1.5 py-2 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition active:scale-[0.96] sm:px-2 ${
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
@@ -120,10 +121,15 @@ export function BottomNavButton({
       aria-current={active ? "page" : undefined}
       {...props}
     >
-      <div className="truncate text-[9px] font-semibold uppercase tracking-[0.06em] sm:text-[10px] sm:tracking-[0.1em]">
+      {Icon ? (
+        <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-xl ${active ? "bg-white/16 text-current" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+      ) : null}
+      <div className="max-w-full truncate text-[9px] font-semibold uppercase tracking-[0.04em] sm:text-[10px] sm:tracking-[0.08em]">
         <SmartLabel label={label} active={active} />
       </div>
-      <div className="mt-1 truncate text-[11px] opacity-85 sm:text-xs">{value}</div>
+      <div className="max-w-full truncate text-[10px] leading-none opacity-85 sm:text-[11px]">{value}</div>
     </button>
   );
 }

@@ -49,8 +49,8 @@ export function SectionAccordion({
   const theme = themeClasses(darkMode);
 
   return (
-    <Card id={id} className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] border ${theme.card}`}>
-      <CardContent className="p-4 md:p-5">
+    <Card id={id} className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[22px] border md:rounded-[24px] ${theme.card}`}>
+      <CardContent className="p-3.5 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <button
             type="button"
@@ -69,7 +69,7 @@ export function SectionAccordion({
                 type="button"
                 variant="outline"
                 onClick={onAction}
-                className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
               >
                 {actionLabel}
               </Button>
@@ -78,7 +78,7 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={onToggle}
-              className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
+              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
             >
               {isOpen ? "Collapse" : "Expand"}
             </Button>
@@ -109,7 +109,7 @@ export function CompactItemCard({
       id={htmlId}
       type="button"
       onClick={onClick}
-      className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[22px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
+      className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] md:rounded-[22px] ${
         selected
           ? darkMode
             ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-card-dark-strong)] shadow-[0_18px_36px_-26px_var(--vessel-glow-dark)]"
@@ -120,7 +120,7 @@ export function CompactItemCard({
       }`}
     >
       <div className={`absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b ${toneRailClass(item?.tone)}`} />
-      <div className="min-w-0 p-4 pl-5">
+      <div className="min-w-0 p-3.5 pl-5 md:p-4 md:pl-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 max-w-full">
             <div className={`truncate text-[0.98rem] font-semibold tracking-[-0.01em] ${theme.textPrimary}`}>{item?.title}</div>
@@ -140,7 +140,7 @@ export function CompactItemCard({
           {statusMeta?.value ? <Badge className={badgeClass}>{statusMeta.value}</Badge> : null}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="mt-4 flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
           <div className="flex min-w-0 flex-wrap gap-2">
             {item?.chips?.filter(Boolean).slice(0, 3).map((chip) => (
               <Badge key={`${item?.id}-${chip}`} className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
@@ -148,7 +148,7 @@ export function CompactItemCard({
               </Badge>
             ))}
           </div>
-          <span className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 max-[420px]:w-full ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
+          <span className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 max-[430px]:w-full ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
             {actionLabel}
           </span>
         </div>
@@ -207,7 +207,7 @@ export function DetailDrawer({
         onClick={onClose}
         aria-label="Close detail drawer"
       />
-      <div className={`absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
+      <div className={`absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
         <div className={`rounded-[24px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,var(--vessel-primary-soft-dark),rgba(255,255,255,0.025))]" : "border-[var(--vessel-border)] bg-[linear-gradient(135deg,var(--vessel-primary-soft),rgba(255,255,255,0.74))]"}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

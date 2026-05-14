@@ -405,9 +405,15 @@ export function ObjectivesView({
                             key={task.id}
                             type="button"
                             onClick={() => handleSelectTask(task.id)}
-                            className={`rounded-2xl border p-3 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
+                            className={`group relative overflow-hidden rounded-2xl border p-3 pl-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
                           >
-                            <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{task.name}</div>
+                            <div className={`absolute inset-y-0 left-0 w-1 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
+                            <div className="flex min-w-0 items-start justify-between gap-2">
+                              <div className={`min-w-0 truncate text-sm font-semibold ${theme.textPrimary}`}>{task.name}</div>
+                              <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-700"}`}>
+                                {(task.assignee || "Ops").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "OP"}
+                              </span>
+                            </div>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
                               <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(task.status)}</Badge>
@@ -421,6 +427,9 @@ export function ObjectivesView({
                                 <span>Due</span>
                                 <span className={`text-right font-medium ${theme.textPrimary}`}>{task.dueDate || "Not set"}</span>
                               </div>
+                            </div>
+                            <div className={`mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
+                              Open details
                             </div>
                           </button>
                         )) : (
@@ -809,7 +818,7 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute -left-10 top-1 h-32 w-32 rounded-full blur-3xl ${darkMode ? "bg-[rgba(var(--vessel-primary-rgb),0.12)]" : "bg-[rgba(var(--vessel-primary-rgb),0.14)]"}`} />
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div id="dashboard-section" className="relative grid gap-3 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
+      <div id="dashboard-section" className="relative grid gap-3 md:gap-4 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
         <div className="min-w-0">
           <div className="md:hidden">
             <div className="brand-hero relative flex flex-col items-center text-center">
@@ -828,11 +837,11 @@ export function AppShellHeader({
                 </div>
               </div>
 
-              <div className={`mt-4 flex h-[60px] w-[60px] items-center justify-center rounded-[22px] border sm:h-[68px] sm:w-[68px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)] shadow-[0_18px_34px_-30px_rgba(19,52,43,0.2)]"}`}>
-                <ContessaUiLogo className="h-[56px] w-[56px] sm:h-[62px] sm:w-[62px]" />
+              <div className={`mt-3 flex h-[58px] w-[58px] items-center justify-center rounded-[22px] border sm:h-[66px] sm:w-[66px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)] shadow-[0_18px_34px_-30px_rgba(19,52,43,0.2)]"}`}>
+                <ContessaUiLogo className="h-[54px] w-[54px] sm:h-[60px] sm:w-[60px]" />
               </div>
 
-              <div className="mt-3 flex w-full justify-center">
+              <div className="mt-2.5 flex w-full justify-center">
                 <img
                   src="/branding/contessa-wordmark-extracted.png"
                   alt="Contessa"
@@ -843,11 +852,11 @@ export function AppShellHeader({
               <VesselTitle
                 name={currentVesselName}
                 darkMode={darkMode}
-                className="mt-3 text-center text-[clamp(2.3rem,10vw,3.85rem)]"
+                className="mt-2 text-center text-[clamp(2rem,9vw,3.35rem)]"
               />
               <div className="app-kicker mt-1.5">{fleetWorkspaceLabel}</div>
 
-              <div className={`mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-medium ${theme.textSecondary}`}>
+              <div className={`mt-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-medium ${theme.textSecondary}`}>
                 <span>{headerClock.toLocaleDateString()}</span>
                 <span className={darkMode ? "text-[#445850]" : "text-[#9ab0a4]"}>&bull;</span>
                 <span>{headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
@@ -855,39 +864,57 @@ export function AppShellHeader({
                 <span>{isOffline ? "Offline sync" : "Sync active"}</span>
               </div>
 
-              <div className={`mt-2 max-w-[320px] text-[13px] font-medium leading-[1.5] ${theme.textSecondary}`}>
-                Investor-ready yacht command workspace for operations, compliance, routing, approvals, and crew readiness.
+              <div className={`mt-2 max-w-[320px] text-[13px] font-medium leading-[1.45] ${theme.textSecondary}`}>
+                Fast yacht operations for tasks, approvals, crew, documents, and route review.
               </div>
 
-              <div className={`mt-4 w-full rounded-[24px] border p-4 text-left ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/62"}`}>
-                <div className="app-kicker">Today Command Brief</div>
-                <div className={`mt-2 text-xl font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
-                <div className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
+              <div className={`mt-4 w-full rounded-[24px] border p-3.5 text-left shadow-[0_18px_42px_-34px_rgba(9,28,32,0.28)] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="app-kicker">Today</div>
+                    <div className={`mt-1 text-lg font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
+                  </div>
+                  <Badge className={stats.pendingApprovals || stats.overdueTasks || routeWarningCount ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>
+                    {stats.pendingApprovals || stats.overdueTasks || routeWarningCount ? "Review" : "Calm"}
+                  </Badge>
+                </div>
+                <div className={`mt-1.5 text-sm leading-5 ${theme.textSecondary}`}>{heroSummary}</div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {heroMetrics.map((metric) => (
-                    <div key={`mobile-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
+                    <div key={`mobile-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
                       <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
-                      <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
+                      <div className={`mt-0.5 truncate text-[11px] ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white">
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary min-h-11 rounded-2xl px-3 py-2.5 text-sm font-semibold text-white">
                     Review priorities
                   </Button>
-                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`min-h-11 rounded-2xl px-3 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
                     Add task
                   </Button>
                 </div>
                 {commandSearchView ? (
-                  <div className="relative z-[70] mt-3 w-full">
+                  <div className="relative z-[70] mt-2.5 w-full">
                     {commandSearchView}
                   </div>
                 ) : null}
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>
+                    {isOffline ? "Offline" : "Live"}
+                  </Badge>
+                  <Badge className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
+                    {visibleModuleLabels.length} sections
+                  </Badge>
+                  <Badge className={darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]"}>
+                    Today
+                  </Badge>
+                </div>
               </div>
 
-              <div className="mt-4 w-full max-w-[340px]">
+              <div className="mt-3 w-full max-w-[340px]">
                 <div className="app-compact-label mb-2 text-center">
                   Operating As
                 </div>
@@ -1419,11 +1446,11 @@ export function AppSectionCards({
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: String(stats.todayAttentionCount || 0), onClick: onShowCommand } : null,
-    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0}`, onClick: onShowExpenses } : null,
-    crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0} · ${stats.certificateDue || 0} due`, onClick: onShowCrewCertificates } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, icon: CheckCircle2, onClick: onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0}`, icon: Wallet, onClick: onShowExpenses } : null,
+    crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0}`, icon: Users, onClick: onShowCrewCertificates } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, icon: Receipt, onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileNavItems = mobileItems;
 
@@ -1441,11 +1468,11 @@ export function AppSectionCards({
       </div>
 
       <div
-        className={`fixed inset-x-4 bottom-4 z-40 rounded-[28px] border px-3 pb-[calc(0.85rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_40px_-18px_rgba(17,46,39,0.20)] md:hidden ${
-          darkMode ? "vessel-card-dark text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.86)] text-[#13231d] backdrop-blur-2xl"
+        className={`fixed inset-x-3 bottom-3 z-40 rounded-[28px] border px-2.5 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
+          darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(4,12,18,0.86)] text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.88)] text-[#13231d]"
         }`}
       >
-        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1.5 pb-1 sm:gap-2">
+        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1.5 pb-0.5 sm:gap-2">
           {mobileNavItems.map((item) => {
             const isActive = expenseView === item.key;
             return (
@@ -1455,6 +1482,7 @@ export function AppSectionCards({
                 darkMode={darkMode}
                 label={item.label}
                 value={item.value}
+                icon={item.icon}
                 active={isActive}
               >
                 {item.label}
