@@ -585,6 +585,7 @@ export function AppShellHeader({
   const currentVesselMetrics = fleetMetricsByVessel?.[activeVesselId] || {};
   const recentHeaderHistory = Array.isArray(history) ? history.slice(0, 3) : [];
   const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
+  const isContessaWorkspace = String(currentVesselName || "").trim().toLowerCase() === "contessa";
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
@@ -847,14 +848,14 @@ export function AppShellHeader({
                 <ContessaUiLogo className="h-[54px] w-[54px] sm:h-[60px] sm:w-[60px]" />
               </div>
 
-              <div className="mt-2.5 flex w-full justify-center">
+              {isContessaWorkspace ? <div className="mt-2.5 flex w-full justify-center">
                 <img
                   src="/branding/contessa-wordmark-extracted.png"
                   alt="Contessa"
                   className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.25rem] w-auto max-w-full select-none opacity-90`}
                   draggable="false"
                 />
-              </div>
+              </div> : null}
               <VesselTitle
                 name={currentVesselName}
                 darkMode={darkMode}
@@ -920,27 +921,6 @@ export function AppShellHeader({
                 </div>
               </div>
 
-              <div className="mt-3 w-full max-w-[340px]">
-                <div className="app-compact-label mb-2 text-center">
-                  Operating As
-                </div>
-                {onCurrentRoleChange ? (
-                  <Select value={currentRole} onValueChange={onCurrentRoleChange}>
-                    <SelectTrigger className={`h-14 w-full rounded-[18px] border ${theme.input}`}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEMO_ROLE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className={`rounded-[18px] border px-3 py-3 text-sm font-medium ${darkMode ? "border-[#31443a] bg-[#111a16] text-[#dce9e1]" : "border-[#d8e7df] bg-white text-[#40534a]"}`}>
-                    Shared vessel access
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
@@ -950,41 +930,18 @@ export function AppShellHeader({
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex flex-col items-center gap-2 lg:flex-row lg:flex-wrap lg:items-center">
-                <img
+                {isContessaWorkspace ? <img
                   src="/branding/contessa-wordmark-extracted.png"
                   alt="Contessa"
                   className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.2rem] w-auto select-none opacity-90`}
                   draggable="false"
-                />
+                /> : null}
                 <div className={`hidden h-4 w-px lg:block ${darkMode ? "bg-[#31443a]" : "bg-[#dbe7e0]"}`} />
                 <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
                   <span className={`inline-flex h-2 w-2 rounded-full ${isOffline ? "bg-[#d9a33e]" : "bg-[#2ea57d]"}`} />
                   {isOffline ? "Offline sync" : "Sync active"}
                 </div>
                 <div className="app-kicker">{fleetWorkspaceLabel}</div>
-                <div className="flex w-full min-w-0 flex-col items-center gap-2 lg:min-w-[220px] lg:flex-1 lg:flex-row lg:items-center xl:max-w-[330px] xl:flex-none">
-                  <div className="app-compact-label">
-                    Operating As
-                  </div>
-                  {onCurrentRoleChange ? (
-                    <div className="min-w-0 w-full flex-1">
-                      <Select value={currentRole} onValueChange={onCurrentRoleChange}>
-                        <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DEMO_ROLE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ) : (
-                    <div className={`rounded-xl border px-3 py-2 text-sm font-medium md:rounded-lg ${darkMode ? "border-[#31443a] bg-[#111a16] text-[#dce9e1]" : "border-[#d8e7df] bg-white text-[#40534a]"}`}>
-                      Shared vessel access
-                    </div>
-                  )}
-                </div>
               </div>
               <VesselTitle
                 name={currentVesselName}
@@ -1070,6 +1027,25 @@ export function AppShellHeader({
           </div>
           <div className="app-glass-line my-3" />
           <div className="app-control-grid">
+            <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
+              <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Operating As</div>
+              {onCurrentRoleChange ? (
+                <Select value={currentRole} onValueChange={onCurrentRoleChange}>
+                  <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEMO_ROLE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-medium ${darkMode ? "border-[#31443a] bg-[#111a16] text-[#dce9e1]" : "border-[#d8e7df] bg-white text-[#40534a]"}`}>
+                  Shared vessel access
+                </div>
+              )}
+            </div>
               <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
                 <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Mode</div>
                 <Select value={appMode} onValueChange={onAppModeChange}>
@@ -1411,23 +1387,6 @@ export function AppShellHeader({
         ))}
       </div>
 
-      <div className={`app-panel app-panel-soft mt-3 rounded-[24px] border px-4 py-4 shadow-[0_20px_52px_-42px_rgba(17,46,39,0.18)] md:rounded-[26px] ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="app-kicker mb-2">Allowed Sections</div>
-            <div className="flex flex-wrap gap-2">
-              {visibleModuleLabels.map((item) => (
-                <Badge key={item.key} className="vessel-pill">
-                  {item.label}
-                </Badge>
-              ))}
-            </div>
-          </div>
-          <div className="text-vessel-accent max-w-sm text-sm font-semibold leading-6">
-            Daily operator view: fast priorities, measured visibility, and quiet confidence under pressure.
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

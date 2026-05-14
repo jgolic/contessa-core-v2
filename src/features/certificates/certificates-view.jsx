@@ -18,14 +18,11 @@ import {
 import { Plus } from "../../components/icons.jsx";
 import { CERTIFICATE_ALERT_WINDOWS, formatDaysRemaining, infoBadgeClass, neutralBadgeClass, themeClasses } from "../../contessa_app_data.mjs";
 import { getCertificateStatusBadgeClass } from "../../contessa_certificate_extraction.mjs";
-import { ROLE_OPTIONS } from "../../contessa_access.mjs";
 import { CertificateExtractionPanel, CertificateReviewFields } from "../../components/certificate_extraction_panel.jsx";
 
 export function CertificatesView({
   darkMode = false,
   canEdit = true,
-  currentRole,
-  onCurrentRoleChange,
   canViewCertificates = false,
   certificateAlerts,
   visibleCertificates,
@@ -85,22 +82,7 @@ export function CertificatesView({
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[280px_1fr]">
-        <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-          <CardContent className="p-4">
-            <div className="app-kicker">Viewing As</div>
-            <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>Role visibility is still simulated locally so future auth can plug in cleanly.</div>
-            {onCurrentRoleChange ? (
-              <Select value={currentRole} onValueChange={onCurrentRoleChange}>
-                <SelectTrigger className={`mt-4 h-12 rounded-xl ${theme.input}`}><SelectValue /></SelectTrigger>
-                <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-              </Select>
-            ) : (
-              <Badge className={`mt-4 ${neutralBadgeClass(darkMode)}`}>{ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || currentRole}</Badge>
-            )}
-          </CardContent>
-        </Card>
-        <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
           {CERTIFICATE_ALERT_WINDOWS.map((windowDays) => (
             <Card key={windowDays} className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
               <CardContent className="p-4">
@@ -109,7 +91,6 @@ export function CertificatesView({
               </CardContent>
             </Card>
           ))}
-        </div>
       </div>
 
       {certificateAlerts.length > 0 ? (

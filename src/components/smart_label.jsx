@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const SMART_LABELS = {
   certificates: { short: "CERTS", full: "CERTIFICATES" },
   maintenance: { short: "MAINT.", full: "MAINTENANCE" },
@@ -53,8 +55,10 @@ export function SmartLabel({
   active = false,
   className = "",
 }) {
+  const [revealed, setRevealed] = useState(false);
   const smartLabel = getSmartLabel(labelKey, label);
   const hasReveal = smartLabel.short !== smartLabel.full;
+  const showFull = active || revealed;
 
   if (!hasReveal) {
     return (
@@ -71,13 +75,13 @@ export function SmartLabel({
     <span
       className={`app-smart-label ${className}`.trim()}
       title={smartLabel.full}
+      onPointerEnter={() => setRevealed(true)}
+      onPointerLeave={() => setRevealed(false)}
+      onFocus={() => setRevealed(true)}
+      onBlur={() => setRevealed(false)}
+      onTouchStart={() => setRevealed(true)}
     >
-      <span className={active ? "hidden" : "inline group-hover:hidden group-focus-within:hidden group-active:hidden"}>
-        {smartLabel.short}
-      </span>
-      <span className={active ? "inline" : "hidden group-hover:inline group-focus-within:inline group-active:inline"}>
-        {smartLabel.full}
-      </span>
+      {showFull ? smartLabel.full : smartLabel.short}
     </span>
   );
 }

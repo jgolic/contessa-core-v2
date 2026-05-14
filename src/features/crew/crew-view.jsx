@@ -270,8 +270,6 @@ function ConfirmableCertificateRow({
 export function CrewView({
   darkMode = false,
   canEdit = true,
-  currentRole,
-  onCurrentRoleChange,
   canViewCrew = false,
   visibleCrewProfiles,
   selectedCrewProfile,
@@ -314,16 +312,6 @@ export function CrewView({
     <div className="grid gap-5 md:gap-6 xl:grid-cols-[340px_1fr]">
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-4">
-          <div className="mb-4 space-y-3">
-            <div>
-              <div className="app-kicker">Viewing As</div>
-              <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>Role-based access is simulated locally for safe planning and future auth wiring.</div>
-            </div>
-            {onCurrentRoleChange ? <Select value={currentRole} onValueChange={onCurrentRoleChange}>
-              <SelectTrigger className={`h-12 rounded-xl ${theme.input}`}><SelectValue /></SelectTrigger>
-              <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-            </Select> : <Badge className={neutralBadgeClass(darkMode)}>{ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || currentRole}</Badge>}
-          </div>
           {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
             <DialogTrigger asChild>
               <Button className="button-vessel-primary mb-4 w-full rounded-2xl px-4 py-5 text-white md:rounded-xl">
