@@ -665,6 +665,12 @@ export function AppShellHeader({
   const actionButtonClass = darkMode
     ? "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3.5 py-2 text-sm font-semibold text-cyan-100 shadow-sm transition-all duration-200 hover:border-cyan-300/50 hover:bg-cyan-300/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
     : "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50/70 px-3.5 py-2 text-sm font-semibold text-blue-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/40";
+  const premiumMetricLabelTone = (label = "", accent = "neutral") => {
+    const normalizedLabel = String(label).toLowerCase();
+    if (accent === "warning" || /approval|spend|quote|pending|route/.test(normalizedLabel)) return "premium-label-gold";
+    if (/urgent|overdue|alert/.test(normalizedLabel)) return "premium-label-urgent";
+    return "";
+  };
 
   return (
     <div className={`app-panel app-hero-surface relative mb-4 overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
@@ -882,8 +888,8 @@ export function AppShellHeader({
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {heroMetrics.map((metric) => (
                     <div key={`mobile-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
-                      <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                      <div className={`app-compact-label ${premiumMetricLabelTone(metric.label)}`.trim()}><SmartLabel label={metric.label} /></div>
+                      <div className={`mt-1 text-lg font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-[11px] ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
                   ))}
@@ -1001,8 +1007,8 @@ export function AppShellHeader({
                 <div className="mt-3 grid gap-2 sm:grid-cols-4">
                   {heroMetrics.map((metric) => (
                     <div key={`desktop-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
-                      <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                      <div className={`app-compact-label ${premiumMetricLabelTone(metric.label)}`.trim()}><SmartLabel label={metric.label} /></div>
+                      <div className={`mt-1 text-lg font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
                   ))}
@@ -1341,8 +1347,8 @@ export function AppShellHeader({
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {card.metrics.map((metric) => (
                   <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
-                    <div className={`mt-2 truncate text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                    <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
+                    <div className={`mt-2 truncate text-lg font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
                   </div>
                 ))}
               </div>

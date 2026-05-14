@@ -530,13 +530,12 @@ select {
 }
 
 .app-kicker {
-  color: var(--vessel-primary, #0f766e);
+  color: #475569;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  line-height: 1.22;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  line-height: 1;
   max-width: 100%;
-  opacity: 0.92;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -550,13 +549,12 @@ select {
 }
 
 .text-premium-label {
-  color: var(--vessel-primary, #0f766e);
+  color: #475569;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1.22;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  line-height: 1;
   max-width: 100%;
-  opacity: 0.9;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -575,7 +573,7 @@ select {
 }
 
 .text-premium-metric {
-  color: #1f2a33;
+  color: #0f172a;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.16);
 }
 
@@ -585,8 +583,7 @@ body.dark-mode .text-premium-title {
 }
 
 body.dark-mode .text-premium-label {
-  color: var(--vessel-accent, #7dd3c7);
-  opacity: 0.94;
+  color: #cbd5e1;
 }
 
 body.dark-mode .text-premium-body {
@@ -599,7 +596,7 @@ body.dark-mode .text-premium-warning {
 }
 
 body.dark-mode .text-premium-metric {
-  color: #f1ece4;
+  color: #f1f5f9;
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
 }
 
@@ -702,31 +699,30 @@ body.dark-mode .text-premium-metric {
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1;
-  color: #1f2a33;
+  color: #0f172a;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.14);
 }
 
 .app-data-label {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: 0.12em;
-  line-height: 1.24;
+  line-height: 1;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
   word-break: normal;
-  color: var(--vessel-primary, #0f766e);
-  opacity: 0.9;
+  color: #475569;
 }
 
 .app-compact-label {
-  color: var(--vessel-primary, #0f766e);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.22;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  line-height: 1;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -820,12 +816,59 @@ body.dark-mode .text-premium-metric {
 body.dark-mode .app-kicker,
 body.dark-mode .app-data-label,
 body.dark-mode .app-compact-label {
-  color: var(--vessel-text-accent-dark, var(--vessel-accent, #7dd3c7));
-  opacity: 1;
+  color: #cbd5e1;
+}
+
+.premium-label-accent,
+.app-kicker.premium-label-accent,
+.app-data-label.premium-label-accent,
+.app-compact-label.premium-label-accent,
+.text-premium-label.premium-label-accent {
+  color: #1d4ed8;
+}
+
+.premium-label-gold,
+.app-kicker.premium-label-gold,
+.app-data-label.premium-label-gold,
+.app-compact-label.premium-label-gold,
+.text-premium-label.premium-label-gold {
+  color: #b45309;
+}
+
+.premium-label-urgent,
+.app-kicker.premium-label-urgent,
+.app-data-label.premium-label-urgent,
+.app-compact-label.premium-label-urgent,
+.text-premium-label.premium-label-urgent {
+  color: #be123c;
+}
+
+body.dark-mode .premium-label-accent,
+body.dark-mode .app-kicker.premium-label-accent,
+body.dark-mode .app-data-label.premium-label-accent,
+body.dark-mode .app-compact-label.premium-label-accent,
+body.dark-mode .text-premium-label.premium-label-accent {
+  color: #bae6fd;
+}
+
+body.dark-mode .premium-label-gold,
+body.dark-mode .app-kicker.premium-label-gold,
+body.dark-mode .app-data-label.premium-label-gold,
+body.dark-mode .app-compact-label.premium-label-gold,
+body.dark-mode .text-premium-label.premium-label-gold {
+  color: #fde68a;
+}
+
+body.dark-mode .premium-label-urgent,
+body.dark-mode .app-kicker.premium-label-urgent,
+body.dark-mode .app-data-label.premium-label-urgent,
+body.dark-mode .app-compact-label.premium-label-urgent,
+body.dark-mode .text-premium-label.premium-label-urgent {
+  color: #fda4af;
 }
 
 body.dark-mode .app-metric-value {
-  color: var(--vessel-text-primary-dark, #e5edf8);
+  color: #f1f5f9;
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
 }
 
@@ -877,12 +920,12 @@ body.dark-mode .app-panel-soft {
   .text-premium-label,
   .app-data-label {
     font-size: 10px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
   }
 
   .app-compact-label {
-    font-size: 9.5px;
-    letter-spacing: 0.055em;
+    font-size: 10px;
+    letter-spacing: 0.085em;
   }
 
   .app-section-grid {

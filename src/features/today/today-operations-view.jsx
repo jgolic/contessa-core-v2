@@ -469,6 +469,14 @@ export function CommandJumpBar({
 
 function MetricTile({ darkMode = false, label, value, note, tone = "neutral", active = false }) {
   const theme = themeClasses(darkMode);
+  const labelToneClass =
+    tone === "critical" || String(label || "").toLowerCase().includes("urgent")
+      ? "premium-label-urgent"
+      : tone === "warning" || /approval|spend|quote|pending/i.test(String(label || ""))
+        ? "premium-label-gold"
+        : active
+          ? "premium-label-accent"
+          : "";
   const badgeClass =
     tone === "critical"
       ? darkMode
@@ -484,10 +492,10 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral", ac
 
   return (
     <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
-      <div className="app-compact-label">
+      <div className={`app-compact-label ${labelToneClass}`.trim()}>
         <SmartLabel label={label} active={active} />
       </div>
-      <div className={`mt-2 truncate text-[1.1rem] font-semibold tracking-tight sm:text-[1.2rem] ${theme.textPrimary}`}>{value}</div>
+      <div className={`mt-3 truncate text-[1.15rem] font-semibold tracking-tight sm:text-[1.25rem] ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{value}</div>
       <div className="mt-2">
         <Badge className={`${badgeClass} max-w-full truncate whitespace-nowrap leading-tight`}>{note}</Badge>
       </div>
