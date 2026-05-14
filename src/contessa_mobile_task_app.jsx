@@ -2710,6 +2710,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onCertificateAttachmentUpload={handleCertificateAttachmentUpload}
               onReextractCertificate={reextractCertificate}
               onDeleteCertificate={deleteCertificate}
+              crewListPrintHref={`/vessels/${activeVesselId}/crew-list/print`}
             /></div>}
             certificatesView={<div id="certificates-section" className="scroll-mt-24 md:scroll-mt-28"><CertificatesView
               darkMode={darkMode}

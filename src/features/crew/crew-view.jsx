@@ -293,6 +293,7 @@ export function CrewView({
   onCertificateAttachmentUpload,
   onReextractCertificate,
   onDeleteCertificate,
+  crewListPrintHref = "",
 }) {
   const theme = themeClasses(darkMode);
 
@@ -341,6 +342,16 @@ export function CrewView({
               </div>
             </DialogContent>
           </Dialog> : <div className={`mb-4 text-sm ${theme.textSecondary}`}>Crew editing is locked until admin mode is unlocked.</div>}
+          {crewListPrintHref ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.open(crewListPrintHref, "_blank", "noopener,noreferrer")}
+              className={`mb-4 w-full rounded-2xl px-4 py-4 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
+            >
+              Print Crew List
+            </Button>
+          ) : null}
           <div className="space-y-3">
             {visibleCrewProfiles.length === 0 ? (
               <div className={`rounded-[22px] border border-dashed p-6 text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>No visible crew profiles yet.</div>

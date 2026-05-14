@@ -290,6 +290,14 @@ const REQUIRED_FLEET_VESSELS = [
       status: "Yard / Refit",
       notes: "Independent Fort Lauderdale refit workspace.",
     },
+    vesselPrintInfo: {
+      displayName: "M/Y CONTESSA",
+      flag: "JAMAICA",
+      imo: "9876543",
+      callSign: "6YCT9",
+      portOfRegistry: "KINGSTON",
+      date: "14 MAY 2026",
+    },
   },
   {
     id: "octopussy",
@@ -301,6 +309,14 @@ const REQUIRED_FLEET_VESSELS = [
       homePort: "Oracabessa, Jamaica",
       status: "Guest Ready",
       notes: "Independent Jamaica guest-ready workspace.",
+    },
+    vesselPrintInfo: {
+      displayName: "M/Y OCTOPUSSY",
+      flag: "CAYMAN ISLANDS",
+      imo: "1010101",
+      callSign: "ZC1234",
+      portOfRegistry: "GEORGE TOWN",
+      date: "14 MAY 2026",
     },
   },
 ];
@@ -382,6 +398,51 @@ function createFallbackVesselProfile(name = "Vessel") {
   return normalizeVesselProfile({ vesselName: name });
 }
 
+function getDefaultVesselPrintInfo(vesselId = DEFAULT_FLEET_VESSEL_ID, name = "M/Y Contessa") {
+  if (vesselId === "octopussy") {
+    return {
+      displayName: "M/Y OCTOPUSSY",
+      flag: "CAYMAN ISLANDS",
+      imo: "1010101",
+      callSign: "ZC1234",
+      portOfRegistry: "GEORGE TOWN",
+      date: "14 MAY 2026",
+    };
+  }
+
+  if (vesselId === DEFAULT_FLEET_VESSEL_ID) {
+    return {
+      displayName: "M/Y CONTESSA",
+      flag: "JAMAICA",
+      imo: "9876543",
+      callSign: "6YCT9",
+      portOfRegistry: "KINGSTON",
+      date: "14 MAY 2026",
+    };
+  }
+
+  return {
+    displayName: String(name || "VESSEL").toUpperCase(),
+    flag: "",
+    imo: "",
+    callSign: "",
+    portOfRegistry: "",
+    date: "14 MAY 2026",
+  };
+}
+
+function normalizeVesselPrintInfo(info = {}, vesselId = DEFAULT_FLEET_VESSEL_ID, name = "M/Y Contessa") {
+  const fallback = getDefaultVesselPrintInfo(vesselId, name);
+  return {
+    displayName: info.displayName || fallback.displayName,
+    flag: info.flag || fallback.flag,
+    imo: info.imo || fallback.imo,
+    callSign: info.callSign || fallback.callSign,
+    portOfRegistry: info.portOfRegistry || fallback.portOfRegistry,
+    date: info.date || fallback.date,
+  };
+}
+
 function buildContessaWorkspace(name = "M/Y Contessa") {
   const vesselProfile = normalizeVesselProfile({
     vesselName: name,
@@ -400,6 +461,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       rank: "Captain",
       department: "Bridge",
       nationality: "British",
+      dateOfBirth: "12 Mar 1978",
       roleKey: "captain",
       notes: "Captain overseeing Fort Lauderdale yard/refit decisions.",
       certificates: [{ id: "CON-CERT-001", name: "Master 3000 GT", holderName: "Graham Ellis", issuingAuthority: "MCA", expiryDate: dateStringFromNow(84), issueDate: dateStringFromNow(-920) }],
@@ -410,6 +472,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       rank: "First Mate",
       department: "Deck",
       nationality: "British",
+      dateOfBirth: "04 Feb 1988",
       roleKey: "first_mate",
       notes: "Deck lead for hull inspection, Bahamas departure prep, and yard coordination.",
       certificates: [{ id: "CON-CERT-002", name: "STCW", holderName: "Oliver Reed", issuingAuthority: "RYA", expiryDate: dateStringFromNow(63), issueDate: dateStringFromNow(-760) }],
@@ -420,6 +483,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       rank: "Chief Engineer",
       department: "Engineering",
       nationality: "Croatian",
+      dateOfBirth: "19 Sep 1982",
       roleKey: "engineer",
       notes: "Engineering lead for generator load testing and shore power review.",
       certificates: [{ id: "CON-CERT-003", name: "EOOW Unlimited", holderName: "Marko Vukovic", issuingAuthority: "Liberia", expiryDate: dateStringFromNow(118), issueDate: dateStringFromNow(-860) }],
@@ -430,6 +494,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       rank: "Bosun",
       department: "Deck",
       nationality: "South African",
+      dateOfBirth: "27 Jun 1990",
       roleKey: "bosun",
       notes: "Hull photo capture, bottom paint quality, and deck readiness.",
       certificates: [{ id: "CON-CERT-004", name: "Powerboat Level 2", holderName: "Daniel Price", issuingAuthority: "RYA", expiryDate: dateStringFromNow(42), issueDate: dateStringFromNow(-510) }],
@@ -440,6 +505,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       rank: "Stewardess",
       department: "Interior",
       nationality: "Croatian",
+      dateOfBirth: "15 Jan 1994",
       roleKey: "stewardess",
       notes: "Document folder preparation and interior departure support.",
       certificates: [{ id: "CON-CERT-005", name: "ENG1", holderName: "Elena Kovac", issuingAuthority: "MCA", expiryDate: dateStringFromNow(25), issueDate: dateStringFromNow(-690) }],
@@ -659,6 +725,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "Captain",
       department: "Bridge",
       nationality: "British",
+      dateOfBirth: "08 May 1979",
       roleKey: "captain",
       notes: "Captain for the Oracabessa operations workspace.",
       certificates: [
@@ -671,6 +738,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "Chief Engineer",
       department: "Engineering",
       nationality: "Australian",
+      dateOfBirth: "21 Oct 1985",
       roleKey: "engineer",
       notes: "Engineering lead for generator, hydraulics, and technical readiness.",
       certificates: [
@@ -683,6 +751,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "First Mate",
       department: "Deck",
       nationality: "Canadian",
+      dateOfBirth: "03 Mar 1989",
       roleKey: "first_mate",
       notes: "Deck lead, bridge support, and arrival preparation.",
       certificates: [
@@ -695,6 +764,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "Bosun",
       department: "Deck",
       nationality: "New Zealander",
+      dateOfBirth: "30 Dec 1991",
       roleKey: "bosun",
       notes: "Deck standards, watersports inventory, and exterior readiness.",
       certificates: [],
@@ -705,6 +775,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "Stewardess",
       department: "Interior",
       nationality: "French",
+      dateOfBirth: "14 Apr 1993",
       roleKey: "stewardess",
       notes: "Guest arrival setup, interior readiness, and provisioning requests.",
       certificates: [],
@@ -715,6 +786,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       rank: "Deckhand",
       department: "Deck",
       nationality: "British",
+      dateOfBirth: "17 Aug 1992",
       roleKey: "deckhand",
       notes: "Exterior detailing, stainless care, and deck support.",
       certificates: [],
@@ -952,6 +1024,7 @@ export function createFleetVesselWorkspace({
       demoSeedVersion: isOctopussyPreset ? OCTOPUSSY_DEMO_SEED_VERSION : isContessaPreset ? CONTESSA_DEMO_SEED_VERSION : undefined,
     },
     theme: normalizeVesselTheme(theme || details.theme || {}, getImplicitThemeNameForVessel(id)),
+    vesselPrintInfo: normalizeVesselPrintInfo(details.vesselPrintInfo || workspace.vesselPrintInfo || {}, id, displayName),
     ...normalizedWorkspace,
   };
 }
@@ -1005,6 +1078,7 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
       demoSeedVersion: vessel.details?.demoSeedVersion,
     },
     theme: normalizeVesselTheme(vessel.theme || vessel.details?.theme || {}, getImplicitThemeNameForVessel(vesselId)),
+    vesselPrintInfo: normalizeVesselPrintInfo(vessel.vesselPrintInfo || vessel.details?.vesselPrintInfo || {}, vesselId, name),
     ...normalizedWorkspace,
   };
 }
@@ -1372,13 +1446,19 @@ export function normalizeCertificate(item = {}) {
 }
 
 export function normalizeCrewProfile(item = {}) {
+  const fullName = item.fullName || item.name || "Crew Member";
+  const rank = item.rank || item.title || "Crew";
+
   return {
     ...item,
     id: item.id || createId("CRW"),
-    fullName: item.fullName || "Crew Member",
-    rank: item.rank || "Crew",
+    fullName,
+    name: item.name || fullName,
+    rank,
+    title: item.title || rank,
     department: CREW_DEPARTMENT_OPTIONS.includes(item.department) ? item.department : CREW_DEPARTMENT_OPTIONS[0],
     nationality: item.nationality || "",
+    dateOfBirth: item.dateOfBirth || "",
     roleKey: item.roleKey || "",
     notes: item.notes || "",
     qrPlaceholder: item.qrPlaceholder || "Future crew QR / CV access",
