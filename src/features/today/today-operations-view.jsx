@@ -599,6 +599,7 @@ export function TodayOperationsView({
   onApprovalAction,
   onNavigateToTasks,
   onNavigateToMaintenance,
+  onNavigateToCrew,
   onNavigateToCertificates,
   onNavigateToApprovals,
   onNavigateToRoute,
