@@ -53,6 +53,7 @@ import {
 } from "./contessa_app_data.mjs";
 import { ConfirmActionDialog, QuoteRow, ShareAppButton } from "./contessa_app_components.jsx";
 import { AlertInboxButton, BottomNavButton, SectionNavCard, ShellControlButton } from "./components/app_shell_primitives.jsx";
+import { SmartLabel } from "./components/smart_label.jsx";
 import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
 import { VesselTitle } from "./components/vessel_title.jsx";
@@ -745,20 +746,20 @@ export function AppShellHeader({
                       <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                      <div className="app-compact-label">Tasks</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                      <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="app-compact-label">Alerts</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="app-compact-label">Approval</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="app-compact-label"><SmartLabel label="Approval" active={isActive} /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
                       </div>
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="app-compact-label">Route</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                        <div className="app-compact-label"><SmartLabel label="Route" active={isActive} /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
                       </div>
                     </div>
@@ -863,8 +864,8 @@ export function AppShellHeader({
                 <div className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {heroMetrics.map((metric) => (
-                    <div key={`mobile-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="app-compact-label">{metric.label}</div>
+                    <div key={`mobile-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
+                      <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
@@ -966,8 +967,8 @@ export function AppShellHeader({
                 <div className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-4">
                   {heroMetrics.map((metric) => (
-                    <div key={`desktop-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="app-compact-label">{metric.label}</div>
+                    <div key={`desktop-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
+                      <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
@@ -1094,9 +1095,7 @@ export function AppShellHeader({
                   >
                     <div className="flex items-start justify-between gap-2.5">
                       <div className="min-w-0">
-                      <div className="app-compact-label">
-                          Vessel
-                        </div>
+                        <div className="app-compact-label">Vessel</div>
                         <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
                         <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>
                           {vessel?.details?.status || "Operational"} · {vessel?.details?.homePort || "Home port not set"}
@@ -1107,12 +1106,12 @@ export function AppShellHeader({
                       </Badge>
                     </div>
                     <div className="mt-2.5 grid grid-cols-2 gap-2">
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
-                        <div className="app-compact-label">Tasks</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                        <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
-                        <div className="app-compact-label">Alerts</div>
+                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                        <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
                     </div>
@@ -1303,8 +1302,8 @@ export function AppShellHeader({
             {card.metrics ? (
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {card.metrics.map((metric) => (
-                  <div key={`${card.key}-${metric.label}`} className={`min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <div className="app-compact-label">{metric.label}</div>
+                  <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                    <div className="app-compact-label"><SmartLabel label={metric.label} /></div>
                     <div className={`mt-2 truncate text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                   </div>
                 ))}

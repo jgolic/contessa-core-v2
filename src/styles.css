@@ -715,6 +715,16 @@ body.dark-mode .text-premium-metric {
   word-break: normal;
 }
 
+.app-smart-label {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+  word-break: normal;
+}
+
 .app-helper-text {
   font-size: 13px;
   line-height: 1.65;

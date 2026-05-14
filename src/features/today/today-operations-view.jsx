@@ -17,6 +17,7 @@ import {
   DetailDrawer,
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
+import { SmartLabel } from "../../components/smart_label.jsx";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -190,7 +191,7 @@ function buildDrawerMeta(item = {}) {
   ].filter(Boolean);
 }
 
-function MetricTile({ darkMode = false, label, value, note, tone = "neutral" }) {
+function MetricTile({ darkMode = false, label, value, note, tone = "neutral", active = false }) {
   const theme = themeClasses(darkMode);
   const badgeClass =
     tone === "critical"
@@ -206,8 +207,10 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral" }) 
             : "border border-slate-200/70 bg-white/80 text-slate-600";
 
   return (
-    <div className={`min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
-      <div className="app-compact-label">{label}</div>
+    <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
+      <div className="app-compact-label">
+        <SmartLabel label={label} active={active} />
+      </div>
       <div className={`mt-2 truncate text-[1.1rem] font-semibold tracking-tight sm:text-[1.2rem] ${theme.textPrimary}`}>{value}</div>
       <div className="mt-2">
         <Badge className={`${badgeClass} max-w-full truncate whitespace-nowrap leading-tight`}>{note}</Badge>
@@ -640,8 +643,10 @@ export function TodayOperationsView({
                     { label: "Crew", value: crewBriefCount, note: crewBriefCount ? "readiness notes" : "stable" },
                     { label: "Tasks", value: taskItems.length + maintenanceItems.length, note: "active queue" },
                   ].map((item) => (
-                    <div key={item.label} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="app-compact-label">{item.label}</div>
+                    <div key={item.label} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-white/70 bg-white/[0.58]"}`}>
+                      <div className="app-compact-label">
+                        <SmartLabel label={item.label} />
+                      </div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{item.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{item.note}</div>
                     </div>
@@ -982,11 +987,15 @@ export function TodayOperationsView({
                       </div>
                       <div className={`mt-2.5 grid grid-cols-2 gap-2 text-xs ${theme.textSecondary}`}>
                         <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
-                          <div className="app-compact-label">Tasks</div>
+                          <div className="app-compact-label">
+                            <SmartLabel label="Tasks" />
+                          </div>
                           <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                         </div>
                         <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
-                          <div className="app-compact-label">Alerts</div>
+                          <div className="app-compact-label">
+                            <SmartLabel label="Alerts" />
+                          </div>
                           <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                         </div>
                       </div>

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "./ui/card.jsx";
 import { Button } from "./ui/button.jsx";
 import { Bell, TriangleAlert } from "./icons.jsx";
+import { SmartLabel } from "./smart_label.jsx";
 import { themeClasses } from "../contessa_app_data.mjs";
 
 export function ShellControlButton({
@@ -64,7 +65,7 @@ export function SectionNavCard({
 }) {
   const theme = themeClasses(darkMode);
   const moduleCardBase =
-    "app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
+    "group app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
     ? "app-panel-soft border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-slate-100 shadow-[0_14px_34px_-28px_rgba(0,0,0,0.45)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]"
     : "app-panel-soft border-slate-200/70 bg-white/70 text-slate-900 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)]";
@@ -77,7 +78,9 @@ export function SectionNavCard({
       <CardContent className="relative z-10 flex h-full min-w-0 items-center justify-between gap-3 overflow-hidden p-3.5">
         <div className={`absolute inset-x-4 bottom-0 h-px ${active ? "bg-current/[0.24]" : darkMode ? "bg-white/[0.08]" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
         <div className="min-w-0">
-          <div className={`app-compact-label ${active ? darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]" : darkMode ? "text-slate-300" : theme.textSecondary}`}>{label}</div>
+          <div className={`app-compact-label ${active ? darkMode ? "text-[var(--vessel-text-accent-dark)]" : "text-[var(--vessel-text-accent)]" : darkMode ? "text-slate-300" : theme.textSecondary}`}>
+            <SmartLabel label={label} active={active} />
+          </div>
           <div className={`mt-1 truncate text-sm font-semibold ${active ? darkMode ? "text-slate-50" : "text-slate-900" : darkMode ? "text-slate-100" : theme.textPrimary}`}>{value}</div>
         </div>
         <div className="flex items-center gap-2">
@@ -105,7 +108,7 @@ export function BottomNavButton({
   return (
     <button
       type="button"
-      className={`app-card-hover app-panel w-full min-w-0 overflow-hidden rounded-[22px] border px-2 py-3 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition sm:px-3 ${
+      className={`group app-card-hover app-panel w-full min-w-0 overflow-hidden rounded-[22px] border px-2 py-3 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition sm:px-3 ${
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
@@ -117,7 +120,9 @@ export function BottomNavButton({
       aria-current={active ? "page" : undefined}
       {...props}
     >
-      <div className="truncate text-[9px] font-semibold uppercase tracking-[0.06em] sm:text-[10px] sm:tracking-[0.1em]">{label}</div>
+      <div className="truncate text-[9px] font-semibold uppercase tracking-[0.06em] sm:text-[10px] sm:tracking-[0.1em]">
+        <SmartLabel label={label} active={active} />
+      </div>
       <div className="mt-1 truncate text-[11px] opacity-85 sm:text-xs">{value}</div>
     </button>
   );

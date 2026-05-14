@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
 import { AlertCircle, Compass, Plus, TriangleAlert, Wifi, WifiOff } from "../../components/icons.jsx";
+import { SmartLabel } from "../../components/smart_label.jsx";
 import { neutralBadgeClass, successBadgeClass, themeClasses, warningBadgeClass } from "../../contessa_app_data.mjs";
 import { ensureMapLibre } from "../../lib/maplibre_loader.mjs";
 import { fetchPublicDepthLayerForRoute } from "../../lib/public_bathymetry_sources.mjs";
@@ -141,7 +142,7 @@ function ParameterBracket({
       </div>
       <div className="mt-3 flex min-w-0 flex-wrap items-end gap-2">
         <div className={`${valueText === "Not set" ? "text-lg" : "text-2xl"} min-w-0 truncate font-semibold tracking-tight ${theme.textPrimary}`}>{valueText}</div>
-        {showUnit ? <div className={`app-compact-label pb-0.5 ${theme.textSecondary}`}>{unit}</div> : null}
+        {showUnit ? <div className={`app-compact-label pb-0.5 ${theme.textSecondary}`}><SmartLabel label={unit} /></div> : null}
       </div>
       <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>{helperText}</div>
       {children ? <div className="mt-4">{children}</div> : null}
@@ -1662,7 +1663,7 @@ export function RoutePlanningView({
                     <div className="rounded-[18px] border border-white/10 px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="app-kicker">Depth opacity</div>
-                        <div className={`app-compact-label ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
+                        <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label={`${Math.round(depthShadingOpacity * 100)}%`} /></div>
                       </div>
                       <input
                         type="range"
@@ -1715,28 +1716,28 @@ export function RoutePlanningView({
               ) : null}
 
               <div className="mt-3 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2 xl:grid-cols-5">
-                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}>Distance</div>
+                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Distance" /></div>
                   <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{passageSummary.totalLegs} leg{passageSummary.totalLegs === 1 ? "" : "s"}</div>
                 </div>
-                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}>ETA</div>
+                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="ETA" /></div>
                   <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Cruising speed planning</div>
                 </div>
-                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}>Fuel</div>
+                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Fuel" /></div>
                   <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--"}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>Estimated route demand</div>
                 </div>
-                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}>Min Depth</div>
+                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Min Depth" /></div>
                   <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{`${minimumSafeDepth.toFixed(1)} m`}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target"}</div>
                 </div>
-                <div className={`app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}>Reserve</div>
+                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Reserve" /></div>
                   <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatPercentValue(vesselProfile.fuelReservePercentage || 0)}</div>
                   <div className={`mt-1 text-xs ${theme.textSecondary}`}>{canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target"}</div>
                 </div>
