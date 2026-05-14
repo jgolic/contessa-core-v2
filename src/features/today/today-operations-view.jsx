@@ -196,11 +196,12 @@ function compactTypeLabel(type = "Item") {
 }
 
 function makeSearchText(parts = []) {
-  return parts
-    .flatMap((part) => {
-      if (Array.isArray(part)) return part;
-      return part;
-    })
+  const safeParts = Array.isArray(parts) ? parts : [];
+  return safeParts
+    .reduce((list, part) => {
+      if (Array.isArray(part)) return [...list, ...part];
+      return [...list, part];
+    }, [])
     .filter((part) => part !== null && part !== undefined)
     .map((part) => String(part).toLowerCase())
     .join(" ");
@@ -239,8 +240,9 @@ function CommandJumpBar({
   const normalizedQuery = query.trim().toLowerCase();
   const filteredResults = useMemo(() => {
     if (!normalizedQuery) return [];
-    return results
-      .filter((result) => result.searchText?.includes(normalizedQuery))
+    const safeResults = Array.isArray(results) ? results : [];
+    return safeResults
+      .filter((result) => result?.searchText?.includes(normalizedQuery))
       .slice(0, 9);
   }, [normalizedQuery, results]);
 
@@ -249,7 +251,7 @@ function CommandJumpBar({
   }, [normalizedQuery]);
 
   function chooseResult(result) {
-    if (!result) return;
+    if (!result?.targetId && !result?.item) return;
     onJump?.(result);
     setQuery("");
     setOpen(false);
@@ -876,7 +878,7 @@ export function TodayOperationsView({
   }
 
   function highlightTarget(targetId) {
-    if (!targetId || typeof document === "undefined") return;
+    if (!targetId || typeof window === "undefined" || typeof document === "undefined") return;
     const element = document.getElementById(targetId);
     if (!element) return;
     element.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -893,13 +895,17 @@ export function TodayOperationsView({
       setExpandedSections((prev) => ({ ...prev, [result.sectionKey]: true }));
     }
 
-    if (result.moduleAction) {
+    if (typeof result.moduleAction === "function") {
       result.moduleAction();
-      window.setTimeout(() => highlightTarget(result.targetId), 260);
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => highlightTarget(result.targetId), 260);
+      }
       return;
     }
 
-    window.setTimeout(() => highlightTarget(result.targetId), result.sectionKey ? 150 : 0);
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => highlightTarget(result.targetId), result.sectionKey ? 150 : 0);
+    }
 
     if (result.item) {
       openInspector(result.item);
