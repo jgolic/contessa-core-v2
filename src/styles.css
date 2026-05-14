@@ -116,6 +116,14 @@ button {
   touch-action: manipulation;
 }
 
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::marker {
+  content: "";
+}
+
 a,
 button,
 input,

@@ -247,7 +247,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
       ? [{ key: "complete", label: "Done", onClick: () => onStatusChange("completed"), className: darkMode ? "bg-[#193628] text-[#d8f7e8]" : "bg-[#ebf6f1] text-[#166155]" }]
       : []),
     ...(task.status === "completed"
-      ? [{ key: "approve", label: "Approve", onClick: () => onStatusChange("approved"), className: "border border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]" }]
+      ? [{ key: "approve", label: "Approve", onClick: () => onStatusChange("approved"), className: darkMode ? "border border-amber-300/25 bg-amber-300/14 text-amber-100" : "border border-amber-300 bg-amber-100 text-amber-950" }]
       : []),
   ].slice(0, 3);
 

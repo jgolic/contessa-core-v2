@@ -1096,19 +1096,14 @@ export function AppShellHeader({
               {darkMode ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
               {darkMode ? "Light Mode" : "Dark Mode"}
             </Button>
-            <ShellControlButton
-              type="button"
-              onClick={() => onHistoryOpenChange(true)}
+            <AlertInboxButton
+              onClick={onOpenNotifications}
               darkMode={darkMode}
+              notificationCount={notificationCount}
               className="w-full"
             >
-              <span className="flex items-center gap-2">
-                <span>History</span>
-                <span className="vessel-pill rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none">
-                  {history.length}
-                </span>
-              </span>
-            </ShellControlButton>
+              Alerts
+            </AlertInboxButton>
           </div>
           <div className={`mt-3 rounded-[22px] border p-3 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)]"}`}>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -1184,7 +1179,25 @@ export function AppShellHeader({
               })}
             </div>
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <details className={`mt-3 rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.025)] text-slate-100" : "border-[rgba(15,80,70,0.08)] bg-white/48 text-slate-800"}`}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold">
+              <span className="app-kicker">Secondary Tools</span>
+              <span className={darkMode ? "text-slate-300" : "text-slate-500"}>History, legal, share, settings</span>
+            </summary>
+          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+            <ShellControlButton
+              type="button"
+              onClick={() => onHistoryOpenChange(true)}
+              darkMode={darkMode}
+              className="w-full"
+            >
+              <span className="flex items-center gap-2">
+                <span>History</span>
+                <span className="vessel-pill rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none">
+                  {history.length}
+                </span>
+              </span>
+            </ShellControlButton>
             <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -1318,15 +1331,16 @@ export function AppShellHeader({
                 </div>
               </DialogContent>
             </Dialog>
-            <AlertInboxButton
-              onClick={onOpenNotifications}
-              darkMode={darkMode}
-              notificationCount={notificationCount}
-              className="sm:col-span-3"
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onOpenSettingsWorkspace}
+              className={`min-h-[52px] w-full rounded-2xl border px-4 py-3 text-sm font-medium shadow-[0_16px_32px_-28px_rgba(10,20,26,0.18)] ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
             >
-              Alerts
-            </AlertInboxButton>
+              Settings
+            </Button>
           </div>
+          </details>
         </div>
       </div>
 

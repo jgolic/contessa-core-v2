@@ -180,7 +180,7 @@ export function getCertificateExpiryMeta(expiryDate) {
       daysRemaining,
       status: "expired",
       statusLabel: "Expired",
-      statusText: `${Math.abs(daysRemaining)} day(s) overdue`,
+      statusText: `Expired ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? "" : "s"} ago`,
       alertLevel: "critical",
     };
   }
@@ -190,7 +190,7 @@ export function getCertificateExpiryMeta(expiryDate) {
       daysRemaining,
       status: "urgent",
       statusLabel: "Urgent",
-      statusText: `${daysRemaining} day(s) remaining`,
+      statusText: daysRemaining === 0 ? "Expires today" : `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining`,
       alertLevel: "critical",
     };
   }
@@ -200,7 +200,7 @@ export function getCertificateExpiryMeta(expiryDate) {
       daysRemaining,
       status: "expiring soon",
       statusLabel: "Expiring Soon",
-      statusText: `${daysRemaining} day(s) remaining`,
+      statusText: `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining`,
       alertLevel: "warning",
     };
   }
@@ -209,7 +209,7 @@ export function getCertificateExpiryMeta(expiryDate) {
     daysRemaining,
     status: "valid",
     statusLabel: "Valid",
-    statusText: `${daysRemaining} day(s) remaining`,
+    statusText: `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining`,
     alertLevel: "ok",
   };
 }

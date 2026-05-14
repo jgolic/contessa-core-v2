@@ -1255,18 +1255,18 @@ export function getVesselMetrics(vesselId, vessels = []) {
 }
 
 export const statusStyles = {
-  pending: "bg-[#e8eee9] text-[#40534a]",
-  ongoing: "bg-[#fff3c4] text-[#7a5416]",
-  completed: "bg-[#dff5ea] text-[#176342]",
-  approved: "vessel-pill",
-  declined: "bg-[#ffe0e0] text-[#8a1f2b]",
+  pending: "border border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200",
+  ongoing: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
+  completed: "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200",
+  approved: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/12 dark:text-amber-100",
+  declined: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
 };
 
 export const priorityStyles = {
-  low: "bg-[#e8eee9] text-[#40534a]",
-  medium: "vessel-pill",
-  high: "bg-[#ffe1bd] text-[#8a4b13]",
-  urgent: "bg-[#ffe0e0] text-[#8a1f2b]",
+  low: "border border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200",
+  medium: "border border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/20 dark:bg-cyan-300/10 dark:text-cyan-100",
+  high: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
+  urgent: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
 };
 
 export const departmentStyles = {
@@ -1279,11 +1279,11 @@ export const departmentStyles = {
 };
 
 export const moneyStatusStyles = {
-  requested: "bg-[#e8eee9] text-[#40534a]",
-  received: "vessel-pill",
-  approved: "vessel-pill",
-  declined: "bg-[#ffe0e0] text-[#8a1f2b]",
-  paid: "bg-[#dff5ea] text-[#176342]",
+  requested: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
+  received: "border border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/20 dark:bg-cyan-300/10 dark:text-cyan-100",
+  approved: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/12 dark:text-amber-100",
+  declined: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
+  paid: "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200",
 };
 
 export function neutralBadgeClass(darkMode = false) {
@@ -1527,6 +1527,16 @@ export function daysUntil(dateString) {
   const today = parseLocalDate(todayDateString());
   const msPerDay = 24 * 60 * 60 * 1000;
   return Math.ceil((dueDate.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0)) / msPerDay);
+}
+
+export function formatDaysRemaining(daysRemaining, { expiredPrefix = "Expired" } = {}) {
+  if (daysRemaining === null || daysRemaining === undefined) return "No expiry";
+  const value = Number(daysRemaining);
+  if (!Number.isFinite(value)) return "No expiry";
+  if (value < 0) return `${expiredPrefix} ${Math.abs(value)} day${Math.abs(value) === 1 ? "" : "s"} ago`;
+  if (value === 0) return "Expires today";
+  if (value === 1) return "1 day remaining";
+  return `${value} days remaining`;
 }
 
 export function isOverdue(dateString, status = "") {
@@ -2435,7 +2445,7 @@ export function buildOperationalNotifications({
       id: `certificate-${item.crewId}-${item.id}`,
       level: item.daysRemaining < 0 ? "critical" : item.daysRemaining <= 30 ? "warning" : "info",
       title: `${item.name} expiring for ${item.crewName}`,
-      detail: item.daysRemaining < 0 ? `${Math.abs(item.daysRemaining)} day(s) overdue` : `${item.daysRemaining} day(s) remaining`,
+      detail: formatDaysRemaining(item.daysRemaining),
       section: "certificates",
       targetId: item.crewId,
     });

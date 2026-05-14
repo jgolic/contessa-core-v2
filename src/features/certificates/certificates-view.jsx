@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../../components/ui/select.jsx";
 import { Plus } from "../../components/icons.jsx";
-import { CERTIFICATE_ALERT_WINDOWS, infoBadgeClass, neutralBadgeClass, themeClasses } from "../../contessa_app_data.mjs";
+import { CERTIFICATE_ALERT_WINDOWS, formatDaysRemaining, infoBadgeClass, neutralBadgeClass, themeClasses } from "../../contessa_app_data.mjs";
 import { getCertificateStatusBadgeClass } from "../../contessa_certificate_extraction.mjs";
 import { ROLE_OPTIONS } from "../../contessa_access.mjs";
 import { CertificateExtractionPanel, CertificateReviewFields } from "../../components/certificate_extraction_panel.jsx";
@@ -117,7 +117,7 @@ export function CertificatesView({
           {certificateAlerts.map((item) => (
             <div key={`alert-${item.id}`} className="rounded-[22px] border border-amber-300 bg-amber-50 p-4 text-amber-900 md:rounded-xl">
               <div className="font-semibold">{item.name} for {item.crewName}</div>
-              <div className="mt-1 text-sm leading-6">{item.department} - expires {item.expiryDate} - {item.daysRemaining < 0 ? `${Math.abs(item.daysRemaining)} days overdue` : `${item.daysRemaining} days remaining`}</div>
+              <div className="mt-1 text-sm leading-6">{item.department} - expires {item.expiryDate} - {formatDaysRemaining(item.daysRemaining)}</div>
             </div>
           ))}
         </div>
@@ -189,7 +189,7 @@ export function CertificatesView({
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge className={getCertificateStatusBadgeClass(certificate.status)}>{certificate.statusLabel || "Certificate"}</Badge>
                       <Badge className="vessel-pill">
-                        {certificate.daysUntilExpiration === null ? "No expiry" : `${certificate.daysUntilExpiration} days`}
+                        {formatDaysRemaining(certificate.daysUntilExpiration)}
                       </Badge>
                       <Badge className={infoBadgeClass(darkMode)}>Confidence {Math.round((certificate.confidenceScore || 0) * 100)}%</Badge>
                       {certificate.needsManualReview ? <Badge className="bg-[#fff3c4] text-[#7a5416]">Manual review</Badge> : null}

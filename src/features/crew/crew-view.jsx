@@ -23,6 +23,7 @@ import {
   CREW_RANK_OPTIONS,
   filePreviewCardClass,
   filePreviewPlaceholderClass,
+  formatDaysRemaining,
   neutralBadgeClass,
   themeClasses,
 } from "../../contessa_app_data.mjs";
@@ -198,7 +199,7 @@ function ConfirmableCertificateRow({
         <div className="flex flex-wrap gap-2">
           <Badge className={getCertificateStatusBadgeClass(certificate.status)}>{certificate.statusLabel || "Certificate"}</Badge>
           <Badge className="vessel-pill">
-            {certificate.daysUntilExpiration === null ? "No expiry" : `${certificate.daysUntilExpiration} days`}
+            {formatDaysRemaining(certificate.daysUntilExpiration)}
           </Badge>
           {certificate.needsManualReview ? <Badge className="bg-[#fff3c4] text-[#7a5416]">Manual review</Badge> : null}
         </div>

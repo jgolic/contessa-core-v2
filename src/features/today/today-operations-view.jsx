@@ -670,7 +670,7 @@ function DetailPanelBody({
         <Button
           type="button"
           onClick={item.type === "approval" || item.type === "quote" ? () => onApprovalAction?.(item.raw || item, "approved") : undefined}
-          className={`min-h-11 rounded-2xl px-4 py-3 ${item.type === "approval" || item.type === "quote" ? "button-vessel-primary text-white" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-500"} disabled:cursor-not-allowed disabled:opacity-60`}
+          className={`min-h-11 rounded-2xl px-4 py-3 font-semibold ${item.type === "approval" || item.type === "quote" ? "border border-amber-300 bg-amber-100 text-amber-950 shadow-[0_14px_30px_-24px_rgba(180,83,9,0.55)] hover:bg-amber-200 dark:border-amber-300/25 dark:bg-amber-300/14 dark:text-amber-100 dark:hover:bg-amber-300/20" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-500"} disabled:cursor-not-allowed disabled:opacity-60`}
           disabled={!canEdit && (item.type === "approval" || item.type === "quote")}
         >
           {item.type === "approval" || item.type === "quote" ? "Approve" : "Mark reviewed"}
