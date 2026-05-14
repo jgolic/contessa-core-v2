@@ -1,13 +1,13 @@
 export const APP_MODULES = [
   { key: "today", label: "Dashboard" },
   { key: "dashboard", label: "Dashboard Analytics" },
-  { key: "route", label: "Route Planning" },
+  { key: "route", label: "Route" },
   { key: "tasks", label: "Tasks" },
-  { key: "expenses", label: "Approvals" },
+  { key: "expenses", label: "Approval" },
   { key: "maintenance", label: "Tasks" },
   { key: "crew", label: "Crew" },
   { key: "certificates", label: "Crew" },
-  { key: "documents", label: "Documents" },
+  { key: "documents", label: "Docs" },
   { key: "notifications", label: "Notifications" },
   { key: "settings", label: "Settings" },
 ];

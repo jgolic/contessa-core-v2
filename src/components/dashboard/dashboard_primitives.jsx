@@ -123,14 +123,14 @@ export function CompactItemCard({
             <div className={`truncate text-[0.98rem] font-semibold tracking-[-0.01em] ${theme.textPrimary}`}>{item?.title}</div>
             {item?.subtitle ? <div className={`mt-1 line-clamp-2 text-sm leading-5 ${theme.textSecondary}`}>{item.subtitle}</div> : null}
           </div>
-          {item?.badge ? <Badge className={`${badgeClass} max-w-[44%] shrink-0 whitespace-normal break-words text-center leading-tight`}>{item.badge}</Badge> : null}
+          {item?.badge ? <Badge className={`${badgeClass} max-w-[44%] shrink-0 truncate whitespace-nowrap text-center leading-tight`}>{item.badge}</Badge> : null}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ${darkMode ? "border-white/10 bg-white/[0.07] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-700"}`}>
             {initialsFromName(owner)}
           </span>
-          <Badge className={`${darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"} max-w-full whitespace-normal break-words leading-tight`}>
+          <Badge className={`${darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"} max-w-full truncate whitespace-nowrap leading-tight`}>
             {owner}
           </Badge>
           {dueMeta?.value ? <Badge className={toneBadgeClass(darkMode, item?.tone === "critical" ? "warning" : "neutral")}>{dueMeta.value}</Badge> : null}

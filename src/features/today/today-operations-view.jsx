@@ -208,9 +208,9 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral" }) 
   return (
     <div className={`min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
       <div className="app-compact-label">{label}</div>
-      <div className={`mt-2 break-words text-[1.1rem] font-semibold tracking-tight sm:text-[1.2rem] ${theme.textPrimary}`}>{value}</div>
+      <div className={`mt-2 truncate text-[1.1rem] font-semibold tracking-tight sm:text-[1.2rem] ${theme.textPrimary}`}>{value}</div>
       <div className="mt-2">
-        <Badge className={`${badgeClass} max-w-full whitespace-normal break-words leading-tight`}>{note}</Badge>
+        <Badge className={`${badgeClass} max-w-full truncate whitespace-nowrap leading-tight`}>{note}</Badge>
       </div>
     </div>
   );
@@ -636,12 +636,12 @@ export function TodayOperationsView({
                 <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
                   {[
                     { label: "Urgent", value: urgentBriefCount, note: "before end of day" },
-                    { label: "Approvals", value: approvalItems.length, note: "waiting decision" },
+                    { label: "Approval", value: approvalItems.length, note: "waiting decision" },
                     { label: "Crew", value: crewBriefCount, note: crewBriefCount ? "readiness notes" : "stable" },
                     { label: "Tasks", value: taskItems.length + maintenanceItems.length, note: "active queue" },
                   ].map((item) => (
                     <div key={item.label} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{item.label}</div>
+                      <div className="app-compact-label">{item.label}</div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{item.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{item.note}</div>
                     </div>
@@ -806,7 +806,7 @@ export function TodayOperationsView({
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Approvals"
+              title="Approval"
               subtitle="Quotes, expenses, and service decisions stay folded until selected."
               count={approvalItems.length}
               tone={approvalItems.length ? "warning" : "neutral"}
@@ -875,7 +875,7 @@ export function TodayOperationsView({
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Documents"
+              title="Docs"
               subtitle="Document controls stay collapsed until someone needs the vault."
               count={stats.documentCount || 0}
               tone="neutral"
@@ -903,7 +903,7 @@ export function TodayOperationsView({
 
             <SectionAccordion
               darkMode={darkMode}
-              title="Route Planning"
+              title="Route"
               subtitle="Navigation review stays concise until the bridge team needs detail."
               count={stats.routeReviewCount || routeReviewItems.length}
               tone={stats.routeReviewCount || routeAlerts.length ? "warning" : "neutral"}
@@ -1048,7 +1048,7 @@ export function TodayOperationsView({
 
             <IntelligencePanel
               darkMode={darkMode}
-              title="Crew Readiness"
+              title="Crew"
               subtitle={`${currentVessel?.metrics?.crewReady || "100%"} crew readiness with ${stats.certificateDue || 0} certificate reviews pending.`}
               actionLabel="Open crew"
               onAction={onNavigateToCertificates}
@@ -1080,14 +1080,14 @@ export function TodayOperationsView({
 
             <IntelligencePanel
               darkMode={darkMode}
-              title="Approvals Snapshot"
+              title="Approvals"
               subtitle="Pending spend, approvals, and decisions stay visible without opening the whole approvals module."
               actionLabel="View approvals"
               onAction={onNavigateToApprovals}
             >
               <div className="grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <MetricTile darkMode={darkMode} label="Pending" value={stats.pendingApprovals || 0} note="Approvals" tone={(stats.pendingApprovals || 0) > 0 ? "warning" : "neutral"} />
+                  <MetricTile darkMode={darkMode} label="Pending" value={stats.pendingApprovals || 0} note="Approval" tone={(stats.pendingApprovals || 0) > 0 ? "warning" : "neutral"} />
                   <MetricTile darkMode={darkMode} label="Pending spend" value={currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)} note="Open spend" />
                   <MetricTile darkMode={darkMode} label="Quotes" value={approvalItems.filter((item) => item.type === "quote").length} note="Live quote items" />
                   <MetricTile darkMode={darkMode} label="Crew spend" value={formatMoney(stats.crewTotal || 0, currency)} note="Crew expenses" />

@@ -559,9 +559,9 @@ export function AppShellHeader({
   const visibleModuleLabels = [
     visibleModuleKeys.includes("today") ? { key: "today", label: "Dashboard" } : null,
     visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance") ? { key: "tasks-maintenance", label: "Tasks" } : null,
-    visibleModuleKeys.includes("expenses") ? { key: "expenses", label: "Approvals" } : null,
+    visibleModuleKeys.includes("expenses") ? { key: "expenses", label: "Approval" } : null,
     visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates") ? { key: "crew-certificates", label: "Crew" } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents" } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs" } : null,
   ].filter(Boolean);
   const fleetWorkspaceCards = [...fleetVessels]
     .filter(Boolean)
@@ -577,7 +577,7 @@ export function AppShellHeader({
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
-    { label: "Approvals", value: stats.pendingApprovals || 0, note: "waiting" },
+    { label: "Approval", value: stats.pendingApprovals || 0, note: "waiting" },
     { label: "Crew", value: stats.certificateDue || 0, note: "readiness notes" },
     { label: "Tasks", value: stats.totalObjectives || currentVesselMetrics.taskCount || 0, note: "active queue" },
   ];
@@ -605,7 +605,7 @@ export function AppShellHeader({
       accent: routeWarningCount > 0 || (stats.overdueTasks || 0) > 0 || (stats.pendingApprovals || 0) > 0 ? "warning" : "neutral",
       metrics: [
         { label: "Overdue", value: stats.overdueTasks || 0 },
-        { label: "Approvals", value: stats.pendingApprovals || 0 },
+        { label: "Approval", value: stats.pendingApprovals || 0 },
         { label: "Route", value: routeWarningCount || 0 },
       ],
       actionLabel: "Open tasks",
@@ -615,13 +615,13 @@ export function AppShellHeader({
     },
     {
       key: "crew-readiness",
-      title: "Crew Readiness",
+      title: "Crew",
       badge: `${stats.certificateDue || 0} due`,
       accent: (stats.certificateDue || 0) > 0 || (stats.maintenanceDue || 0) > 0 ? "warning" : "neutral",
       metrics: [
         { label: "Crew", value: stats.crewProfiles || 0 },
-        { label: "Certificates", value: stats.certificateDue || 0 },
-        { label: "Maintenance", value: stats.maintenanceDue || 0 },
+        { label: "Certs", value: stats.certificateDue || 0 },
+        { label: "Maint.", value: stats.maintenanceDue || 0 },
       ],
       actionLabel: "Open crew",
       onAction: onOpenCrewCertificates,
@@ -630,12 +630,12 @@ export function AppShellHeader({
     },
     {
       key: "spend-activity",
-      title: "Approvals & Activity",
+      title: "Approval Activity",
       badge: `${currentVesselMetrics.quoteCount || 0} quotes`,
       accent: "neutral",
       rows: [
-        { label: "Open expenses", value: `${currentVesselMetrics.expenseCount || 0}` },
-        { label: "Approvals waiting", value: `${stats.pendingApprovals || 0}` },
+        { label: "Spend", value: `${currentVesselMetrics.expenseCount || 0}` },
+        { label: "Approval", value: `${stats.pendingApprovals || 0}` },
         { label: "Pending spend", value: formatMoney(stats.totalExpenses || 0, currency) },
       ],
       activity: recentHeaderHistory[0] || null,
@@ -746,19 +746,19 @@ export function AppShellHeader({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Tasks</div>
+                      <div className="app-compact-label">Tasks</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Alerts</div>
+                        <div className="app-compact-label">Alerts</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Approvals</div>
+                        <div className="app-compact-label">Approval</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
                       </div>
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Route</div>
+                        <div className="app-compact-label">Route</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
                       </div>
                     </div>
@@ -967,7 +967,7 @@ export function AppShellHeader({
                 <div className="mt-3 grid gap-2 sm:grid-cols-4">
                   {heroMetrics.map((metric) => (
                     <div key={`desktop-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
-                      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{metric.label}</div>
+                      <div className="app-compact-label">{metric.label}</div>
                       <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                       <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
                     </div>
@@ -1094,7 +1094,7 @@ export function AppShellHeader({
                   >
                     <div className="flex items-start justify-between gap-2.5">
                       <div className="min-w-0">
-                        <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">
+                      <div className="app-compact-label">
                           Vessel
                         </div>
                         <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
@@ -1108,11 +1108,11 @@ export function AppShellHeader({
                     </div>
                     <div className="mt-2.5 grid grid-cols-2 gap-2">
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Tasks</div>
+                        <div className="app-compact-label">Tasks</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
                       <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
-                        <div className="text-premium-label text-[9px] font-semibold uppercase tracking-[0.14em]">Alerts</div>
+                        <div className="app-compact-label">Alerts</div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
                     </div>
@@ -1296,7 +1296,7 @@ export function AppShellHeader({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="app-kicker">{card.title}</div>
-                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{card.title === "Crew Readiness" ? `${currentVesselName} readiness` : card.title === "Priority Queue" ? "What needs action now" : card.title === "Approvals & Activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
+                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
               </div>
               <Badge className={intelBadgeClass(card.accent)}>{card.badge}</Badge>
             </div>
@@ -1305,7 +1305,7 @@ export function AppShellHeader({
                 {card.metrics.map((metric) => (
                   <div key={`${card.key}-${metric.label}`} className={`min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                     <div className="app-compact-label">{metric.label}</div>
-                    <div className={`mt-2 break-words text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                    <div className={`mt-2 truncate text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
                   </div>
                 ))}
               </div>
@@ -1397,7 +1397,7 @@ export function AppSectionCards({
   const desktopItems = [
     visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
     tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", label: "Approvals", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? {
       key: "crew-certificates",
       label: "Crew",
@@ -1406,14 +1406,14 @@ export function AppSectionCards({
       active: expenseView === "crew-certificates",
       onClick: onShowCrewCertificates,
     } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileItems = [
     visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: String(stats.todayAttentionCount || 0), onClick: onShowCommand } : null,
     tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", label: "Approvals", value: `${stats.pendingApprovals || 0}`, onClick: onShowExpenses } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0}`, onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0} · ${stats.certificateDue || 0} due`, onClick: onShowCrewCertificates } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Documents", value: `${stats.documentCount || 0}`, onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileNavItems = mobileItems;
 
@@ -1995,7 +1995,7 @@ export function TaskMaintenanceWorkspace({
             </div>
             <div className="flex flex-wrap gap-2">
               <WorkspaceSegmentButton active={activePanel === "tasks"} onClick={() => onChangePanel("tasks")} darkMode={darkMode}>Tasks</WorkspaceSegmentButton>
-              <WorkspaceSegmentButton active={activePanel === "maintenance"} onClick={() => onChangePanel("maintenance")} darkMode={darkMode}>Maintenance</WorkspaceSegmentButton>
+              <WorkspaceSegmentButton active={activePanel === "maintenance"} onClick={() => onChangePanel("maintenance")} darkMode={darkMode}>Maint.</WorkspaceSegmentButton>
             </div>
           </div>
         </CardContent>
@@ -2025,7 +2025,7 @@ export function CrewCertificatesWorkspace({
             </div>
             <div className="flex flex-wrap gap-2">
               <WorkspaceSegmentButton active={activePanel === "crew"} onClick={() => onChangePanel("crew")} darkMode={darkMode}>Crew</WorkspaceSegmentButton>
-              <WorkspaceSegmentButton active={activePanel === "certificates"} onClick={() => onChangePanel("certificates")} darkMode={darkMode}>Certificates</WorkspaceSegmentButton>
+              <WorkspaceSegmentButton active={activePanel === "certificates"} onClick={() => onChangePanel("certificates")} darkMode={darkMode}>Certs</WorkspaceSegmentButton>
             </div>
           </div>
         </CardContent>

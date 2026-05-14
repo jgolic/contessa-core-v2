@@ -284,6 +284,11 @@ body.dark-mode .vessel-outline-button {
   border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.2));
   background: var(--vessel-primary-soft, rgba(var(--vessel-primary-rgb), 0.08));
   color: var(--vessel-text-accent, var(--vessel-primary));
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 body.dark-mode .vessel-pill {
@@ -296,6 +301,11 @@ body.dark-mode .vessel-pill {
   border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.24));
   background: linear-gradient(135deg, rgba(var(--vessel-primary-rgb), 0.22), rgba(var(--vessel-secondary-rgb), 0.16));
   color: var(--vessel-text-accent, var(--vessel-primary));
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 body.dark-mode .vessel-pill-strong {
@@ -507,8 +517,11 @@ select {
   line-height: 1.22;
   max-width: 100%;
   opacity: 0.92;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 .text-premium-title {
@@ -524,8 +537,11 @@ select {
   line-height: 1.22;
   max-width: 100%;
   opacity: 0.9;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 .text-premium-body {
@@ -676,8 +692,11 @@ body.dark-mode .text-premium-metric {
   letter-spacing: 0.12em;
   line-height: 1.24;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
   color: var(--vessel-primary, #0f766e);
   opacity: 0.9;
 }
@@ -689,8 +708,11 @@ body.dark-mode .text-premium-metric {
   letter-spacing: 0.08em;
   line-height: 1.22;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 .app-helper-text {
