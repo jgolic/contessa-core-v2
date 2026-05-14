@@ -651,6 +651,9 @@ export function AppShellHeader({
     }
     return darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600";
   };
+  const actionButtonClass = darkMode
+    ? "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3.5 py-2 text-sm font-semibold text-cyan-100 shadow-sm transition-all duration-200 hover:border-cyan-300/50 hover:bg-cyan-300/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
+    : "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50/70 px-3.5 py-2 text-sm font-semibold text-blue-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/40";
 
   return (
     <div className={`app-panel app-hero-surface relative mb-4 overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
@@ -1331,9 +1334,9 @@ export function AppShellHeader({
                   type="button"
                   variant="outline"
                   onClick={card.onAction}
-                  className={`min-h-[42px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+                  className={actionButtonClass}
                 >
-                  {card.actionLabel}
+                  {card.actionLabel} <span aria-hidden="true">→</span>
                 </Button>
               ) : null}
               {card.onSecondaryAction ? (
@@ -1341,9 +1344,9 @@ export function AppShellHeader({
                   type="button"
                   variant="outline"
                   onClick={card.onSecondaryAction}
-                  className={`min-h-[42px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
+                  className={actionButtonClass}
                 >
-                  {card.secondaryActionLabel}
+                  {card.secondaryActionLabel} <span aria-hidden="true">→</span>
                 </Button>
               ) : null}
             </div>
