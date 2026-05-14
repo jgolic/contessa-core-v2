@@ -573,6 +573,17 @@ export function AppShellHeader({
   const activeFleetVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId) || null;
   const currentVesselMetrics = fleetMetricsByVessel?.[activeVesselId] || {};
   const recentHeaderHistory = Array.isArray(history) ? history.slice(0, 3) : [];
+  const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
+  const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
+  const heroMetrics = [
+    { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
+    { label: "Approvals", value: stats.pendingApprovals || 0, note: "waiting" },
+    { label: "Crew", value: stats.certificateDue || 0, note: "readiness notes" },
+    { label: "Tasks", value: stats.totalObjectives || currentVesselMetrics.taskCount || 0, note: "active queue" },
+  ];
+  const heroSummary = (stats.overdueTasks || stats.pendingApprovals || routeWarningCount)
+    ? `${stats.overdueTasks || 0} overdue, ${stats.pendingApprovals || 0} approval${stats.pendingApprovals === 1 ? "" : "s"} waiting, and ${routeWarningCount || 0} route review${routeWarningCount === 1 ? "" : "s"} need attention.`
+    : "Vessel operations are calm. Crew readiness, approvals, and route status are available at a glance.";
   const commandIntelCards = [
     {
       key: "vessel-status",
@@ -843,6 +854,29 @@ export function AppShellHeader({
                 Investor-ready yacht command workspace for operations, compliance, routing, approvals, and crew readiness.
               </div>
 
+              <div className={`mt-4 w-full rounded-[24px] border p-4 text-left ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/62"}`}>
+                <div className="app-kicker">Today Command Brief</div>
+                <div className={`mt-2 text-xl font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
+                <div className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {heroMetrics.map((metric) => (
+                    <div key={`mobile-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
+                      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{metric.label}</div>
+                      <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                      <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white">
+                    Review priorities
+                  </Button>
+                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                    Add task
+                  </Button>
+                </div>
+              </div>
+
               <div className="mt-4 w-full max-w-[340px]">
                 <div className="text-premium-label mb-2 text-center text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Operating As
@@ -922,6 +956,32 @@ export function AppShellHeader({
               <div className={`mt-1.5 max-w-lg text-sm font-medium leading-6 ${theme.textSecondary}`}>
                 Investor-ready yacht command workspace for operations, compliance, routing, approvals, and crew readiness.
               </div>
+              <div className={`mt-4 rounded-[26px] border p-4 text-left shadow-[0_18px_48px_-38px_rgba(17,46,39,0.18)] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/62"}`}>
+                <div className="app-kicker">Today Command Brief</div>
+                <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
+                <div className={`mt-1 text-base font-semibold ${theme.textPrimary}`}>Today on {currentVesselName}</div>
+                <div className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
+                <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                  {heroMetrics.map((metric) => (
+                    <div key={`desktop-hero-${metric.label}`} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
+                      <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{metric.label}</div>
+                      <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                      <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{metric.note}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2.5">
+                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white">
+                    Review priorities
+                  </Button>
+                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                    Add task
+                  </Button>
+                  <Button type="button" variant="outline" onClick={onOpenNotifications} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                    Open alerts
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -942,11 +1002,25 @@ export function AppShellHeader({
         <div className={`app-panel app-panel-soft rounded-[28px] border p-4 shadow-[0_18px_48px_-36px_rgba(17,46,39,0.18)] md:p-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="app-kicker">Workspace Controls</div>
-              <div className={`mt-1 text-xs ${theme.textSecondary}`}>Mode, access, and critical workspace actions.</div>
+              <div className="app-kicker">Bridge State</div>
+              <div className={`mt-1 text-xs ${theme.textSecondary}`}>Mode, sync, vessel access, and critical actions.</div>
             </div>
           </div>
-          <div className="app-glass-line my-4" />
+          <div className={`mt-3 grid gap-2 rounded-[22px] border p-3 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-white/54"} ${theme.textSecondary}`}>
+            <div className="flex items-center justify-between gap-3">
+              <span>Time</span>
+              <span className={`font-semibold ${theme.textPrimary}`}>{headerClock.toLocaleDateString()} / {headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>Sync</span>
+              <span className={`font-semibold ${theme.textPrimary}`}>{isOffline ? "Offline mode" : "Live connection"}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>Next best action</span>
+              <span className={`text-right font-semibold ${theme.textPrimary}`}>{stats.pendingApprovals ? "Review approvals" : routeWarningCount ? "Review route" : "Monitor priorities"}</span>
+            </div>
+          </div>
+          <div className="app-glass-line my-3" />
           <div className="app-control-grid">
               <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
                 <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.24em]">Mode</div>

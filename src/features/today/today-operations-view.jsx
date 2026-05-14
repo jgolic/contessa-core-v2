@@ -602,18 +602,18 @@ export function TodayOperationsView({
   return (
     <>
       <div className="grid gap-4 md:gap-5">
-        <Card className={`app-panel app-panel-active relative overflow-hidden rounded-[32px] border ${darkMode ? "border-[var(--vessel-border-dark)] bg-[radial-gradient(circle_at_12%_0%,var(--vessel-primary-soft-dark),transparent_36%),linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(6,12,18,0.92))]" : "border-[var(--vessel-border)] bg-[radial-gradient(circle_at_14%_0%,var(--vessel-primary-soft),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.94),rgba(238,248,244,0.76))]"}`}>
+        <Card className={`hidden app-panel app-panel-active relative overflow-hidden rounded-[30px] border ${darkMode ? "border-[var(--vessel-border-dark)] bg-[radial-gradient(circle_at_10%_0%,var(--vessel-primary-soft-dark),transparent_30%),radial-gradient(circle_at_90%_8%,rgba(212,175,55,0.08),transparent_24%),linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(6,12,18,0.92))]" : "border-[var(--vessel-border)] bg-[radial-gradient(circle_at_12%_0%,var(--vessel-primary-soft),transparent_30%),radial-gradient(circle_at_92%_8%,rgba(212,175,55,0.12),transparent_24%),linear-gradient(135deg,rgba(255,255,255,0.95),rgba(238,248,244,0.76))]"}`}>
           <div className={`pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full blur-3xl ${darkMode ? "bg-[var(--vessel-glow-dark)]" : "bg-[var(--vessel-primary-soft)]"}`} />
-          <CardContent className="relative p-4 md:p-6">
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
+          <CardContent className="relative p-4 md:p-5">
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.45fr)]">
               <div className="min-w-0">
                 <div className="app-kicker">Today Command Brief</div>
-                <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-2">
-                  <h2 className={`text-[1.7rem] font-semibold tracking-tight md:text-[2.25rem] ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</h2>
+                <div className="mt-1.5 flex flex-wrap items-end gap-x-4 gap-y-2">
+                  <h2 className={`text-[1.65rem] font-semibold tracking-tight md:text-[2.05rem] ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</h2>
                   <div className={`pb-1 text-sm ${theme.textSecondary}`}>{currentVessel?.location || "Home port not set"}</div>
                 </div>
-                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>Today on {currentVessel?.name || currentVesselName}</div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className={`mt-1.5 text-base font-semibold ${theme.textPrimary}`}>Today on {currentVessel?.name || currentVesselName}</div>
+                <div className="mt-2.5 flex flex-wrap gap-2">
                   <Badge className={darkMode ? "border border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}>
                     {currentVessel?.status || commandPanelConfig.status}
                   </Badge>
@@ -628,29 +628,30 @@ export function TodayOperationsView({
                     {canEdit ? "Editor Mode" : "View Mode"}
                   </Badge>
                 </div>
-                <p className={`mt-3 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>
+                <p className={`mt-2.5 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>
                   {urgentBriefCount || approvalItems.length
                     ? `${urgentBriefCount} urgent item${urgentBriefCount === 1 ? "" : "s"}, ${approvalItems.length} approval${approvalItems.length === 1 ? "" : "s"} waiting, and ${crewBriefCount} crew readiness note${crewBriefCount === 1 ? "" : "s"} need calm review.`
                     : "No urgent tasks today. Crew readiness is stable and the command board is calm."}
                 </p>
-                <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
                   {[
                     { label: "Urgent", value: urgentBriefCount, note: "before end of day" },
                     { label: "Approvals", value: approvalItems.length, note: "waiting decision" },
                     { label: "Crew", value: crewBriefCount, note: crewBriefCount ? "readiness notes" : "stable" },
+                    { label: "Tasks", value: taskItems.length + maintenanceItems.length, note: "active queue" },
                   ].map((item) => (
-                    <div key={item.label} className={`rounded-2xl border px-3 py-3 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-white/70 bg-white/[0.58]"}`}>
+                    <div key={item.label} className={`rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-white/70 bg-white/[0.58]"}`}>
                       <div className="text-premium-label text-[10px] font-semibold uppercase tracking-[0.16em]">{item.label}</div>
-                      <div className={`mt-1 text-xl font-semibold ${theme.textPrimary}`}>{item.value}</div>
-                      <div className={`mt-1 text-xs ${theme.textSecondary}`}>{item.note}</div>
+                      <div className={`mt-0.5 text-lg font-semibold ${theme.textPrimary}`}>{item.value}</div>
+                      <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{item.note}</div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
+                <div className="mt-3 flex flex-wrap items-center gap-2.5">
                   <Button
                     type="button"
                     onClick={() => priorityItems[0] ? openInspector(priorityItems[0]) : onNavigateToTasks?.()}
-                    className="button-vessel-primary rounded-2xl px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_36px_-24px_var(--vessel-glow-dark)]"
+                    className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white shadow-[0_18px_36px_-24px_var(--vessel-glow-dark)]"
                   >
                     Review priorities
                   </Button>
@@ -658,16 +659,24 @@ export function TodayOperationsView({
                     type="button"
                     variant="outline"
                     onClick={onNavigateToTasks}
-                    className={`rounded-2xl px-4 py-3 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.50)] text-[#43554d] hover:bg-[rgba(255,255,255,0.72)]"}`}
+                    className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.50)] text-[#43554d] hover:bg-[rgba(255,255,255,0.72)]"}`}
                   >
                     Add task
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onNavigateToAlerts}
+                    className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.50)] text-[#43554d] hover:bg-[rgba(255,255,255,0.72)]"}`}
+                  >
+                    Open alerts
                   </Button>
                 </div>
               </div>
 
-              <div className={`rounded-[24px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.72)]"}`}>
+              <div className={`rounded-[24px] border p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.72)]"}`}>
                 <div className="app-kicker">Bridge State</div>
-                <div className={`mt-3 grid gap-2.5 text-sm ${theme.textSecondary}`}>
+                <div className={`mt-2.5 grid gap-2 text-sm ${theme.textSecondary}`}>
                   <div className="flex items-center justify-between gap-3">
                     <span>Time</span>
                     <span className={`font-medium ${theme.textPrimary}`}>{commandClock.toLocaleDateString()} / {commandClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
@@ -681,7 +690,7 @@ export function TodayOperationsView({
                     <span className={`font-medium ${theme.textPrimary}`}>{unsyncedItemsCount}</span>
                   </div>
                 </div>
-                <div className={`mt-4 rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.55]"}`}>
+                <div className={`mt-3 rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.55]"}`}>
                   <div className={`text-xs font-semibold ${theme.textPrimary}`}>Next best action</div>
                   <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>{priorityItems[0]?.title || "No urgent action. Review upcoming maintenance when ready."}</div>
                 </div>
@@ -716,12 +725,6 @@ export function TodayOperationsView({
             </div>
           </CardContent>
         </Card>
-
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
-          {statusTiles.map((tile) => (
-            <MetricTile key={tile.label} darkMode={darkMode} {...tile} />
-          ))}
-        </div>
 
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
