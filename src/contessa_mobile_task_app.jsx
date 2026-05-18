@@ -139,7 +139,13 @@ const ExpensesView = dynamic(
 );
 
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
-  const initialAppState = useMemo(() => getInitialAppState(), []);
+  const initialAppState = useMemo(() => {
+    const state = getInitialAppState();
+    const routeHasWorkspace = Array.isArray(state.vessels) && state.vessels.some((vessel) => vessel?.id === routeVesselId);
+
+    if (!routeVesselId || !routeHasWorkspace) return state;
+    return createPersistedAppState({ ...state, activeVesselId: routeVesselId });
+  }, [routeVesselId]);
   const initialFleet = useMemo(() => initialAppState.vessels || [], [initialAppState.vessels]);
   const initialRouteVesselMissing = useMemo(
     () => Boolean(routeVesselId && !initialFleet.some((vessel) => vessel?.id === routeVesselId)),
