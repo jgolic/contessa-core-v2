@@ -105,8 +105,8 @@ export function CrewListPrintView({ vessel }) {
         <section className="crew-print-meta" aria-label="Vessel metadata">
           {metadata.map(([label, value]) => (
             <div key={label} className="crew-print-meta-row">
-              <dt>{label}</dt>
-              <dd>{value || "-"}</dd>
+              <dt>{label}:</dt>
+              <dd>{value || "—"}</dd>
             </div>
           ))}
         </section>
@@ -140,10 +140,7 @@ export function CrewListPrintView({ vessel }) {
 
         <footer className="crew-print-footer">
           <span />
-          <div className="crew-print-footer-center">
-            <FooterAnchorMark />
-            <p>Generated from vessel crew records</p>
-          </div>
+          <FooterAnchorMark />
           <span />
         </footer>
       </main>
