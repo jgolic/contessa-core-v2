@@ -276,7 +276,6 @@ function CrewListToolsDialog({
 }) {
   const theme = themeClasses(darkMode);
   const previewHref = href || "#";
-  const printHref = href ? `${href}${href.includes("?") ? "&" : "?"}print=1` : "#";
   const lastUpdated = new Date().toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
   const openLink = (targetHref) => {
     if (!targetHref || targetHref === "#") return;
@@ -317,19 +316,11 @@ function CrewListToolsDialog({
               </div>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Button
-              type="button"
-              className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
-              onClick={() => openLink(printHref)}
-              disabled={!href}
-            >
-              Print / Save PDF
-            </Button>
+          <div className="mt-1 flex justify-center">
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex min-h-11 items-center justify-center rounded-2xl border px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/30 ${darkMode ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 hover:bg-cyan-300/20" : "border-blue-300/70 bg-blue-50/70 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:shadow-md"}`}
+              className={`mx-auto inline-flex min-h-11 w-full max-w-[240px] min-w-[180px] items-center justify-center rounded-2xl border px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/30 ${darkMode ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 hover:bg-cyan-300/20" : "border-blue-300/70 bg-blue-50/70 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:shadow-md"}`}
               onClick={() => openLink(previewHref)}
               disabled={!href}
             >
