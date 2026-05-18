@@ -459,7 +459,7 @@ export function CommandJumpBar({
   }
 
   return (
-    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="app-kicker">Command Search</div>
@@ -578,7 +578,7 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral", ac
             : "border border-slate-200/70 bg-white/80 text-slate-600";
 
   return (
-    <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
+    <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
       <div className={`app-compact-label ${labelToneClass}`.trim()}>
         <SmartLabel label={label} active={active} />
       </div>
@@ -613,7 +613,7 @@ function IntelligencePanel({
               type="button"
               variant="outline"
               onClick={onAction}
-              className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+            className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
             >
               {actionLabel}
             </Button>
@@ -679,14 +679,14 @@ function DetailPanelBody({
       </div>
 
       {item.description ? (
-        <section className={`rounded-[22px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+        <section className={`rounded-[22px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
           <div className="app-kicker">Brief</div>
           <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{item.description}</p>
         </section>
       ) : null}
 
       {checklist.length ? (
-        <section className={`rounded-[22px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+        <section className={`rounded-[22px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
           <div className="app-kicker">Checklist</div>
           <div className="mt-3 space-y-2">
             {checklist.map((step) => (
@@ -700,11 +700,11 @@ function DetailPanelBody({
       ) : null}
 
       {linkedQuotes.length ? (
-        <section className={`rounded-[22px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+        <section className={`rounded-[22px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
           <div className="app-kicker">Linked Quotes</div>
           <div className="mt-3 space-y-2">
             {linkedQuotes.slice(0, 4).map((quote) => (
-              <div key={`${item.id}-${quote.id || quote.supplier}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/50"}`}>
+              <div key={`${item.id}-${quote.id || quote.supplier}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 ${darkMode ? "app-dark-card border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/50"}`}>
                 <div>
                   <div className={`text-sm font-semibold ${theme.textPrimary}`}>{quote.supplier || quote.title || "Quote"}</div>
                   <div className={`text-xs ${theme.textSecondary}`}>{titleCase(quote.status || "requested")}</div>
@@ -717,11 +717,11 @@ function DetailPanelBody({
       ) : null}
 
       {linkedExpenses.length ? (
-        <section className={`rounded-[22px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+        <section className={`rounded-[22px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
           <div className="app-kicker">Linked Expenses</div>
           <div className="mt-3 space-y-2">
             {linkedExpenses.slice(0, 4).map((expense) => (
-              <div key={`${item.id}-${expense.id || expense.title}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/50"}`}>
+              <div key={`${item.id}-${expense.id || expense.title}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 ${darkMode ? "app-dark-card border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/50"}`}>
                 <div>
                   <div className={`text-sm font-semibold ${theme.textPrimary}`}>{expense.title || "Expense"}</div>
                   <div className={`text-xs ${theme.textSecondary}`}>{titleCase(expense.status || "requested")}</div>
@@ -734,7 +734,7 @@ function DetailPanelBody({
       ) : null}
 
       {activity.length ? (
-        <section className={`rounded-[22px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+        <section className={`rounded-[22px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
           <div className="app-kicker">Recent Activity</div>
           <ul className={`mt-3 space-y-2 text-sm leading-6 ${theme.textSecondary}`}>
             {activity.map((entry) => (
@@ -744,14 +744,14 @@ function DetailPanelBody({
         </section>
       ) : null}
 
-      <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5 shadow-[0_-18px_42px_-34px_rgba(0,0,0,0.46)] backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/82" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
+      <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5 shadow-[0_-18px_42px_-34px_rgba(0,0,0,0.46)] backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
         <Button type="button" onClick={primaryAction.onClick} className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-white">
           {primaryAction.label}
         </Button>
-        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
           Request update
         </Button>
-        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
           Add comment
         </Button>
         <Button
@@ -1397,7 +1397,7 @@ export function TodayOperationsView({
                   const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
 
                   return (
-                    <div key={vessel.id} className={`rounded-[18px] border p-3 ${isCurrent ? darkMode ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_12px_28px_-24px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] shadow-[0_12px_28px_-24px_rgba(35,103,84,0.14)]" : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/70"}`}>
+                    <div key={vessel.id} className={`rounded-[18px] border p-3 ${isCurrent ? darkMode ? "app-dark-inner border-[var(--vessel-primary-dark)] shadow-[0_12px_28px_-24px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] shadow-[0_12px_28px_-24px_rgba(35,103,84,0.14)]" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/70"}`}>
                       <div className="flex items-start justify-between gap-2.5">
                         <div className="min-w-0">
                           <div className={`text-sm font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
@@ -1408,13 +1408,13 @@ export function TodayOperationsView({
                         </Badge>
                       </div>
                       <div className={`mt-2.5 grid grid-cols-2 gap-2 text-xs ${theme.textSecondary}`}>
-                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
+                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "app-dark-inner border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
                           <div className="app-compact-label">
                             <SmartLabel label="Tasks" />
                           </div>
                           <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                         </div>
-                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "border-white/5 bg-white/[0.02]" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
+                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "app-dark-inner border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
                           <div className="app-compact-label">
                             <SmartLabel label="Alerts" />
                           </div>
@@ -1427,7 +1427,7 @@ export function TodayOperationsView({
                             type="button"
                             variant="outline"
                             disabled
-                            className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                            className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-400"
                           >
                             Current Workspace
                           </Button>
@@ -1435,7 +1435,7 @@ export function TodayOperationsView({
                           <Button
                             type="button"
                             onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                            className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                            className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-cyan-300/30 dark:bg-cyan-300/12 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
                           >
                             Open Vessel
                           </Button>

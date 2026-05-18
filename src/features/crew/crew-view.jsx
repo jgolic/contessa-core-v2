@@ -372,7 +372,7 @@ export function CrewView({
   const theme = themeClasses(darkMode);
   const [crewListOpen, setCrewListOpen] = useState(false);
   const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:bg-cyan-300/20";
-  const secondaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10";
+  const secondaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/15";
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;

@@ -68,10 +68,10 @@ export function SectionNavCard({
   const moduleCardBase =
     "group app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
-    ? "app-panel-soft border-white/10 bg-slate-950/70 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.28)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]"
+    ? "app-panel-soft app-dark-card border-white/10 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.35)] hover:border-[var(--vessel-primary-dark)] hover:bg-slate-800/80"
     : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:border-[var(--vessel-border)] hover:bg-white";
   const moduleCardActive = darkMode
-    ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_0_24px_var(--vessel-glow-dark)]"
+    ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] text-cyan-100 shadow-[0_0_24px_var(--vessel-glow-dark)]"
     : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 shadow-[0_0_24px_rgba(var(--vessel-primary-rgb),0.12)]";
 
   return (
@@ -86,11 +86,11 @@ export function SectionNavCard({
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (
-            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "vessel-icon-chip"}`}>
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-cyan-100" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? darkMode ? "bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-white/[0.07] text-slate-200" : "bg-white/60 text-slate-500"}`}>
+          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-slate-300" : "bg-white/60 text-slate-500"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
@@ -116,7 +116,7 @@ export function BottomNavButton({
             ? "app-panel-active vessel-active-dark"
             : "app-panel-active border-vessel bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.96),rgba(var(--vessel-secondary-rgb),0.92))] text-white"
           : darkMode
-            ? "app-panel-soft vessel-card-dark border text-slate-100"
+            ? "app-panel-soft app-dark-card border text-slate-100"
             : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
       }`}
       aria-current={active ? "page" : undefined}

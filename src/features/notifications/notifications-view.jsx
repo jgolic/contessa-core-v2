@@ -12,10 +12,10 @@ export function NotificationsView({
   const criticalCount = notifications.filter((item) => item.level === "critical").length;
   const warningCount = notifications.filter((item) => item.level === "warning").length;
   const noticeCount = notifications.filter((item) => item.level !== "critical" && item.level !== "warning").length;
-  const statusLabelClass = darkMode ? "text-slate-600" : theme.textSecondary;
-  const statusTitleClass = darkMode ? "text-slate-800" : theme.textPrimary;
-  const statusNumberClass = darkMode ? "text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.42)]" : theme.textPrimary;
-  const statusDividerClass = darkMode ? "bg-slate-300/70" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]";
+  const statusLabelClass = darkMode ? "text-slate-300" : theme.textSecondary;
+  const statusTitleClass = darkMode ? "text-slate-100" : theme.textPrimary;
+  const statusNumberClass = darkMode ? "text-slate-50" : theme.textPrimary;
+  const statusDividerClass = darkMode ? "bg-white/10" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]";
 
   return (
     <div className="app-section-grid grid md:gap-6">
@@ -48,7 +48,7 @@ export function NotificationsView({
                     <div className={`app-compact-label ${statusLabelClass}`}>Critical</div>
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{criticalCount}</div>
                   </div>
-                  <div className={`px-1 py-1.5 sm:px-2 ${darkMode ? "sm:border-x sm:border-slate-300/70" : "sm:border-x sm:border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
+                  <div className={`px-1 py-1.5 sm:px-2 ${darkMode ? "sm:border-x sm:border-white/10" : "sm:border-x sm:border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
                     <div className={`app-compact-label ${statusLabelClass}`}>Warning</div>
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{warningCount}</div>
                   </div>
@@ -57,7 +57,7 @@ export function NotificationsView({
                     <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{noticeCount}</div>
                   </div>
                 </div>
-                <div className={`mt-4 pt-3 text-xs leading-5 ${darkMode ? "border-t border-slate-300/70 text-slate-600" : `border-t border-[rgba(var(--vessel-primary-rgb),0.10)] ${theme.textSecondary}`}`}>
+                <div className={`mt-4 pt-3 text-xs leading-5 ${darkMode ? "border-t border-white/10 text-slate-300" : `border-t border-[rgba(var(--vessel-primary-rgb),0.10)] ${theme.textSecondary}`}`}>
                   Command summary of the vessel’s most actionable operational signals.
                 </div>
               </div>

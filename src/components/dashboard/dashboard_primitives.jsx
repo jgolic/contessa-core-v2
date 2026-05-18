@@ -69,7 +69,7 @@ export function SectionAccordion({
                 type="button"
                 variant="outline"
                 onClick={onAction}
-              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
               >
                 {actionLabel}
               </Button>
@@ -78,7 +78,7 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={onToggle}
-              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
+              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "app-dark-inner text-slate-100 hover:bg-slate-700/80" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
             >
               {isOpen ? "Collapse" : "Expand"}
             </Button>
@@ -112,10 +112,10 @@ export function CompactItemCard({
       className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] md:rounded-[22px] ${
         selected
           ? darkMode
-            ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-card-dark-strong)] shadow-[0_18px_36px_-26px_var(--vessel-glow-dark)]"
+            ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] shadow-[0_18px_36px_-26px_var(--vessel-glow-dark)]"
             : "app-panel-active border-[var(--vessel-border)] bg-[rgba(255,255,255,0.92)] shadow-[0_18px_36px_-28px_rgba(35,103,84,0.14)]"
           : darkMode
-            ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]"
+            ? "app-dark-card border-[var(--vessel-border-dark)]"
             : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.72)]"
       }`}
     >
@@ -168,7 +168,7 @@ export function DashboardEmptyState({
   const theme = themeClasses(darkMode);
 
   return (
-    <div className={`rounded-[22px] border border-dashed p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))]" : "border-[rgba(15,80,70,0.14)] bg-[linear-gradient(135deg,rgba(255,255,255,0.78),rgba(242,250,246,0.58))]"}`}>
+    <div className={`rounded-[22px] border border-dashed p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.14)] bg-[linear-gradient(135deg,rgba(255,255,255,0.78),rgba(242,250,246,0.58))]"}`}>
       <div className={`text-sm font-semibold ${theme.textPrimary}`}>{title}</div>
       <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{message}</div>
       {secondaryContent ? <div className="mt-3">{secondaryContent}</div> : null}
@@ -207,8 +207,8 @@ export function DetailDrawer({
         onClick={onClose}
         aria-label="Close detail drawer"
       />
-      <div className={`absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "vessel-card-dark border-[var(--vessel-border-dark)] text-[var(--vessel-text-primary-dark)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
-        <div className={`rounded-[24px] border p-4 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,var(--vessel-primary-soft-dark),rgba(255,255,255,0.025))]" : "border-[var(--vessel-border)] bg-[linear-gradient(135deg,var(--vessel-primary-soft),rgba(255,255,255,0.74))]"}`}>
+      <div className={`absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)] text-slate-50" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
+        <div className={`rounded-[24px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[var(--vessel-border)] bg-[linear-gradient(135deg,var(--vessel-primary-soft),rgba(255,255,255,0.74))]"}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="app-kicker">Operational Details</div>
@@ -219,7 +219,7 @@ export function DetailDrawer({
             type="button"
             variant="outline"
             onClick={onClose}
-            className={`min-h-[40px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+            className={`min-h-[40px] rounded-2xl px-3 py-2 text-sm font-medium ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
           >
             Close
           </Button>
@@ -228,7 +228,7 @@ export function DetailDrawer({
         {meta?.filter(Boolean).length ? (
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {meta.filter(Boolean).map((entry) => (
-              <div key={`${title}-${entry.label}`} className={`rounded-2xl border px-3 py-2.5 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+              <div key={`${title}-${entry.label}`} className={`rounded-2xl border px-3 py-2.5 text-sm ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
                 <div className={`app-compact-label ${theme.textSecondary}`}>{entry.label}</div>
                 <div className={`mt-1 truncate font-semibold ${theme.textPrimary}`}>{entry.value}</div>
               </div>

@@ -2466,7 +2466,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
                   key={vessel.id}
                   type="button"
                   onClick={() => openVesselWorkspace(vessel.id)}
-                  className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10"
+                  className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900/85 dark:hover:border-cyan-300/40 dark:hover:bg-slate-800/80"
                 >
                   <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{vessel.name}</span>
                   <span className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{vessel.details?.status || "Operational"}</span>

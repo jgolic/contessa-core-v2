@@ -77,7 +77,7 @@ const premiumInnerClass = (darkMode = false) =>
 const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300";
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
 const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50/80 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20";
-const mutedButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-2.5 text-sm font-semibold text-slate-500 shadow-sm transition dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400";
+const mutedButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-2.5 text-sm font-semibold text-slate-500 shadow-sm transition dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300";
 
 function ControlCard({ darkMode = false, label, value, children }) {
   return (
@@ -437,7 +437,7 @@ export function ObjectivesView({
                             key={task.id}
                             type="button"
                             onClick={() => handleSelectTask(task.id)}
-                            className={`group relative overflow-hidden rounded-2xl border p-3 pl-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
+                            className={`group relative overflow-hidden rounded-2xl border p-3 pl-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)] hover:bg-slate-800/80" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
                           >
                             <div className={`absolute inset-y-0 left-0 w-1 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
                             <div className="flex min-w-0 items-start justify-between gap-2">
@@ -465,7 +465,7 @@ export function ObjectivesView({
                             </div>
                           </button>
                         )) : (
-                          <div className={`rounded-2xl border border-dashed p-3 text-sm ${theme.textSecondary} ${darkMode ? "border-white/10 bg-white/[0.02]" : "border-slate-200/70 bg-white/50"}`}>
+                          <div className={`rounded-2xl border border-dashed p-3 text-sm ${theme.textSecondary} ${darkMode ? "app-dark-inner border-white/10" : "border-slate-200/70 bg-white/50"}`}>
                             {column.empty}
                           </div>
                         )}
@@ -917,7 +917,7 @@ export function AppShellHeader({
                 Fast yacht operations for tasks, approvals, crew, documents, and route review.
               </div>
 
-              <div className={`mt-4 w-full rounded-[24px] border p-3.5 text-left shadow-[0_18px_42px_-34px_rgba(9,28,32,0.28)] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+              <div className={`mt-4 w-full rounded-[24px] border p-3.5 text-left shadow-[0_18px_42px_-34px_rgba(9,28,32,0.28)] ${darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="app-kicker">Today</div>
@@ -998,7 +998,7 @@ export function AppShellHeader({
               <div className={`mt-1.5 max-w-lg text-sm font-medium leading-6 ${theme.textSecondary}`}>
                 Investor-ready yacht command workspace for operations, compliance, routing, approvals, and crew readiness.
               </div>
-              <div className={`mt-4 rounded-[26px] border p-4 text-left shadow-[0_18px_48px_-38px_rgba(17,46,39,0.18)] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/62"}`}>
+              <div className={`mt-4 rounded-[26px] border p-4 text-left shadow-[0_18px_48px_-38px_rgba(17,46,39,0.18)] ${darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/62"}`}>
                 <div className="app-kicker">Today Command Brief</div>
                 <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
                 <div className={`mt-1 text-base font-semibold ${theme.textPrimary}`}>Today on {currentVesselName}</div>
@@ -1110,7 +1110,7 @@ export function AppShellHeader({
               </Select>
             </ControlCard>
             <ControlCard darkMode={darkMode} label="Status">
-              <Badge className={canEditApp ? "flex min-h-11 w-full items-center justify-center rounded-2xl border border-amber-300/70 bg-amber-50/90 px-4 text-sm font-semibold text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/10 dark:text-amber-100" : "flex min-h-11 w-full items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 text-sm font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300"}>
+              <Badge className={canEditApp ? "flex min-h-11 w-full items-center justify-center rounded-2xl border border-amber-300/70 bg-amber-50/90 px-4 text-sm font-semibold text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/15 dark:text-amber-100" : "flex min-h-11 w-full items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 text-sm font-semibold text-slate-600 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300"}>
                 {canEditApp ? "Editor Mode" : "View Mode"}
               </Badge>
             </ControlCard>

@@ -927,6 +927,46 @@ body.dark-mode .app-panel {
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+.app-dark-panel {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #f8fafc !important;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.app-dark-card {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(15, 23, 42, 0.86) !important;
+  color: #f8fafc !important;
+}
+
+.app-dark-inner {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(30, 41, 59, 0.72) !important;
+  color: #f8fafc !important;
+}
+
+.app-dark-muted {
+  color: #cbd5e1 !important;
+}
+
+.app-dark-label {
+  color: #cbd5e1 !important;
+}
+
+.app-dark-action {
+  border-color: rgba(103, 232, 249, 0.30) !important;
+  background: rgba(34, 211, 238, 0.12) !important;
+  color: #cffafe !important;
+}
+
+.app-dark-action:hover {
+  border-color: rgba(103, 232, 249, 0.52) !important;
+  background: rgba(34, 211, 238, 0.20) !important;
+}
+
 body.dark-mode .app-page-frame {
   background:
     radial-gradient(circle at top left, var(--vessel-primary-soft-dark, rgba(45, 212, 191, 0.06)), transparent 30%),
