@@ -617,7 +617,8 @@ export function AppShellHeader({
   const currentVesselMetrics = fleetMetricsByVessel?.[activeVesselId] || {};
   const recentHeaderHistory = Array.isArray(history) ? history.slice(0, 3) : [];
   const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
-  const isContessaWorkspace = String(currentVesselName || "").trim().toLowerCase() === "contessa";
+  const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
+  const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },

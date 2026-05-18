@@ -59,12 +59,15 @@ export function SmartLabel({
   const smartLabel = getSmartLabel(labelKey, label);
   const hasReveal = smartLabel.short !== smartLabel.full;
   const showFull = active || revealed;
+  const renderedLabel = showFull ? smartLabel.full : smartLabel.short;
 
   if (!hasReveal) {
     return (
       <span
         className={`app-smart-label ${className}`.trim()}
         title={smartLabel.full}
+        aria-label={smartLabel.full}
+        data-label-state="full"
       >
         {smartLabel.full}
       </span>
@@ -75,13 +78,15 @@ export function SmartLabel({
     <span
       className={`app-smart-label ${className}`.trim()}
       title={smartLabel.full}
+      aria-label={smartLabel.full}
+      data-label-state={showFull ? "full" : "short"}
       onPointerEnter={() => setRevealed(true)}
       onPointerLeave={() => setRevealed(false)}
       onFocus={() => setRevealed(true)}
       onBlur={() => setRevealed(false)}
       onTouchStart={() => setRevealed(true)}
     >
-      {showFull ? smartLabel.full : smartLabel.short}
+      {renderedLabel}
     </span>
   );
 }

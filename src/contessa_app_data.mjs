@@ -984,7 +984,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
 
 export function createFleetVesselWorkspace({
   id = DEFAULT_FLEET_VESSEL_ID,
-  name = "Contessa",
+  name = "Vessel",
   details = {},
   workspace = {},
   theme = null,
@@ -1031,7 +1031,12 @@ export function createFleetVesselWorkspace({
 
 export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VESSEL_ID) {
   const vesselId = vessel.id || fallbackId;
-  const name = vessel.name || vessel.vesselProfile?.vesselName || (vesselId === "octopussy" ? "M/Y Octopussy" : "M/Y Contessa");
+  const fallbackName = vesselId === DEFAULT_FLEET_VESSEL_ID
+    ? "M/Y Contessa"
+    : vesselId === "octopussy"
+      ? "M/Y Octopussy"
+      : formatVesselNameFromId(vesselId);
+  const name = vessel.name || vessel.vesselProfile?.vesselName || fallbackName;
   const isRequiredDemoVessel = vesselId === DEFAULT_FLEET_VESSEL_ID || vesselId === "octopussy";
   const requiredSeedVersion = vesselId === "octopussy" ? OCTOPUSSY_DEMO_SEED_VERSION : CONTESSA_DEMO_SEED_VERSION;
   if (
