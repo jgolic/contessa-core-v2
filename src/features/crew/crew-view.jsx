@@ -380,6 +380,8 @@ export function CrewView({
 }) {
   const theme = themeClasses(darkMode);
   const [crewListOpen, setCrewListOpen] = useState(false);
+  const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:bg-cyan-300/20";
+  const secondaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10";
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -411,64 +413,88 @@ export function CrewView({
         crewCount={visibleCrewProfiles.length}
       />
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-        <CardContent className="p-4">
-          <div className="mb-4 grid gap-2">
-          {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
-            <DialogTrigger asChild>
-              <Button className="button-vessel-primary w-full rounded-2xl px-4 py-4 text-white md:rounded-xl">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Crew Profile
-              </Button>
-            </DialogTrigger>
-            <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
-              <DialogHeader><DialogTitle>Add Crew Profile</DialogTitle></DialogHeader>
-              <div className="space-y-3">
-                <Input placeholder="Full name" value={newCrewProfile.fullName} onChange={(event) => onNewCrewProfileChange({ fullName: event.target.value })} className={`h-12 ${theme.input}`} />
-                <Select value={newCrewProfile.rank} onValueChange={(value) => onNewCrewProfileChange({ rank: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
-                  <SelectContent>{CREW_RANK_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-                </Select>
-                <Select value={newCrewProfile.department} onValueChange={(value) => onNewCrewProfileChange({ department: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
-                  <SelectContent>{CREW_DEPARTMENT_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
-                </Select>
-                <Input placeholder="Nationality" value={newCrewProfile.nationality} onChange={(event) => onNewCrewProfileChange({ nationality: event.target.value })} className={`h-12 ${theme.input}`} />
-                <Select value={newCrewProfile.roleKey} onValueChange={(value) => onNewCrewProfileChange({ roleKey: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
-                  <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-                </Select>
-                <textarea value={newCrewProfile.notes} onChange={(event) => onNewCrewProfileChange({ notes: event.target.value })} placeholder="Crew notes" className={`min-h-24 w-full rounded-lg border px-3 py-2 outline-none ${theme.input}`} />
-                <Button onClick={onAddCrewProfile} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white">Save Crew Profile</Button>
-              </div>
-            </DialogContent>
-          </Dialog> : <div className={`mb-4 text-sm ${theme.textSecondary}`}>Crew editing is locked until admin mode is unlocked.</div>}
-          {crewListPrintHref ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setCrewListOpen(true)}
-              className={`w-full rounded-2xl px-4 py-4 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
-            >
-              Crew List
-            </Button>
-          ) : null}
+        <CardContent className="p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <div className="app-kicker">Crew</div>
+              <h2 className={`mt-2 text-xl font-semibold tracking-tight ${darkMode ? "text-slate-50" : "text-slate-950"}`}>Crew onboard</h2>
+              <p className={`mt-1 text-sm leading-6 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+                Manage onboard crew, certificates, and printable crew list.
+              </p>
+            </div>
+            <div className="grid gap-2 sm:flex sm:shrink-0 sm:flex-row">
+              {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
+                <DialogTrigger asChild>
+                  <Button className={`${primaryButtonClass} w-full sm:w-auto`}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Crew
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
+                  <DialogHeader><DialogTitle>Add Crew Profile</DialogTitle></DialogHeader>
+                  <div className="space-y-3">
+                    <Input placeholder="Full name" value={newCrewProfile.fullName} onChange={(event) => onNewCrewProfileChange({ fullName: event.target.value })} className={`h-12 ${theme.input}`} />
+                    <Select value={newCrewProfile.rank} onValueChange={(value) => onNewCrewProfileChange({ rank: value })}>
+                      <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
+                      <SelectContent>{CREW_RANK_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Select value={newCrewProfile.department} onValueChange={(value) => onNewCrewProfileChange({ department: value })}>
+                      <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
+                      <SelectContent>{CREW_DEPARTMENT_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Input placeholder="Nationality" value={newCrewProfile.nationality} onChange={(event) => onNewCrewProfileChange({ nationality: event.target.value })} className={`h-12 ${theme.input}`} />
+                    <Select value={newCrewProfile.roleKey} onValueChange={(value) => onNewCrewProfileChange({ roleKey: value })}>
+                      <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
+                      <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <textarea value={newCrewProfile.notes} onChange={(event) => onNewCrewProfileChange({ notes: event.target.value })} placeholder="Crew notes" className={`min-h-24 w-full rounded-lg border px-3 py-2 outline-none ${theme.input}`} />
+                    <Button onClick={onAddCrewProfile} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white">Save Crew Profile</Button>
+                  </div>
+                </DialogContent>
+              </Dialog> : null}
+              {crewListPrintHref ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCrewListOpen(true)}
+                  className={`${secondaryButtonClass} w-full sm:w-auto`}
+                >
+                  Crew List
+                </Button>
+              ) : null}
+            </div>
           </div>
-          <div className="space-y-3">
+          {!canEdit ? <div className={`mt-4 text-sm ${theme.textSecondary}`}>Crew editing is locked until admin mode is unlocked.</div> : null}
+          <div className="mt-5 space-y-3">
             {visibleCrewProfiles.length === 0 ? (
               <div className={`rounded-[22px] border border-dashed p-6 text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>No visible crew profiles yet.</div>
             ) : (
-              visibleCrewProfiles.map((profile) => (
+              visibleCrewProfiles.map((profile) => {
+                const crewName = profile.fullName || profile.name || "Unnamed crew";
+                const position = profile.position || profile.title || profile.rank || profile.role || "Crew";
+                const department = profile.department || "General";
+                const certificateCount = profile.certificates?.length || 0;
+
+                return (
                 <button
                   key={profile.id}
                   type="button"
                   onClick={() => onSelectCrewProfile(profile.id)}
-                  className={`w-full rounded-[22px] border p-4 text-left transition md:rounded-xl ${selectedCrewProfile?.id === profile.id ? "vessel-active border-vessel" : darkMode ? "border-[#233630] bg-[#111a17]/88 text-[#f4fbf6] hover:bg-[#16211d]" : "border-white/80 bg-white/88 text-[#1d2b24] hover:bg-[#f8fcfa]"}`}
+                  className={`w-full rounded-2xl border px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 md:rounded-2xl ${selectedCrewProfile?.id === profile.id ? (darkMode ? "border-cyan-300/40 bg-cyan-300/10" : "border-blue-300 bg-blue-50/70") : darkMode ? "border-white/10 bg-white/[0.04] hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white hover:border-blue-300 hover:bg-blue-50/40"}`}
                 >
-                  <div className="font-semibold">{profile.fullName}</div>
-                  <div className={`text-sm ${selectedCrewProfile?.id === profile.id ? "text-white/80" : theme.textSecondary}`}>{profile.rank} - {profile.department}</div>
-                  <div className={`mt-2 text-xs ${selectedCrewProfile?.id === profile.id ? "text-white/70" : theme.textSecondary}`}>{profile.certificates?.length || 0} certificate(s)</div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className={`truncate text-base font-semibold ${darkMode ? "text-slate-50" : "text-slate-950"}`}>{crewName}</p>
+                      <p className={`mt-1 truncate text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}>{position} &middot; {department}</p>
+                      <p className={`mt-2 text-xs font-medium ${darkMode ? "text-slate-400" : "text-slate-500"}`}>{certificateCount} certificate{certificateCount === 1 ? "" : "s"}</p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">
+                      Open
+                    </span>
+                  </div>
                 </button>
-              ))
+                );
+              })
             )}
           </div>
         </CardContent>
