@@ -12,6 +12,10 @@ export function NotificationsView({
   const criticalCount = notifications.filter((item) => item.level === "critical").length;
   const warningCount = notifications.filter((item) => item.level === "warning").length;
   const noticeCount = notifications.filter((item) => item.level !== "critical" && item.level !== "warning").length;
+  const statusLabelClass = darkMode ? "text-slate-600" : theme.textSecondary;
+  const statusTitleClass = darkMode ? "text-slate-800" : theme.textPrimary;
+  const statusNumberClass = darkMode ? "text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.42)]" : theme.textPrimary;
+  const statusDividerClass = darkMode ? "bg-slate-300/70" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]";
 
   return (
     <div className="app-section-grid grid md:gap-6">
@@ -32,28 +36,28 @@ export function NotificationsView({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="app-kicker">Operational Status</div>
-                    <div className={`mt-1 text-sm font-semibold tracking-[-0.01em] ${theme.textPrimary}`}>Live vessel signal mix</div>
+                    <div className={`mt-1 text-sm font-semibold tracking-[-0.01em] ${statusTitleClass}`}>Live vessel signal mix</div>
                   </div>
                   <Badge className={notifications.length ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
                     {notifications.length ? "Monitoring" : "Quiet"}
                   </Badge>
                 </div>
-                <div className={`my-4 h-px ${darkMode ? "bg-white/8" : "bg-[rgba(var(--vessel-primary-rgb),0.10)]"}`} />
+                <div className={`my-4 h-px ${statusDividerClass}`} />
                 <div className="grid gap-0 sm:grid-cols-3">
                   <div className="px-1 py-1.5 sm:px-2">
-                    <div className={`app-compact-label ${theme.textSecondary}`}>Critical</div>
-                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{criticalCount}</div>
+                    <div className={`app-compact-label ${statusLabelClass}`}>Critical</div>
+                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{criticalCount}</div>
                   </div>
-                  <div className={`px-1 py-1.5 sm:px-2 ${darkMode ? "sm:border-x sm:border-white/8" : "sm:border-x sm:border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
-                    <div className={`app-compact-label ${theme.textSecondary}`}>Warning</div>
-                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{warningCount}</div>
+                  <div className={`px-1 py-1.5 sm:px-2 ${darkMode ? "sm:border-x sm:border-slate-300/70" : "sm:border-x sm:border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
+                    <div className={`app-compact-label ${statusLabelClass}`}>Warning</div>
+                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{warningCount}</div>
                   </div>
                   <div className="px-1 py-1.5 sm:px-2">
-                    <div className={`app-compact-label ${theme.textSecondary}`}>Notice</div>
-                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${theme.textPrimary}`}>{noticeCount}</div>
+                    <div className={`app-compact-label ${statusLabelClass}`}>Notice</div>
+                    <div className={`mt-2 text-[2rem] font-semibold leading-none tracking-[-0.04em] ${statusNumberClass}`}>{noticeCount}</div>
                   </div>
                 </div>
-                <div className={`mt-4 pt-3 text-xs leading-5 ${theme.textSecondary} ${darkMode ? "border-t border-white/8" : "border-t border-[rgba(var(--vessel-primary-rgb),0.10)]"}`}>
+                <div className={`mt-4 pt-3 text-xs leading-5 ${darkMode ? "border-t border-slate-300/70 text-slate-600" : `border-t border-[rgba(var(--vessel-primary-rgb),0.10)] ${theme.textSecondary}`}`}>
                   Command summary of the vessel’s most actionable operational signals.
                 </div>
               </div>
