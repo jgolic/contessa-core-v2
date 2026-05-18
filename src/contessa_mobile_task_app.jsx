@@ -215,7 +215,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [taskDeleteRequest, setTaskDeleteRequest] = useState(null);
   const [crewExpenseDeleteRequest, setCrewExpenseDeleteRequest] = useState(null);
   const [actorName, setActorName] = useState(initialAppState.actorName);
-  const [history, setHistory] = useState(initialAppState.history);
+  const [history, setHistory] = useState(initialActiveWorkspace.history || []);
   const [notificationPermission, setNotificationPermission] = useState(() =>
     typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported"
   );
@@ -258,6 +258,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         vesselProfile,
         documents,
         tasks,
+        history,
+        declinedTasks,
         crewExpenses,
         crewProfiles,
         workers: crewProfiles,
@@ -266,7 +268,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       },
       activeVesselId
     );
-  }, [vessels, activeVesselId, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning]);
+  }, [vessels, activeVesselId, vesselProfile, documents, tasks, history, declinedTasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning]);
   const vesselsForPersistence = useMemo(() => {
     const nextFleet = Array.isArray(vessels) && vessels.length ? vessels : [activeVesselWorkspace];
     const hasActiveVessel = nextFleet.some((vessel) => vessel.id === activeVesselId);
@@ -1134,6 +1136,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setVesselProfile(vesselWorkspace.vesselProfile || vesselWorkspace.routePlanning?.vesselProfile || {});
     setDocuments(vesselWorkspace.documents || []);
     setTasks(nextTasks);
+    setHistory(vesselWorkspace.history || []);
+    setDeclinedTasks(vesselWorkspace.declinedTasks || []);
     setCrewExpenses(vesselWorkspace.crewExpenses || []);
     setCrewProfiles(nextCrewProfiles);
     setMaintenanceItems(vesselWorkspace.maintenanceItems || []);
