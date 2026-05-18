@@ -404,7 +404,7 @@ export function CrewView({
   }
 
   return (
-    <div className="grid gap-5 md:gap-6 xl:grid-cols-[340px_1fr]">
+    <div className="grid min-w-0 gap-5 md:gap-6 xl:grid-cols-[minmax(380px,420px)_minmax(0,1fr)]">
       <CrewListToolsDialog
         open={crewListOpen}
         onOpenChange={setCrewListOpen}
@@ -414,15 +414,15 @@ export function CrewView({
       />
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="min-w-0 max-w-full">
               <div className="app-kicker">Crew</div>
               <h2 className={`mt-2 text-xl font-semibold tracking-tight ${darkMode ? "text-slate-50" : "text-slate-950"}`}>Crew onboard</h2>
-              <p className={`mt-1 text-sm leading-6 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+              <p className={`mt-1 max-w-[32ch] text-sm leading-6 sm:max-w-[48ch] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
                 Manage onboard crew, certificates, and printable crew list.
               </p>
             </div>
-            <div className="grid gap-2 sm:flex sm:shrink-0 sm:flex-row">
+            <div className="grid min-w-0 gap-2 sm:grid-cols-2">
               {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
                 <DialogTrigger asChild>
                   <Button className={`${primaryButtonClass} w-full sm:w-auto`}>
