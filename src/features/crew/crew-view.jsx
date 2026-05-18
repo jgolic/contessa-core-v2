@@ -412,10 +412,9 @@ export function CrewView({
       />
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-4">
-          <div className="mb-4 grid gap-2">
           {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
             <DialogTrigger asChild>
-              <Button className="button-vessel-primary w-full rounded-2xl px-4 py-4 text-white md:rounded-xl">
+              <Button className="button-vessel-primary mb-4 w-full rounded-2xl px-4 py-4 text-white md:rounded-xl">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Crew Profile
               </Button>
@@ -442,17 +441,6 @@ export function CrewView({
               </div>
             </DialogContent>
           </Dialog> : <div className={`mb-4 text-sm ${theme.textSecondary}`}>Crew editing is locked until admin mode is unlocked.</div>}
-          {crewListPrintHref ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setCrewListOpen(true)}
-              className={`w-full rounded-2xl px-4 py-4 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
-            >
-              Crew List
-            </Button>
-          ) : null}
-          </div>
           <div className="space-y-3">
             {visibleCrewProfiles.length === 0 ? (
               <div className={`rounded-[22px] border border-dashed p-6 text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>No visible crew profiles yet.</div>
@@ -488,9 +476,21 @@ export function CrewView({
                     <Badge className="vessel-pill">{selectedCrewProfile.certificates?.length || 0} certificates</Badge>
                   </div>
                 </div>
+                <div className="flex flex-col gap-2 sm:items-end">
+                  {crewListPrintHref ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCrewListOpen(true)}
+                      className={`min-h-11 rounded-2xl px-4 py-2.5 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
+                    >
+                      Crew List
+                    </Button>
+                  ) : null}
                 <div className={`rounded-[22px] border p-4 text-sm md:rounded-xl ${darkMode ? "border-[#284038] bg-[#0f1715]/92" : "border-white/80 bg-white/84"}`}>
                   <div className="app-kicker">QR Placeholder</div>
                   <div className={`mt-2 leading-6 ${theme.textSecondary}`}>{selectedCrewProfile.qrPlaceholder}</div>
+                </div>
                 </div>
               </div>
 
