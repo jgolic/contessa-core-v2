@@ -2178,19 +2178,19 @@ export function themeClasses(darkMode) {
   return {
     page: "bg-vessel-page",
     card: darkMode
-      ? "vessel-card-dark border shadow-[0_24px_70px_-40px_rgba(0,0,0,0.54)] backdrop-blur-xl"
-      : "border border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.68)] shadow-[0_24px_60px_-38px_rgba(18,55,46,0.16)] backdrop-blur-xl",
+      ? "vessel-card-dark border border-white/10 bg-slate-950/70 shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      : "border border-slate-200/80 bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl",
     textPrimary: darkMode ? "text-[color:var(--vessel-text-primary-dark)] drop-shadow-[0_2px_8px_rgba(255,255,255,0.05)]" : "text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
     textSecondary: darkMode ? "text-[color:var(--vessel-text-secondary-dark)]" : "text-slate-600",
     input: darkMode
       ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-[#f1ece4] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border-dark)]"
-      : "border-slate-200/70 bg-white/70 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
+      : "border-slate-200/80 bg-white/90 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
     selectedTask: darkMode
       ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(8,18,24,0.98))] text-white shadow-[0_22px_48px_-28px_rgba(0,0,0,0.72),0_0_20px_var(--vessel-glow-dark)]"
       : "border-[#2f7771] bg-[linear-gradient(135deg,rgba(23,86,84,0.92),rgba(14,58,61,0.96))] text-white shadow-[0_18px_40px_-24px_rgba(20,71,89,0.22)]",
-    unselectedTask: darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-slate-100" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.62)] text-slate-900",
+    unselectedTask: darkMode ? "border-white/10 bg-slate-950/70 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.28)]" : "border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)]",
     ring: "ring-vessel",
-    subtle: darkMode ? "bg-[var(--vessel-primary-soft-dark)]" : "bg-[rgba(255,255,255,0.42)]",
+    subtle: darkMode ? "bg-white/[0.04]" : "bg-slate-50/80",
   };
 }
 

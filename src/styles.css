@@ -4,21 +4,21 @@
   --app-sea-soft: #667a71;
   --app-glow: rgba(16, 95, 84, 0.1);
   --app-bg-light:
-    radial-gradient(circle at top left, rgba(69, 161, 141, 0.1), transparent 28%),
-    radial-gradient(circle at 84% 4%, rgba(213, 188, 124, 0.1), transparent 20%),
-    linear-gradient(180deg, #f7fbf9 0%, #f1f6f3 48%, #ebf1ee 100%);
+    radial-gradient(circle at top left, rgba(69, 161, 141, 0.09), transparent 28%),
+    radial-gradient(circle at 84% 4%, rgba(213, 188, 124, 0.09), transparent 20%),
+    linear-gradient(180deg, #eef5f2 0%, #edf4f1 48%, #e8efec 100%);
   --app-bg-dark:
     radial-gradient(circle at top left, rgba(24, 114, 102, 0.18), transparent 24%),
     radial-gradient(circle at 86% 4%, rgba(198, 163, 91, 0.08), transparent 14%),
     linear-gradient(180deg, #071015 0%, #0b141a 42%, #091118 100%);
-  --app-card-light: rgba(255, 255, 255, 0.68);
-  --app-card-soft-light: rgba(255, 255, 255, 0.58);
-  --app-card-dark: rgba(8, 18, 24, 0.72);
-  --app-card-soft-dark: rgba(10, 22, 29, 0.58);
-  --app-border-light: rgba(15, 80, 70, 0.08);
-  --app-border-dark: rgba(255, 255, 255, 0.08);
-  --app-shadow-light: 0 18px 44px -34px rgba(18, 55, 46, 0.12);
-  --app-shadow-dark: 0 18px 52px -36px rgba(0, 0, 0, 0.46);
+  --app-card-light: rgba(255, 255, 255, 0.90);
+  --app-card-soft-light: rgba(248, 250, 252, 0.80);
+  --app-card-dark: rgba(2, 6, 23, 0.70);
+  --app-card-soft-dark: rgba(255, 255, 255, 0.04);
+  --app-border-light: rgba(203, 213, 225, 0.80);
+  --app-border-dark: rgba(255, 255, 255, 0.10);
+  --app-shadow-light: 0 18px 50px rgba(15, 23, 42, 0.06);
+  --app-shadow-dark: 0 18px 50px rgba(0, 0, 0, 0.28);
   --app-shadow-dark-glow: 0 0 20px rgba(42, 132, 120, 0.05);
   --app-accent: #16786e;
   --app-warning: #c6a35b;
@@ -37,17 +37,17 @@
   --vessel-bg-start: #eef7f3;
   --vessel-bg-end: #f8fbf9;
   --vessel-bg-light:
-    radial-gradient(circle at top left, rgba(69, 161, 141, 0.1), transparent 28%),
-    radial-gradient(circle at 84% 4%, rgba(213, 188, 124, 0.1), transparent 20%),
-    linear-gradient(180deg, #f7fbf9 0%, #f1f6f3 48%, #ebf1ee 100%);
+    radial-gradient(circle at top left, rgba(69, 161, 141, 0.09), transparent 28%),
+    radial-gradient(circle at 84% 4%, rgba(213, 188, 124, 0.09), transparent 20%),
+    linear-gradient(180deg, #eef5f2 0%, #edf4f1 48%, #e8efec 100%);
   --vessel-bg-dark:
     radial-gradient(circle at top left, rgba(24, 114, 102, 0.18), transparent 24%),
     radial-gradient(circle at 86% 4%, rgba(198, 163, 91, 0.08), transparent 14%),
     linear-gradient(180deg, #071015 0%, #0b141a 42%, #091118 100%);
-  --vessel-card: rgba(255, 255, 255, 0.68);
-  --vessel-card-strong: rgba(255, 255, 255, 0.78);
-  --vessel-card-light: rgba(255, 255, 255, 0.68);
-  --vessel-card-dark: rgba(8, 18, 24, 0.72);
+  --vessel-card: rgba(255, 255, 255, 0.90);
+  --vessel-card-strong: rgba(255, 255, 255, 0.94);
+  --vessel-card-light: rgba(255, 255, 255, 0.90);
+  --vessel-card-dark: rgba(2, 6, 23, 0.70);
   --vessel-bg-dark-start: #03130f;
   --vessel-bg-dark-end: #061c1a;
   --vessel-card-dark-strong: rgba(8, 31, 28, 0.88);
@@ -171,7 +171,9 @@ body.dark-mode .bg-vessel-page {
 .app-card {
   background: var(--vessel-card-light, var(--app-card-light));
   border: 1px solid var(--app-border-light);
-  box-shadow: var(--app-shadow-light), 0 0 0 1px rgba(var(--vessel-primary-rgb), 0.03);
+  box-shadow:
+    var(--app-shadow-light),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(24px);
 }
 
@@ -179,7 +181,7 @@ body.dark-mode .bg-vessel-page {
   background: var(--vessel-card-dark, var(--app-card-dark));
   border: 1px solid var(--vessel-border-dark, var(--app-border-dark));
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.22),
+    var(--app-shadow-dark),
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 0 18px var(--vessel-glow-dark, rgba(var(--vessel-accent-rgb), 0.05));
   backdrop-filter: blur(24px);
@@ -187,16 +189,18 @@ body.dark-mode .bg-vessel-page {
 
 .app-card-soft {
   background: var(--vessel-card, var(--app-card-soft-light));
-  border: 1px solid rgba(15, 80, 70, 0.08);
-  box-shadow: 0 18px 44px -36px rgba(18, 55, 46, 0.12), 0 0 20px rgba(var(--vessel-primary-rgb), 0.03);
+  border: 1px solid var(--app-border-light);
+  box-shadow:
+    0 14px 36px rgba(15, 23, 42, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(20px);
 }
 
 .app-card-soft-dark {
   background: var(--vessel-card-dark, var(--app-card-soft-dark));
-  border: 1px solid var(--vessel-border-dark, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--vessel-border-dark, var(--app-border-dark));
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.18),
+    0 18px 50px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 0 18px var(--vessel-glow-dark, rgba(var(--vessel-accent-rgb), 0.05));
   backdrop-filter: blur(20px);
@@ -353,13 +357,15 @@ body.dark-mode .vessel-icon-chip {
 }
 
 .vessel-surface-soft {
-  border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.18));
-  background: var(--vessel-card-strong, rgba(255,255,255,0.78));
+  border: 1px solid rgba(203, 213, 225, 0.80);
+  background: rgba(248, 250, 252, 0.80);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
 }
 
 body.dark-mode .vessel-surface-soft {
-  border-color: var(--vessel-border-dark, rgba(var(--vessel-primary-rgb), 0.18));
-  background: var(--vessel-card-dark, rgba(var(--vessel-primary-rgb), 0.1));
+  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .vessel-active {
@@ -376,10 +382,10 @@ body.dark-mode .vessel-active {
 }
 
 .vessel-card-dark {
-  background: var(--vessel-card-dark, rgba(8, 18, 24, 0.72));
-  border: 1px solid var(--vessel-border-dark, rgba(255,255,255,0.08));
+  background: var(--vessel-card-dark, rgba(2, 6, 23, 0.70));
+  border: 1px solid var(--vessel-border-dark, rgba(255,255,255,0.10));
   box-shadow:
-    0 18px 50px rgba(0,0,0,0.22),
+    0 18px 50px rgba(0,0,0,0.28),
     inset 0 1px 0 rgba(255,255,255,0.04),
     0 0 18px var(--vessel-glow-dark, rgba(var(--vessel-accent-rgb), 0.05));
   backdrop-filter: blur(24px);
@@ -632,6 +638,11 @@ body.dark-mode .text-premium-metric {
 
 .app-panel {
   position: relative;
+  border-color: rgba(203, 213, 225, 0.80);
+  background: rgba(255, 255, 255, 0.90);
+  box-shadow:
+    0 18px 50px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   border-radius: var(--app-radius-lg);
   backdrop-filter: blur(24px);
   min-width: 0;
@@ -650,13 +661,17 @@ body.dark-mode .text-premium-metric {
 
 .app-panel-active {
   box-shadow:
-    0 20px 48px -34px rgba(8, 24, 30, 0.32),
+    0 22px 54px rgba(15, 23, 42, 0.08),
     0 0 0 1px rgba(var(--vessel-accent-rgb), 0.16),
     0 0 18px rgba(var(--vessel-accent-rgb), 0.08);
 }
 
 .app-panel-soft {
-  box-shadow: 0 14px 34px -30px rgba(16, 39, 33, 0.1);
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(203, 213, 225, 0.80);
+  box-shadow:
+    0 14px 36px rgba(15, 23, 42, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .app-hero-surface {
@@ -676,6 +691,9 @@ body.dark-mode .text-premium-metric {
   max-width: 1320px;
   min-width: 0;
   overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(var(--vessel-primary-rgb), 0.035), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(238, 245, 242, 0.10));
 }
 
 .app-card-grid {
@@ -687,18 +705,25 @@ body.dark-mode .text-premium-metric {
 
 .app-section-shell {
   border-radius: 28px;
-  border: 1px solid rgba(15, 80, 70, 0.08);
-  background: var(--vessel-card-light, rgba(255, 255, 255, 0.64));
-  box-shadow: 0 16px 38px -32px rgba(18, 55, 46, 0.12);
+  border: 1px solid rgba(203, 213, 225, 0.80);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.84));
+  box-shadow:
+    0 18px 50px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(24px);
   min-width: 0;
   max-width: 100%;
 }
 
 .app-section-shell-dark {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: var(--vessel-card-dark, rgba(8, 18, 24, 0.64));
-  box-shadow: 0 18px 48px -34px rgba(0, 0, 0, 0.46), 0 0 18px rgba(var(--vessel-accent-rgb), 0.05);
+  border-color: rgba(255, 255, 255, 0.10);
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.76), rgba(8, 18, 24, 0.68));
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 18px rgba(var(--vessel-accent-rgb), 0.05);
 }
 
 .app-metric-value {
@@ -766,31 +791,33 @@ body.dark-mode .text-premium-metric {
 
 .app-command-strip {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12));
-  border: 1px solid rgba(var(--vessel-primary-rgb), 0.12);
-  box-shadow: 0 14px 34px -28px rgba(18, 55, 46, 0.12), 0 0 18px rgba(var(--vessel-primary-rgb), 0.04);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.78));
+  border: 1px solid rgba(203, 213, 225, 0.80);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06), 0 0 18px rgba(var(--vessel-primary-rgb), 0.04);
   backdrop-filter: blur(20px);
 }
 
 .app-command-strip-dark {
   background:
-    linear-gradient(135deg, rgba(13, 26, 33, 0.84), rgba(8, 18, 24, 0.72));
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 16px 38px -30px rgba(0, 0, 0, 0.44), 0 0 18px rgba(var(--vessel-accent-rgb), 0.05);
+    linear-gradient(135deg, rgba(2, 6, 23, 0.78), rgba(8, 18, 24, 0.70));
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28), 0 0 18px rgba(var(--vessel-accent-rgb), 0.05);
   backdrop-filter: blur(22px);
 }
 
 .app-control-block {
   border-radius: 22px;
-  border: 1px solid rgba(15, 80, 70, 0.07);
-  background: rgba(255, 255, 255, 0.32);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(203, 213, 225, 0.72);
+  background: rgba(248, 250, 252, 0.80);
+  box-shadow:
+    0 10px 24px rgba(15, 23, 42, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(18px);
 }
 
 .app-control-block-dark {
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(8, 18, 24, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
@@ -885,9 +912,25 @@ body.dark-mode .app-helper-text {
 }
 
 body.dark-mode .app-panel-soft {
+  background: var(--vessel-card-dark, rgba(2, 6, 23, 0.70));
+  border-color: var(--vessel-border-dark, rgba(255, 255, 255, 0.10));
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.18),
+    0 18px 50px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+body.dark-mode .app-panel {
+  border-color: var(--vessel-border-dark, rgba(255, 255, 255, 0.10));
+  background: var(--vessel-card-dark, rgba(2, 6, 23, 0.70));
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode .app-page-frame {
+  background:
+    radial-gradient(circle at top left, var(--vessel-primary-soft-dark, rgba(45, 212, 191, 0.06)), transparent 30%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.10), rgba(2, 6, 23, 0.02));
 }
 
 @media (hover: hover) and (pointer: fine) {

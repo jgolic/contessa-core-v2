@@ -12,7 +12,7 @@ export function ShellControlButton({
 }) {
   const baseClassName = darkMode
     ? "app-control-block-dark vessel-card-dark vessel-label-dark hover:border-vessel hover:bg-[var(--vessel-card-dark-strong)]"
-    : "app-control-block border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-slate-700 hover:border-vessel hover:bg-[rgba(255,255,255,0.6)]";
+    : "app-control-block border-slate-200/80 bg-white/90 text-slate-700 hover:border-vessel hover:bg-white";
 
   return (
     <Button
@@ -37,7 +37,7 @@ export function AlertInboxButton({
     : "border-[#ead59a] bg-[linear-gradient(135deg,rgba(255,251,233,0.98),rgba(255,242,205,0.92))] text-[#7a5b18] hover:border-[#dfc57d]";
   const idleClassName = darkMode
     ? "app-control-block-dark vessel-card-dark vessel-label-dark hover:border-vessel hover:bg-[var(--vessel-card-dark-strong)]"
-    : "app-control-block border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-slate-700 hover:border-vessel hover:bg-[rgba(255,255,255,0.6)]";
+    : "app-control-block border-slate-200/80 bg-white/90 text-slate-700 hover:border-vessel hover:bg-white";
 
   return (
     <Button
@@ -68,8 +68,8 @@ export function SectionNavCard({
   const moduleCardBase =
     "group app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
-    ? "app-panel-soft border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-slate-100 shadow-[0_14px_34px_-28px_rgba(0,0,0,0.45)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]"
-    : "app-panel-soft border-slate-200/70 bg-white/70 text-slate-900 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)]";
+    ? "app-panel-soft border-white/10 bg-slate-950/70 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.28)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]"
+    : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:border-[var(--vessel-border)] hover:bg-white";
   const moduleCardActive = darkMode
     ? "app-panel-active border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_0_24px_var(--vessel-glow-dark)]"
     : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 shadow-[0_0_24px_rgba(var(--vessel-primary-rgb),0.12)]";
@@ -117,7 +117,7 @@ export function BottomNavButton({
             : "app-panel-active border-vessel bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.96),rgba(var(--vessel-secondary-rgb),0.92))] text-white"
           : darkMode
             ? "app-panel-soft vessel-card-dark border text-slate-100"
-            : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.64)] text-[#365248]"
+            : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
       }`}
       aria-current={active ? "page" : undefined}
       {...props}
