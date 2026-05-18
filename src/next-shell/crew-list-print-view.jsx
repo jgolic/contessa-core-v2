@@ -36,16 +36,44 @@ function PrintActions({ vesselId }) {
   );
 }
 
+function formatPrintDate() {
+  return new Date()
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+    .toUpperCase();
+}
+
+function getCrewPrintName(person = {}) {
+  return (
+    person.name ||
+    person.fullName ||
+    [person.firstName, person.lastName].filter(Boolean).join(" ") ||
+    "Unnamed crew"
+  );
+}
+
+function getCrewPrintPosition(person = {}) {
+  return person.position || person.title || person.rank || person.role || "Crew";
+}
+
 export function CrewListPrintView({ vessel }) {
   const vesselId = vessel?.id || "contessa";
   const info = vessel?.vesselPrintInfo || {};
-  const crew = (Array.isArray(vessel?.crewProfiles) ? vessel.crewProfiles : []).slice(0, 5);
+  const crew = Array.isArray(vessel?.crew)
+    ? vessel.crew
+    : Array.isArray(vessel?.crewProfiles)
+      ? vessel.crewProfiles
+      : [];
+  const printDate = info.date || formatPrintDate();
   const metadata = [
     ["FLAG", info.flag],
     ["IMO", info.imo],
     ["CALL SIGN", info.callSign],
     ["PORT OF REGISTRY", info.portOfRegistry],
-    ["DATE", info.date],
+    ["DATE", printDate],
   ];
 
   return (
@@ -84,14 +112,18 @@ export function CrewListPrintView({ vessel }) {
             </tr>
           </thead>
           <tbody>
-            {crew.map((person) => (
-              <tr key={person.id}>
-                <td>{person.name || person.fullName}</td>
-                <td>{person.title || person.rank}</td>
-                <td>{person.nationality || "-"}</td>
-                <td>{person.dateOfBirth || "-"}</td>
-              </tr>
-            ))}
+            {crew.map((person) => {
+              const fullName = getCrewPrintName(person);
+
+              return (
+                <tr key={person.id || fullName}>
+                  <td className="crew-print-name">{fullName}</td>
+                  <td>{getCrewPrintPosition(person)}</td>
+                  <td>{person.nationality || "-"}</td>
+                  <td>{person.dateOfBirth || person.dob || "-"}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

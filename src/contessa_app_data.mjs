@@ -1453,12 +1453,16 @@ export function normalizeCertificate(item = {}) {
 export function normalizeCrewProfile(item = {}) {
   const fullName = item.fullName || item.name || "Crew Member";
   const rank = item.rank || item.title || "Crew";
+  const [derivedFirstName = "", ...derivedLastNameParts] = fullName.split(" ").filter(Boolean);
 
   return {
     ...item,
     id: item.id || createId("CRW"),
+    firstName: item.firstName || derivedFirstName,
+    lastName: item.lastName || derivedLastNameParts.join(" "),
     fullName,
     name: item.name || fullName,
+    position: item.position || rank,
     rank,
     title: item.title || rank,
     department: CREW_DEPARTMENT_OPTIONS.includes(item.department) ? item.department : CREW_DEPARTMENT_OPTIONS[0],
