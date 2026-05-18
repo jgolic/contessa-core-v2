@@ -2,12 +2,11 @@
 
 import { useEffect } from "react";
 
-function CrewPrintEmblem() {
+function CrewPrintLogo() {
   return (
-    <svg viewBox="0 0 64 64" className="crew-print-compass" aria-hidden="true">
-      <path d="M32 6 39.5 24.5 58 32 39.5 39.5 32 58 24.5 39.5 6 32 24.5 24.5 32 6Z" />
-      <path d="M32 16 35.5 28.5 48 32 35.5 35.5 32 48 28.5 35.5 16 32 28.5 28.5 32 16Z" />
-    </svg>
+    <div className="crew-print-logo">
+      <img src="/icon.svg" alt="Contessa" />
+    </div>
   );
 }
 
@@ -51,14 +50,14 @@ function formatPrintDate() {
 function getCrewPrintName(person = {}) {
   return (
     person.name ||
-    [person.firstName, person.lastName].filter(Boolean).join(" ") ||
     person.fullName ||
+    [person.firstName, person.lastName].filter(Boolean).join(" ") ||
     "Unnamed crew"
   );
 }
 
 function getCrewPrintPosition(person = {}) {
-  return person.position || person.title || person.role || person.rank || "Crew";
+  return person.position || person.title || person.rank || person.role || "Crew";
 }
 
 export function CrewListPrintView({ vessel }) {
@@ -93,7 +92,7 @@ export function CrewListPrintView({ vessel }) {
 
       <main className="crew-print-page">
         <header className="crew-print-header">
-          <CrewPrintEmblem />
+          <CrewPrintLogo />
           <h1>{info.displayName || String(vessel?.name || "M/Y VESSEL").toUpperCase()}</h1>
           <div className="crew-print-subtitle">
             <span />
@@ -130,8 +129,8 @@ export function CrewListPrintView({ vessel }) {
                 <tr key={person.id || fullName}>
                   <td className="crew-print-name">{fullName}</td>
                   <td>{getCrewPrintPosition(person)}</td>
-                  <td>{person.nationality || "—"}</td>
-                  <td>{person.dateOfBirth || person.dob || "—"}</td>
+                  <td>{person.nationality || "-"}</td>
+                  <td>{person.dateOfBirth || person.dob || "-"}</td>
                 </tr>
               );
             })}

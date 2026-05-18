@@ -13,20 +13,7 @@ function getPrintVessel(vesselId: string) {
     ? state.vessels.find((item) => item?.id === vesselId)
     : null;
 
-  if (!vessel) return null;
-
-  const normalizedVessel = normalizeFleetVessel(vessel, vesselId);
-  const vesselWithOptionalCrew = normalizedVessel as typeof normalizedVessel & { crew?: unknown[] };
-  const crew = Array.isArray(vesselWithOptionalCrew.crew)
-    ? vesselWithOptionalCrew.crew
-    : Array.isArray(vesselWithOptionalCrew.crewProfiles)
-      ? vesselWithOptionalCrew.crewProfiles
-      : [];
-
-  return {
-    ...vesselWithOptionalCrew,
-    crew,
-  };
+  return vessel ? normalizeFleetVessel(vessel, vesselId) : null;
 }
 
 export async function generateMetadata(
