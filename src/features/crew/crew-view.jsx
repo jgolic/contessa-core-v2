@@ -272,10 +272,12 @@ function CrewListToolsDialog({
   onOpenChange,
   href = "",
   darkMode = false,
+  crewCount = 0,
 }) {
   const theme = themeClasses(darkMode);
   const previewHref = href || "#";
   const printHref = href ? `${href}${href.includes("?") ? "&" : "?"}print=1` : "#";
+  const lastUpdated = new Date().toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
   const openLink = (targetHref) => {
     if (!targetHref || targetHref === "#") return;
     window.open(targetHref, "_blank", "noopener,noreferrer");
@@ -287,12 +289,35 @@ function CrewListToolsDialog({
         <DialogHeader>
           <DialogTitle>Crew List</DialogTitle>
         </DialogHeader>
-        <div className={`rounded-3xl border p-5 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
-          <div className="app-kicker">Printable Document</div>
-          <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>
-            Official printable crew list for the current vessel.
-          </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4">
+          <div className={`flex items-center gap-4 rounded-3xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
+            <div className={`flex h-28 w-20 shrink-0 flex-col items-center justify-start rounded-xl border px-2 py-3 shadow-sm ${darkMode ? "border-cyan-300/20 bg-slate-900 text-slate-100" : "border-slate-200 bg-white text-slate-900"}`}>
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">Crew</div>
+              <div className="mt-2 h-px w-full bg-slate-300/70 dark:bg-white/20" />
+              <div className="mt-3 grid w-full gap-1.5">
+                <span className="h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+                <span className="h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+                <span className="h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="app-kicker">Printable Document</div>
+              <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>
+                Official printable crew list for the current vessel.
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <div className={`rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-slate-200/80 bg-white/80"}`}>
+                  <div className="font-semibold text-slate-500 dark:text-slate-400">Crew</div>
+                  <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{crewCount}</div>
+                </div>
+                <div className={`rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-slate-200/80 bg-white/80"}`}>
+                  <div className="font-semibold text-slate-500 dark:text-slate-400">Updated</div>
+                  <div className="mt-1 truncate font-semibold text-slate-900 dark:text-slate-100">{lastUpdated}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
             <Button
               type="button"
               className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
@@ -383,6 +408,7 @@ export function CrewView({
         onOpenChange={setCrewListOpen}
         href={crewListPrintHref}
         darkMode={darkMode}
+        crewCount={visibleCrewProfiles.length}
       />
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-4">
