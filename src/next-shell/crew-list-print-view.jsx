@@ -140,7 +140,10 @@ export function CrewListPrintView({ vessel }) {
 
         <footer className="crew-print-footer">
           <span />
-          <FooterAnchorMark />
+          <div className="crew-print-footer-center">
+            <FooterAnchorMark />
+            <p>Generated from vessel crew records</p>
+          </div>
           <span />
         </footer>
       </main>
