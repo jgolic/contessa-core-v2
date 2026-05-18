@@ -996,6 +996,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       { id: "section-maintenance", type: "Section", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleName: "tasks-maintenance", options: { panel: "maintenance" } },
       { id: "section-approvals", type: "Section", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleName: "expenses-approvals", options: { bucket: "boat" } },
       { id: "section-crew", type: "Section", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" } },
+      { id: "section-crew-list", type: "Document", title: "Crew List", context: `Printable crew list for ${vesselName}`, targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
       { id: "section-certificates", type: "Section", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleName: "crew-certificates", options: { panel: "certificates" } },
       { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleName: "documents" },
       { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
@@ -1056,6 +1057,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const handleCommandSearchJump = (result) => {
     if (!result) return;
+
+    if (result.action === "crew-list") {
+      navigateToSection(result.targetId || "crew-section", result.moduleName || "crew-certificates", result.options || { panel: "crew" });
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("contessa:open-crew-list"));
+        }, 260);
+      }
+      return;
+    }
 
     if (result.item) {
       setExpenseView("command");

@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import { useEffect } from "react";
+
 function CompassMark() {
   return (
     <svg viewBox="0 0 64 64" className="crew-print-compass" aria-hidden="true">
@@ -75,6 +77,15 @@ export function CrewListPrintView({ vessel }) {
     ["PORT OF REGISTRY", info.portOfRegistry],
     ["DATE", printDate],
   ];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const shouldPrint = new URLSearchParams(window.location.search).get("print") === "1";
+    if (!shouldPrint) return undefined;
+
+    const timeout = window.setTimeout(() => window.print(), 450);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   return (
     <div className="crew-print-screen">

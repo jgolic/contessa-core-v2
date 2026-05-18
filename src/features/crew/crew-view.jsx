@@ -267,6 +267,64 @@ function ConfirmableCertificateRow({
   );
 }
 
+function CrewListToolsDialog({
+  open,
+  onOpenChange,
+  href = "",
+  darkMode = false,
+}) {
+  const theme = themeClasses(darkMode);
+  const previewHref = href || "#";
+  const printHref = href ? `${href}${href.includes("?") ? "&" : "?"}print=1` : "#";
+  const openLink = (targetHref) => {
+    if (!targetHref || targetHref === "#") return;
+    window.open(targetHref, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={`max-w-lg rounded-[28px] border p-5 shadow-2xl md:rounded-[30px] ${darkMode ? "border-white/10 bg-slate-950/95 text-slate-100" : "border-slate-200/80 bg-white text-slate-950"}`}>
+        <DialogHeader>
+          <DialogTitle>Crew List</DialogTitle>
+        </DialogHeader>
+        <div className={`rounded-3xl border p-5 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
+          <div className="app-kicker">Printable Document</div>
+          <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>
+            Official printable crew list for the current vessel.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Button
+              type="button"
+              className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-sm font-semibold text-white"
+              onClick={() => openLink(printHref)}
+              disabled={!href}
+            >
+              Print / Save PDF
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className={`min-h-11 rounded-2xl px-4 py-3 text-sm font-semibold ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
+              onClick={() => openLink(previewHref)}
+              disabled={!href}
+            >
+              Open A4 Preview
+            </Button>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className={`mt-3 min-h-11 w-full rounded-2xl px-4 py-3 text-sm font-semibold ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+            onClick={() => onOpenChange(false)}
+          >
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function CrewView({
   darkMode = false,
   canEdit = true,
@@ -296,6 +354,15 @@ export function CrewView({
   crewListPrintHref = "",
 }) {
   const theme = themeClasses(darkMode);
+  const [crewListOpen, setCrewListOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const openCrewList = () => setCrewListOpen(true);
+    window.addEventListener("contessa:open-crew-list", openCrewList);
+    return () => window.removeEventListener("contessa:open-crew-list", openCrewList);
+  }, []);
 
   if (!canViewCrew) {
     return (
@@ -311,11 +378,18 @@ export function CrewView({
 
   return (
     <div className="grid gap-5 md:gap-6 xl:grid-cols-[340px_1fr]">
+      <CrewListToolsDialog
+        open={crewListOpen}
+        onOpenChange={setCrewListOpen}
+        href={crewListPrintHref}
+        darkMode={darkMode}
+      />
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-4">
+          <div className="mb-4 grid gap-2">
           {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
             <DialogTrigger asChild>
-              <Button className="button-vessel-primary mb-4 w-full rounded-2xl px-4 py-5 text-white md:rounded-xl">
+              <Button className="button-vessel-primary w-full rounded-2xl px-4 py-4 text-white md:rounded-xl">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Crew Profile
               </Button>
@@ -346,12 +420,13 @@ export function CrewView({
             <Button
               type="button"
               variant="outline"
-              onClick={() => window.open(crewListPrintHref, "_blank", "noopener,noreferrer")}
-              className={`mb-4 w-full rounded-2xl px-4 py-4 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
+              onClick={() => setCrewListOpen(true)}
+              className={`w-full rounded-2xl px-4 py-4 text-sm font-semibold md:rounded-xl ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/16" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100"}`}
             >
-              Print Crew List
+              Crew List
             </Button>
           ) : null}
+          </div>
           <div className="space-y-3">
             {visibleCrewProfiles.length === 0 ? (
               <div className={`rounded-[22px] border border-dashed p-6 text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>No visible crew profiles yet.</div>
