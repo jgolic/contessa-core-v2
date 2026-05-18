@@ -447,10 +447,10 @@ export function CrewView({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setCrewListOpen(true)}
+                  onClick={() => window.open(crewListPrintHref, "_blank", "noopener,noreferrer")}
                   className={`${secondaryButtonClass} w-full sm:w-auto`}
                 >
-                  Crew List
+                  Print Crew List
                 </Button>
               ) : null}
             </div>

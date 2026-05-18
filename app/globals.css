@@ -73,17 +73,15 @@ body {
   margin-bottom: 24px;
 }
 
-.crew-print-logo {
-  display: flex;
-  justify-content: center;
+.crew-print-compass {
+  width: 34px;
+  height: 34px;
+  fill: #071a3a;
+  stroke: #071a3a;
+  stroke-linejoin: round;
+  stroke-width: 1.1;
+  opacity: 0.96;
   margin-bottom: 14px;
-}
-
-.crew-print-logo img {
-  display: block;
-  height: auto;
-  width: 36px;
-  object-fit: contain;
 }
 
 .crew-print-header h1 {
