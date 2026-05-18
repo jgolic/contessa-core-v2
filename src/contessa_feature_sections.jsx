@@ -58,6 +58,38 @@ import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
 import { VesselTitle } from "./components/vessel_title.jsx";
 
+const premiumShellClass = (darkMode = false) =>
+  [
+    "rounded-[28px] border p-5 backdrop-blur-xl",
+    darkMode
+      ? "border-white/10 bg-slate-950/70 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
+      : "border-slate-200/80 bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.06)]",
+  ].join(" ");
+
+const premiumInnerClass = (darkMode = false) =>
+  [
+    "rounded-2xl border",
+    darkMode
+      ? "border-white/10 bg-white/[0.04]"
+      : "border-slate-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]",
+  ].join(" ");
+
+const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300";
+const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
+const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50/80 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20";
+const mutedButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-2.5 text-sm font-semibold text-slate-500 shadow-sm transition dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400";
+
+function ControlCard({ darkMode = false, label, value, children }) {
+  return (
+    <div className={`${premiumShellClass(darkMode)} p-4 md:p-5`}>
+      <p className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>{label}</p>
+      <div className={`${premiumInnerClass(darkMode)} mt-3 min-h-14 px-4 py-3`}>
+        {children || <p className={`${premiumValueClass} ${darkMode ? "!text-slate-50" : ""}`}>{value}</p>}
+      </div>
+    </div>
+  );
+}
+
 function SettingsPanel({ darkMode = false }) {
   const theme = themeClasses(darkMode);
 
@@ -702,19 +734,19 @@ export function AppShellHeader({
         </DialogContent>
       </Dialog>
       <Dialog open={fleetOpen} onOpenChange={onFleetOpenChange}>
-        <DialogContent className={`max-h-[82vh] w-full max-w-[1100px] overflow-hidden rounded-[32px] border p-5 backdrop-blur-2xl transition-all duration-200 ${darkMode ? "vessel-card-dark text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.88)] text-[#1d2b24] shadow-[0_28px_80px_-48px_rgba(19,52,43,0.28)]"}`}>
+        <DialogContent className={`max-h-[82vh] w-full max-w-[1100px] overflow-hidden rounded-[32px] border p-5 backdrop-blur-2xl transition-all duration-200 ${premiumShellClass(darkMode)} ${darkMode ? "text-[#f4fbf6]" : "text-[#1d2b24]"}`}>
           <DialogHeader>
             <DialogTitle>Fleet</DialogTitle>
           </DialogHeader>
           <div className="flex h-full flex-col gap-3">
-            <div className={`rounded-[28px] border p-4 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.68)]"}`}>
-              <div className="app-kicker">Fleet</div>
+            <div className={`${premiumInnerClass(darkMode)} p-4`}>
+              <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Fleet</div>
               <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>Switch vessels or create a new independent workspace without leaving the current command layout.</div>
             </div>
 
             {fleetFormOpen ? (
-              <div className={`rounded-[28px] border p-4 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.62)]"}`}>
-                <div className="app-kicker">New Vessel</div>
+              <div className={`${premiumInnerClass(darkMode)} p-4`}>
+                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>New Vessel</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <Input placeholder="Vessel name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
                   <Input placeholder="Vessel length" value={fleetDraft.vesselLength} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselLength: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
@@ -730,7 +762,7 @@ export function AppShellHeader({
                   className={`mt-3 min-h-24 w-full rounded-2xl border px-3 py-3 outline-none ${theme.input}`}
                 />
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <Button type="button" variant="outline" className={`rounded-2xl px-4 py-3 ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`} onClick={() => setFleetFormOpen(false)}>
+                  <Button type="button" variant="outline" className={`${mutedButtonClass} rounded-2xl px-4 py-3 ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => setFleetFormOpen(false)}>
                     Cancel
                   </Button>
                   <Button
@@ -758,10 +790,10 @@ export function AppShellHeader({
                 const isActive = vessel?.id === activeVesselId;
 
                 return (
-                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-3 shadow-sm backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_16px_32px_-26px_var(--vessel-glow-dark)]" : "border-vessel bg-[rgba(var(--vessel-primary-rgb),0.07)] shadow-[0_16px_32px_-28px_rgba(35,103,84,0.16)]") : darkMode ? "vessel-card-dark hover:-translate-y-0.5 hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/70 hover:-translate-y-0.5 hover:bg-white/82"}`}>
+                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-4 backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}>
                     <div className="flex items-start justify-between gap-2.5">
                       <div>
-                        <div className="app-kicker">Vessel</div>
+                        <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel</div>
                         <div className={`mt-0.5 text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
                       </div>
                       {isActive ? <Badge className={`px-2 py-0.5 text-[10px] ${darkMode ? "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.18)] text-vessel-accent" : "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.10)] text-vessel-accent"}`}>Current</Badge> : null}
@@ -772,19 +804,19 @@ export function AppShellHeader({
                       <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                       <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Approval" active={isActive} /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
                       </div>
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/52"}`}>
+                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Route" active={isActive} /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
                       </div>
@@ -795,7 +827,7 @@ export function AppShellHeader({
                           type="button"
                           variant="outline"
                           disabled
-                          className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                          className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-400" : ""}`}
                         >
                           Current Workspace
                         </Button>
@@ -803,7 +835,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                          className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
                         >
                           Open Vessel
                         </Button>
@@ -1013,7 +1045,7 @@ export function AppShellHeader({
           </div>
         </div>
 
-        <div className={`app-panel app-panel-soft rounded-[28px] border p-4 shadow-[0_18px_48px_-36px_rgba(17,46,39,0.18)] md:p-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
+        <div className={`${premiumShellClass(darkMode)} p-4 md:p-5`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="app-kicker">Operational Snapshot</div>
@@ -1045,10 +1077,9 @@ export function AppShellHeader({
               );
             })}
           </div>
-          <div className="app-glass-line my-3" />
-          <div className="app-control-grid">
-            <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
-              <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Operating As</div>
+          <div className="app-glass-line my-4" />
+          <div className="grid min-w-0 gap-4 md:grid-cols-3">
+            <ControlCard darkMode={darkMode} label="Operating As">
               {onCurrentRoleChange ? (
                 <Select value={currentRole} onValueChange={onCurrentRoleChange}>
                   <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
@@ -1061,14 +1092,13 @@ export function AppShellHeader({
                   </SelectContent>
                 </Select>
               ) : (
-                <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-medium ${darkMode ? "border-[#31443a] bg-[#111a16] text-[#dce9e1]" : "border-[#d8e7df] bg-white text-[#40534a]"}`}>
+                <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-medium ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-800"}`}>
                   Shared vessel access
                 </div>
               )}
-            </div>
-              <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
-                <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Mode</div>
-                <Select value={appMode} onValueChange={onAppModeChange}>
+            </ControlCard>
+            <ControlCard darkMode={darkMode} label="Mode">
+              <Select value={appMode} onValueChange={onAppModeChange}>
                 <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
                   <SelectValue />
                 </SelectTrigger>
@@ -1077,48 +1107,56 @@ export function AppShellHeader({
                   <SelectItem value="editor">Editor Mode</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className={`app-control-block px-3 py-3 ${darkMode ? "app-control-block-dark" : ""}`}>
-              <div className="text-premium-label mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">Status</div>
-              <Badge className={canEditApp ? "w-full justify-center border border-[#d9bb70] bg-[#fff0cf]/92 text-[#7a5416]" : "w-full justify-center border border-slate-200/70 bg-[#eef3f7]/92 text-[#345064]"}>
+            </ControlCard>
+            <ControlCard darkMode={darkMode} label="Status">
+              <Badge className={canEditApp ? "flex min-h-11 w-full items-center justify-center rounded-2xl border border-amber-300/70 bg-amber-50/90 px-4 text-sm font-semibold text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/10 dark:text-amber-100" : "flex min-h-11 w-full items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 text-sm font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300"}>
                 {canEditApp ? "Editor Mode" : "View Mode"}
               </Badge>
-            </div>
+            </ControlCard>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <Button
               variant="outline"
-              className="vessel-outline-button min-h-[52px] w-full min-w-0 rounded-2xl px-4 py-3 text-sm font-medium"
+              className={`${premiumShellClass(darkMode)} app-card-hover min-h-[72px] w-full min-w-0 px-5 py-4 text-left text-sm font-semibold ${darkMode ? "text-slate-100 hover:border-cyan-300/40 hover:bg-slate-900/80" : "text-slate-800 hover:border-blue-300 hover:bg-white"}`}
               onClick={onToggleDarkMode}
             >
-              {darkMode ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
-              {darkMode ? "Light Mode" : "Dark Mode"}
+              <span className="flex items-center gap-3">
+                <span className={`${premiumInnerClass(darkMode)} inline-flex h-11 w-11 shrink-0 items-center justify-center`}>
+                  {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </span>
+                <span>
+                  <span className={`${premiumLabelClass} block ${darkMode ? "!text-slate-300" : ""}`}>Dark Mode</span>
+                  <span className={`${premiumValueClass} mt-1 block text-base ${darkMode ? "!text-slate-50" : ""}`}>{darkMode ? "Light Mode" : "Dark Mode"}</span>
+                </span>
+              </span>
             </Button>
             <AlertInboxButton
               onClick={onOpenNotifications}
               darkMode={darkMode}
               notificationCount={notificationCount}
-              className="w-full"
+              className={`${premiumShellClass(darkMode)} min-h-[72px] w-full justify-start px-5 py-4 text-left`}
             >
               Alerts
             </AlertInboxButton>
           </div>
-          <div className={`mt-3 rounded-[22px] border p-3 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)]"}`}>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div className={`${premiumShellClass(darkMode)} mt-4 p-4 md:p-6`}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <div className="app-kicker">Fleet Switcher</div>
-                <div className={`mt-1 max-w-xl text-xs leading-5 ${theme.textSecondary}`}>
+                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Fleet Switcher</div>
+                <div className={`mt-2 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>
                   Keep vessel identity explicit. Open the other workspace directly from here without losing the current command layout.
                 </div>
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className={`h-9 rounded-xl px-3 py-2 text-xs font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}
+                className={`${primaryButtonClass} ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
                 onClick={openFleetPanel}
               >
                 Manage
               </Button>
             </div>
-            <div className="mt-3 grid gap-2.5 md:grid-cols-2">
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
               {fleetWorkspaceCards.map((vessel) => {
                 const isCurrent = vessel.id === activeVesselId;
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
@@ -1126,11 +1164,11 @@ export function AppShellHeader({
                 return (
                   <div
                     key={`fleet-switcher-${vessel.id}`}
-                    className={`flex h-full flex-col rounded-[18px] border p-3 transition-all duration-200 ${isCurrent ? (darkMode ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] shadow-[0_12px_28px_-24px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[rgba(var(--vessel-primary-rgb),0.07)] shadow-[0_12px_28px_-24px_rgba(35,103,84,0.14)]") : darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] hover:border-[var(--vessel-primary-dark)] hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-white/60 hover:border-[var(--vessel-border)] hover:bg-white/78"}`}
+                    className={`flex h-full flex-col rounded-2xl border p-5 transition-all duration-200 ${isCurrent ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}
                   >
                     <div className="flex items-start justify-between gap-2.5">
                       <div className="min-w-0">
-                        <div className="app-compact-label">Vessel</div>
+                        <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel</div>
                         <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
                         <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>
                           {vessel?.details?.status || "Operational"} · {vessel?.details?.homePort || "Home port not set"}
@@ -1140,23 +1178,23 @@ export function AppShellHeader({
                         {isCurrent ? "Current" : "Available"}
                       </Badge>
                     </div>
-                    <div className="mt-2.5 grid grid-cols-2 gap-2">
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <div className={`group rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`group rounded-xl border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.025]" : "border-[rgba(15,80,70,0.08)] bg-white/50"}`}>
+                      <div className={`group rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-auto pt-4">
                       {isCurrent ? (
                         <Button
                           type="button"
                           variant="outline"
                           disabled
-                          className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                          className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-400" : ""}`}
                         >
                           Current Workspace
                         </Button>
@@ -1164,7 +1202,7 @@ export function AppShellHeader({
                         <Button
                           type="button"
                           onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10 dark:hover:text-cyan-100 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                          className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
                         >
                           Open Vessel
                         </Button>
@@ -1175,12 +1213,15 @@ export function AppShellHeader({
               })}
             </div>
           </div>
-          <details className={`mt-3 rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.025)] text-slate-100" : "border-[rgba(15,80,70,0.08)] bg-white/48 text-slate-800"}`}>
+          <details className={`${premiumShellClass(darkMode)} group mt-4 p-4`}>
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold">
-              <span className="app-kicker">Secondary Tools</span>
-              <span className={darkMode ? "text-slate-300" : "text-slate-500"}>History, legal, share, settings</span>
+              <span className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Secondary Tools</span>
+              <span className={`inline-flex items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-500"}`}>
+                History, legal, share, settings
+                <span className="text-lg leading-none transition-transform group-open:rotate-90">&rarr;</span>
+              </span>
             </summary>
-          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
             <ShellControlButton
               type="button"
               onClick={() => onHistoryOpenChange(true)}
@@ -1198,7 +1239,7 @@ export function AppShellHeader({
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`min-h-[52px] w-full rounded-2xl border px-4 py-3 text-sm font-medium shadow-[0_16px_32px_-28px_rgba(10,20,26,0.18)] ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+                  className={`${mutedButtonClass} min-h-[52px] w-full ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300 hover:!bg-white/[0.07]" : ""}`}
                 >
                   <span className="flex items-center justify-center gap-2">
                     <Receipt className={`h-4 w-4 ${darkMode ? "text-[#b8c8c0]" : "text-[#6b7d75]"}`} />
@@ -1217,7 +1258,7 @@ export function AppShellHeader({
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`min-h-[52px] w-full rounded-2xl border px-4 py-3 text-sm font-medium shadow-[0_18px_34px_-28px_rgba(12,36,41,0.18)] ${darkMode ? "border-[#355a62]/55 bg-[rgba(9,26,32,0.64)] text-[#dff6ef] hover:bg-[rgba(14,32,38,0.82)]" : "border-[#bfd5dd] bg-[rgba(240,249,247,0.72)] text-[#1f5d59] hover:bg-[#edf7f4]"}`}
+                  className={`${primaryButtonClass} min-h-[52px] w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
                 >
                   <span className="flex items-center justify-center gap-2">
                     <Share2 className="text-vessel-accent h-4 w-4" />
@@ -1331,7 +1372,7 @@ export function AppShellHeader({
               type="button"
               variant="outline"
               onClick={onOpenSettingsWorkspace}
-              className={`min-h-[52px] w-full rounded-2xl border px-4 py-3 text-sm font-medium shadow-[0_16px_32px_-28px_rgba(10,20,26,0.18)] ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+              className={`${mutedButtonClass} min-h-[52px] w-full ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300 hover:!bg-white/[0.07]" : ""}`}
             >
               Settings
             </Button>
