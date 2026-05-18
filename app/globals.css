@@ -73,18 +73,21 @@ body {
   margin-bottom: 24px;
 }
 
-.crew-print-compass {
-  width: 30px;
-  height: 30px;
-  fill: none;
-  stroke: #071a3a;
-  stroke-linejoin: round;
-  stroke-width: 1.55;
-  opacity: 0.86;
+.crew-print-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.crew-print-logo img {
+  display: block;
+  height: auto;
+  width: 36px;
+  object-fit: contain;
 }
 
 .crew-print-header h1 {
-  margin: 14px 0 0;
+  margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 48px;
   font-weight: 500;

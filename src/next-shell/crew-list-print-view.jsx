@@ -2,12 +2,11 @@
 
 import { useEffect } from "react";
 
-function CompassMark() {
+function CrewPrintLogo() {
   return (
-    <svg viewBox="0 0 64 64" className="crew-print-compass" aria-hidden="true">
-      <path d="M32 6 39.5 24.5 58 32 39.5 39.5 32 58 24.5 39.5 6 32 24.5 24.5 32 6Z" />
-      <path d="M32 16 35.5 28.5 48 32 35.5 35.5 32 48 28.5 35.5 16 32 28.5 28.5 32 16Z" />
-    </svg>
+    <div className="crew-print-logo">
+      <img src="/icon.svg" alt="Contessa" />
+    </div>
   );
 }
 
@@ -93,7 +92,7 @@ export function CrewListPrintView({ vessel }) {
 
       <main className="crew-print-page">
         <header className="crew-print-header">
-          <CompassMark />
+          <CrewPrintLogo />
           <h1>{info.displayName || String(vessel?.name || "M/Y VESSEL").toUpperCase()}</h1>
           <div className="crew-print-subtitle">
             <span />
