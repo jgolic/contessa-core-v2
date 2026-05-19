@@ -1140,11 +1140,11 @@ export function AppShellHeader({
               Alerts
             </AlertInboxButton>
           </div>
-          <div className={`${premiumShellClass(darkMode)} mt-4 p-4 md:p-6`}>
+          <div className={`${premiumShellClass(darkMode)} mt-4 w-full min-w-0 max-w-full overflow-hidden p-4 md:p-6`}>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
+              <div className="min-w-0">
                 <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Fleet Switcher</div>
-                <div className={`mt-2 max-w-3xl text-sm leading-6 ${theme.textSecondary}`}>
+                <div className={`mt-2 max-w-full text-sm leading-6 sm:max-w-3xl ${theme.textSecondary}`}>
                   Keep vessel identity explicit. Open the other workspace directly from here without losing the current command layout.
                 </div>
               </div>
@@ -1157,7 +1157,7 @@ export function AppShellHeader({
                 Manage
               </Button>
             </div>
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="mt-5 grid w-full min-w-0 grid-cols-1 gap-3 lg:grid-cols-2">
               {fleetWorkspaceCards.map((vessel) => {
                 const isCurrent = vessel.id === activeVesselId;
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
@@ -1165,26 +1165,26 @@ export function AppShellHeader({
                 return (
                   <div
                     key={`fleet-switcher-${vessel.id}`}
-                    className={`flex h-full flex-col rounded-2xl border p-5 transition-all duration-200 ${isCurrent ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}
+                    className={`flex h-full w-full min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border p-4 transition-all duration-200 sm:p-5 ${isCurrent ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}
                   >
-                    <div className="flex items-start justify-between gap-2.5">
-                      <div className="min-w-0">
+                    <div className="flex min-w-0 items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
                         <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel</div>
                         <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
-                        <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>
+                        <div className={`mt-0.5 max-w-full truncate text-xs ${theme.textSecondary}`}>
                           {vessel?.details?.status || "Operational"} · {vessel?.details?.homePort || "Home port not set"}
                         </div>
                       </div>
-                      <Badge className={`px-2 py-0.5 text-[10px] ${isCurrent ? "vessel-pill" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-600"}`}>
+                      <Badge className={`max-w-[42%] shrink-0 truncate px-2 py-0.5 text-[10px] ${isCurrent ? "vessel-pill" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-600"}`}>
                         {isCurrent ? "Current" : "Available"}
                       </Badge>
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      <div className={`group rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
+                    <div className="mt-4 grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
+                      <div className={`group min-w-0 rounded-2xl border p-3 sm:p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
                       </div>
-                      <div className={`group rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
+                      <div className={`group min-w-0 rounded-2xl border p-3 sm:p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
                         <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
                         <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
                       </div>
@@ -1214,10 +1214,10 @@ export function AppShellHeader({
               })}
             </div>
           </div>
-          <details className={`${premiumShellClass(darkMode)} group mt-4 p-4`}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold">
+          <details className={`${premiumShellClass(darkMode)} group mt-4 w-full min-w-0 max-w-full overflow-hidden p-4`}>
+            <summary className="flex cursor-pointer list-none flex-col gap-3 text-sm font-semibold min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
               <span className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Secondary Tools</span>
-              <span className={`inline-flex items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-500"}`}>
+              <span className={`inline-flex min-w-0 items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-500"}`}>
                 History, legal, share, settings
                 <span className="text-lg leading-none transition-transform group-open:rotate-90">&rarr;</span>
               </span>
@@ -1487,9 +1487,9 @@ export function AppSectionCards({
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Home", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
     tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, icon: CheckCircle2, onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0}`, icon: Wallet, onClick: onShowExpenses } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approve", value: `${stats.pendingApprovals || 0}`, icon: Wallet, onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0}`, icon: Users, onClick: onShowCrewCertificates } : null,
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, icon: Receipt, onClick: onShowDocuments } : null,
   ].filter(Boolean);
@@ -1509,11 +1509,11 @@ export function AppSectionCards({
       </div>
 
       <div
-        className={`fixed inset-x-3 bottom-3 z-40 rounded-[28px] border px-2.5 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
+        className={`fixed inset-x-3 bottom-3 z-40 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[28px] border p-2 pb-[calc(0.55rem+env(safe-area-inset-bottom))] shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
           darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(4,12,18,0.86)] text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.88)] text-[#13231d]"
         }`}
       >
-        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1.5 pb-0.5 sm:gap-2">
+        <div className="grid w-full min-w-0 grid-cols-5 gap-1 pb-0.5 min-[390px]:gap-1.5">
           {mobileNavItems.map((item) => {
             const isActive = expenseView === item.key;
             return (

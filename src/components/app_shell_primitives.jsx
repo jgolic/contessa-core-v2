@@ -110,7 +110,7 @@ export function BottomNavButton({
   return (
     <button
       type="button"
-      className={`group app-card-hover app-panel flex min-h-[58px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] border px-1.5 py-2 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition active:scale-[0.96] sm:px-2 ${
+      className={`group app-card-hover app-panel flex min-h-[54px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border px-1 py-2 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition active:scale-[0.96] min-[390px]:min-h-[58px] min-[390px]:px-1.5 sm:px-2 ${
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
@@ -123,14 +123,14 @@ export function BottomNavButton({
       {...props}
     >
       {Icon ? (
-        <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-xl ${active ? "bg-white/16 text-current" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
-          <Icon className="h-3.5 w-3.5" />
+        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? "bg-white/16 text-current" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
+          <Icon className="h-3 w-3 min-[390px]:h-3.5 min-[390px]:w-3.5" />
         </span>
       ) : null}
-      <div className="max-w-full truncate text-[9px] font-semibold uppercase tracking-[0.04em] sm:text-[10px] sm:tracking-[0.08em]">
+      <div className="max-w-full truncate text-[8.5px] font-semibold uppercase tracking-[0.035em] min-[390px]:text-[9px] sm:text-[10px] sm:tracking-[0.08em]">
         <SmartLabel label={label} active={active} />
       </div>
-      <div className="max-w-full truncate text-[10px] leading-none opacity-85 sm:text-[11px]">{value}</div>
+      <div className="max-w-full truncate text-[10px] leading-none opacity-85">{value}</div>
     </button>
   );
 }
