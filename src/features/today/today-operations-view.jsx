@@ -992,7 +992,7 @@ export function TodayOperationsView({
       makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleAction: onNavigateToDocuments }),
       makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
       makeSection({ id: "search-alerts", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleAction: onNavigateToAlerts }),
-      makeSection({ id: "search-fleet", title: "Fleet Switcher", context: "Open another vessel workspace", targetId: "fleet-switcher-section", moduleAction: onOpenFleet }),
+      makeSection({ id: "search-fleet", title: "Fleet Switcher", context: "Open another vessel workspace", targetId: "fleet-switcher-section" }),
     ];
 
     const itemResults = operationItems.map((item) => {
@@ -1068,7 +1068,6 @@ export function TodayOperationsView({
     onNavigateToDocuments,
     onNavigateToRoute,
     onNavigateToAlerts,
-    onOpenFleet,
   ]);
 
   function openInspector(item) {
@@ -1155,55 +1154,6 @@ export function TodayOperationsView({
       <div className="grid gap-4 md:gap-5">
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
-            <Card id="dashboard-section" className={`app-panel app-hero-surface min-w-0 overflow-visible rounded-[28px] border ${darkMode ? "border-cyan-300/15 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.14),transparent_32%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.12),transparent_24%),linear-gradient(135deg,rgba(11,24,40,0.96),rgba(6,16,29,0.94))] text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.42)]" : "border-slate-200/80 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_30%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.10),transparent_22%),rgba(255,255,255,0.90)] text-slate-950 shadow-[0_22px_60px_rgba(15,23,42,0.07)]"}`}>
-              <CardContent className="p-5 md:p-6">
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
-                  <div className="min-w-0">
-                    <div className="app-kicker premium-label-accent">Today Command Brief</div>
-                    <h2 className={`mt-3 text-2xl font-semibold tracking-tight md:text-3xl ${theme.textPrimary}`}>
-                      {greeting}, {currentRoleLabel}
-                    </h2>
-                    <p className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>
-                      {currentVessel?.name || currentVesselName} is in {currentVessel?.status || "operational"} mode. {priorityItems.length || 0} items need attention before the next handoff.
-                    </p>
-                    <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                      <Button type="button" onClick={onNavigateToTasks} className="button-vessel-primary min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold text-white">
-                        Review priorities
-                      </Button>
-                      <Button type="button" variant="outline" onClick={onNavigateToApprovals} className={`min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold ${darkMode ? "border-amber-300/30 bg-amber-300/12 text-amber-100 hover:bg-amber-300/20" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}>
-                        View approvals
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className={`rounded-3xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/70 bg-white/72"}`}>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-cyan-100">Bridge snapshot</p>
-                    <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{nextMilestone}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>{isOffline ? "Offline" : "Live"}</Badge>
-                      <Badge className={notificationsReady ? successBadgeClass(darkMode) : notificationsUnsupported ? warningBadgeClass(darkMode) : "border border-slate-200 bg-white/80 text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"}>
-                        Alerts {notificationsReady ? "ready" : "available"}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {statusTiles.slice(0, 4).map((tile) => (
-                    <MetricTile
-                      key={tile.label}
-                      darkMode={darkMode}
-                      label={tile.label}
-                      value={tile.value}
-                      note={tile.note}
-                      tone={tile.tone}
-                      active={tile.tone === "success"}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             <Card id="mission-cards-section" className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
               <CardContent className="p-4 md:p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -1447,28 +1397,64 @@ export function TodayOperationsView({
           <div className="grid gap-4 xl:col-span-4">
             <IntelligencePanel
               darkMode={darkMode}
-              title="Recent Activity"
-              subtitle="Latest vessel movement without opening a full history board."
+              title="Fleet Switcher"
+              subtitle="Current vessel marked; other workspaces stay one click away."
+              actionLabel="Open fleet"
+              onAction={onOpenFleet}
             >
-              <div className="grid gap-3">
-                {activityItems.length ? (
-                  activityItems.slice(0, 4).map((item) => (
-                    <CompactItemCard
-                      htmlId={`right-activity-item-${item.id}`}
-                      key={item.id}
-                      darkMode={darkMode}
-                      item={item}
-                      selected={selectedItem?.id === item.id}
-                      onClick={() => openInspector(item)}
-                    />
-                  ))
-                ) : (
-                  <DashboardEmptyState
-                    darkMode={darkMode}
-                    title="No recent changes"
-                    message="New vessel actions and notes will appear here as the crew updates the workspace."
-                  />
-                )}
+              <div id="fleet-switcher-section" className="grid gap-2.5">
+                {fleetEntries.map((vessel) => {
+                  const isCurrent = vessel.id === activeVesselId;
+                  const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
+
+                  return (
+                    <div key={vessel.id} className={`rounded-[18px] border p-3 ${isCurrent ? darkMode ? "app-dark-inner border-[var(--vessel-primary-dark)] shadow-[0_12px_28px_-24px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] shadow-[0_12px_28px_-24px_rgba(35,103,84,0.14)]" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/70"}`}>
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div className="min-w-0">
+                          <div className={`text-sm font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
+                          <div className={`mt-1 text-xs ${theme.textSecondary}`}>{vessel?.details?.homePort || "Home port not set"}</div>
+                        </div>
+                        <Badge className={`px-2 py-0.5 text-[10px] ${isCurrent ? darkMode ? "border border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}`}>
+                          {isCurrent ? "Current" : "Available"}
+                        </Badge>
+                      </div>
+                      <div className={`mt-2.5 grid grid-cols-2 gap-2 text-xs ${theme.textSecondary}`}>
+                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "app-dark-inner border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
+                          <div className="app-compact-label">
+                            <SmartLabel label="Tasks" />
+                          </div>
+                          <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
+                        </div>
+                        <div className={`rounded-xl border px-2.5 py-2 ${darkMode ? "app-dark-inner border-white/10" : "border-[rgba(15,80,70,0.06)] bg-white/52"}`}>
+                          <div className="app-compact-label">
+                            <SmartLabel label="Alerts" />
+                          </div>
+                          <div className={`mt-1 font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        {isCurrent ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled
+                            className="h-9 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-400"
+                          >
+                            Current Workspace
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() => onSwitchFleetVessel?.(vessel.id)}
+                            className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-cyan-300/30 dark:bg-cyan-300/12 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                          >
+                            Open Vessel
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </IntelligencePanel>
 
