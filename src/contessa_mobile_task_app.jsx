@@ -2733,9 +2733,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         <div className="hidden min-w-0 gap-4 md:grid md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[230px_minmax(0,1fr)_310px]">
           <DesktopMissionSidebar
             darkMode={darkMode}
+            vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
+            vesselStatus={activeVesselWorkspace?.details?.status || "Operational"}
+            vesselLocation={activeVesselWorkspace?.details?.homePort || "Home port not set"}
             expenseView={expenseView}
             stats={stats}
             routeWarningCount={routeAlerts.length}
+            onOpenFleet={() => setFleetOpen(true)}
             onShowCommand={() => openMobileWorkspace("command")}
             onShowTasks={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
             onShowApprovals={() => openMobileWorkspace("expenses-approvals", { bucket: "boat" })}
@@ -3044,9 +3048,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
 function DesktopMissionSidebar({
   darkMode,
+  vesselName,
+  vesselStatus,
+  vesselLocation,
   expenseView,
   stats,
   routeWarningCount,
+  onOpenFleet,
   onShowCommand,
   onShowTasks,
   onShowApprovals,
@@ -3066,18 +3074,31 @@ function DesktopMissionSidebar({
   ];
 
   return (
-    <aside className="sticky top-5 h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+    <aside className="sticky top-5 h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border border-cyan-300/15 bg-[#071321]/95 p-4 text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.32)] backdrop-blur-2xl dark:border-cyan-300/15 dark:bg-[#06101d]/95 dark:shadow-[0_28px_90px_rgba(0,0,0,0.50)]">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-white/[0.08] shadow-[0_0_28px_rgba(34,211,238,0.10)]">
           <ContessaUiLogo className="h-10 w-10" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold tracking-tight text-slate-950 dark:text-slate-50">Contessa</p>
-          <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Yacht Ops</p>
+          <p className="truncate text-sm font-semibold tracking-tight text-slate-50">Contessa</p>
+          <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-100/80">Yacht Ops</p>
         </div>
       </div>
 
-      <nav className="mt-7 space-y-2" aria-label="Primary vessel workspace">
+      <button
+        type="button"
+        onClick={onOpenFleet}
+        className="mt-5 w-full rounded-3xl border border-cyan-300/15 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_36%),rgba(255,255,255,0.04)] p-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-cyan-300/35 hover:bg-cyan-300/10"
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-100/80">Current vessel</p>
+        <p className="mt-2 truncate text-base font-semibold text-slate-50">{vesselName}</p>
+        <p className="mt-1 truncate text-xs text-slate-300">{vesselStatus} {"\u00b7"} {vesselLocation}</p>
+        <span className="mt-3 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+          Switch vessel
+        </span>
+      </button>
+
+      <nav className="mt-5 space-y-2" aria-label="Primary vessel workspace">
         {items.map((item) => (
           <DesktopMissionNavButton
             key={item.key}
@@ -3091,9 +3112,9 @@ function DesktopMissionSidebar({
         ))}
       </nav>
 
-      <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-900/80">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-cyan-200">Bridge mode</p>
-        <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">Focused module view with details kept in the inspector.</p>
+      <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-amber-300/15 bg-amber-300/[0.08] p-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-100">Bridge mode</p>
+        <p className="mt-2 text-sm leading-5 text-slate-300">Focused module view with details kept in the inspector.</p>
       </div>
     </aside>
   );
@@ -3108,11 +3129,11 @@ function DesktopMissionNavButton({ active, themeKey = "dashboard", label, meta, 
       className={`group flex w-full min-w-0 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-all duration-200 ${
         active
           ? moduleTheme.active
-          : "border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white/70 hover:text-slate-950 dark:text-slate-300 dark:hover:border-white/10 dark:hover:bg-white/[0.05] dark:hover:text-slate-50"
+          : "border-transparent bg-transparent text-slate-300 hover:border-cyan-300/15 hover:bg-white/[0.06] hover:text-slate-50"
       }`}
     >
       <span className="min-w-0 truncate text-sm font-semibold">{label}</span>
-      <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${active ? moduleTheme.chip : "border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400"}`}>
+      <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${active ? moduleTheme.chip : "border-white/10 bg-white/5 text-slate-400"}`}>
         {meta}
       </span>
     </button>
@@ -3145,12 +3166,15 @@ function TopCommandBar({
   const alertTheme = getModuleTheme("alerts");
 
   return (
-    <header className="relative z-[9990] rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
+    <header className="relative z-[9990] rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-cyan-300/10 dark:bg-[#0b1828]/92 dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,560px)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${dashboardTheme.chip}`}>
               {isOffline ? "Offline sync" : "Live"}
+            </span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-200">
+              {currentRoleLabel}
             </span>
           </div>
           <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
@@ -3168,10 +3192,10 @@ function TopCommandBar({
             <span aria-hidden="true">{"\u25cb"}</span>
             {alertCount ? <span className="ml-1 rounded-full bg-current/12 px-1.5 py-0.5 text-[10px] leading-none">{alertCount}</span> : null}
           </button>
-          <button type="button" onClick={onToggleDarkMode} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Toggle dark mode">
+          <button type="button" onClick={onToggleDarkMode} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-[#0f2033] dark:text-slate-100" aria-label="Toggle dark mode">
             {darkMode ? "\u263c" : "\u25d0"}
           </button>
-          <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Open settings menu" aria-expanded={settingsOpen}>
+          <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg font-semibold text-slate-800 dark:border-white/10 dark:bg-[#0f2033] dark:text-slate-100" aria-label="Open settings menu" aria-expanded={settingsOpen}>
             {"\u2699"}
           </button>
         </div>
@@ -3179,8 +3203,8 @@ function TopCommandBar({
 
       {settingsOpen ? (
         <>
-          <button type="button" className="fixed inset-0 z-[82] bg-black/30 md:hidden" aria-label="Close settings menu" onClick={() => setSettingsOpen(false)} />
-          <div className="fixed inset-x-3 bottom-3 z-[83] max-h-[82vh] overflow-y-auto rounded-[30px] border border-slate-200/80 bg-white/96 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/96 md:absolute md:bottom-auto md:left-auto md:right-0 md:top-[calc(100%+12px)] md:w-[380px]">
+          <button type="button" className="fixed inset-0 z-[2090] bg-black/30 md:hidden" aria-label="Close settings menu" onClick={() => setSettingsOpen(false)} />
+          <div className="fixed inset-x-3 bottom-3 z-[2100] max-h-[82vh] overflow-y-auto rounded-[30px] border border-slate-200/80 bg-white/96 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl dark:border-cyan-300/10 dark:bg-[#0b1828]/96 md:absolute md:bottom-auto md:left-auto md:right-0 md:top-[calc(100%+12px)] md:w-[380px]">
             <TopCommandSettingsMenu
               currentRole={currentRole}
               onCurrentRoleChange={onCurrentRoleChange}
@@ -3214,8 +3238,8 @@ function TopCommandBar({
       ) : null}
 
       {legalOpen ? (
-        <div className="fixed inset-0 z-[95] flex items-end bg-black/45 p-3 md:items-center md:justify-center">
-          <div className="w-full rounded-[28px] border border-slate-200/80 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 md:max-w-lg">
+        <div className="fixed inset-0 z-[3000] flex items-end bg-black/45 p-3 md:items-center md:justify-center">
+          <div className="w-full rounded-[28px] border border-slate-200/80 bg-white p-5 text-slate-900 shadow-2xl dark:border-cyan-300/10 dark:bg-[#0b1828] dark:text-slate-50 md:max-w-lg">
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-cyan-200">Legal</p>
             <h2 className="mt-2 text-xl font-semibold">Contessa Core</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{APP_FOOTER_NOTICE}</p>
@@ -3346,7 +3370,7 @@ function DesktopMissionInspector({
         };
 
   return (
-    <aside className={`sticky top-5 hidden h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border bg-white/88 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:bg-slate-950/78 dark:shadow-[0_24px_70px_rgba(0,0,0,0.36)] xl:block ${moduleTheme.border}`}>
+    <aside className={`sticky top-5 hidden h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border bg-white/88 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:bg-[#0b1828]/92 dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)] xl:block ${moduleTheme.border}`}>
       <p className={`text-[11px] font-bold uppercase tracking-[0.14em] ${moduleTheme.accent}`}>Inspector</p>
       <h2 className="mt-3 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{context.title}</h2>
       <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{context.meta}</p>
@@ -3357,7 +3381,7 @@ function DesktopMissionInspector({
         <InspectorMetric label="Crew" value={stats.crewProfiles || 0} />
       </div>
 
-      <div className="mt-5 rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-900/80">
+      <div className="mt-5 rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-[#0f2033]/90">
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">{context.label}</p>
         <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Details stay here so the main workspace remains calm, focused, and operational.</p>
         <button type="button" onClick={context.onAction} className={`mt-4 min-h-10 w-full rounded-2xl border px-4 py-2 text-sm font-semibold ${moduleTheme.chip}`}>
@@ -3370,7 +3394,7 @@ function DesktopMissionInspector({
 
 function InspectorMetric({ label, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-900/80">
+    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-[#0f2033]/90">
       <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">{label}</p>
       <p className="mt-1 truncate text-lg font-semibold text-slate-950 dark:text-slate-50">{value}</p>
     </div>
