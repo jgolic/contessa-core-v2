@@ -99,8 +99,8 @@ function SummaryRow({ darkMode = false, label, value, detail, tone = "neutral" }
 
   return (
     <div className={`app-panel app-panel-soft rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
+      <div className="flex min-w-0 flex-col gap-2 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-3">
+        <div className="min-w-0">
           <div className={`app-data-label ${theme.textSecondary}`}>{label}</div>
           <div className={`app-metric-value mt-3 ${theme.textPrimary}`}>{value}</div>
         </div>
@@ -136,9 +136,9 @@ function ParameterBracket({
 
   return (
     <div className={`app-panel ${tone !== "neutral" ? "app-panel-active" : "app-panel-soft"} min-w-0 overflow-hidden rounded-[22px] border p-4 md:rounded-xl ${shellClass}`}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex min-w-0 flex-col gap-2 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-3">
         <div className={`min-w-0 truncate text-sm font-semibold ${theme.textPrimary}`}>{label}</div>
-        <Badge className={`${badgeClass} max-w-[44%] shrink-0 truncate whitespace-nowrap text-center leading-tight`}>{statusLabel}</Badge>
+        <Badge className={`${badgeClass} max-w-full shrink-0 truncate whitespace-nowrap text-center leading-tight min-[420px]:max-w-[44%]`}>{statusLabel}</Badge>
       </div>
       <div className="mt-3 flex min-w-0 flex-wrap items-end gap-2">
         <div className={`${valueText === "Not set" ? "text-lg" : "text-2xl"} min-w-0 truncate font-semibold tracking-tight ${theme.textPrimary}`}>{valueText}</div>
@@ -1639,7 +1639,7 @@ export function RoutePlanningView({
                     </div>
                     <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}</div>
 
-                    <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 md:grid-cols-5">
+                    <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 xl:grid-cols-5">
                       {[
                         ["depthShading", "Shading"],
                         ["depthContours", "Contours"],

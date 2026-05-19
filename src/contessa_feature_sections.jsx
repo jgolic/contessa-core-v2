@@ -913,7 +913,7 @@ export function AppShellHeader({
                 <span>{isOffline ? "Offline sync" : "Sync active"}</span>
               </div>
 
-              <div className={`mt-2 max-w-[320px] text-[13px] font-medium leading-[1.45] ${theme.textSecondary}`}>
+              <div className={`mt-2 max-w-full text-[13px] font-medium leading-[1.45] sm:max-w-[360px] ${theme.textSecondary}`}>
                 Fast yacht operations for tasks, approvals, crew, documents, and route review.
               </div>
 
@@ -1003,7 +1003,7 @@ export function AppShellHeader({
                 <div className={`mt-2 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{greeting}, {currentRoleLabel}</div>
                 <div className={`mt-1 text-base font-semibold ${theme.textPrimary}`}>Today on {currentVesselName}</div>
                 <div className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>{heroSummary}</div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                <div className="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 lg:grid-cols-4">
                   {heroMetrics.map((metric) => (
                     <div key={`desktop-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2.5 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
                       <div className={`app-compact-label ${premiumMetricLabelTone(metric.label)}`.trim()}><SmartLabel label={metric.label} /></div>
@@ -1222,7 +1222,7 @@ export function AppShellHeader({
                 <span className="text-lg leading-none transition-transform group-open:rotate-90">&rarr;</span>
               </span>
             </summary>
-          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 xl:grid-cols-4">
             <ShellControlButton
               type="button"
               onClick={() => onHistoryOpenChange(true)}
@@ -1631,7 +1631,7 @@ export function MaintenanceReminderModal({
           </div>
         ) : (
           <div className="mt-5 space-y-3">
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 lg:grid-cols-3">
               <Button
                 onClick={() => onNoteMaintenanceReminder(maintenancePopupItem)}
                 className="button-vessel-primary rounded-lg px-4 py-6 text-white"
@@ -1754,7 +1754,7 @@ export function HistoryPanel({
         )}
       </div>
       <div className={`rounded-lg border p-3 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-[#fbfefd]"}`}>
-        <div className={`mb-3 grid gap-2 text-xs font-semibold uppercase ${theme.textSecondary} md:grid-cols-4`}>
+        <div className={`mb-3 grid gap-2 text-xs font-semibold uppercase ${theme.textSecondary} lg:grid-cols-4`}>
           <div>Time</div>
           <div>Who</div>
           <div>Section</div>
@@ -1767,7 +1767,7 @@ export function HistoryPanel({
             </div>
           ) : (
             history.map((entry) => (
-              <div key={entry.id} className={`grid gap-2 rounded-lg border p-3 text-sm md:grid-cols-4 ${darkMode ? "border-[#2a3a32] bg-[#111a16]" : "border-[#d8e7df] bg-white"}`}>
+              <div key={entry.id} className={`grid gap-2 rounded-lg border p-3 text-sm lg:grid-cols-4 ${darkMode ? "border-[#2a3a32] bg-[#111a16]" : "border-[#d8e7df] bg-white"}`}>
                 <div className={theme.textSecondary}>{formatHistoryTime(entry.at)}</div>
                 <div className={theme.textPrimary}>{entry.by}</div>
                 <div className={theme.textPrimary}>{entry.section}</div>
@@ -1860,7 +1860,7 @@ export function TaskDetails({
           </div>
           {canEdit ? <Input type="file" accept="image/*" multiple onChange={(event) => onTaskPhotoUpload(selectedTask.id, event.target.files)} className={`rounded-lg h-12 ${theme.input}`} /> : null}
           {selectedTask.photos && selectedTask.photos.length > 0 ? (
-            <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="mt-3 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 xl:grid-cols-4">
               {selectedTask.photos.map((photo, index) => (
                 <div key={`${selectedTask.id}-photo-${index}`} className={`relative ${filePreviewCardClass(darkMode)}`}>
                   {canEdit ? <button

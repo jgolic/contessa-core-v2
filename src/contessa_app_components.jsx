@@ -332,7 +332,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
             <div className={`mt-3 text-[11px] font-medium tracking-[0.12em] uppercase md:hidden ${theme.textSecondary}`}>
               Swipe left for quick actions
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 lg:grid-cols-4">
               {TASK_STATUS_OPTIONS.map((status) => {
                 const isActive = task.status === status;
                 return (
@@ -410,7 +410,7 @@ export function QuoteRow({
       >
         x
       </button> : null}
-      <div className="mb-3 flex items-start justify-between gap-3 pr-10">
+      <div className="mb-3 flex flex-col items-start gap-3 pr-10 min-[420px]:flex-row min-[420px]:justify-between">
         <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Quote</div>
         <label
           className={`flex min-h-[2.5rem] cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition ${
@@ -433,7 +433,7 @@ export function QuoteRow({
           <span>{quote.includeInSummary ? "Include in summary" : "Excluded from summary"}</span>
         </label>
       </div>
-      <div className="grid gap-3 md:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Input disabled={!canEdit} value={draft.supplier} onChange={(event) => setDraft((prev) => ({ ...prev, supplier: event.target.value }))} placeholder="Supplier" className={`h-12 rounded-lg ${theme.input}`} />
         <Input disabled={!canEdit} type="number" value={draft.amount} onChange={(event) => setDraft((prev) => ({ ...prev, amount: event.target.value }))} placeholder="Amount" className={`h-12 rounded-lg ${theme.input}`} />
         <Select value={draft.currency || "USD"} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, currency: value }))}>
@@ -486,7 +486,7 @@ export function QuoteRow({
         </div>
         {canEdit ? <Input type="file" multiple onChange={onReceiptUpload} className={`h-12 rounded-lg ${theme.input}`} /> : null}
         {quote.attachments && quote.attachments.length > 0 ? (
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 xl:grid-cols-4">
             {quote.attachments.map((attachment, index) => (
               <a
                 key={`${quote.id}-attachment-${index}`}
@@ -529,7 +529,7 @@ export function ExpenseRow({
 
   return (
     <div className={`rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
-      <div className="grid gap-3 md:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Input value={expense.title} onChange={(event) => onTitleChange(event.target.value)} placeholder="Expense title" className={`h-12 rounded-lg ${theme.input}`} />
         <Input type="number" value={expense.amount} onChange={(event) => onAmountChange(event.target.value)} placeholder="Amount" className={`h-12 rounded-lg ${theme.input}`} />
         <Select value={expense.currency || "USD"} onValueChange={onCurrencyChange}>
@@ -581,7 +581,7 @@ export function ExpenseRow({
         </div>
         <Input type="file" multiple onChange={onReceiptUpload} className={`h-12 rounded-lg ${theme.input}`} />
         {expense.attachments && expense.attachments.length > 0 ? (
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 xl:grid-cols-4">
             {expense.attachments.map((attachment, index) => (
               <a
                 key={`${expense.id}-attachment-${index}`}

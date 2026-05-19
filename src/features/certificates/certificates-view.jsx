@@ -68,7 +68,7 @@ export function CertificatesView({
               </div>
               <div className={`rounded-[24px] border p-4 md:rounded-[22px] ${darkMode ? "border-[#294038] bg-[#0d1513]/84" : "border-white/80 bg-white/86"}`}>
                 <div className="app-kicker">Alert Pressure</div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 gap-3 min-[380px]:grid-cols-3">
                   {CERTIFICATE_ALERT_WINDOWS.map((windowDays) => (
                     <div key={windowDays} className="min-w-0">
                       <div className={`app-compact-label ${theme.textSecondary}`}>{windowDays} Days</div>
@@ -82,7 +82,7 @@ export function CertificatesView({
         </CardContent>
       </Card>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
           {CERTIFICATE_ALERT_WINDOWS.map((windowDays) => (
             <Card key={windowDays} className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
               <CardContent className="p-4">

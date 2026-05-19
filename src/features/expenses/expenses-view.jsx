@@ -81,11 +81,11 @@ function ConfirmableCrewExpenseRow({
           x
         </button>
       ) : null}
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
         <div className={`pr-10 text-sm font-medium ${theme.textSecondary}`}>{item.id}</div>
         <Badge className={neutralBadgeClass(darkMode)}>{convertedMoney(item.amount, item.currency || "USD", currency, exchangeRates)}</Badge>
       </div>
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Input disabled={!canEdit} value={draft.title} onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
         <Input disabled={!canEdit} type="number" value={draft.amount} onChange={(event) => setDraft((prev) => ({ ...prev, amount: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
         <Select value={draft.currency || "USD"} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, currency: value }))}>
@@ -109,7 +109,7 @@ function ConfirmableCrewExpenseRow({
           </SelectContent>
         </Select>
       </div>
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <Badge className={moneyStatusStyles[item.status] || moneyStatusStyles.requested}>{titleCase(item.status || "requested")}</Badge>
           <Badge className={isPaidMoneyStatus(item.status) ? successBadgeClass(darkMode) : warningBadgeClass(darkMode)}>
@@ -137,7 +137,7 @@ function ConfirmableCrewExpenseRow({
         </div>
         {canEdit ? <Input type="file" multiple onChange={(event) => onAttachmentUpload(item.id, event.target.files)} className={`rounded-lg h-12 ${theme.input}`} /> : null}
         {item.attachments && item.attachments.length > 0 ? (
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 xl:grid-cols-4">
             {item.attachments.map((attachment, index) => (
               <a
                 key={`${item.id}-attachment-${index}`}

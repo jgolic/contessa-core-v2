@@ -82,7 +82,7 @@ function ConfirmableMaintenanceItemRow({
         <Badge className={statusClass}>{statusText}</Badge>
       </div>
       <div className={`mb-3 text-sm ${theme.textSecondary}`}>{extensionText}</div>
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Input disabled={!canEdit} value={draft.title} onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
         <Input disabled={!canEdit} value={draft.area} onChange={(event) => setDraft((prev) => ({ ...prev, area: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
         <Select value={String(draft.frequencyMonths)} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, frequencyMonths: Number(value) }))}>
@@ -111,24 +111,24 @@ function ConfirmableMaintenanceItemRow({
         placeholder="Notes"
         className={`mt-3 min-h-20 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--vessel-ring)] ${theme.input}`}
       />
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      <div className="mt-3 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
         {canEdit ? (
           <Button
             type="button"
             onClick={() => onConfirm(item.id, draft)}
             disabled={!isDirty}
-            className="button-vessel-primary rounded-lg px-4 py-5 text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50 min-[420px]:w-auto"
           >
             Confirm
           </Button>
         ) : null}
-        {canEdit ? <Button onClick={() => onCompleteMaintenanceItem(item.id)} className="button-vessel-primary rounded-lg px-4 py-5 text-white">
+        {canEdit ? <Button onClick={() => onCompleteMaintenanceItem(item.id)} className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white min-[420px]:w-auto">
           Done - Set Next Date
         </Button> : null}
         {canEdit ? <Button
           variant="outline"
           onClick={() => setDraft((prev) => ({ ...prev, alertEnabled: !prev.alertEnabled }))}
-          className="vessel-outline-button rounded-lg px-4 py-5"
+          className="vessel-outline-button min-h-11 w-full rounded-lg px-4 py-3 min-[420px]:w-auto"
         >
           {draft.alertEnabled ? "Alerts On" : "Alerts Off"}
         </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}

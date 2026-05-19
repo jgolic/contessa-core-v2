@@ -223,7 +223,7 @@ function ConfirmableCertificateRow({
         </div>
         {canEdit ? <Input type="file" accept={CERTIFICATE_UPLOAD_ACCEPT} multiple onChange={(event) => onAttachmentUpload(certificate.id, event.target.files)} className={`rounded-lg h-12 ${theme.input}`} /> : null}
         {certificate.attachments?.length ? (
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 xl:grid-cols-4">
             {certificate.attachments.map((attachment, index) => (
               <a key={`${certificate.id}-attachment-${index}`} href={attachment.dataUrl} download={attachment.name} className={filePreviewCardClass(darkMode)}>
                 {String(attachment.type || "").startsWith("image/") ? (
