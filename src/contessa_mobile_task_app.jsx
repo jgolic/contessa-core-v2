@@ -2730,7 +2730,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         />
         </div>
 
-        <div className="hidden min-w-0 gap-4 md:grid md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[230px_minmax(0,1fr)_310px]">
+        <div className={`hidden min-w-0 gap-4 md:grid md:grid-cols-[220px_minmax(0,1fr)] ${expenseView === "command" ? "xl:grid-cols-[230px_minmax(0,1fr)]" : "xl:grid-cols-[230px_minmax(0,1fr)_310px]"}`}>
           <DesktopMissionSidebar
             darkMode={darkMode}
             vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
@@ -3012,18 +3012,20 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         )}
             </div>
           </main>
-          <DesktopMissionInspector
-            darkMode={darkMode}
-            selectedTask={selectedTask}
-            selectedCrewProfile={selectedCrewProfile}
-            routeSummary={routeSummary}
-            stats={stats}
-            currency={currency}
-            expenseView={expenseView}
-            onOpenTask={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
-            onOpenCrew={() => openMobileWorkspace("crew-certificates", { panel: "crew" })}
-            onOpenRoute={() => openMobileWorkspace("route")}
-          />
+          {expenseView !== "command" ? (
+            <DesktopMissionInspector
+              darkMode={darkMode}
+              selectedTask={selectedTask}
+              selectedCrewProfile={selectedCrewProfile}
+              routeSummary={routeSummary}
+              stats={stats}
+              currency={currency}
+              expenseView={expenseView}
+              onOpenTask={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
+              onOpenCrew={() => openMobileWorkspace("crew-certificates", { panel: "crew" })}
+              onOpenRoute={() => openMobileWorkspace("route")}
+            />
+          ) : null}
         </div>
       </div>
       <MobileDetailSheet item={mobileDetailItem} onClose={() => setMobileDetailItem(null)} />
@@ -3074,7 +3076,7 @@ function DesktopMissionSidebar({
   ];
 
   return (
-    <aside className="sticky top-5 h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border border-cyan-300/15 bg-[#071321]/95 p-4 text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.32)] backdrop-blur-2xl dark:border-cyan-300/15 dark:bg-[#06101d]/95 dark:shadow-[0_28px_90px_rgba(0,0,0,0.50)]">
+    <aside className="sticky top-5 flex h-[calc(100vh-2.5rem)] min-w-0 flex-col overflow-hidden rounded-[32px] border border-cyan-300/15 bg-[#071321]/95 p-4 text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.32)] backdrop-blur-2xl dark:border-cyan-300/15 dark:bg-[#06101d]/95 dark:shadow-[0_28px_90px_rgba(0,0,0,0.50)]">
       <div className="flex items-center gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-white/[0.08] shadow-[0_0_28px_rgba(34,211,238,0.10)]">
           <ContessaUiLogo className="h-10 w-10" />
@@ -3098,7 +3100,7 @@ function DesktopMissionSidebar({
         </span>
       </button>
 
-      <nav className="mt-5 space-y-2" aria-label="Primary vessel workspace">
+      <nav className="mt-4 flex-1 space-y-1.5 overflow-y-auto pr-1" aria-label="Primary vessel workspace">
         {items.map((item) => (
           <DesktopMissionNavButton
             key={item.key}
@@ -3112,9 +3114,9 @@ function DesktopMissionSidebar({
         ))}
       </nav>
 
-      <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-amber-300/15 bg-amber-300/[0.08] p-4">
+      <div className="mt-4 shrink-0 rounded-3xl border border-amber-300/15 bg-amber-300/[0.08] p-3">
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-100">Bridge mode</p>
-        <p className="mt-2 text-sm leading-5 text-slate-300">Focused module view with details kept in the inspector.</p>
+        <p className="mt-1 text-xs leading-5 text-slate-300">Focused modules, calm details, no crowded controls.</p>
       </div>
     </aside>
   );
@@ -3166,7 +3168,7 @@ function TopCommandBar({
   const alertTheme = getModuleTheme("alerts");
 
   return (
-    <header className="relative z-[9990] rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-cyan-300/10 dark:bg-[#0b1828]/92 dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+    <header className="relative z-[9990] rounded-[28px] border border-slate-200/80 bg-white/76 p-3 shadow-[0_18px_54px_rgba(15,23,42,0.06)] backdrop-blur-2xl dark:border-cyan-300/10 dark:bg-[#081421]/92 dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,560px)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -3177,7 +3179,7 @@ function TopCommandBar({
               {currentRoleLabel}
             </span>
           </div>
-          <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
+          <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
           <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">
             {vesselStatus} {"\u00b7"} {vesselLocation}
           </p>

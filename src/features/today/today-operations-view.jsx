@@ -1155,40 +1155,65 @@ export function TodayOperationsView({
       <div className="grid gap-4 md:gap-5">
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
-            <Card id="dashboard-section" className={`app-panel app-hero-surface min-w-0 overflow-visible rounded-[28px] border ${darkMode ? "border-cyan-300/15 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.14),transparent_32%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.12),transparent_24%),linear-gradient(135deg,rgba(11,24,40,0.96),rgba(6,16,29,0.94))] text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.42)]" : "border-slate-200/80 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_30%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.10),transparent_22%),rgba(255,255,255,0.90)] text-slate-950 shadow-[0_22px_60px_rgba(15,23,42,0.07)]"}`}>
-              <CardContent className="p-5 md:p-6">
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
+            <Card id="dashboard-section" className={`app-panel app-hero-surface min-w-0 overflow-visible rounded-[34px] border ${darkMode ? "border-cyan-300/15 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_34%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.14),transparent_25%),linear-gradient(135deg,rgba(11,24,40,0.98),rgba(6,16,29,0.96))] text-slate-50 shadow-[0_30px_95px_rgba(0,0,0,0.46)]" : "border-slate-200/80 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.11),transparent_30%),radial-gradient(circle_at_top_right,rgba(198,163,91,0.10),transparent_24%),rgba(255,255,255,0.92)] text-slate-950 shadow-[0_24px_70px_rgba(15,23,42,0.08)]"}`}>
+              <CardContent className="p-5 md:p-7">
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.7fr)] xl:items-start">
                   <div className="min-w-0">
-                    <div className="app-kicker premium-label-accent">Today Command Brief</div>
-                    <h2 className={`mt-3 text-2xl font-semibold tracking-tight md:text-3xl ${theme.textPrimary}`}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="app-kicker premium-label-accent">Today Command Brief</div>
+                      <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>{isOffline ? "Offline" : "Live command"}</Badge>
+                    </div>
+                    <h2 className={`mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl ${theme.textPrimary}`}>
                       {greeting}, {currentRoleLabel}
                     </h2>
-                    <p className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>
-                      {currentVessel?.name || currentVesselName} is in {currentVessel?.status || "operational"} mode. {priorityItems.length || 0} items need attention before the next handoff.
+                    <p className={`mt-3 max-w-[64ch] text-base font-semibold leading-7 ${theme.textPrimary}`}>
+                      Today on {currentVessel?.name || currentVesselName}
                     </p>
-                    <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <p className={`mt-2 max-w-[68ch] text-sm leading-6 ${theme.textSecondary}`}>
+                      {currentVessel?.status || "Operational"} command state. {urgentBriefCount} urgent, {stats.pendingApprovals || approvalItems.length} approvals waiting, and {crewBriefCount} crew readiness notes before the next handoff.
+                    </p>
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                       <Button type="button" onClick={onNavigateToTasks} className="button-vessel-primary min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold text-white">
                         Review priorities
                       </Button>
-                      <Button type="button" variant="outline" onClick={onNavigateToApprovals} className={`min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold ${darkMode ? "border-amber-300/30 bg-amber-300/12 text-amber-100 hover:bg-amber-300/20" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}>
+                      <Button type="button" variant="outline" onClick={onNavigateToApprovals} className={`min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold ${darkMode ? "border-amber-300/35 bg-amber-300/12 text-amber-100 hover:bg-amber-300/20" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}>
                         View approvals
+                      </Button>
+                      <Button type="button" variant="outline" onClick={onNavigateToRoute} className={`min-h-11 rounded-2xl px-5 py-2.5 text-sm font-semibold ${darkMode ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100 hover:bg-cyan-300/18" : "border-blue-200 bg-blue-50/80 text-blue-800 hover:bg-blue-100"}`}>
+                        Open route
                       </Button>
                     </div>
                   </div>
 
-                  <div className={`rounded-3xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/70 bg-white/72"}`}>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-cyan-100">Bridge snapshot</p>
-                    <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{nextMilestone}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>{isOffline ? "Offline" : "Live"}</Badge>
+                  <div className={`min-w-0 rounded-[28px] border p-4 ${darkMode ? "border-white/10 bg-white/[0.045]" : "border-slate-200/70 bg-white/76"}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-cyan-100">Operational Snapshot</p>
+                        <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Compact vessel context without repeating controls.</p>
+                      </div>
                       <Badge className={notificationsReady ? successBadgeClass(darkMode) : notificationsUnsupported ? warningBadgeClass(darkMode) : "border border-slate-200 bg-white/80 text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"}>
                         Alerts {notificationsReady ? "ready" : "available"}
                       </Badge>
                     </div>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {[
+                        { label: "Vessel", value: currentVessel?.status || "Operational", tone: "normal" },
+                        { label: "Route", value: stats.routeReviewCount ? "Review" : "Clear", tone: stats.routeReviewCount ? "gold" : "normal" },
+                        { label: "Approval", value: `${stats.pendingApprovals || approvalItems.length}`, tone: "gold" },
+                        { label: "Crew", value: crewBriefCount ? `${crewBriefCount} notes` : "Stable", tone: crewBriefCount ? "gold" : "normal" },
+                        { label: "Weather", value: "Calm watch", tone: "normal" },
+                        { label: "Spend", value: currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency), tone: "gold" },
+                      ].map((item) => (
+                        <div key={item.label} className={`min-w-0 rounded-2xl border px-3 py-3 ${darkMode ? item.tone === "gold" ? "border-amber-300/25 bg-amber-300/10" : "border-white/10 bg-[#0f2033]/70" : item.tone === "gold" ? "border-amber-200 bg-amber-50/70" : "border-slate-200/80 bg-white/78"}`}>
+                          <p className={`truncate text-[10px] font-bold uppercase tracking-[0.12em] ${item.tone === "gold" ? "text-amber-700 dark:text-amber-200" : "text-slate-600 dark:text-slate-300"}`}>{item.label}</p>
+                          <p className={`mt-1 truncate text-sm font-semibold ${theme.textPrimary}`}>{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   {statusTiles.slice(0, 4).map((tile) => (
                     <MetricTile
                       key={tile.label}
