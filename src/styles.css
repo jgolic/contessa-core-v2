@@ -81,6 +81,7 @@ html {
   background: #eef5f1;
   overflow-x: hidden;
   max-width: 100%;
+  width: 100%;
 }
 
 *,
@@ -102,6 +103,14 @@ body {
   color: var(--app-sea-ink);
   line-height: 1.58;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
   max-width: 100%;
 }
 
@@ -1007,6 +1016,17 @@ body.dark-mode .app-page-frame {
     max-width: 100%;
   }
 
+  .app-page-frame {
+    overflow-x: hidden;
+  }
+
+  .app-panel,
+  .app-panel-soft,
+  .app-panel-active {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
   .app-kicker,
   .text-premium-label,
   .app-data-label {
@@ -1036,6 +1056,7 @@ body.dark-mode .app-page-frame {
   }
 
   .search-command-card input {
+    width: 100%;
     min-width: 0;
   }
 

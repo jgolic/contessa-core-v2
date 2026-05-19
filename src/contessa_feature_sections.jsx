@@ -716,7 +716,7 @@ export function AppShellHeader({
   };
 
   return (
-    <div className={`app-panel app-hero-surface relative mb-4 overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
+    <div className={`app-panel app-hero-surface relative mb-4 min-w-0 max-w-full overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
           <DialogHeader>
@@ -928,7 +928,7 @@ export function AppShellHeader({
                   </Badge>
                 </div>
                 <div className={`mt-1.5 text-sm leading-5 ${theme.textSecondary}`}>{heroSummary}</div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
                   {heroMetrics.map((metric) => (
                     <div key={`mobile-hero-${metric.label}`} className={`group rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.03]" : "border-white/70 bg-white/[0.58]"}`}>
                       <div className={`app-compact-label ${premiumMetricLabelTone(metric.label)}`.trim()}><SmartLabel label={metric.label} /></div>
@@ -1046,14 +1046,14 @@ export function AppShellHeader({
           </div>
         </div>
 
-        <div className={`${premiumShellClass(darkMode)} p-4 md:p-5`}>
+        <div className={`${premiumShellClass(darkMode)} min-w-0 p-4 md:p-5`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="app-kicker">Operational Snapshot</div>
               <div className={`mt-1 text-xs ${theme.textSecondary}`}>Compact vessel context without repeating time or sync.</div>
             </div>
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 xl:grid-cols-3">
             {operationalSnapshot.map((item) => {
               const toneClass = item.tone === "warning"
                 ? darkMode
@@ -1151,7 +1151,7 @@ export function AppShellHeader({
               <Button
                 type="button"
                 variant="outline"
-                className={`${primaryButtonClass} ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
+                className={`${primaryButtonClass} w-full sm:w-auto ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
                 onClick={openFleetPanel}
               >
                 Manage
@@ -1382,7 +1382,7 @@ export function AppShellHeader({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-12">
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-12">
         {commandIntelCards.map((card) => (
           <div
             key={card.key}
@@ -1396,7 +1396,7 @@ export function AppShellHeader({
               <Badge className={intelBadgeClass(card.accent)}>{card.badge}</Badge>
             </div>
             {card.metrics ? (
-              <div className="mt-4 grid grid-cols-3 gap-2">
+              <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 sm:grid-cols-3">
                 {card.metrics.map((metric) => (
                   <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                     <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
@@ -1423,13 +1423,13 @@ export function AppShellHeader({
                 <div className={`mt-2 text-xs ${theme.textSecondary}`}>{formatHistoryTime(card.activity.at)}</div>
               </div>
             ) : null}
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
               {card.onAction ? (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={card.onAction}
-                  className={actionButtonClass}
+                  className={`${actionButtonClass} w-full min-[420px]:w-auto`}
                 >
                   {card.actionLabel} <span aria-hidden="true">→</span>
                 </Button>
@@ -1439,7 +1439,7 @@ export function AppShellHeader({
                   type="button"
                   variant="outline"
                   onClick={card.onSecondaryAction}
-                  className={actionButtonClass}
+                  className={`${actionButtonClass} w-full min-[420px]:w-auto`}
                 >
                   {card.secondaryActionLabel} <span aria-hidden="true">→</span>
                 </Button>

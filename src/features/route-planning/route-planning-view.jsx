@@ -1369,19 +1369,19 @@ export function RoutePlanningView({
   };
 
   return (
-    <div className="app-section-grid grid md:gap-6">
-      <Card className={`app-panel app-hero-surface app-panel-active mobile-route-hero overflow-hidden rounded-[28px] md:rounded-[30px] ${theme.card}`}>
+    <div className="app-section-grid grid min-w-0 max-w-full md:gap-6">
+      <Card className={`app-panel app-hero-surface app-panel-active mobile-route-hero min-w-0 overflow-hidden rounded-[28px] md:rounded-[30px] ${theme.card}`}>
         <CardContent className="p-0">
           <div className={`${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.18),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.1),_transparent_24%),linear-gradient(135deg,_rgba(16,25,23,0.98),_rgba(8,14,12,0.98))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.12),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.14),_transparent_20%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} p-4 md:p-5`}>
-            <div className="grid gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)] xl:items-center">
-              <div className="max-w-xl">
+            <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)] xl:items-center">
+              <div className="min-w-0 max-w-xl">
                 <div className="app-kicker">Route Planning</div>
                 <h2 className={`mt-2 text-[1.55rem] font-semibold tracking-tight md:text-[2rem] ${theme.textPrimary}`}>Chart-first passage planning.</h2>
                 <p className={`mt-2 max-w-lg text-sm leading-6 ${theme.textSecondary}`}>Place, review, and reorder waypoints on a live planning chart. Certified navigation checks remain separate.</p>
               </div>
-              <div className={`app-panel mobile-route-status rounded-[22px] border p-4 md:rounded-[20px] ${darkMode ? "border-[#24353b] bg-[#0c1419]/86" : "border-white/80 bg-white/86"}`}>
-                <div className="flex items-center justify-between gap-3">
-                  <div>
+              <div className={`app-panel mobile-route-status min-w-0 rounded-[22px] border p-4 md:rounded-[20px] ${darkMode ? "border-[#24353b] bg-[#0c1419]/86" : "border-white/80 bg-white/86"}`}>
+                <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
+                  <div className="min-w-0">
                     <div className="app-kicker">Planning Status</div>
                     <div className={`mt-2 text-xl font-semibold ${theme.textPrimary}`}>{waypoints.length ? `${waypoints.length} waypoint${waypoints.length === 1 ? "" : "s"}` : "Awaiting route"}</div>
                   </div>
@@ -1402,7 +1402,7 @@ export function RoutePlanningView({
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
+      <div className="grid min-w-0 max-w-full gap-4 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
         <Card className={`route-waypoint-pane order-2 app-panel app-panel-soft rounded-[26px] md:rounded-[24px] xl:order-1 xl:sticky xl:top-6 ${theme.card}`}>
           <CardContent className="p-5 md:p-6">
             <div className="mb-4">
@@ -1427,7 +1427,7 @@ export function RoutePlanningView({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
                         <div className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl text-sm font-semibold md:rounded-xl ${darkMode ? "bg-[#183029] text-[#d7f6e9]" : "bg-[#ebf6f1] text-[#166155]"}`}>{index + 1}</div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <Input
                             disabled={!canEdit}
                             value={waypoint.name || ""}
@@ -1484,17 +1484,17 @@ export function RoutePlanningView({
         </Card>
 
         <div className="grid gap-4">
-          <Card className={`app-panel app-panel-soft rounded-[26px] md:rounded-[24px] ${theme.card}`}>
+          <Card className={`app-panel app-panel-soft min-w-0 rounded-[26px] md:rounded-[24px] ${theme.card}`}>
             <CardContent className="p-4 md:p-5">
               <div className="mb-4 flex flex-col gap-3">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <div>
+                  <div className="min-w-0">
                     <div className="app-kicker">Marine Chart</div>
                     <div className={`mt-1 text-xl font-semibold ${theme.textPrimary}`}>Route planning chart</div>
                     <div className={`mt-1 text-sm ${theme.textSecondary}`}>Clean planning surface with route, waypoints, vessel position, and depth context.</div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 lg:justify-end">
+                  <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
                     {canEdit ? (
                       <Button
                         type="button"
@@ -1517,7 +1517,7 @@ export function RoutePlanningView({
                   </div>
                 </div>
 
-                <div className={`flex max-w-full gap-2 overflow-x-auto rounded-[22px] border p-2 md:flex-wrap md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
+                <div className={`-mx-1 flex max-w-[calc(100%+0.5rem)] gap-2 overflow-x-auto rounded-[22px] border p-2 px-1 md:mx-0 md:max-w-full md:flex-wrap md:px-2 md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
                   {[
                     { key: "planning", label: "Route", active: overlayToggles.route, onClick: () => toggleOverlay("route") },
                     { key: "depthShading", label: "Depth", active: overlayToggles.depthShading, onClick: () => toggleOverlay("depthShading") },

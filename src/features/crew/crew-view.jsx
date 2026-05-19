@@ -284,12 +284,12 @@ function CrewListToolsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`max-w-lg rounded-[28px] border p-5 shadow-2xl md:rounded-[30px] ${darkMode ? "border-white/10 bg-slate-950/95 text-slate-100" : "border-slate-200/80 bg-white text-slate-950"}`}>
+      <DialogContent className={`max-h-[90dvh] w-[calc(100vw-2rem)] max-w-lg overflow-y-auto rounded-[28px] border p-4 shadow-2xl sm:p-5 md:rounded-[30px] ${darkMode ? "border-white/10 bg-slate-950/95 text-slate-100" : "border-slate-200/80 bg-white text-slate-950"}`}>
         <DialogHeader>
           <DialogTitle>Crew List</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4">
-          <div className={`flex items-center gap-4 rounded-3xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
+          <div className={`flex min-w-0 flex-col gap-4 rounded-3xl border p-4 min-[420px]:flex-row min-[420px]:items-center ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
             <div className={`flex h-28 w-20 shrink-0 flex-col items-center justify-start rounded-xl border px-2 py-3 shadow-sm ${darkMode ? "border-cyan-300/20 bg-slate-900 text-slate-100" : "border-slate-200 bg-white text-slate-900"}`}>
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">Crew</div>
               <div className="mt-2 h-px w-full bg-slate-300/70 dark:bg-white/20" />
@@ -299,12 +299,12 @@ function CrewListToolsDialog({
                 <span className="h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
               </div>
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="app-kicker">Printable Document</div>
               <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>
                 Official printable crew list for the current vessel.
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[360px]:grid-cols-2">
                 <div className={`rounded-2xl border px-3 py-2 ${darkMode ? "border-white/10 bg-white/[0.035]" : "border-slate-200/80 bg-white/80"}`}>
                   <div className="font-semibold text-slate-500 dark:text-slate-400">Crew</div>
                   <div className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{crewCount}</div>
@@ -409,7 +409,7 @@ export function CrewView({
             <div className="min-w-0 max-w-full">
               <div className="app-kicker">Crew</div>
               <h2 className={`mt-2 text-xl font-semibold tracking-tight ${darkMode ? "text-slate-50" : "text-slate-950"}`}>Crew onboard</h2>
-              <p className={`mt-1 max-w-[32ch] text-sm leading-6 sm:max-w-[48ch] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+              <p className={`mt-1 max-w-full text-sm leading-6 sm:max-w-[48ch] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
                 Manage onboard crew, certificates, and printable crew list.
               </p>
             </div>
@@ -473,7 +473,7 @@ export function CrewView({
                   onClick={() => onSelectCrewProfile(profile.id)}
                   className={`w-full rounded-2xl border px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 md:rounded-2xl ${selectedCrewProfile?.id === profile.id ? (darkMode ? "border-cyan-300/40 bg-cyan-300/10" : "border-blue-300 bg-blue-50/70") : darkMode ? "border-white/10 bg-white/[0.04] hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white hover:border-blue-300 hover:bg-blue-50/40"}`}
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-col gap-3 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
                     <div className="min-w-0">
                       <p className={`truncate text-base font-semibold ${darkMode ? "text-slate-50" : "text-slate-950"}`}>{crewName}</p>
                       <p className={`mt-1 truncate text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}>{position} &middot; {department}</p>

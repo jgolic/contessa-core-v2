@@ -366,7 +366,7 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div className="search-command-card relative z-50 min-w-0 flex-1 md:max-w-[680px]">
+      <div className="search-command-card relative z-50 w-full min-w-0 md:max-w-[680px]">
         <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/22 bg-slate-950/78 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/80 bg-white/88 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
           <button
             type="button"
@@ -459,7 +459,7 @@ export function CommandJumpBar({
   }
 
   return (
-    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="app-kicker">Command Search</div>
