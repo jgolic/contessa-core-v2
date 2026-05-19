@@ -18,6 +18,7 @@ import {
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
 import { SmartLabel } from "../../components/smart_label.jsx";
+import { getModuleTheme, moduleThemeKeyForResult } from "../../components/module_themes.js";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -419,6 +420,9 @@ export function CommandJumpBar({
             {filteredResults.length ? (
               <div className="grid gap-2">
                 {filteredResults.map((result, index) => (
+                  (() => {
+                    const moduleTheme = getModuleTheme(moduleThemeKeyForResult(result));
+                    return (
                   <button
                     key={result.id}
                     type="button"
@@ -439,12 +443,14 @@ export function CommandJumpBar({
                         <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
+                        <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${moduleTheme.chip}`}>
                           {result.type}
                         </span>
                         <span className={`hidden text-xs font-semibold md:inline ${darkMode ? "text-slate-500" : "text-slate-400"}`}>Enter</span>
                       </div>
                   </button>
+                    );
+                  })()
                 ))}
               </div>
             ) : (
@@ -516,6 +522,9 @@ export function CommandJumpBar({
               {filteredResults.length ? (
                 <div className="grid gap-1.5">
                   {filteredResults.map((result, index) => (
+                    (() => {
+                      const moduleTheme = getModuleTheme(moduleThemeKeyForResult(result));
+                      return (
                     <button
                       key={result.id}
                       type="button"
@@ -535,10 +544,12 @@ export function CommandJumpBar({
                         <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{result.title}</div>
                         <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
                       </div>
-                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.04] text-[var(--vessel-text-accent-dark)]" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
+                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${moduleTheme.chip}`}>
                         {result.type}
                       </span>
                     </button>
+                      );
+                    })()
                   ))}
                 </div>
               ) : (

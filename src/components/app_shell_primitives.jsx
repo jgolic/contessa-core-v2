@@ -3,6 +3,7 @@ import { Button } from "./ui/button.jsx";
 import { Bell, TriangleAlert } from "./icons.jsx";
 import { SmartLabel } from "./smart_label.jsx";
 import { themeClasses } from "../contessa_app_data.mjs";
+import { getModuleTheme } from "./module_themes.js";
 
 export function ShellControlButton({
   darkMode = false,
@@ -62,17 +63,17 @@ export function SectionNavCard({
   value,
   icon: Icon,
   active = false,
+  themeKey = "dashboard",
 }) {
   const theme = themeClasses(darkMode);
+  const moduleTheme = getModuleTheme(themeKey);
   const navLabelTone = active ? "premium-label-accent" : "";
   const moduleCardBase =
     "group app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
     ? "app-panel-soft app-dark-card border-white/10 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.35)] hover:border-[var(--vessel-primary-dark)] hover:bg-slate-800/80"
     : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:border-[var(--vessel-border)] hover:bg-white";
-  const moduleCardActive = darkMode
-    ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] text-cyan-100 shadow-[0_0_24px_var(--vessel-glow-dark)]"
-    : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 shadow-[0_0_24px_rgba(var(--vessel-primary-rgb),0.12)]";
+  const moduleCardActive = `app-panel-active ${moduleTheme.active}`;
 
   return (
     <Card className={`${moduleCardBase} ${active ? moduleCardActive : moduleCardInactive}`}>
@@ -86,11 +87,11 @@ export function SectionNavCard({
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (
-            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-cyan-100" : "vessel-icon-chip"}`}>
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? `border ${moduleTheme.chip}` : darkMode ? "border border-white/10 bg-slate-800/70 text-slate-200" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-slate-300" : "bg-white/60 text-slate-500"}`}>
+          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? `border ${moduleTheme.chip}` : darkMode ? "border border-white/10 bg-slate-800/70 text-slate-300" : "bg-white/60 text-slate-500"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
@@ -105,16 +106,16 @@ export function BottomNavButton({
   value,
   icon: Icon,
   active = false,
+  themeKey = "dashboard",
   ...props
 }) {
+  const moduleTheme = getModuleTheme(themeKey);
   return (
     <button
       type="button"
       className={`group app-card-hover app-panel flex min-h-[54px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border px-1 py-2 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition active:scale-[0.96] min-[390px]:min-h-[58px] min-[390px]:px-1.5 sm:px-2 ${
         active
-          ? darkMode
-            ? "app-panel-active vessel-active-dark"
-            : "app-panel-active border-vessel bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.96),rgba(var(--vessel-secondary-rgb),0.92))] text-white"
+          ? `app-panel-active ${moduleTheme.active}`
           : darkMode
             ? "app-panel-soft app-dark-card border text-slate-100"
             : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
@@ -123,7 +124,7 @@ export function BottomNavButton({
       {...props}
     >
       {Icon ? (
-        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? "bg-white/16 text-current" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
+        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? `border ${moduleTheme.chip}` : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
           <Icon className="h-3 w-3 min-[390px]:h-3.5 min-[390px]:w-3.5" />
         </span>
       ) : null}
