@@ -40,7 +40,6 @@ import {
   formatVesselNameFromId,
   formatMoney,
   getConfiguredPublicAppUrlEnvValue,
-  getInitialAppState,
   getNextFleetTheme,
   getVesselMetrics,
   hasMaintenanceDuplicate,
@@ -142,7 +141,7 @@ const ExpensesView = dynamic(
 
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
   const initialAppState = useMemo(() => {
-    const state = getInitialAppState();
+    const state = createEmptyAppState();
     const routeHasWorkspace = Array.isArray(state.vessels) && state.vessels.some((vessel) => vessel?.id === routeVesselId);
 
     if (!routeVesselId || !routeHasWorkspace) return state;
@@ -226,23 +225,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [crewExpenseDeleteRequest, setCrewExpenseDeleteRequest] = useState(null);
   const [actorName, setActorName] = useState(initialAppState.actorName);
   const [history, setHistory] = useState(initialActiveWorkspace.history || []);
-  const [notificationPermission, setNotificationPermission] = useState(() =>
-    typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported"
-  );
+  const [notificationPermission, setNotificationPermission] = useState("unsupported");
   const jsonImportInputRef = useRef(null);
   const sectionNavigationTimeoutRef = useRef(null);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
-  const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
-    const saved = getStoredJson(PROTOTYPE_SYNC_KEY, null);
-    if (saved && typeof saved === "object") {
-      return {
-        lastSyncAt: saved.lastSyncAt || new Date().toISOString(),
-        unsyncedItemsCount: Number.isFinite(Number(saved.unsyncedItemsCount)) ? Number(saved.unsyncedItemsCount) : 0,
-      };
-    }
-
-    return { lastSyncAt: new Date().toISOString(), unsyncedItemsCount: 0 };
-  });
+  const [prototypeSyncState, setPrototypeSyncState] = useState({ lastSyncAt: "2026-05-19T12:00:00.000Z", unsyncedItemsCount: 0 });
   const syncTrackingReadyRef = useRef(false);
 
   const theme = themeClasses(darkMode);
