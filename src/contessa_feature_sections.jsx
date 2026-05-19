@@ -1473,26 +1473,25 @@ export function AppSectionCards({
   const tasksVisible = visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance");
   const approvalsVisible = visibleModuleKeys.includes("expenses");
   const desktopItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", themeKey: "dashboard", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
-    tasksVisible ? { key: "tasks-maintenance", themeKey: "tasks", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", themeKey: "approvals", label: "Approval", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
     crewAndCertificatesVisible ? {
       key: "crew-certificates",
-      themeKey: "crew",
       label: "Crew",
       value: `${stats.crewProfiles || 0} crew · ${stats.certificateDue || 0} due`,
       icon: Users,
       active: expenseView === "crew-certificates",
       onClick: onShowCrewCertificates,
     } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", themeKey: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", themeKey: "dashboard", label: "Home", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
-    tasksVisible ? { key: "tasks-maintenance", themeKey: "tasks", label: "Tasks", value: `${stats.totalObjectives || 0}`, icon: CheckCircle2, onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", themeKey: "approvals", label: "Approve", value: `${stats.pendingApprovals || 0}`, icon: Wallet, onClick: onShowExpenses } : null,
-    crewAndCertificatesVisible ? { key: "crew-certificates", themeKey: "crew", label: "Crew", value: `${stats.crewProfiles || 0}`, icon: Users, onClick: onShowCrewCertificates } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", themeKey: "documents", label: "Docs", value: `${stats.documentCount || 0}`, icon: Receipt, onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Home", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0}`, icon: CheckCircle2, onClick: onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approve", value: `${stats.pendingApprovals || 0}`, icon: Wallet, onClick: onShowExpenses } : null,
+    crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0}`, icon: Users, onClick: onShowCrewCertificates } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, icon: Receipt, onClick: onShowDocuments } : null,
   ].filter(Boolean);
   const mobileNavItems = mobileItems;
 
@@ -1504,7 +1503,7 @@ export function AppSectionCards({
       >
         {desktopItems.map((item) => (
           <button key={item.key} type="button" onClick={item.onClick} className="h-full min-w-0 text-left">
-            <SectionNavCard label={item.label} value={item.value} icon={item.icon} active={item.active} darkMode={darkMode} themeKey={item.themeKey} />
+            <SectionNavCard label={item.label} value={item.value} icon={item.icon} active={item.active} darkMode={darkMode} />
           </button>
         ))}
       </div>
@@ -1526,7 +1525,6 @@ export function AppSectionCards({
                 value={item.value}
                 icon={item.icon}
                 active={isActive}
-                themeKey={item.themeKey}
               >
                 {item.label}
               </BottomNavButton>

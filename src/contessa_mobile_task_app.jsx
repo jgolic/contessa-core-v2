@@ -80,10 +80,8 @@ import {
   TaskMaintenanceWorkspace,
   TodayOperationsView,
 } from "./contessa_feature_sections.jsx";
-import { canAccessCrewProfile, canAccessModule, canAccessTask, DEMO_ROLE_OPTIONS, getVisibleModulesForRole } from "./contessa_access.mjs";
-import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
-import { MobileDetailSheet, MobileSection } from "./components/mobile_command_sections.jsx";
-import { getModuleTheme, moduleThemeKeyForView } from "./components/module_themes.js";
+import { canAccessCrewProfile, canAccessModule, canAccessTask, getVisibleModulesForRole } from "./contessa_access.mjs";
+import { APP_BRAND_NAME } from "./components/branding.jsx";
 import {
   calculateRoutePassageSummary,
   createRouteWaypoint,
@@ -183,8 +181,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [expenseView, setExpenseView] = useState("command");
-  const [openMobileSection, setOpenMobileSection] = useState("today");
-  const [mobileDetailItem, setMobileDetailItem] = useState(null);
   const [expenseBucket, setExpenseBucket] = useState("boat");
   const [tasksMaintenancePanel, setTasksMaintenancePanel] = useState("tasks");
   const [crewCertificatesPanel, setCrewCertificatesPanel] = useState("crew");
@@ -992,48 +988,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setPendingSectionNavigation({ sectionId, moduleName, options, requestedAt: Date.now() });
   };
 
-  const mobileSectionForModule = (moduleName = "", options = {}) => {
-    if (options?.panel === "maintenance") return "tasks";
-    if (options?.panel === "certificates") return "crew";
-
-    switch (moduleName) {
-      case "tasks-maintenance":
-        return "tasks";
-      case "expenses-approvals":
-        return "approvals";
-      case "crew-certificates":
-        return "crew";
-      case "route":
-        return "route";
-      case "documents":
-        return "docs";
-      case "settings":
-      case "notifications":
-        return "tools";
-      case "command":
-      default:
-        return "today";
-    }
-  };
-
-  const scrollToMobileSection = (section) => {
-    if (typeof window === "undefined" || !section) return;
-    window.requestAnimationFrame(() => {
-      document.getElementById(`mobile-${section}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-
-  const openMobileSectionById = (section) => {
-    if (!section) return;
-    setOpenMobileSection(section);
-    scrollToMobileSection(section);
-  };
-
-  const openMobileWorkspace = (moduleName = "command", options = {}) => {
-    activateModuleForSection(moduleName, options);
-    openMobileSectionById(mobileSectionForModule(moduleName, options));
-  };
-
   const commandSearchResults = useMemo(() => {
     const vesselName = activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME;
     const sectionResults = [
@@ -1106,7 +1060,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     if (result.action === "crew-list") {
       navigateToSection(result.targetId || "crew-section", result.moduleName || "crew-certificates", result.options || { panel: "crew" });
-      openMobileSectionById("crew");
       if (typeof window !== "undefined") {
         window.setTimeout(() => {
           window.dispatchEvent(new CustomEvent("contessa:open-crew-list"));
@@ -1117,8 +1070,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     if (result.item) {
       setExpenseView("command");
-      openMobileSectionById(result.item.type === "quote" || result.item.type === "approval" ? "approvals" : result.item.type === "certificate" ? "crew" : "tasks");
-      setMobileDetailItem(result.item);
       if (typeof window !== "undefined") {
         window.setTimeout(() => {
           window.dispatchEvent(new CustomEvent("contessa:open-command-item", { detail: { id: result.item.id } }));
@@ -1127,7 +1078,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       return;
     }
 
-    openMobileSectionById(mobileSectionForModule(result.moduleName || "", result.options || {}));
     navigateToSection(result.targetId || "dashboard-section", result.moduleName || "", result.options || {});
   };
 
@@ -2529,15 +2479,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     );
   }
 
-  const commandSearchView = (
-    <DashboardCommandSearch
-      darkMode={darkMode}
-      currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
-      searchResults={commandSearchResults}
-      onJump={handleCommandSearchJump}
-    />
-  );
-
   return (
     <div
       className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-5 lg:px-8 xl:px-10 ${theme.page}`}
@@ -2557,7 +2498,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       />
       <div className="app-page-frame">
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
-        <div className="hidden">
         <AppShellHeader
           darkMode={darkMode}
           isOffline={isOffline}
@@ -2617,59 +2557,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           onOpenSettingsWorkspace={() => navigateToSection("settings-section", "settings")}
           notificationCount={accessibleNotifications.length}
           onOpenNotifications={() => navigateToSection("alerts-section", "notifications")}
-          commandSearchView={commandSearchView}
-        />
-        </div>
-
-        <MobileFocusedDashboard
-          darkMode={darkMode}
-          vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-          vesselStatus={activeVesselWorkspace?.details?.status || "Operational"}
-          vesselLocation={activeVesselWorkspace?.details?.homePort || "Home port not set"}
-          currentRoleLabel={currentRoleLabel}
-          appMode={appMode}
-          isOffline={isOffline}
-          stats={stats}
-          currency={currency}
-          tasks={visibleTasks}
-          maintenanceItems={maintenanceItems}
-          approvals={approvalScopedBoatItems}
-          crewExpenses={crewExpenses}
-          crewProfiles={visibleCrewProfiles}
-          documents={documents}
-          routePlanning={routePlanning}
-          routeSummary={routeSummary}
-          routeAlerts={routeAlerts}
-          fleetVessels={vesselsForPersistence}
-          activeVesselId={activeVesselId}
-          fleetMetricsByVessel={fleetMetricsByVessel}
-          commandSearchView={commandSearchView}
-          openSection={openMobileSection}
-          onOpenSection={openMobileSectionById}
-          onOpenDetail={setMobileDetailItem}
-          onOpenTaskModule={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
-          onOpenApprovals={() => openMobileWorkspace("expenses-approvals", { bucket: "boat" })}
-          onOpenCrew={() => openMobileWorkspace("crew-certificates", { panel: "crew" })}
-          onOpenRoute={() => openMobileWorkspace("route")}
-          onOpenDocuments={() => openMobileWorkspace("documents")}
-          onOpenTools={() => openMobileWorkspace("settings")}
-          onSwitchFleetVessel={openVesselWorkspace}
-          onAddTask={() => {
-            openMobileWorkspace("tasks-maintenance", { panel: "tasks" });
-            setNewTaskOpen(true);
-          }}
-          onAddCrew={() => {
-            openMobileWorkspace("crew-certificates", { panel: "crew" });
-            setNewCrewProfileOpen(true);
-          }}
-          onOpenCrewList={() => {
-            if (typeof window !== "undefined") {
-              window.open(`/vessels/${activeVesselId}/crew-list/print`, "_blank");
-            }
-          }}
+          commandSearchView={
+            <DashboardCommandSearch
+              darkMode={darkMode}
+              currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
+              searchResults={commandSearchResults}
+              onJump={handleCommandSearchJump}
+            />
+          }
         />
 
-        <div className="md:hidden">
         <AppSectionCards
           darkMode={darkMode}
           expenseView={expenseView}
@@ -2679,68 +2576,20 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           fleetCount={vesselsForPersistence.length}
           routeWarningCount={routeAlerts.length}
           quickActionItems={mobileQuickActionItems || []}
-          onShowCommand={() => openMobileWorkspace("command")}
-          onShowRoute={() => {
-            openMobileWorkspace("route");
-            navigateToSection("route-section", "route");
-          }}
+          onShowCommand={() => setExpenseView("command")}
+          onShowRoute={() => navigateToSection("route-section", "route")}
           onShowTasksMaintenance={() => {
-            openMobileWorkspace("tasks-maintenance", { panel: "tasks" });
             navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
           }}
           onShowCrewCertificates={() => {
-            openMobileWorkspace("crew-certificates", { panel: "crew" });
             navigateToSection("crew-section", "crew-certificates", { panel: "crew" });
           }}
-          onShowExpenses={() => {
-            openMobileWorkspace("expenses-approvals", { bucket: "boat" });
-            navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" });
-          }}
-          onShowDocuments={() => {
-            openMobileWorkspace("documents");
-            navigateToSection("docs-section", "documents");
-          }}
+          onShowExpenses={() => navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" })}
+          onShowDocuments={() => navigateToSection("docs-section", "documents")}
           onShowFleet={() => setFleetOpen(true)}
-          onShowSettings={() => {
-            openMobileWorkspace("settings");
-            navigateToSection("settings-section", "settings");
-          }}
+          onShowSettings={() => navigateToSection("settings-section", "settings")}
         />
-        </div>
 
-        <div className="hidden min-w-0 gap-4 md:grid md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[230px_minmax(0,1fr)_310px]">
-          <DesktopMissionSidebar
-            darkMode={darkMode}
-            expenseView={expenseView}
-            stats={stats}
-            routeWarningCount={routeAlerts.length}
-            onShowCommand={() => openMobileWorkspace("command")}
-            onShowTasks={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
-            onShowApprovals={() => openMobileWorkspace("expenses-approvals", { bucket: "boat" })}
-            onShowCrew={() => openMobileWorkspace("crew-certificates", { panel: "crew" })}
-            onShowRoute={() => openMobileWorkspace("route")}
-            onShowDocuments={() => openMobileWorkspace("documents")}
-            onShowMore={() => openMobileWorkspace("settings")}
-          />
-          <main className="min-w-0 space-y-4">
-            <DesktopMissionTopBar
-              darkMode={darkMode}
-              vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-              vesselStatus={activeVesselWorkspace?.details?.status || "Operational"}
-              vesselLocation={activeVesselWorkspace?.details?.homePort || "Home port not set"}
-              currentRole={effectiveRole}
-              currentRoleLabel={currentRoleLabel}
-              onCurrentRoleChange={setCurrentRole}
-              appMode={appMode}
-              onAppModeChange={handleAppModeChange}
-              isOffline={isOffline}
-              alertCount={accessibleNotifications.length}
-              commandSearchView={commandSearchView}
-              onOpenFleet={() => setFleetOpen(true)}
-              onOpenAlerts={() => navigateToSection("alerts-section", "notifications")}
-              onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-            />
-            <div className="min-w-0">
         {expenseView === "command" ? (
           <TodayOperationsView
             darkMode={darkMode}
@@ -2981,23 +2830,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         )}
-            </div>
-          </main>
-          <DesktopMissionInspector
-            darkMode={darkMode}
-            selectedTask={selectedTask}
-            selectedCrewProfile={selectedCrewProfile}
-            routeSummary={routeSummary}
-            stats={stats}
-            currency={currency}
-            expenseView={expenseView}
-            onOpenTask={() => openMobileWorkspace("tasks-maintenance", { panel: "tasks" })}
-            onOpenCrew={() => openMobileWorkspace("crew-certificates", { panel: "crew" })}
-            onOpenRoute={() => openMobileWorkspace("route")}
-          />
-        </div>
       </div>
-      <MobileDetailSheet item={mobileDetailItem} onClose={() => setMobileDetailItem(null)} />
       <MaintenanceReminderModal
         darkMode={darkMode}
         maintenancePopupItem={maintenancePopupItem}
@@ -3015,651 +2848,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       </div>
     </div>
   );
-}
-
-function DesktopMissionSidebar({
-  darkMode,
-  expenseView,
-  stats,
-  routeWarningCount,
-  onShowCommand,
-  onShowTasks,
-  onShowApprovals,
-  onShowCrew,
-  onShowRoute,
-  onShowDocuments,
-  onShowMore,
-}) {
-  const items = [
-    { key: "command", themeKey: "dashboard", label: "Dashboard", meta: `${stats.todayAttentionCount || 0}`, onClick: onShowCommand },
-    { key: "tasks-maintenance", themeKey: "tasks", label: "Tasks", meta: `${stats.totalObjectives || 0}`, onClick: onShowTasks },
-    { key: "expenses-approvals", themeKey: "approvals", label: "Approvals", meta: `${stats.pendingApprovals || 0}`, onClick: onShowApprovals },
-    { key: "crew-certificates", themeKey: "crew", label: "Crew", meta: `${stats.crewProfiles || 0}`, onClick: onShowCrew },
-    { key: "route", themeKey: "route", label: "Route", meta: `${routeWarningCount || 0}`, onClick: onShowRoute },
-    { key: "documents", themeKey: "documents", label: "Docs", meta: `${stats.documentCount || 0}`, onClick: onShowDocuments },
-    { key: "settings", themeKey: "fleet", label: "More", meta: "Tools", onClick: onShowMore },
-  ];
-
-  return (
-    <aside className="sticky top-5 h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-900">
-          <ContessaUiLogo className="h-10 w-10" />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold tracking-tight text-slate-950 dark:text-slate-50">Contessa</p>
-          <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Yacht Ops</p>
-        </div>
-      </div>
-
-      <nav className="mt-7 space-y-2" aria-label="Primary vessel workspace">
-        {items.map((item) => (
-          <DesktopMissionNavButton
-            key={item.key}
-            active={expenseView === item.key}
-            themeKey={item.themeKey}
-            label={item.label}
-            meta={item.meta}
-            onClick={item.onClick}
-            darkMode={darkMode}
-          />
-        ))}
-      </nav>
-
-      <div className="absolute inset-x-4 bottom-4 rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-900/80">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-cyan-200">Bridge mode</p>
-        <p className="mt-2 text-sm leading-5 text-slate-600 dark:text-slate-300">Focused module view with details kept in the inspector.</p>
-      </div>
-    </aside>
-  );
-}
-
-function DesktopMissionNavButton({ active, themeKey = "dashboard", label, meta, onClick }) {
-  const moduleTheme = getModuleTheme(themeKey);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group flex w-full min-w-0 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-all duration-200 ${
-        active
-          ? moduleTheme.active
-          : "border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white/70 hover:text-slate-950 dark:text-slate-300 dark:hover:border-white/10 dark:hover:bg-white/[0.05] dark:hover:text-slate-50"
-      }`}
-    >
-      <span className="min-w-0 truncate text-sm font-semibold">{label}</span>
-      <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${active ? moduleTheme.chip : "border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400"}`}>
-        {meta}
-      </span>
-    </button>
-  );
-}
-
-function DesktopMissionTopBar({
-  vesselName,
-  vesselStatus,
-  vesselLocation,
-  currentRole,
-  currentRoleLabel,
-  onCurrentRoleChange,
-  appMode,
-  onAppModeChange,
-  isOffline,
-  alertCount,
-  commandSearchView,
-  onOpenFleet,
-  onOpenAlerts,
-  onToggleDarkMode,
-}) {
-  const dashboardTheme = getModuleTheme("dashboard");
-  const alertTheme = getModuleTheme("alerts");
-  const fleetTheme = getModuleTheme("fleet");
-
-  return (
-    <header className="rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] xl:items-center">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${dashboardTheme.chip}`}>
-              {isOffline ? "Offline sync" : "Live"}
-            </span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200">
-              {currentRoleLabel}
-            </span>
-          </div>
-          <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{vesselStatus} · {vesselLocation}</p>
-        </div>
-
-        <div className="relative z-[70] min-w-0">
-          {commandSearchView}
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button type="button" onClick={onOpenFleet} className={`min-h-10 rounded-2xl border px-4 py-2 text-sm font-semibold ${fleetTheme.chip}`}>
-          Fleet
-        </button>
-        <select
-          value={currentRole}
-          onChange={(event) => onCurrentRoleChange?.(event.target.value)}
-          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
-        >
-          {DEMO_ROLE_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
-        <select
-          value={appMode}
-          onChange={(event) => onAppModeChange?.(event.target.value)}
-          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
-        >
-          <option value="view">View Mode</option>
-          <option value="editor">Editor Mode</option>
-        </select>
-        <button type="button" onClick={onOpenAlerts} className={`min-h-10 rounded-2xl border px-4 py-2 text-sm font-semibold ${alertTheme.chip}`}>
-          Alerts {alertCount}
-        </button>
-        <button type="button" onClick={onToggleDarkMode} className="ml-auto min-h-10 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
-          Theme
-        </button>
-      </div>
-    </header>
-  );
-}
-
-function DesktopMissionInspector({
-  selectedTask,
-  selectedCrewProfile,
-  routeSummary,
-  stats,
-  currency,
-  expenseView,
-  onOpenTask,
-  onOpenCrew,
-  onOpenRoute,
-}) {
-  const moduleTheme = getModuleTheme(moduleThemeKeyForView(expenseView));
-  const context =
-    expenseView === "crew-certificates"
-      ? {
-        label: "Crew Detail",
-        title: selectedCrewProfile?.fullName || "Crew profile",
-        meta: selectedCrewProfile?.rank || selectedCrewProfile?.department || "Crew",
-        action: "Open crew",
-        onAction: onOpenCrew,
-      }
-      : expenseView === "route"
-        ? {
-          label: "Route Detail",
-          title: `${Math.round(routeSummary?.totalDistanceNm || 0)} nm passage`,
-          meta: `${routeSummary?.estimatedHours ? routeSummary.estimatedHours.toFixed(1) : "0"} h estimate`,
-          action: "Open route",
-          onAction: onOpenRoute,
-        }
-        : {
-          label: "Task Detail",
-          title: selectedTask?.name || "Select a task",
-          meta: selectedTask?.area || selectedTask?.assignee || "No item selected",
-          action: "Open tasks",
-          onAction: onOpenTask,
-        };
-
-  return (
-    <aside className={`sticky top-5 hidden h-[calc(100vh-2.5rem)] min-w-0 overflow-hidden rounded-[32px] border bg-white/88 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl dark:bg-slate-950/78 dark:shadow-[0_24px_70px_rgba(0,0,0,0.36)] xl:block ${moduleTheme.border}`}>
-      <p className={`text-[11px] font-bold uppercase tracking-[0.14em] ${moduleTheme.accent}`}>Inspector</p>
-      <h2 className="mt-3 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{context.title}</h2>
-      <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{context.meta}</p>
-
-      <div className="mt-5 grid gap-3">
-        <InspectorMetric label="Pending spend" value={formatMoney(stats.totalExpenses || 0, currency)} />
-        <InspectorMetric label="Approvals" value={stats.pendingApprovals || 0} />
-        <InspectorMetric label="Crew" value={stats.crewProfiles || 0} />
-      </div>
-
-      <div className="mt-5 rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-900/80">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">{context.label}</p>
-        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Details stay here so the main workspace remains calm, focused, and operational.</p>
-        <button type="button" onClick={context.onAction} className={`mt-4 min-h-10 w-full rounded-2xl border px-4 py-2 text-sm font-semibold ${moduleTheme.chip}`}>
-          {context.action}
-        </button>
-      </div>
-    </aside>
-  );
-}
-
-function InspectorMetric({ label, value }) {
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-900/80">
-      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-1 truncate text-lg font-semibold text-slate-950 dark:text-slate-50">{value}</p>
-    </div>
-  );
-}
-
-function MobileFocusedDashboard({
-  vesselName,
-  vesselStatus,
-  vesselLocation,
-  currentRoleLabel,
-  appMode,
-  isOffline,
-  stats,
-  currency,
-  tasks = [],
-  maintenanceItems = [],
-  approvals = [],
-  crewExpenses = [],
-  crewProfiles = [],
-  documents = [],
-  routePlanning,
-  routeSummary,
-  routeAlerts = [],
-  fleetVessels = [],
-  activeVesselId,
-  fleetMetricsByVessel = {},
-  commandSearchView,
-  openSection,
-  onOpenSection,
-  onOpenDetail,
-  onOpenTaskModule,
-  onOpenApprovals,
-  onOpenCrew,
-  onOpenRoute,
-  onOpenDocuments,
-  onOpenTools,
-  onSwitchFleetVessel,
-  onAddTask,
-  onAddCrew,
-  onOpenCrewList,
-}) {
-  const safeTasks = Array.isArray(tasks) ? tasks : [];
-  const safeMaintenance = Array.isArray(maintenanceItems) ? maintenanceItems : [];
-  const safeApprovals = Array.isArray(approvals) ? approvals : [];
-  const safeCrewExpenses = Array.isArray(crewExpenses) ? crewExpenses : [];
-  const safeCrew = Array.isArray(crewProfiles) ? crewProfiles : [];
-  const safeDocuments = Array.isArray(documents) ? documents : [];
-  const waypoints = Array.isArray(routePlanning?.waypoints) ? routePlanning.waypoints : [];
-  const approvalItems = [...safeApprovals, ...safeCrewExpenses].slice(0, 3);
-  const routeFrom = waypoints[0]?.name || routePlanning?.route?.from || "Departure";
-  const routeTo = waypoints[waypoints.length - 1]?.name || routePlanning?.route?.to || "Destination";
-  const currentVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId);
-  const otherVessels = fleetVessels.filter((vessel) => vessel?.id !== activeVesselId);
-
-  const openItem = (item, section) => {
-    onOpenSection?.(section);
-    onOpenDetail?.(item);
-  };
-
-  return (
-    <div className="md:hidden">
-      <div className="space-y-4 px-0 pb-3 pt-1">
-        <section
-          id="mobile-command-brief"
-          className="w-full min-w-0 max-w-full overflow-visible rounded-[30px] border border-slate-200/80 bg-white/90 p-4 text-slate-950 shadow-[0_18px_54px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50"
-        >
-          <div className="flex min-w-0 items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="max-w-full truncate text-[11px] font-bold uppercase tracking-[0.1em] text-blue-700 dark:text-cyan-200">Today</p>
-              <h1 className="mt-1 max-w-full truncate text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
-              <p className="mt-1 max-w-full truncate text-sm text-slate-600 dark:text-slate-300">
-                {vesselStatus} · {vesselLocation}
-              </p>
-            </div>
-            <span className="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">
-              {isOffline ? "Offline" : "Live"}
-            </span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
-              {currentRoleLabel}
-            </span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
-              {appMode === "editor" ? "Editor" : "View"}
-            </span>
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/15 dark:text-amber-100">
-              {stats.todayAttentionCount || 0} need attention
-            </span>
-          </div>
-
-          <div className="relative z-[80] mt-4 w-full min-w-0 max-w-full">
-            {commandSearchView}
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <MobileMetric label="Urgent" value={stats.overdueTasks || 0} themeKey="alerts" />
-            <MobileMetric label="Approvals" value={stats.pendingApprovals || 0} tone="gold" />
-            <MobileMetric label="Crew" value={stats.crewProfiles || 0} themeKey="crew" />
-            <MobileMetric label="Tasks" value={stats.totalObjectives || 0} themeKey="tasks" />
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => onOpenSection?.("tasks")} className="min-h-11 rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 shadow-sm dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-              Review
-            </button>
-            <button type="button" onClick={onAddTask} className="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100">
-              Add task
-            </button>
-          </div>
-        </section>
-
-        <MobileSection
-          id="today"
-          themeKey="dashboard"
-          title="Today"
-          subtitle={`${stats.todayAttentionCount || 0} items need attention`}
-          count={stats.todayAttentionCount || 0}
-          open={openSection === "today"}
-          onOpen={onOpenSection}
-        >
-          <div className="space-y-3">
-            {safeTasks.slice(0, 3).map((task) => (
-              <MobileTaskCard key={task.id} task={task} onOpen={() => openItem(taskToMobileDetail(task, currency), "tasks")} />
-            ))}
-            {!safeTasks.length ? <MobileEmptyState>No urgent tasks today.</MobileEmptyState> : null}
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="tasks"
-          themeKey="tasks"
-          title="Tasks"
-          subtitle={`${safeTasks.length} active work items`}
-          count={safeTasks.length}
-          open={openSection === "tasks"}
-          onOpen={onOpenSection}
-        >
-          <div className="space-y-3">
-            {safeTasks.slice(0, 3).map((task) => (
-              <MobileTaskCard key={task.id} task={task} onOpen={() => openItem(taskToMobileDetail(task, currency), "tasks")} />
-            ))}
-            <button type="button" onClick={onOpenTaskModule} className="min-h-11 w-full rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-              Open task board
-            </button>
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="approvals"
-          themeKey="approvals"
-          title="Approvals"
-          subtitle={`${approvalItems.length} decisions visible`}
-          count={stats.pendingApprovals || approvalItems.length}
-          open={openSection === "approvals"}
-          onOpen={onOpenSection}
-        >
-          <div className="space-y-3">
-            {approvalItems.length ? approvalItems.map((item) => (
-              <MobileApprovalCard key={item.id || item.title} item={item} currency={currency} onOpen={() => openItem(approvalToMobileDetail(item, currency), "approvals")} />
-            )) : <MobileEmptyState>No approvals waiting.</MobileEmptyState>}
-            <button type="button" onClick={onOpenApprovals} className="min-h-11 w-full rounded-2xl border border-amber-300/70 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/15 dark:text-amber-100">
-              Open approvals
-            </button>
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="crew"
-          themeKey="crew"
-          title="Crew"
-          subtitle={`${safeCrew.length} onboard profiles`}
-          count={safeCrew.length}
-          open={openSection === "crew"}
-          onOpen={onOpenSection}
-        >
-          <div className="grid gap-3">
-            <div className="grid grid-cols-2 gap-3">
-              <button type="button" onClick={onAddCrew} className="min-h-11 rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-                Add Crew
-              </button>
-              <button type="button" onClick={onOpenCrewList} className="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100">
-                Crew List
-              </button>
-            </div>
-            {safeCrew.slice(0, 4).map((person) => (
-              <MobileCrewCard key={person.id || person.fullName} person={person} onOpen={() => openItem(crewToMobileDetail(person), "crew")} />
-            ))}
-            {!safeCrew.length ? <MobileEmptyState>No crew profiles yet.</MobileEmptyState> : null}
-            <button type="button" onClick={onOpenCrew} className="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100">
-              Open crew workspace
-            </button>
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="route"
-          themeKey="route"
-          title="Route"
-          subtitle={`${routeFrom} to ${routeTo}`}
-          count={routeAlerts.length}
-          open={openSection === "route"}
-          onOpen={onOpenSection}
-        >
-          <div className="rounded-3xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-800/70">
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-blue-700 dark:text-cyan-200">Route preview</p>
-            <p className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">{routeFrom} → {routeTo}</p>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <MobileMetric label="Distance" value={`${Math.round(routeSummary?.totalDistanceNm || 0)} nm`} themeKey="route" />
-              <MobileMetric label="ETA" value={routeSummary?.estimatedHours ? `${routeSummary.estimatedHours.toFixed(1)} h` : "Review"} themeKey="route" />
-            </div>
-            <button type="button" onClick={onOpenRoute} className="mt-4 min-h-11 w-full rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-              View route
-            </button>
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="fleet"
-          themeKey="fleet"
-          title="Fleet"
-          subtitle={`${fleetVessels.length} vessel workspaces`}
-          count={fleetVessels.length}
-          open={openSection === "fleet"}
-          onOpen={onOpenSection}
-        >
-          <div className="grid w-full min-w-0 gap-3">
-            {[currentVessel, ...otherVessels].filter(Boolean).map((vessel) => (
-              <MobileFleetCard
-                key={vessel.id}
-                vessel={vessel}
-                current={vessel.id === activeVesselId}
-                metrics={fleetMetricsByVessel[vessel.id] || {}}
-                onOpen={() => onSwitchFleetVessel?.(vessel.id)}
-              />
-            ))}
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="docs"
-          themeKey="documents"
-          title="Docs"
-          subtitle={`${safeDocuments.length} vessel files`}
-          count={safeDocuments.length}
-          open={openSection === "docs"}
-          onOpen={onOpenSection}
-        >
-          <div className="space-y-3">
-            {safeDocuments.slice(0, 4).map((document) => (
-              <MobileSimpleRow key={document.id || document.title} title={document.title || document.name || "Document"} meta={document.category || document.type || "Document"} />
-            ))}
-            {!safeDocuments.length ? <MobileEmptyState>No documents uploaded yet.</MobileEmptyState> : null}
-            <button type="button" onClick={onOpenDocuments} className="min-h-11 w-full rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-              Open documents
-            </button>
-          </div>
-        </MobileSection>
-
-        <MobileSection
-          id="tools"
-          themeKey="fleet"
-          title="Tools"
-          subtitle="History, legal, share, settings"
-          open={openSection === "tools"}
-          onOpen={onOpenSection}
-        >
-          <button type="button" onClick={onOpenTools} className="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100">
-            Open secondary tools
-          </button>
-        </MobileSection>
-      </div>
-    </div>
-  );
-}
-
-function MobileMetric({ label, value, tone = "default", themeKey }) {
-  const moduleTheme = getModuleTheme(themeKey || (tone === "gold" ? "approvals" : "documents"));
-  const toneClass = tone === "gold" ? getModuleTheme("approvals").accent : moduleTheme.accent;
-
-  return (
-    <div className={`min-w-0 rounded-2xl border p-3 ${moduleTheme.bg} ${moduleTheme.border}`}>
-      <p className={`max-w-full truncate whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.08em] ${toneClass}`}>{label}</p>
-      <p className="mt-1 truncate text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-50">{value}</p>
-    </div>
-  );
-}
-
-function MobileTaskCard({ task, onOpen }) {
-  return (
-    <button type="button" onClick={onOpen} className="w-full min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm dark:border-white/10 dark:bg-slate-800/70">
-      <div className="flex min-w-0 items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{task.name || "Untitled task"}</p>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{task.assignee || "Unassigned"} · {task.dueDate || "No due date"}</p>
-        </div>
-        <span className="shrink-0 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-300/30 dark:bg-rose-400/15 dark:text-rose-200">
-          {titleCase(task.priority || "Normal")}
-        </span>
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <span className="truncate text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">{titleCase(task.status || "Pending")}</span>
-        <span className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">Open</span>
-      </div>
-    </button>
-  );
-}
-
-function MobileApprovalCard({ item, currency, onOpen }) {
-  const amount = item.amount !== undefined && item.amount !== null ? formatMoney(item.amount, item.currency || currency) : "";
-  return (
-    <button type="button" onClick={onOpen} className="w-full min-w-0 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-left shadow-sm dark:border-amber-300/25 dark:bg-amber-300/15">
-      <div className="flex min-w-0 items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{item.displayName || item.title || item.supplier || "Approval"}</p>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{item.taskName || item.requester || "Decision item"}</p>
-        </div>
-        <span className="shrink-0 rounded-full border border-amber-300 bg-white/80 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:border-amber-300/30 dark:bg-slate-900/60 dark:text-amber-100">
-          {amount}
-        </span>
-      </div>
-    </button>
-  );
-}
-
-function MobileCrewCard({ person, onOpen }) {
-  return (
-    <button type="button" onClick={onOpen} className="w-full min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm dark:border-white/10 dark:bg-slate-800/70">
-      <div className="flex min-w-0 items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{person.fullName || person.name || "Unnamed crew"}</p>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{person.rank || person.position || person.role || "Crew"} · {person.department || "General"}</p>
-        </div>
-        <span className="shrink-0 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">Open</span>
-      </div>
-    </button>
-  );
-}
-
-function MobileFleetCard({ vessel, current, metrics, onOpen }) {
-  return (
-    <div className={`w-full min-w-0 max-w-full overflow-hidden rounded-2xl border p-4 ${current ? "border-blue-300 bg-blue-50/60 dark:border-cyan-300/35 dark:bg-cyan-300/10" : "border-slate-200/80 bg-white dark:border-white/10 dark:bg-slate-800/70"}`}>
-      <div className="flex min-w-0 items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600 dark:text-slate-300">Vessel</p>
-          <p className="mt-1 truncate text-lg font-semibold text-slate-950 dark:text-slate-50">{vessel.name}</p>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{vessel.details?.status || "Operational"} · {vessel.details?.homePort || "Home port not set"}</p>
-        </div>
-        <span className="shrink-0 rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-          {current ? "Current" : "Available"}
-        </span>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <MobileMetric label="Tasks" value={metrics.taskCount || 0} themeKey="tasks" />
-        <MobileMetric label="Alerts" value={metrics.alertCount || 0} themeKey="alerts" />
-      </div>
-      {current ? (
-        <button type="button" disabled className="mt-3 min-h-11 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-500 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-400">
-          Current Workspace
-        </button>
-      ) : (
-        <button type="button" onClick={onOpen} className="mt-3 min-h-11 w-full rounded-2xl border border-blue-300/70 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 dark:border-cyan-300/35 dark:bg-cyan-300/15 dark:text-cyan-100">
-          Open Vessel
-        </button>
-      )}
-    </div>
-  );
-}
-
-function MobileSimpleRow({ title, meta }) {
-  return (
-    <div className="w-full min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-white/10 dark:bg-slate-800/70">
-      <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{title}</p>
-      <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{meta}</p>
-    </div>
-  );
-}
-
-function MobileEmptyState({ children }) {
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300">
-      {children}
-    </div>
-  );
-}
-
-function taskToMobileDetail(task, currency) {
-  const amount = (task.quotes || []).reduce((sum, quote) => sum + Number(quote.amount || 0), 0);
-  return {
-    id: task.id,
-    type: "Task",
-    title: task.name || "Untitled task",
-    subtitle: task.area || task.department || "Operations",
-    status: titleCase(task.status || "pending"),
-    priority: titleCase(task.priority || "normal"),
-    assignedTo: task.assignee || "Unassigned",
-    dueDate: task.dueDate || "Not set",
-    amount: amount ? formatMoney(amount, task.quotes?.[0]?.currency || currency) : "",
-    description: task.notes || "",
-  };
-}
-
-function approvalToMobileDetail(item, currency) {
-  return {
-    id: item.id,
-    type: "Approval",
-    title: item.displayName || item.title || item.supplier || "Approval",
-    subtitle: item.taskName || item.requester || "Decision item",
-    status: titleCase(item.status || "requested"),
-    priority: "Review",
-    assignedTo: item.requester || "Captain",
-    dueDate: "Awaiting decision",
-    amount: item.amount !== undefined && item.amount !== null ? formatMoney(item.amount, item.currency || currency) : "",
-    description: item.reason || item.notes || "",
-  };
-}
-
-function crewToMobileDetail(person) {
-  return {
-    id: person.id,
-    type: "Crew",
-    title: person.fullName || person.name || "Unnamed crew",
-    subtitle: person.department || "General",
-    status: `${person.certificates?.length || 0} certificates`,
-    priority: person.rank || person.position || person.role || "Crew",
-    assignedTo: person.fullName || person.name || "Crew",
-    dueDate: person.dateOfBirth || person.dob || "",
-    description: person.notes || "",
-  };
 }
 
 
