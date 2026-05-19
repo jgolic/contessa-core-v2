@@ -57,6 +57,8 @@ export const APPROVAL_OPTIONS = ["pending", "approved", "rejected"];
 export const PAYMENT_OPTIONS = ["unpaid", "paid"];
 export const REJECTION_HOLD_MS = 24 * 60 * 60 * 1000;
 export const DECLINED_HOLD_MS = 10 * 60 * 1000;
+const DEMO_NOW_MS = Date.UTC(2026, 4, 19, 12, 0, 0);
+const demoTimestamp = (minutesAgo = 0) => new Date(DEMO_NOW_MS - minutesAgo * 60 * 1000).toISOString();
 export const MAINTENANCE_FREQUENCIES = [
   { months: 1, label: "Every month" },
   { months: 2, label: "Every 2 months" },
@@ -524,7 +526,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       dueDate: todayDateString(),
       approvalStatus: "pending",
       notes: "Critical yard/refit decision. Confirm bow thruster tunnel coating quality before further coating work is accepted.",
-      comments: [{ id: "CON-COM-001", text: "Possible coating issue flagged during hull inspection.", by: "Oliver Reed", at: new Date().toISOString() }],
+      comments: [{ id: "CON-COM-001", text: "Possible coating issue flagged during hull inspection.", by: "Oliver Reed", at: demoTimestamp(12) }],
     },
     {
       id: "CON-TASK-002",
@@ -575,7 +577,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       approvalStatus: "approved",
       notes: "Prepare Bahamas clearance packet, crew documents, EPIRB registration, and route paperwork.",
     },
-  ].map((task) => normalizeTask(task));
+  ].map((task) => normalizeTask(task, DEMO_NOW_MS));
 
   const crewExpenses = [
     { id: "CON-EXP-001", title: "Yard daily labor access", amount: 1250, currency: "USD", status: "requested", requester: "Graham Ellis", reason: "Daily LMC access and coordination labor.", attachments: [] },
@@ -619,10 +621,10 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
   });
 
   const history = [
-    { id: "CON-HIS-001", at: new Date().toISOString(), section: "Maintenance", action: "Coating issue flagged", detail: "Oliver flagged possible coating issue in bow thruster tunnel." },
-    { id: "CON-HIS-002", at: new Date(Date.now() - 1000 * 60 * 43).toISOString(), section: "Tasks", action: "Hull photos uploaded", detail: "Daniel uploaded photos from hull inspection." },
-    { id: "CON-HIS-003", at: new Date(Date.now() - 1000 * 60 * 97).toISOString(), section: "Expenses and Quotations", action: "Paint quote review requested", detail: "Graham requested review of waterline paint quote." },
-    { id: "CON-HIS-004", at: new Date(Date.now() - 1000 * 60 * 148).toISOString(), section: "Maintenance", action: "Generator test completed", detail: "Marko completed generator warm-up test." },
+    { id: "CON-HIS-001", at: demoTimestamp(8), section: "Maintenance", action: "Coating issue flagged", detail: "Oliver flagged possible coating issue in bow thruster tunnel." },
+    { id: "CON-HIS-002", at: demoTimestamp(43), section: "Tasks", action: "Hull photos uploaded", detail: "Daniel uploaded photos from hull inspection." },
+    { id: "CON-HIS-003", at: demoTimestamp(97), section: "Expenses and Quotations", action: "Paint quote review requested", detail: "Graham requested review of waterline paint quote." },
+    { id: "CON-HIS-004", at: demoTimestamp(148), section: "Maintenance", action: "Generator test completed", detail: "Marko completed generator warm-up test." },
   ];
 
   return {
@@ -863,7 +865,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
       approvalStatus: "approved",
       notes: "Confirm Port Antonio berth request and arrival window with marina office.",
     },
-  ].map((task) => normalizeTask(task));
+  ].map((task) => normalizeTask(task, DEMO_NOW_MS));
 
   const crewExpenses = [
     { id: "OCT-EXP-001", title: "Fresh provisioning", amount: 540, currency: "USD", status: "requested", requester: "Mia Laurent", reason: "Fresh produce and guest arrival supplies.", attachments: [] },
@@ -961,11 +963,11 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
   });
 
   const history = [
-    { id: "OCT-HIS-001", at: new Date().toISOString(), section: "Maintenance", action: "Hydraulic residue reported", detail: "Adrian reported hydraulic residue near tender davit." },
-    { id: "OCT-HIS-002", at: new Date(Date.now() - 1000 * 60 * 41).toISOString(), section: "Crew", action: "Deck walkaround completed", detail: "Nina completed pre-arrival deck walkaround." },
-    { id: "OCT-HIS-003", at: new Date(Date.now() - 1000 * 60 * 97).toISOString(), section: "Expenses and Quotations", action: "Guest welcome approval requested", detail: "Mia requested approval for guest welcome setup." },
-    { id: "OCT-HIS-004", at: new Date(Date.now() - 1000 * 60 * 155).toISOString(), section: "Maintenance", action: "Generator inspection added", detail: "Generator coolant inspection added for today." },
-    { id: "OCT-HIS-005", at: new Date(Date.now() - 1000 * 60 * 214).toISOString(), section: "Maintenance", action: "AC filter check scheduled", detail: "Leo scheduled AC chilled water filter check." },
+    { id: "OCT-HIS-001", at: demoTimestamp(9), section: "Maintenance", action: "Hydraulic residue reported", detail: "Adrian reported hydraulic residue near tender davit." },
+    { id: "OCT-HIS-002", at: demoTimestamp(41), section: "Crew", action: "Deck walkaround completed", detail: "Nina completed pre-arrival deck walkaround." },
+    { id: "OCT-HIS-003", at: demoTimestamp(97), section: "Expenses and Quotations", action: "Guest welcome approval requested", detail: "Mia requested approval for guest welcome setup." },
+    { id: "OCT-HIS-004", at: demoTimestamp(155), section: "Maintenance", action: "Generator inspection added", detail: "Generator coolant inspection added for today." },
+    { id: "OCT-HIS-005", at: demoTimestamp(214), section: "Maintenance", action: "AC filter check scheduled", detail: "Leo scheduled AC chilled water filter check." },
   ];
 
   return {
@@ -1500,7 +1502,16 @@ export function convertedMoney(value, fromCurrency, toCurrency, exchangeRates) {
 
 export function formatHistoryTime(value) {
   if (!value) return "Unknown time";
-  return new Date(value).toLocaleString();
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Unknown time";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 export function describePatch(patch) {
