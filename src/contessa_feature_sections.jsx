@@ -572,7 +572,7 @@ export function AppShellHeader({
     notes: "",
   });
   const [fleetFormOpen, setFleetFormOpen] = useState(false);
-  const [headerClock, setHeaderClock] = useState(null);
+  const [headerClock, setHeaderClock] = useState(() => new Date());
   const fleetWorkspaceLabel = `${currentVesselName} Operations`;
   const openFleetPanel = () => {
     if (onOpenFleet) {
@@ -596,7 +596,6 @@ export function AppShellHeader({
     }
   }, [fleetOpen]);
   useEffect(() => {
-    setHeaderClock(new Date());
     const interval = setInterval(() => setHeaderClock(new Date()), 30 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -620,10 +619,7 @@ export function AppShellHeader({
   const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
-  const headerHour = headerClock?.getHours?.() ?? 15;
-  const greeting = headerHour < 12 ? "Good morning" : headerHour < 18 ? "Good afternoon" : "Good evening";
-  const headerDateLabel = headerClock ? headerClock.toLocaleDateString() : "Today";
-  const headerTimeLabel = headerClock ? headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Live";
+  const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
     { label: "Approval", value: stats.pendingApprovals || 0, note: "waiting" },
@@ -910,9 +906,9 @@ export function AppShellHeader({
               <div className="app-kicker mt-1.5">{fleetWorkspaceLabel}</div>
 
               <div className={`mt-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-medium ${theme.textSecondary}`}>
-                <span>{headerDateLabel}</span>
+                <span>{headerClock.toLocaleDateString()}</span>
                 <span className={darkMode ? "text-[#445850]" : "text-[#9ab0a4]"}>&bull;</span>
-                <span>{headerTimeLabel}</span>
+                <span>{headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                 <span className={darkMode ? "text-[#445850]" : "text-[#9ab0a4]"}>&bull;</span>
                 <span>{isOffline ? "Offline sync" : "Sync active"}</span>
               </div>
@@ -995,9 +991,9 @@ export function AppShellHeader({
                 className="text-center text-[clamp(2.8rem,4.8vw,4.8rem)] lg:text-left"
               />
               <div className={`mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-medium lg:justify-start ${theme.textSecondary}`}>
-                <span>{headerDateLabel}</span>
+                <span>{headerClock.toLocaleDateString()}</span>
                 <span className={darkMode ? "text-[#445850]" : "text-[#9ab0a4]"}>&bull;</span>
-                <span>{headerTimeLabel}</span>
+                <span>{headerClock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
               <div className={`mt-1.5 max-w-lg text-sm font-medium leading-6 ${theme.textSecondary}`}>
                 Investor-ready yacht command workspace for operations, compliance, routing, approvals, and crew readiness.
