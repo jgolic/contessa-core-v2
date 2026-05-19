@@ -816,7 +816,7 @@ export function TodayOperationsView({
   const currentVessel = vesselOperations || null;
   const [selectedItem, setSelectedItem] = useState(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
-  const [commandClock, setCommandClock] = useState(() => new Date());
+  const [commandClock, setCommandClock] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
     tasksMaintenance: false,
     expensesApprovals: false,
@@ -833,6 +833,7 @@ export function TodayOperationsView({
   };
 
   useEffect(() => {
+    setCommandClock(new Date());
     const interval = setInterval(() => setCommandClock(new Date()), 60 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -961,7 +962,8 @@ export function TodayOperationsView({
     },
   ];
 
-  const greeting = commandClock.getHours() < 12 ? "Good morning" : commandClock.getHours() < 18 ? "Good afternoon" : "Good evening";
+  const commandHour = commandClock?.getHours?.() ?? 15;
+  const greeting = commandHour < 12 ? "Good morning" : commandHour < 18 ? "Good afternoon" : "Good evening";
   const urgentBriefCount = priorityItems.filter((item) => item.tone === "critical").length || stats.overdueTasks || 0;
   const crewBriefCount = crewReadinessNote.length || stats.certificateDue || 0;
   const nextMilestone = routeReviewItems[0]?.title || maintenanceItems[0]?.title || "Service plan standing by";
