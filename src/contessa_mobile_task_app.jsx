@@ -3145,7 +3145,7 @@ function TopCommandBar({
   const alertTheme = getModuleTheme("alerts");
 
   return (
-    <header className="relative z-[9990] rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
+    <header className="rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,560px)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -3159,7 +3159,7 @@ function TopCommandBar({
           </p>
         </div>
 
-        <div className="relative z-[9999] order-3 col-span-2 min-w-0 lg:order-none lg:col-span-1">
+        <div className="relative z-[70] order-3 col-span-2 min-w-0 lg:order-none lg:col-span-1">
           {commandSearchView}
         </div>
 
