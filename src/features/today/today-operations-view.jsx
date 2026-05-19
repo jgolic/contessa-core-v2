@@ -367,7 +367,7 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div className="search-command-card relative z-50 w-full min-w-0 md:max-w-[680px]">
+      <div className="search-command-card relative z-[9999] w-full min-w-0 md:max-w-[680px]">
         <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/22 bg-slate-950/78 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/80 bg-white/88 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
           <button
             type="button"
@@ -416,7 +416,7 @@ export function CommandJumpBar({
         </div>
 
         {open && normalizedQuery ? (
-          <div className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[9999] max-h-[min(440px,70vh)] overflow-y-auto rounded-[24px] border p-2.5 shadow-[0_32px_100px_-24px_rgba(0,0,0,0.58)] backdrop-blur-xl ${darkMode ? "border-cyan-300/20 bg-slate-950/97" : "border-slate-200/90 bg-white/98"}`}>
+          <div className={`absolute left-0 right-0 top-full z-[10000] mt-3 max-h-[min(440px,70vh)] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}>
             {filteredResults.length ? (
               <div className="grid gap-2">
                 {filteredResults.map((result, index) => (
@@ -465,7 +465,7 @@ export function CommandJumpBar({
   }
 
   return (
-    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative z-[9999] w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="app-kicker">Command Search</div>
@@ -473,7 +473,7 @@ export function CommandJumpBar({
             Jump across {vesselName} tasks, crew, approvals, route, certificates, and documents.
           </div>
         </div>
-        <div className="relative min-w-0 flex-1 lg:max-w-[620px]">
+        <div className="relative z-[9999] min-w-0 flex-1 lg:max-w-[620px]">
           <div className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/45 text-slate-100 focus-within:border-[var(--vessel-primary-dark)]" : "border-slate-200/80 bg-white/82 text-slate-900 focus-within:border-blue-400"} shadow-sm transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]`}>
             <button
               type="button"
@@ -518,7 +518,7 @@ export function CommandJumpBar({
           </div>
 
           {open && normalizedQuery ? (
-            <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}>
+            <div className={`absolute left-0 right-0 top-full z-[10000] mt-3 max-h-[min(420px,70vh)] overflow-y-auto rounded-3xl border p-2 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}>
               {filteredResults.length ? (
                 <div className="grid gap-1.5">
                   {filteredResults.map((result, index) => (
