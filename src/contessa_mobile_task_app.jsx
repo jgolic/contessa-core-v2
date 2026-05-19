@@ -2691,7 +2691,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           }}
         />
 
-        <div className="md:hidden">
+        <div className="hidden">
         <AppSectionCards
           darkMode={darkMode}
           expenseView={expenseView}
@@ -3120,6 +3120,7 @@ function DesktopMissionNavButton({ active, themeKey = "dashboard", label, meta, 
 }
 
 function TopCommandBar({
+  darkMode,
   vesselName,
   vesselStatus,
   vesselLocation,
@@ -3145,36 +3146,35 @@ function TopCommandBar({
 
   return (
     <header className="rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] xl:items-center">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,560px)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${dashboardTheme.chip}`}>
               {isOffline ? "Offline sync" : "Live"}
             </span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200">
-              {currentRoleLabel}
-            </span>
           </div>
           <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
-          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{vesselStatus} · {vesselLocation}</p>
+          <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">
+            {vesselStatus} {"\u00b7"} {vesselLocation}
+          </p>
         </div>
 
-        <div className="relative z-[70] min-w-0">
+        <div className="relative z-[70] order-3 col-span-2 min-w-0 lg:order-none lg:col-span-1">
           {commandSearchView}
         </div>
-      </div>
 
-      <div className="mt-3 flex items-center justify-end gap-2">
-        <button type="button" onClick={onOpenAlerts} className={`relative flex h-11 min-w-11 items-center justify-center rounded-2xl border px-3 text-sm font-semibold ${alertTheme.chip}`} aria-label={`${alertCount} alerts`}>
-          <span aria-hidden="true">○</span>
-          {alertCount ? <span className="ml-1 rounded-full bg-current/12 px-1.5 py-0.5 text-[10px] leading-none">{alertCount}</span> : null}
-        </button>
-        <button type="button" onClick={onToggleDarkMode} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Toggle dark mode">
-          ◐
-        </button>
-        <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Open settings menu" aria-expanded={settingsOpen}>
-          ⚙
-        </button>
+        <div className="order-2 flex items-start justify-end gap-2 lg:order-none">
+          <button type="button" onClick={onOpenAlerts} className={`relative flex h-11 min-w-11 items-center justify-center rounded-2xl border px-3 text-sm font-semibold ${alertTheme.chip}`} aria-label={`${alertCount} alerts`}>
+            <span aria-hidden="true">{"\u25cb"}</span>
+            {alertCount ? <span className="ml-1 rounded-full bg-current/12 px-1.5 py-0.5 text-[10px] leading-none">{alertCount}</span> : null}
+          </button>
+          <button type="button" onClick={onToggleDarkMode} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Toggle dark mode">
+            {darkMode ? "\u263c" : "\u25d0"}
+          </button>
+          <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Open settings menu" aria-expanded={settingsOpen}>
+            {"\u2699"}
+          </button>
+        </div>
       </div>
 
       {settingsOpen ? (
@@ -3203,7 +3203,10 @@ function TopCommandBar({
                 setSettingsOpen(false);
                 onOpenSettings?.();
               }}
-              onOpenLegal={() => setLegalOpen(true)}
+              onOpenLegal={() => {
+                setSettingsOpen(false);
+                setLegalOpen(true);
+              }}
               onClose={() => setSettingsOpen(false)}
             />
           </div>
@@ -3279,7 +3282,9 @@ function TopCommandSettingsMenu({
 
         <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-900/80">
           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Status</p>
-          <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-slate-50">{currentRoleLabel} · {appMode === "editor" ? "Editor Mode" : "View Mode"}</p>
+          <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-slate-50">
+            {currentRoleLabel} {"\u00b7"} {appMode === "editor" ? "Editor Mode" : "View Mode"}
+          </p>
         </div>
       </div>
 
@@ -3298,7 +3303,7 @@ function SettingsMenuButton({ children, onClick }) {
   return (
     <button type="button" onClick={onClick} className="flex min-h-11 w-full items-center justify-between rounded-2xl border border-slate-200/80 bg-white px-4 py-2 text-left text-sm font-semibold text-slate-800 transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-cyan-300/30 dark:hover:bg-cyan-300/10">
       <span>{children}</span>
-      <span aria-hidden="true">→</span>
+      <span aria-hidden="true">{"\u2192"}</span>
     </button>
   );
 }
