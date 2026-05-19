@@ -1,9 +1,7 @@
-const CACHE_NAME = "contessapp-operations-v2";
+const CACHE_NAME = "contessa-core-v3";
 const APP_SHELL = [
-  "./",
-  "./preview-inline.html",
-  "./manifest.json",
-  "./icon.svg"
+  "/manifest.json",
+  "/icon.svg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -21,7 +19,22 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("/"))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request).then((cached) =>
+      cached || fetch(event.request).then((response) => {
+        if (event.request.method === "GET" && response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return response;
+      })
+    )
   );
 });

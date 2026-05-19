@@ -1,12 +1,12 @@
 {
   "name": "Contessa Operations",
   "short_name": "Contessa",
-  "description": "Mobile-friendly task, quote, receipt, and crew expense tracking for Contessa.",
-  "start_url": "./preview-inline.html",
-  "scope": "./",
+  "description": "Premium yacht operations command system for vessel tasks, approvals, crew, documents, and route planning.",
+  "start_url": "/vessels/contessa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f4f7f6",
-  "theme_color": "#0f766e",
+  "background_color": "#020617",
+  "theme_color": "#020617",
   "orientation": "portrait",
   "icons": [
     {
