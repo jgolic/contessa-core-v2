@@ -2557,28 +2557,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       />
       <div className="app-page-frame">
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
-        <div className="md:hidden">
-          <TopCommandBar
-            darkMode={darkMode}
-            vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-            vesselStatus={activeVesselWorkspace?.details?.status || "Operational"}
-            vesselLocation={activeVesselWorkspace?.details?.homePort || "Home port not set"}
-            currentRole={effectiveRole}
-            currentRoleLabel={currentRoleLabel}
-            onCurrentRoleChange={setCurrentRole}
-            appMode={appMode}
-            onAppModeChange={handleAppModeChange}
-            isOffline={isOffline}
-            alertCount={accessibleNotifications.length}
-            commandSearchView={commandSearchView}
-            onOpenFleet={() => setFleetOpen(true)}
-            onOpenAlerts={() => navigateToSection("alerts-section", "notifications")}
-            onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-            onOpenHistory={() => setHistoryOpen(true)}
-            onOpenShare={() => setSharingOpen(true)}
-            onOpenSettings={() => openMobileWorkspace("settings")}
-          />
-        </div>
         <div className="hidden">
         <AppShellHeader
           darkMode={darkMode}
@@ -2745,7 +2723,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onShowMore={() => openMobileWorkspace("settings")}
           />
           <main className="min-w-0 space-y-4">
-            <TopCommandBar
+            <DesktopMissionTopBar
               darkMode={darkMode}
               vesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
               vesselStatus={activeVesselWorkspace?.details?.status || "Operational"}
@@ -2761,9 +2739,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onOpenFleet={() => setFleetOpen(true)}
               onOpenAlerts={() => navigateToSection("alerts-section", "notifications")}
               onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-              onOpenHistory={() => setHistoryOpen(true)}
-              onOpenShare={() => setSharingOpen(true)}
-              onOpenSettings={() => openMobileWorkspace("settings")}
             />
             <div className="min-w-0">
         {expenseView === "command" ? (
@@ -3119,7 +3094,7 @@ function DesktopMissionNavButton({ active, themeKey = "dashboard", label, meta, 
   );
 }
 
-function TopCommandBar({
+function DesktopMissionTopBar({
   vesselName,
   vesselStatus,
   vesselLocation,
@@ -3134,14 +3109,10 @@ function TopCommandBar({
   onOpenFleet,
   onOpenAlerts,
   onToggleDarkMode,
-  onOpenHistory,
-  onOpenShare,
-  onOpenSettings,
 }) {
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [legalOpen, setLegalOpen] = useState(false);
   const dashboardTheme = getModuleTheme("dashboard");
   const alertTheme = getModuleTheme("alerts");
+  const fleetTheme = getModuleTheme("fleet");
 
   return (
     <header className="rounded-[32px] border border-slate-200/80 bg-white/88 p-4 shadow-[0_18px_54px_rgba(15,23,42,0.07)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/78 dark:shadow-[0_18px_54px_rgba(0,0,0,0.34)]">
@@ -3164,142 +3135,35 @@ function TopCommandBar({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-end gap-2">
-        <button type="button" onClick={onOpenAlerts} className={`relative flex h-11 min-w-11 items-center justify-center rounded-2xl border px-3 text-sm font-semibold ${alertTheme.chip}`} aria-label={`${alertCount} alerts`}>
-          <span aria-hidden="true">○</span>
-          {alertCount ? <span className="ml-1 rounded-full bg-current/12 px-1.5 py-0.5 text-[10px] leading-none">{alertCount}</span> : null}
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={onOpenFleet} className={`min-h-10 rounded-2xl border px-4 py-2 text-sm font-semibold ${fleetTheme.chip}`}>
+          Fleet
         </button>
-        <button type="button" onClick={onToggleDarkMode} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Toggle dark mode">
-          ◐
+        <select
+          value={currentRole}
+          onChange={(event) => onCurrentRoleChange?.(event.target.value)}
+          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
+        >
+          {DEMO_ROLE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+        <select
+          value={appMode}
+          onChange={(event) => onAppModeChange?.(event.target.value)}
+          className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <option value="view">View Mode</option>
+          <option value="editor">Editor Mode</option>
+        </select>
+        <button type="button" onClick={onOpenAlerts} className={`min-h-10 rounded-2xl border px-4 py-2 text-sm font-semibold ${alertTheme.chip}`}>
+          Alerts {alertCount}
         </button>
-        <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100" aria-label="Open settings menu" aria-expanded={settingsOpen}>
-          ⚙
+        <button type="button" onClick={onToggleDarkMode} className="ml-auto min-h-10 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
+          Theme
         </button>
       </div>
-
-      {settingsOpen ? (
-        <>
-          <button type="button" className="fixed inset-0 z-[82] bg-black/30 md:hidden" aria-label="Close settings menu" onClick={() => setSettingsOpen(false)} />
-          <div className="fixed inset-x-3 bottom-3 z-[83] max-h-[82vh] overflow-y-auto rounded-[30px] border border-slate-200/80 bg-white/96 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/96 md:absolute md:bottom-auto md:left-auto md:right-0 md:top-[calc(100%+12px)] md:w-[380px]">
-            <TopCommandSettingsMenu
-              currentRole={currentRole}
-              onCurrentRoleChange={onCurrentRoleChange}
-              appMode={appMode}
-              onAppModeChange={onAppModeChange}
-              currentRoleLabel={currentRoleLabel}
-              onOpenFleet={() => {
-                setSettingsOpen(false);
-                onOpenFleet?.();
-              }}
-              onOpenHistory={() => {
-                setSettingsOpen(false);
-                onOpenHistory?.();
-              }}
-              onOpenShare={() => {
-                setSettingsOpen(false);
-                onOpenShare?.();
-              }}
-              onOpenSettings={() => {
-                setSettingsOpen(false);
-                onOpenSettings?.();
-              }}
-              onOpenLegal={() => setLegalOpen(true)}
-              onClose={() => setSettingsOpen(false)}
-            />
-          </div>
-        </>
-      ) : null}
-
-      {legalOpen ? (
-        <div className="fixed inset-0 z-[95] flex items-end bg-black/45 p-3 md:items-center md:justify-center">
-          <div className="w-full rounded-[28px] border border-slate-200/80 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 md:max-w-lg">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-cyan-200">Legal</p>
-            <h2 className="mt-2 text-xl font-semibold">Contessa Core</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{APP_FOOTER_NOTICE}</p>
-            <button type="button" onClick={() => setLegalOpen(false)} className="mt-5 min-h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-800 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
-              Close
-            </button>
-          </div>
-        </div>
-      ) : null}
     </header>
-  );
-}
-
-function TopCommandSettingsMenu({
-  currentRole,
-  onCurrentRoleChange,
-  appMode,
-  onAppModeChange,
-  currentRoleLabel,
-  onOpenFleet,
-  onOpenHistory,
-  onOpenShare,
-  onOpenSettings,
-  onOpenLegal,
-  onClose,
-}) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-cyan-200">Command Settings</p>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Role, mode, fleet, and secondary tools.</p>
-        </div>
-        <button type="button" onClick={onClose} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
-          Close
-        </button>
-      </div>
-
-      <div className="grid gap-3">
-        <label className="block">
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Operating As</span>
-          <select
-            value={currentRole}
-            onChange={(event) => onCurrentRoleChange?.(event.target.value)}
-            className="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
-          >
-            {DEMO_ROLE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Mode</span>
-          <select
-            value={appMode}
-            onChange={(event) => onAppModeChange?.(event.target.value)}
-            className="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
-          >
-            <option value="view">View Mode</option>
-            <option value="editor">Editor Mode</option>
-          </select>
-        </label>
-
-        <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-900/80">
-          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Status</p>
-          <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-slate-50">{currentRoleLabel} · {appMode === "editor" ? "Editor Mode" : "View Mode"}</p>
-        </div>
-      </div>
-
-      <div className="grid gap-2">
-        <SettingsMenuButton onClick={onOpenFleet}>Fleet management</SettingsMenuButton>
-        <SettingsMenuButton onClick={onOpenHistory}>History</SettingsMenuButton>
-        <SettingsMenuButton onClick={onOpenShare}>Share</SettingsMenuButton>
-        <SettingsMenuButton onClick={onOpenLegal}>Legal</SettingsMenuButton>
-        <SettingsMenuButton onClick={onOpenSettings}>App settings</SettingsMenuButton>
-      </div>
-    </div>
-  );
-}
-
-function SettingsMenuButton({ children, onClick }) {
-  return (
-    <button type="button" onClick={onClick} className="flex min-h-11 w-full items-center justify-between rounded-2xl border border-slate-200/80 bg-white px-4 py-2 text-left text-sm font-semibold text-slate-800 transition hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-cyan-300/30 dark:hover:bg-cyan-300/10">
-      <span>{children}</span>
-      <span aria-hidden="true">→</span>
-    </button>
   );
 }
 
@@ -3433,11 +3297,7 @@ function MobileFocusedDashboard({
           id="mobile-command-brief"
           className="w-full min-w-0 max-w-full overflow-visible rounded-[30px] border border-slate-200/80 bg-white/90 p-4 text-slate-950 shadow-[0_18px_54px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50"
         >
-          <div className="mb-3 min-w-0">
-            <p className="max-w-full truncate text-[11px] font-bold uppercase tracking-[0.1em] text-blue-700 dark:text-cyan-200">Today Brief</p>
-            <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-50">{stats.todayAttentionCount || 0} items need attention</h2>
-          </div>
-          <div className="hidden">
+          <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="max-w-full truncate text-[11px] font-bold uppercase tracking-[0.1em] text-blue-700 dark:text-cyan-200">Today</p>
               <h1 className="mt-1 max-w-full truncate text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">{vesselName}</h1>
@@ -3450,7 +3310,7 @@ function MobileFocusedDashboard({
             </span>
           </div>
 
-          <div className="hidden">
+          <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
               {currentRoleLabel}
             </span>
@@ -3462,11 +3322,11 @@ function MobileFocusedDashboard({
             </span>
           </div>
 
-          <div className="hidden">
+          <div className="relative z-[80] mt-4 w-full min-w-0 max-w-full">
             {commandSearchView}
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-2 gap-3">
             <MobileMetric label="Urgent" value={stats.overdueTasks || 0} themeKey="alerts" />
             <MobileMetric label="Approvals" value={stats.pendingApprovals || 0} tone="gold" />
             <MobileMetric label="Crew" value={stats.crewProfiles || 0} themeKey="crew" />
