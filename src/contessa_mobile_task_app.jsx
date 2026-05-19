@@ -218,7 +218,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     notes: "",
   });
   const [maintenanceReminderState, setMaintenanceReminderState] = useState(() => loadReminderState());
-  const [maintenancePopupTick, setMaintenancePopupTick] = useState(0);
+  const [maintenancePopupTick, setMaintenancePopupTick] = useState(Date.now());
   const [postponeDate, setPostponeDate] = useState(dateStringFromNow(1));
   const [quoteDeleteRequest, setQuoteDeleteRequest] = useState(null);
   const [taskDeleteRequest, setTaskDeleteRequest] = useState(null);
@@ -414,7 +414,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   }, []);
 
   useEffect(() => {
-    setMaintenancePopupTick(Date.now());
     const interval = setInterval(() => setMaintenancePopupTick(Date.now()), 60 * 1000);
     return () => clearInterval(interval);
   }, []);
