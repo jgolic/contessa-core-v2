@@ -366,8 +366,8 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div className="search-command-card relative z-50 w-full min-w-0 md:max-w-[680px]">
-        <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:min-h-[60px] md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/22 bg-slate-950/78 text-slate-100 shadow-[0_18px_52px_rgba(0,0,0,0.20)] hover:border-cyan-300/40 focus-within:border-cyan-300/60 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_52px_rgba(0,0,0,0.28)]" : "border-blue-200/80 bg-white/88 text-slate-900 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_16px_48px_rgba(15,23,42,0.10)]"}`}>
+      <div className="search-command-card relative z-[1000] w-full min-w-0 md:max-w-[720px]">
+        <div className={`group flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2 backdrop-blur-xl transition-all duration-200 md:h-14 md:gap-3 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/35 bg-slate-950/90 text-slate-100 shadow-[0_18px_60px_rgba(34,211,238,0.16)] hover:border-cyan-300/50 focus-within:border-cyan-300/70 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.12),0_18px_60px_rgba(34,211,238,0.20)]" : "border-blue-300/70 bg-white/95 text-slate-950 shadow-[0_18px_50px_rgba(59,130,246,0.14)] hover:border-blue-400 focus-within:border-blue-500 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_18px_54px_rgba(59,130,246,0.16)]"}`}>
           <button
             type="button"
             onClick={() => {
@@ -415,7 +415,7 @@ export function CommandJumpBar({
         </div>
 
         {open && normalizedQuery ? (
-          <div className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[9999] max-h-[min(440px,70vh)] overflow-y-auto rounded-[24px] border p-2.5 shadow-[0_32px_100px_-24px_rgba(0,0,0,0.58)] backdrop-blur-xl ${darkMode ? "border-cyan-300/20 bg-slate-950/97" : "border-slate-200/90 bg-white/98"}`}>
+          <div className={`absolute left-0 right-0 top-full z-[2000] mt-3 max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}>
             {filteredResults.length ? (
               <div className="grid gap-2">
                 {filteredResults.map((result, index) => (

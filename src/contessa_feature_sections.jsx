@@ -868,20 +868,21 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute -left-10 top-1 h-32 w-32 rounded-full blur-3xl ${darkMode ? "bg-[rgba(var(--vessel-primary-rgb),0.12)]" : "bg-[rgba(var(--vessel-primary-rgb),0.14)]"}`} />
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="relative z-[90] mb-4 flex min-w-0 flex-wrap items-center gap-2 md:flex-nowrap">
-        <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <DialogTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className={`h-11 shrink-0 rounded-2xl px-3.5 text-sm font-semibold shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-              aria-label="Open settings"
-            >
-              <span className="mr-2 text-base" aria-hidden="true">⚙</span>
-              Settings
-            </Button>
-          </DialogTrigger>
-          <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
+      <div className="relative z-[1000] mb-4 min-w-0">
+        <div className="mb-3 flex items-center gap-2 md:absolute md:left-0 md:top-1 md:mb-0">
+          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className={`h-11 shrink-0 rounded-2xl px-3.5 text-sm font-semibold shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                aria-label="Open settings"
+              >
+                <span className="mr-2 text-base" aria-hidden="true">⚙</span>
+                Settings
+              </Button>
+            </DialogTrigger>
+            <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
@@ -958,22 +959,25 @@ export function AppShellHeader({
                 </Button>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
 
-        <Button
-          type="button"
-          variant="outline"
-          className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-          onClick={onToggleDarkMode}
-          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-        >
-          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+            onClick={onToggleDarkMode}
+            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+        </div>
 
         {commandSearchView ? (
-          <div className="relative z-[9999] min-w-0 basis-full md:basis-auto md:flex-1">
-            {commandSearchView}
+          <div className="relative z-[1000] mx-auto flex w-full max-w-3xl justify-center">
+            <div className="relative z-[1000] w-full min-w-0">
+              {commandSearchView}
+            </div>
           </div>
         ) : null}
       </div>
@@ -1540,73 +1544,73 @@ export function AppShellHeader({
           </details>
         </div>
         ) : null}
-      </div>
-
-      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-12">
-        {commandIntelCards.map((card) => (
-          <div
-            key={card.key}
-            className={`app-panel app-panel-soft rounded-[24px] border p-4 shadow-[0_20px_52px_-42px_rgba(17,46,39,0.18)] transition-all duration-200 hover:-translate-y-0.5 md:rounded-[24px] xl:col-span-3 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}
-          >
-            <div className="flex items-start justify-between gap-3">
+        <section id="dashboard-summary-grid" className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-2">
+          {commandIntelCards.map((card) => (
+            <div
+              key={card.key}
+              className={`app-panel app-panel-soft flex h-full min-h-0 flex-col justify-between gap-3 rounded-[24px] border p-3.5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_20px_60px_rgba(0,0,0,0.32)]" : "app-section-shell"}`}
+            >
               <div className="min-w-0">
-                <div className="app-kicker">{card.title}</div>
-                <div className={`mt-2 text-base font-semibold ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
-              </div>
-              <Badge className={intelBadgeClass(card.accent)}>{card.badge}</Badge>
-            </div>
-            {card.metrics ? (
-              <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 sm:grid-cols-3">
-                {card.metrics.map((metric) => (
-                  <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
-                    <div className={`mt-2 truncate text-lg font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="app-kicker">{card.title}</div>
+                    <div className={`mt-1.5 text-[15px] font-semibold leading-6 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
                   </div>
-                ))}
-              </div>
-            ) : null}
-            {card.rows ? (
-              <div className="mt-4 grid gap-2">
-                {card.rows.map((row) => (
-                  <div key={`${card.key}-${row.label}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <span className={theme.textSecondary}>{row.label}</span>
-                    <span className={`text-right font-semibold ${theme.textPrimary}`}>{row.value}</span>
+                  <Badge className={`${intelBadgeClass(card.accent)} shrink-0`}>{card.badge}</Badge>
+                </div>
+                {card.metrics ? (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {card.metrics.map((metric) => (
+                      <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border px-3 py-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                        <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
+                        <div className={`mt-1.5 truncate text-base font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : null}
+                {card.rows ? (
+                  <div className="mt-3 grid gap-2">
+                    {card.rows.map((row) => (
+                      <div key={`${card.key}-${row.label}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                        <span className={theme.textSecondary}>{row.label}</span>
+                        <span className={`text-right font-semibold ${theme.textPrimary}`}>{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {card.activity ? (
+                  <div className={`mt-3 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                    <div className="app-compact-label">Recent activity</div>
+                    <div className={`mt-1.5 truncate text-sm font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
+                    <div className={`mt-1 line-clamp-2 text-sm leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
-            {card.activity ? (
-              <div className={`mt-4 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                <div className="app-compact-label">Recent activity</div>
-                <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
-                <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
-                <div className={`mt-2 text-xs ${theme.textSecondary}`}>{formatHistoryTime(card.activity.at)}</div>
+              <div className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
+                {card.onAction ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={card.onAction}
+                    className={`${actionButtonClass} w-full min-[420px]:w-auto`}
+                  >
+                    {card.actionLabel} <span aria-hidden="true">→</span>
+                  </Button>
+                ) : null}
+                {card.onSecondaryAction ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={card.onSecondaryAction}
+                    className={`${actionButtonClass} w-full min-[420px]:w-auto`}
+                  >
+                    {card.secondaryActionLabel} <span aria-hidden="true">→</span>
+                  </Button>
+                ) : null}
               </div>
-            ) : null}
-            <div className="mt-4 flex flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
-              {card.onAction ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={card.onAction}
-                  className={`${actionButtonClass} w-full min-[420px]:w-auto`}
-                >
-                  {card.actionLabel} <span aria-hidden="true">→</span>
-                </Button>
-              ) : null}
-              {card.onSecondaryAction ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={card.onSecondaryAction}
-                  className={`${actionButtonClass} w-full min-[420px]:w-auto`}
-                >
-                  {card.secondaryActionLabel} <span aria-hidden="true">→</span>
-                </Button>
-              ) : null}
             </div>
-          </div>
-        ))}
+          ))}
+        </section>
       </div>
 
     </div>
