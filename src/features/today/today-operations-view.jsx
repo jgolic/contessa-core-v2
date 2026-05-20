@@ -1192,6 +1192,7 @@ export function TodayOperationsView({
               subtitle="Compact queue of work orders, overdue actions, and due-today upkeep."
               count={taskItems.length + maintenanceItems.length}
               tone={taskItems.length || maintenanceItems.length ? "warning" : "neutral"}
+              module="tasks"
               isOpen={expandedSections.tasksMaintenance}
               onToggle={() => toggleSection("tasksMaintenance")}
               actionLabel="Open tasks"
@@ -1229,6 +1230,7 @@ export function TodayOperationsView({
               subtitle="Quotes, expenses, and service decisions stay folded until selected."
               count={approvalItems.length}
               tone={approvalItems.length ? "warning" : "neutral"}
+              module="approval"
               isOpen={expandedSections.expensesApprovals}
               onToggle={() => toggleSection("expensesApprovals")}
               actionLabel="Open approvals"
@@ -1266,6 +1268,7 @@ export function TodayOperationsView({
               subtitle="Crew readiness stays collapsed until documentation or review is needed."
               count={certificateItems.length}
               tone={certificateItems.length ? "warning" : "neutral"}
+              module="crew"
               isOpen={expandedSections.certificatesCrew}
               onToggle={() => toggleSection("certificatesCrew")}
               actionLabel="Open crew"
@@ -1302,6 +1305,7 @@ export function TodayOperationsView({
               subtitle="Document controls stay collapsed until someone needs the vault."
               count={stats.documentCount || 0}
               tone="neutral"
+              module="docs"
               isOpen={expandedSections.documents}
               onToggle={() => toggleSection("documents")}
               actionLabel="Open documents"
@@ -1331,6 +1335,7 @@ export function TodayOperationsView({
               subtitle="Navigation review stays concise until the bridge team needs detail."
               count={stats.routeReviewCount || routeReviewItems.length}
               tone={stats.routeReviewCount || routeAlerts.length ? "warning" : "neutral"}
+              module="route"
               isOpen={expandedSections.routePlanning}
               onToggle={() => toggleSection("routePlanning")}
               actionLabel="Open route"
@@ -1357,6 +1362,7 @@ export function TodayOperationsView({
               subtitle="A compact running log instead of a full-width empty history panel."
               count={activityItems.length}
               tone="neutral"
+              module="activity"
               isOpen={expandedSections.activity}
               onToggle={() => toggleSection("activity")}
             >

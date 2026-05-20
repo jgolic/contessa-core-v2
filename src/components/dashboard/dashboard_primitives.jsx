@@ -23,6 +23,64 @@ function toneRailClass(tone = "neutral") {
   return "from-[var(--vessel-primary)] via-[var(--vessel-accent)] to-[var(--vessel-primary)]";
 }
 
+function sectionModuleTheme(darkMode, module = "neutral", isOpen = false) {
+  const themes = {
+    tasks: {
+      shell: darkMode
+        ? "border-blue-300/20 bg-blue-400/10 text-slate-50 shadow-[0_16px_44px_rgba(37,99,235,0.10)] hover:border-blue-300/35 hover:bg-blue-400/14"
+        : "border-blue-200/70 bg-blue-50/60 text-slate-900 shadow-[0_16px_44px_rgba(37,99,235,0.075)] hover:border-blue-300/80 hover:bg-blue-100/60",
+      rail: "from-blue-400 via-sky-300 to-transparent",
+      badge: darkMode ? "border border-blue-300/25 bg-blue-300/15 text-blue-100" : "border border-blue-200/80 bg-blue-100/80 text-blue-800",
+      action: darkMode ? "border-blue-300/25 bg-blue-300/12 text-blue-100 hover:border-blue-300/45 hover:bg-blue-300/20" : "border-blue-200/80 bg-blue-50/80 text-blue-800 hover:border-blue-300 hover:bg-blue-100/80",
+    },
+    approval: {
+      shell: darkMode
+        ? "border-amber-300/25 bg-amber-300/10 text-slate-50 shadow-[0_16px_44px_rgba(245,158,11,0.10)] hover:border-amber-300/40 hover:bg-amber-300/14"
+        : "border-amber-200/70 bg-amber-50/70 text-slate-900 shadow-[0_16px_44px_rgba(180,83,9,0.075)] hover:border-amber-300/80 hover:bg-amber-100/60",
+      rail: "from-amber-400 via-yellow-300 to-transparent",
+      badge: darkMode ? "border border-amber-300/30 bg-amber-300/15 text-amber-100" : "border border-amber-200/80 bg-amber-100/80 text-amber-800",
+      action: darkMode ? "border-amber-300/25 bg-amber-300/12 text-amber-100 hover:border-amber-300/45 hover:bg-amber-300/20" : "border-amber-200/80 bg-amber-50/80 text-amber-800 hover:border-amber-300 hover:bg-amber-100/80",
+    },
+    crew: {
+      shell: darkMode
+        ? "border-teal-300/25 bg-teal-300/10 text-slate-50 shadow-[0_16px_44px_rgba(20,184,166,0.10)] hover:border-teal-300/40 hover:bg-teal-300/14"
+        : "border-teal-200/70 bg-teal-50/60 text-slate-900 shadow-[0_16px_44px_rgba(13,148,136,0.075)] hover:border-teal-300/80 hover:bg-teal-100/55",
+      rail: "from-teal-400 via-cyan-300 to-transparent",
+      badge: darkMode ? "border border-teal-300/30 bg-teal-300/15 text-teal-100" : "border border-teal-200/80 bg-teal-100/80 text-teal-800",
+      action: darkMode ? "border-teal-300/25 bg-teal-300/12 text-teal-100 hover:border-teal-300/45 hover:bg-teal-300/20" : "border-teal-200/80 bg-teal-50/80 text-teal-800 hover:border-teal-300 hover:bg-teal-100/80",
+    },
+    docs: {
+      shell: darkMode
+        ? "border-slate-300/20 bg-slate-400/10 text-slate-50 shadow-[0_16px_44px_rgba(148,163,184,0.08)] hover:border-slate-300/35 hover:bg-slate-400/14"
+        : "border-slate-200/80 bg-slate-50/80 text-slate-900 shadow-[0_16px_44px_rgba(51,65,85,0.06)] hover:border-slate-300/80 hover:bg-slate-100/75",
+      rail: "from-slate-500 via-slate-300 to-transparent",
+      badge: darkMode ? "border border-slate-300/25 bg-slate-300/12 text-slate-100" : "border border-slate-200/90 bg-white/80 text-slate-700",
+      action: darkMode ? "border-slate-300/20 bg-slate-300/10 text-slate-100 hover:border-slate-300/35 hover:bg-slate-300/16" : "border-slate-200/90 bg-white/80 text-slate-700 hover:border-slate-300 hover:bg-slate-100/80",
+    },
+    route: {
+      shell: darkMode
+        ? "border-sky-300/20 bg-sky-300/10 text-slate-50 shadow-[0_16px_44px_rgba(14,165,233,0.10)] hover:border-sky-300/35 hover:bg-sky-300/14"
+        : "border-sky-200/70 bg-sky-50/60 text-slate-900 shadow-[0_16px_44px_rgba(2,132,199,0.075)] hover:border-sky-300/80 hover:bg-sky-100/55",
+      rail: "from-sky-400 via-cyan-300 to-transparent",
+      badge: darkMode ? "border border-sky-300/25 bg-sky-300/15 text-sky-100" : "border border-sky-200/80 bg-sky-100/80 text-sky-800",
+      action: darkMode ? "border-sky-300/25 bg-sky-300/12 text-sky-100 hover:border-sky-300/45 hover:bg-sky-300/20" : "border-sky-200/80 bg-sky-50/80 text-sky-800 hover:border-sky-300 hover:bg-sky-100/80",
+    },
+    activity: {
+      shell: darkMode
+        ? "border-violet-300/20 bg-violet-300/10 text-slate-50 shadow-[0_16px_44px_rgba(139,92,246,0.09)] hover:border-violet-300/35 hover:bg-violet-300/14"
+        : "border-violet-200/60 bg-violet-50/50 text-slate-900 shadow-[0_16px_44px_rgba(109,40,217,0.055)] hover:border-violet-300/70 hover:bg-violet-100/50",
+      rail: "from-violet-400 via-slate-300 to-transparent",
+      badge: darkMode ? "border border-violet-300/25 bg-violet-300/15 text-violet-100" : "border border-violet-200/80 bg-violet-100/70 text-violet-800",
+      action: darkMode ? "border-violet-300/25 bg-violet-300/12 text-violet-100 hover:border-violet-300/45 hover:bg-violet-300/20" : "border-violet-200/80 bg-violet-50/80 text-violet-800 hover:border-violet-300 hover:bg-violet-100/80",
+    },
+  };
+  const selected = themes[module] || themes.docs;
+  return {
+    ...selected,
+    shell: `${selected.shell} ${isOpen ? "ring-1 ring-current/10" : ""}`,
+  };
+}
+
 function initialsFromName(name = "Ops") {
   return String(name || "Ops")
     .split(/\s+/)
@@ -40,6 +98,7 @@ export function SectionAccordion({
   subtitle,
   count,
   tone = "neutral",
+  module,
   isOpen = false,
   onToggle,
   actionLabel,
@@ -47,9 +106,12 @@ export function SectionAccordion({
   children,
 }) {
   const theme = themeClasses(darkMode);
+  const normalizedModule = module || String(title || "").toLowerCase().replace(/\s+/g, "-");
+  const moduleTheme = sectionModuleTheme(darkMode, normalizedModule, isOpen);
 
   return (
-    <Card id={id} className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[22px] border md:rounded-[24px] ${theme.card}`}>
+    <Card id={id} className={`app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
+      <div className={`pointer-events-none absolute inset-x-6 top-0 h-[3px] rounded-b-full bg-gradient-to-r ${moduleTheme.rail}`} />
       <CardContent className="p-3.5 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <button
@@ -59,7 +121,7 @@ export function SectionAccordion({
           >
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <div className="app-kicker">{title}</div>
-              <Badge className={`${toneBadgeClass(darkMode, tone)} shrink-0`}>{count}</Badge>
+              <Badge className={`${moduleTheme.badge} shrink-0`}>{count}</Badge>
             </div>
             <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div>
           </button>
@@ -69,7 +131,7 @@ export function SectionAccordion({
                 type="button"
                 variant="outline"
                 onClick={onAction}
-              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+                className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold shadow-sm transition-all duration-200 sm:w-auto md:rounded-2xl ${moduleTheme.action}`}
               >
                 {actionLabel}
               </Button>
@@ -78,7 +140,7 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={onToggle}
-              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold sm:w-auto md:rounded-2xl ${darkMode ? "app-dark-inner text-slate-100 hover:bg-slate-700/80" : "border-[rgba(15,80,70,0.10)] bg-white/52 text-[#4a6057] hover:bg-white/78"}`}
+              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold shadow-sm transition-all duration-200 sm:w-auto md:rounded-2xl ${moduleTheme.action}`}
             >
               {isOpen ? "Collapse" : "Expand"}
             </Button>
