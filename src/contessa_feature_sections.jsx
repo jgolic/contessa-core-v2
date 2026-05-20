@@ -707,8 +707,8 @@ export function AppShellHeader({
     return darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600";
   };
   const actionButtonClass = darkMode
-    ? "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3.5 py-2 text-sm font-semibold text-cyan-100 shadow-sm transition-all duration-200 hover:border-cyan-300/50 hover:bg-cyan-300/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
-    : "inline-flex min-h-[38px] items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50/70 px-3.5 py-2 text-sm font-semibold text-blue-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/40";
+    ? "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 shadow-sm transition-all duration-200 hover:border-cyan-300/50 hover:bg-cyan-300/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
+    : "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/70 px-3 py-1.5 text-xs font-semibold text-blue-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/40";
   const premiumMetricLabelTone = (label = "", accent = "neutral") => {
     const normalizedLabel = String(label).toLowerCase();
     if (accent === "warning" || /approval|spend|quote|pending|route/.test(normalizedLabel)) return "premium-label-gold";
@@ -1544,49 +1544,49 @@ export function AppShellHeader({
           </details>
         </div>
         ) : null}
-        <section id="dashboard-summary-grid" className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-2">
+        <section id="dashboard-summary-grid" className="grid min-w-0 items-start gap-2.5 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4">
           {commandIntelCards.map((card) => (
             <div
               key={card.key}
-              className={`app-panel app-panel-soft flex h-full min-h-0 flex-col justify-between gap-3 rounded-[24px] border p-3.5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_20px_60px_rgba(0,0,0,0.32)]" : "app-section-shell"}`}
+              className={`app-panel app-panel-soft self-start rounded-[22px] border p-3 shadow-[0_12px_34px_rgba(15,23,42,0.055)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_18px_46px_rgba(0,0,0,0.30)]" : "app-section-shell"}`}
             >
               <div className="min-w-0">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-2.5">
                   <div className="min-w-0">
                     <div className="app-kicker">{card.title}</div>
-                    <div className={`mt-1.5 text-[15px] font-semibold leading-6 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Pending spend and recent movement" : `${currentVesselName} operating snapshot`}</div>
+                    <div className={`mt-1 max-w-full text-sm font-semibold leading-5 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Spend and movement" : `${currentVesselName} snapshot`}</div>
                   </div>
-                  <Badge className={`${intelBadgeClass(card.accent)} shrink-0`}>{card.badge}</Badge>
+                  <Badge className={`${intelBadgeClass(card.accent)} max-w-[44%] shrink-0 truncate px-2.5 py-1 text-[11px]`}>{card.badge}</Badge>
                 </div>
                 {card.metrics ? (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div className="mt-2.5 grid grid-cols-3 gap-1.5">
                     {card.metrics.map((metric) => (
-                      <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-2xl border px-3 py-2.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                      <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                         <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
-                        <div className={`mt-1.5 truncate text-base font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
+                        <div className={`mt-1 truncate text-sm font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
                       </div>
                     ))}
                   </div>
                 ) : null}
                 {card.rows ? (
-                  <div className="mt-3 grid gap-2">
+                  <div className="mt-2.5 grid gap-1.5">
                     {card.rows.map((row) => (
-                      <div key={`${card.key}-${row.label}`} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-sm ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                        <span className={theme.textSecondary}>{row.label}</span>
-                        <span className={`text-right font-semibold ${theme.textPrimary}`}>{row.value}</span>
+                      <div key={`${card.key}-${row.label}`} className={`flex min-h-9 items-center justify-between gap-2 rounded-[18px] border px-2.5 py-1.5 text-xs ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                        <span className={`min-w-0 truncate ${theme.textSecondary}`}>{row.label}</span>
+                        <span className={`min-w-0 max-w-[58%] truncate text-right font-semibold ${theme.textPrimary}`}>{row.value}</span>
                       </div>
                     ))}
                   </div>
                 ) : null}
                 {card.activity ? (
-                  <div className={`mt-3 rounded-2xl border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                  <div className={`mt-2.5 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                     <div className="app-compact-label">Recent activity</div>
-                    <div className={`mt-1.5 truncate text-sm font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
-                    <div className={`mt-1 line-clamp-2 text-sm leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
+                    <div className={`mt-1 truncate text-xs font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
+                    <div className={`mt-0.5 line-clamp-1 text-xs leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
                   </div>
                 ) : null}
               </div>
-              <div className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
+              <div className="mt-2.5 flex flex-col gap-1.5 min-[420px]:flex-row min-[420px]:flex-wrap">
                 {card.onAction ? (
                   <Button
                     type="button"
