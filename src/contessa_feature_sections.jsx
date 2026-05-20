@@ -76,8 +76,8 @@ const premiumInnerClass = (darkMode = false) =>
 
 const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300";
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
-const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50/80 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20";
-const mutedButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-2.5 text-sm font-semibold text-slate-500 shadow-sm transition dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300";
+const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
+const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
 
 function ControlCard({ darkMode = false, label, value, children }) {
   return (
@@ -710,9 +710,7 @@ export function AppShellHeader({
     }
     return darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600";
   };
-  const actionButtonClass = darkMode
-    ? "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 shadow-sm transition-all duration-200 hover:border-cyan-300/50 hover:bg-cyan-300/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
-    : "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/70 px-3 py-1.5 text-xs font-semibold text-blue-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/40";
+  const actionButtonClass = "app-action-button inline-flex items-center justify-center";
   const premiumMetricLabelTone = (label = "", accent = "neutral") => {
     const normalizedLabel = String(label).toLowerCase();
     if (accent === "warning" || /approval|spend|quote|pending|route/.test(normalizedLabel)) return "premium-label-gold";
@@ -1123,10 +1121,10 @@ export function AppShellHeader({
                   ))}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary min-h-11 rounded-2xl px-3 py-2.5 text-sm font-semibold text-white">
+                  <Button type="button" onClick={onOpenCommand} className="app-primary-action-button w-full">
                     Review priorities
                   </Button>
-                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`min-h-11 rounded-2xl px-3 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className="app-action-button w-full">
                     Add task
                   </Button>
                 </div>
@@ -1183,13 +1181,13 @@ export function AppShellHeader({
                   ))}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2.5">
-                  <Button type="button" onClick={onOpenCommand} className="button-vessel-primary rounded-2xl px-4 py-2.5 text-sm font-semibold text-white">
+                  <Button type="button" onClick={onOpenCommand} className="app-primary-action-button">
                     Review priorities
                   </Button>
-                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                  <Button type="button" variant="outline" onClick={onOpenTasksMaintenance} className="app-action-button">
                     Add task
                   </Button>
-                  <Button type="button" variant="outline" onClick={onOpenNotifications} className={`rounded-2xl px-4 py-2.5 text-sm font-medium ${darkMode ? "vessel-outline-button" : "border-[rgba(15,80,70,0.10)] bg-white/60 text-[#43554d] hover:bg-white/80"}`}>
+                  <Button type="button" variant="outline" onClick={onOpenNotifications} className="app-action-button">
                     Open alerts
                   </Button>
                 </div>
@@ -2375,16 +2373,16 @@ export function SettingsWorkspaceView({
               onChange={onImportAppStateJson}
               className="hidden"
             />
-            <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6] hover:bg-[#22312a]" : "border-[#c9ded3] bg-white text-[#40534a] hover:bg-[#f3faf6]"}`} onClick={onExportCsv}>Export CSV</Button>
-            <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6] hover:bg-[#22312a]" : "border-[#c9ded3] bg-white text-[#40534a] hover:bg-[#f3faf6]"}`} onClick={onExportAppStateJson}>Export Full JSON</Button>
-            <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6] hover:bg-[#22312a]" : "border-[#c9ded3] bg-white text-[#40534a] hover:bg-[#f3faf6]"}`} onClick={onPrintSummary}>Print / PDF</Button>
-            {canEdit ? <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6] hover:bg-[#22312a]" : "border-[#c9ded3] bg-white text-[#40534a] hover:bg-[#f3faf6]"}`} onClick={onOpenJsonImportPicker}>Import Full JSON</Button> : null}
+            <Button variant="outline" className="app-action-button w-full" onClick={onExportCsv}>Export CSV</Button>
+            <Button variant="outline" className="app-action-button w-full" onClick={onExportAppStateJson}>Export Full JSON</Button>
+            <Button variant="outline" className="app-action-button w-full" onClick={onPrintSummary}>Print / PDF</Button>
+            {canEdit ? <Button variant="outline" className="app-action-button w-full" onClick={onOpenJsonImportPicker}>Import Full JSON</Button> : null}
           </CardContent>
         </Card>
         <Card className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
           <CardContent className="space-y-3 p-5">
             <div className="app-kicker">Admin Utilities</div>
-            <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6] hover:bg-[#22312a]" : "border-[#c9ded3] bg-white text-[#40534a] hover:bg-[#f3faf6]"}`} onClick={onOpenHistory}>Open Activity History</Button>
+            <Button variant="outline" className="app-action-button w-full" onClick={onOpenHistory}>Open Activity History</Button>
             {canEdit ? <Button variant="outline" className={`w-full rounded-2xl px-4 py-5 md:rounded-xl ${darkMode ? "border-[#5b2a2a] bg-[#231515] text-[#ffd9d9] hover:bg-[#382020]" : "border-[#e8bcbc] bg-[#fff3f3] text-[#8a1f2b] hover:bg-[#ffe4e4]"}`} onClick={onResetDemoData}>Reset Demo Data</Button> : null}
             <div className={`rounded-xl border p-4 text-sm leading-6 ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#dce9e1]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#40534a]"}`}>
               <div className="font-semibold">{APP_LEGAL_SHORT_COPY}</div>

@@ -613,7 +613,7 @@ function IntelligencePanel({
               type="button"
               variant="outline"
               onClick={onAction}
-            className={`min-h-11 w-full rounded-2xl px-3 py-2 text-sm font-medium sm:w-auto ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}
+              className="app-action-button w-full sm:w-auto"
             >
               {actionLabel}
             </Button>
@@ -745,13 +745,13 @@ function DetailPanelBody({
       ) : null}
 
       <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5 shadow-[0_-18px_42px_-34px_rgba(0,0,0,0.46)] backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
-        <Button type="button" onClick={primaryAction.onClick} className="button-vessel-primary min-h-11 rounded-2xl px-4 py-3 text-white">
+        <Button type="button" onClick={primaryAction.onClick} className="app-primary-action-button">
           {primaryAction.label}
         </Button>
-        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className="app-action-button">
           Request update
         </Button>
-        <Button type="button" variant="outline" className={`min-h-11 rounded-2xl px-4 py-3 ${darkMode ? "app-dark-action" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.44)] text-[#43554d] hover:bg-[rgba(255,255,255,0.62)]"}`}>
+        <Button type="button" variant="outline" className="app-action-button">
           Add comment
         </Button>
         <Button
@@ -1153,7 +1153,7 @@ export function TodayOperationsView({
                   <Button
                     type="button"
                     onClick={onNavigateToTasks}
-                    className="button-vessel-primary min-h-11 w-full rounded-2xl px-4 py-2.5 text-sm font-semibold text-white sm:w-auto"
+                    className="app-primary-action-button w-full sm:w-auto"
                   >
                     View details
                   </Button>
@@ -1441,7 +1441,7 @@ export function TodayOperationsView({
                           <Button
                             type="button"
                             onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                            className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:border-cyan-300/30 dark:bg-cyan-300/12 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-300/20 dark:focus:ring-cyan-300 dark:focus:ring-offset-slate-950"
+                            className="app-action-button h-11 w-full"
                           >
                             Open Vessel
                           </Button>

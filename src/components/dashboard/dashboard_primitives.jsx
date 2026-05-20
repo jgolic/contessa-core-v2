@@ -131,7 +131,7 @@ export function SectionAccordion({
                 type="button"
                 variant="outline"
                 onClick={onAction}
-                className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold shadow-sm transition-all duration-200 sm:w-auto md:rounded-2xl ${moduleTheme.action}`}
+                className={`app-action-button w-full sm:w-auto ${moduleTheme.action}`}
               >
                 {actionLabel}
               </Button>
@@ -140,7 +140,7 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={onToggle}
-              className={`min-h-11 w-full rounded-xl px-3 py-2 text-sm font-semibold shadow-sm transition-all duration-200 sm:w-auto md:rounded-2xl ${moduleTheme.action}`}
+              className={`app-action-button w-full sm:w-auto ${moduleTheme.action}`}
             >
               {isOpen ? "Collapse" : "Expand"}
             </Button>
@@ -239,7 +239,7 @@ export function DashboardEmptyState({
           type="button"
           variant="outline"
           onClick={onAction}
-          className="button-vessel-primary mt-3 min-h-[40px] rounded-2xl px-3 py-2 text-sm font-semibold text-white"
+          className="app-primary-action-button mt-3"
         >
           {actionLabel}
         </Button>

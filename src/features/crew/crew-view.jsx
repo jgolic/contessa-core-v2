@@ -320,7 +320,7 @@ function CrewListToolsDialog({
             <Button
               type="button"
               variant="outline"
-              className={`mx-auto inline-flex min-h-11 w-full max-w-[240px] min-w-[180px] items-center justify-center rounded-2xl border px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/30 ${darkMode ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 hover:bg-cyan-300/20" : "border-blue-300/70 bg-blue-50/70 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:shadow-md"}`}
+              className="app-primary-action-button mx-auto w-full max-w-[240px] min-w-[180px] text-center"
               onClick={() => openLink(previewHref)}
               disabled={!href}
             >
@@ -330,7 +330,7 @@ function CrewListToolsDialog({
           <Button
             type="button"
             variant="outline"
-            className={`mt-3 min-h-11 w-full rounded-2xl px-4 py-3 text-sm font-semibold ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+            className="app-action-button mt-3 w-full"
             onClick={() => onOpenChange(false)}
           >
             Close
