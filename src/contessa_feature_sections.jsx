@@ -650,6 +650,7 @@ export function AppShellHeader({
         { label: "Crew onboard", value: `${currentVesselMetrics.crewCount || stats.crewProfiles || 0}` },
         { label: "Main sections", value: `${visibleModuleLabels.length || 0}` },
       ],
+      signal: `${activeFleetVessel?.details?.status || "Operational"} workspace verified`,
       actionLabel: "Open dashboard",
       onAction: onOpenCommand,
     },
@@ -663,6 +664,7 @@ export function AppShellHeader({
         { label: "Approval", value: stats.pendingApprovals || 0 },
         { label: "Route", value: routeWarningCount || 0 },
       ],
+      signal: `${stats.overdueTasks || 0} overdue · ${stats.pendingApprovals || 0} approvals waiting`,
       actionLabel: "Open tasks",
       onAction: onOpenTasksMaintenance,
       secondaryActionLabel: "View route",
@@ -678,6 +680,7 @@ export function AppShellHeader({
         { label: "Certs", value: stats.certificateDue || 0 },
         { label: "Maint.", value: stats.maintenanceDue || 0 },
       ],
+      signal: (stats.certificateDue || stats.maintenanceDue) ? "Readiness items need attention" : "Crew readiness stable",
       actionLabel: "Open crew",
       onAction: onOpenCrewCertificates,
       secondaryActionLabel: "Docs",
@@ -694,6 +697,7 @@ export function AppShellHeader({
         { label: "Pending spend", value: formatMoney(stats.totalExpenses || 0, currency) },
       ],
       activity: recentHeaderHistory[0] || null,
+      signal: recentHeaderHistory[0] ? `${recentHeaderHistory[0].action}: ${recentHeaderHistory[0].detail}` : "Approval queue is current",
       actionLabel: "Open approvals",
       onAction: onOpenApprovals,
       secondaryActionLabel: "History",
@@ -1544,72 +1548,70 @@ export function AppShellHeader({
           </details>
         </div>
         ) : null}
-        <section id="dashboard-summary-grid" className="grid min-w-0 items-start gap-2.5 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4">
-          {commandIntelCards.map((card) => (
-            <div
-              key={card.key}
-              className={`app-panel app-panel-soft self-start rounded-[22px] border p-3 shadow-[0_12px_34px_rgba(15,23,42,0.055)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_18px_46px_rgba(0,0,0,0.30)]" : "app-section-shell"}`}
-            >
-              <div className="min-w-0">
-                <div className="flex items-start justify-between gap-2.5">
-                  <div className="min-w-0">
-                    <div className="app-kicker">{card.title}</div>
-                    <div className={`mt-1 max-w-full text-sm font-semibold leading-5 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Spend and movement" : `${currentVesselName} snapshot`}</div>
+        <section id="dashboard-summary-grid" className="grid min-w-0 auto-rows-fr gap-2.5 md:grid-cols-2">
+          {commandIntelCards.map((card) => {
+            const dataCells = card.metrics || card.rows || [];
+            const accentLineClass =
+              card.key === "priority-queue"
+                ? "from-amber-300/70 via-amber-200/30 to-transparent"
+                : card.key === "crew-readiness"
+                  ? "from-teal-300/70 via-cyan-200/25 to-transparent"
+                  : card.key === "spend-activity"
+                    ? "from-amber-300/65 via-yellow-200/25 to-transparent"
+                    : "from-cyan-300/70 via-blue-200/25 to-transparent";
+
+            return (
+              <div
+                key={card.key}
+                className={`app-panel app-panel-soft flex h-full min-h-[204px] flex-col justify-between rounded-[22px] border p-3 shadow-[0_12px_34px_rgba(15,23,42,0.055)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_18px_46px_rgba(0,0,0,0.30)]" : "app-section-shell"}`}
+              >
+                <div className={`h-1 w-full rounded-full bg-gradient-to-r ${accentLineClass}`} />
+                <div className="min-w-0">
+                  <div className="mt-2 flex min-h-[48px] items-start justify-between gap-2.5">
+                    <div className="min-w-0">
+                      <div className="app-kicker">{card.title}</div>
+                      <div className={`mt-1 max-w-full text-sm font-semibold leading-5 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Spend and movement" : `${currentVesselName} snapshot`}</div>
+                    </div>
+                    <Badge className={`${intelBadgeClass(card.accent)} max-w-[44%] shrink-0 truncate px-2.5 py-1 text-[11px]`}>{card.badge}</Badge>
                   </div>
-                  <Badge className={`${intelBadgeClass(card.accent)} max-w-[44%] shrink-0 truncate px-2.5 py-1 text-[11px]`}>{card.badge}</Badge>
-                </div>
-                {card.metrics ? (
                   <div className="mt-2.5 grid grid-cols-3 gap-1.5">
-                    {card.metrics.map((metric) => (
-                      <div key={`${card.key}-${metric.label}`} className={`group min-w-0 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                        <div className={`app-compact-label ${premiumMetricLabelTone(metric.label, card.accent)}`.trim()}><SmartLabel label={metric.label} /></div>
-                        <div className={`mt-1 truncate text-sm font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{metric.value}</div>
+                    {dataCells.map((cell) => (
+                      <div key={`${card.key}-${cell.label}`} className={`group min-w-0 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                        <div className={`app-compact-label ${premiumMetricLabelTone(cell.label, card.accent)}`.trim()}><SmartLabel label={cell.label} /></div>
+                        <div className={`mt-1 truncate text-sm font-semibold tracking-tight ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{cell.value}</div>
                       </div>
                     ))}
                   </div>
-                ) : null}
-                {card.rows ? (
-                  <div className="mt-2.5 grid gap-1.5">
-                    {card.rows.map((row) => (
-                      <div key={`${card.key}-${row.label}`} className={`flex min-h-9 items-center justify-between gap-2 rounded-[18px] border px-2.5 py-1.5 text-xs ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                        <span className={`min-w-0 truncate ${theme.textSecondary}`}>{row.label}</span>
-                        <span className={`min-w-0 max-w-[58%] truncate text-right font-semibold ${theme.textPrimary}`}>{row.value}</span>
-                      </div>
-                    ))}
+                  <div className={`mt-2.5 flex min-h-9 items-center gap-2 rounded-[18px] border px-2.5 py-1.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                    <span className="app-compact-label shrink-0">Signal</span>
+                    <span className={`min-w-0 truncate text-xs font-medium ${theme.textSecondary}`}>{card.signal}</span>
                   </div>
-                ) : null}
-                {card.activity ? (
-                  <div className={`mt-2.5 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
-                    <div className="app-compact-label">Recent activity</div>
-                    <div className={`mt-1 truncate text-xs font-semibold ${theme.textPrimary}`}>{card.activity.action}</div>
-                    <div className={`mt-0.5 line-clamp-1 text-xs leading-5 ${theme.textSecondary}`}>{card.activity.detail}</div>
-                  </div>
-                ) : null}
+                </div>
+                <div className="mt-2.5 flex min-h-9 flex-col gap-1.5 min-[420px]:flex-row min-[420px]:flex-wrap">
+                  {card.onAction ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={card.onAction}
+                      className={`${actionButtonClass} w-full min-[420px]:w-auto`}
+                    >
+                      {card.actionLabel} <span aria-hidden="true">→</span>
+                    </Button>
+                  ) : null}
+                  {card.onSecondaryAction ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={card.onSecondaryAction}
+                      className={`${actionButtonClass} w-full min-[420px]:w-auto`}
+                    >
+                      {card.secondaryActionLabel} <span aria-hidden="true">→</span>
+                    </Button>
+                  ) : null}
+                </div>
               </div>
-              <div className="mt-2.5 flex flex-col gap-1.5 min-[420px]:flex-row min-[420px]:flex-wrap">
-                {card.onAction ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={card.onAction}
-                    className={`${actionButtonClass} w-full min-[420px]:w-auto`}
-                  >
-                    {card.actionLabel} <span aria-hidden="true">→</span>
-                  </Button>
-                ) : null}
-                {card.onSecondaryAction ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={card.onSecondaryAction}
-                    className={`${actionButtonClass} w-full min-[420px]:w-auto`}
-                  >
-                    {card.secondaryActionLabel} <span aria-hidden="true">→</span>
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
       </div>
 
