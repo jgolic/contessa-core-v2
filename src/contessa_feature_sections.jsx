@@ -562,6 +562,7 @@ export function AppShellHeader({
 }) {
   const theme = themeClasses(darkMode);
   const [legalOpen, setLegalOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [fleetDraft, setFleetDraft] = useState({
     vesselName: "",
     vesselLength: "",
@@ -867,19 +868,186 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute -left-10 top-1 h-32 w-32 rounded-full blur-3xl ${darkMode ? "bg-[rgba(var(--vessel-primary-rgb),0.12)]" : "bg-[rgba(var(--vessel-primary-rgb),0.14)]"}`} />
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
+      <div className="relative z-[90] mb-4 flex min-w-0 flex-wrap items-center gap-2 md:flex-nowrap">
+        <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+          <DialogTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className={`h-11 shrink-0 rounded-2xl px-3.5 text-sm font-semibold shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              aria-label="Open settings"
+            >
+              <span className="mr-2 text-base" aria-hidden="true">⚙</span>
+              Settings
+            </Button>
+          </DialogTrigger>
+          <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
+            <DialogHeader>
+              <DialogTitle>Settings</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className={`${premiumInnerClass(darkMode)} p-3`}>
+                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Operating As</div>
+                <div className="mt-2">
+                  {onCurrentRoleChange ? (
+                    <Select value={currentRole} onValueChange={onCurrentRoleChange}>
+                      <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEMO_ROLE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-medium ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-800"}`}>
+                      Shared vessel access
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className={`${premiumInnerClass(darkMode)} p-3`}>
+                  <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Mode</div>
+                  <Select value={appMode} onValueChange={onAppModeChange}>
+                    <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="view">View Mode</SelectItem>
+                      <SelectItem value="editor">Editor Mode</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className={`${premiumInnerClass(darkMode)} p-3`}>
+                  <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Status</div>
+                  <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-semibold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/15 dark:text-amber-100" : "border border-slate-200/80 bg-slate-50/80 text-slate-600 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300"}`}>
+                    {canEditApp ? "Editor Mode" : "View Mode"}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <AlertInboxButton
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    onOpenNotifications?.();
+                  }}
+                  darkMode={darkMode}
+                  notificationCount={notificationCount}
+                  className="min-h-11 w-full justify-start px-4 py-3"
+                >
+                  Alerts
+                </AlertInboxButton>
+                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); openFleetPanel(); }}>
+                  Fleet management
+                </Button>
+                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onHistoryOpenChange(true); }}>
+                  History
+                </Button>
+                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onSharingOpenChange(true); }}>
+                  Share
+                </Button>
+                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); setLegalOpen(true); }}>
+                  Legal
+                </Button>
+                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onOpenSettingsWorkspace?.(); }}>
+                  App settings
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Button
+          type="button"
+          variant="outline"
+          className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+          onClick={onToggleDarkMode}
+          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
+
+        {commandSearchView ? (
+          <div className="relative z-[9999] min-w-0 basis-full md:basis-auto md:flex-1">
+            {commandSearchView}
+          </div>
+        ) : null}
+      </div>
+
+      <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
+        <DialogContent className={`rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>
+          <DialogHeader>
+            <DialogTitle>Legal</DialogTitle>
+          </DialogHeader>
+          <SettingsPanel darkMode={darkMode} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={sharingOpen} onOpenChange={onSharingOpenChange}>
+        <DialogContent className={`rounded-[28px] ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>
+          <DialogHeader>
+            <DialogTitle>Share</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {localShareWarning ? (
+              <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#6c5a27] bg-[#2c2515] text-[#ffe7ad]" : "border-[#ecd28c] bg-[#fff8df] text-[#7a5416]"}`}>
+                <div className="font-semibold">Local Development Warning</div>
+                <div className="mt-1">{localShareWarning}</div>
+              </div>
+            ) : null}
+            <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#dce9e1]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#40534a]"}`}>
+              <div className="font-semibold">Public App Link</div>
+              <div className={`mt-1 text-xs ${theme.textSecondary}`}>
+                {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
+              </div>
+            </div>
+            <input
+              ref={jsonImportInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={onImportAppStateJson}
+              className="hidden"
+            />
+            <div className="grid gap-2">
+              <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
+                Share App
+              </ShareAppButton>
+              <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
+                Email App Link
+              </ShareAppButton>
+              <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
+                Copy App Link
+              </ShareAppButton>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onExportCsv}>Export CSV</Button>
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onExportAppStateJson}>Export JSON</Button>
+              {canEditApp ? <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onOpenJsonImportPicker}>Import JSON</Button> : null}
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onPrintSummary}>Print / PDF</Button>
+            </div>
+            {canEditApp ? (
+              <Button
+                variant="outline"
+                className={`w-full rounded-2xl px-4 py-3 ${darkMode ? "border-[#5b2a2a] bg-[#231515] text-[#ffd9d9] hover:bg-[#382020]" : "border-[#e8bcbc] bg-[#fff3f3] text-[#8a1f2b] hover:bg-[#ffe4e4]"}`}
+                onClick={onResetDemoData}
+              >
+                Reset Demo Data
+              </Button>
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div id="dashboard-section" className="relative grid gap-3 md:gap-4 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
         <div className="min-w-0">
           <div className="md:hidden">
             <div className="brand-hero relative flex flex-col items-center text-center">
               <div className="flex w-full items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => onHistoryOpenChange(true)}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${darkMode ? "vessel-card-dark vessel-label-dark hover:bg-[var(--vessel-card-dark-strong)]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)] text-[#365248] hover:bg-white/90"}`}
-                  aria-label="Open workspace history"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                </button>
+                <span aria-hidden="true" className="h-10 w-10" />
                 <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
                   <span className={`inline-flex h-2 w-2 rounded-full ${isOffline ? "bg-[#d9a33e]" : "bg-[#2ea57d]"}`} />
                   {isOffline ? "Offline sync" : "Sync active"}
@@ -945,11 +1113,6 @@ export function AppShellHeader({
                     Add task
                   </Button>
                 </div>
-                {commandSearchView ? (
-                  <div className="relative z-[70] mt-2.5 w-full">
-                    {commandSearchView}
-                  </div>
-                ) : null}
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>
                     {isOffline ? "Offline" : "Live"}
@@ -1023,11 +1186,6 @@ export function AppShellHeader({
                     Open alerts
                   </Button>
                 </div>
-                {commandSearchView ? (
-                  <div className="relative z-[70] mt-3 w-full">
-                    {commandSearchView}
-                  </div>
-                ) : null}
               </div>
             </div>
           </div>
@@ -1046,7 +1204,8 @@ export function AppShellHeader({
           </div>
         </div>
 
-        <div className={`${premiumShellClass(darkMode)} min-w-0 p-4 md:p-5`}>
+        {false ? (
+        <div className="hidden">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="app-kicker">Operational Snapshot</div>
@@ -1380,6 +1539,7 @@ export function AppShellHeader({
           </div>
           </details>
         </div>
+        ) : null}
       </div>
 
       <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-12">
