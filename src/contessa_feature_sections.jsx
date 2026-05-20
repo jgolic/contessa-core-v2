@@ -873,19 +873,57 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
       <div className="relative z-[1000] mb-4 min-w-0">
-        <div className="mb-3 flex items-center gap-2 md:absolute md:left-0 md:top-1 md:mb-0">
-          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className={`h-11 shrink-0 rounded-2xl px-3.5 text-sm font-semibold shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-                aria-label="Open settings"
-              >
-                <span className="mr-2 text-base" aria-hidden="true">⚙</span>
-                Settings
-              </Button>
-            </DialogTrigger>
+        <div className="grid min-w-0 grid-cols-[auto_auto] items-center gap-3 md:grid-cols-[minmax(220px,0.9fr)_minmax(360px,1.4fr)_minmax(120px,0.9fr)]">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border sm:h-14 sm:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
+              <ContessaUiLogo className="h-11 w-11 sm:h-[52px] sm:w-[52px]" />
+            </div>
+            <div className="hidden min-w-0 sm:block">
+              {isContessaWorkspace ? (
+                <img
+                  src="/branding/contessa-wordmark-extracted.png"
+                  alt="Contessa"
+                  className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.05rem] w-auto max-w-[140px] select-none opacity-90`}
+                  draggable="false"
+                />
+              ) : (
+                <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{currentVesselName}</div>
+              )}
+              <div className="app-kicker mt-1 truncate">{fleetWorkspaceLabel}</div>
+            </div>
+          </div>
+
+          {commandSearchView ? (
+            <div className="relative z-[1000] col-span-2 row-start-2 flex w-full min-w-0 justify-center md:col-span-1 md:col-start-2 md:row-start-1">
+              <div className="relative z-[1000] w-full min-w-0 md:max-w-3xl">
+                {commandSearchView}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-2 md:col-start-3">
+            <Button
+              type="button"
+              variant="outline"
+              className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              onClick={onToggleDarkMode}
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+
+            <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className={`h-11 shrink-0 rounded-2xl px-3 text-sm font-semibold shadow-sm sm:px-3.5 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  aria-label="Open settings"
+                >
+                  <span className="text-base sm:mr-2" aria-hidden="true">⚙</span>
+                  <span className="hidden sm:inline">Settings</span>
+                </Button>
+              </DialogTrigger>
             <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
@@ -964,26 +1002,9 @@ export function AppShellHeader({
               </div>
             </div>
             </DialogContent>
-          </Dialog>
-
-          <Button
-            type="button"
-            variant="outline"
-            className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-            onClick={onToggleDarkMode}
-            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-        </div>
-
-        {commandSearchView ? (
-          <div className="relative z-[1000] mx-auto flex w-full max-w-3xl justify-center">
-            <div className="relative z-[1000] w-full min-w-0">
-              {commandSearchView}
-            </div>
+            </Dialog>
           </div>
-        ) : null}
+        </div>
       </div>
 
       <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
@@ -1062,22 +1083,10 @@ export function AppShellHeader({
                 </div>
               </div>
 
-              <div className={`mt-3 flex h-[58px] w-[58px] items-center justify-center rounded-[22px] border sm:h-[66px] sm:w-[66px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)] shadow-[0_18px_34px_-30px_rgba(19,52,43,0.2)]"}`}>
-                <ContessaUiLogo className="h-[54px] w-[54px] sm:h-[60px] sm:w-[60px]" />
-              </div>
-
-              {isContessaWorkspace ? <div className="mt-2.5 flex w-full justify-center">
-                <img
-                  src="/branding/contessa-wordmark-extracted.png"
-                  alt="Contessa"
-                  className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.25rem] w-auto max-w-full select-none opacity-90`}
-                  draggable="false"
-                />
-              </div> : null}
               <VesselTitle
                 name={currentVesselName}
                 darkMode={darkMode}
-                className="mt-2 text-center text-[clamp(2rem,9vw,3.35rem)]"
+                className="mt-4 text-center text-[clamp(2rem,9vw,3.35rem)]"
               />
               <div className="app-kicker mt-1.5">{fleetWorkspaceLabel}</div>
 
@@ -1137,19 +1146,9 @@ export function AppShellHeader({
             </div>
           </div>
 
-          <div className="brand-hero hidden md:flex md:flex-col md:items-center md:gap-2 md:text-center lg:items-start lg:text-left">
-            <div className={`mt-0.5 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[20px] border ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.56)] shadow-[0_18px_34px_-30px_rgba(19,52,43,0.2)]"}`}>
-              <ContessaUiLogo className="h-12 w-12" />
-            </div>
+          <div className="brand-hero hidden md:flex md:flex-col md:items-center md:text-center lg:items-start lg:text-left">
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex flex-col items-center gap-2 lg:flex-row lg:flex-wrap lg:items-center">
-                {isContessaWorkspace ? <img
-                  src="/branding/contessa-wordmark-extracted.png"
-                  alt="Contessa"
-                  className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.2rem] w-auto select-none opacity-90`}
-                  draggable="false"
-                /> : null}
-                <div className={`hidden h-4 w-px lg:block ${darkMode ? "bg-[#31443a]" : "bg-[#dbe7e0]"}`} />
                 <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] ${isOffline ? (darkMode ? "border-[#5a4820] bg-[#2a2110] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]") : "vessel-pill"}`}>
                   <span className={`inline-flex h-2 w-2 rounded-full ${isOffline ? "bg-[#d9a33e]" : "bg-[#2ea57d]"}`} />
                   {isOffline ? "Offline sync" : "Sync active"}
