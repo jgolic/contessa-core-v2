@@ -51,6 +51,8 @@ function ConfirmableCrewProfileFields({
     rank: profile.rank || CREW_RANK_OPTIONS[0],
     department: profile.department || CREW_DEPARTMENT_OPTIONS[0],
     nationality: profile.nationality || "",
+    passportNumber: profile.passportNumber || "",
+    seamansBookNumber: profile.seamansBookNumber || "",
     roleKey: profile.roleKey || "",
     notes: profile.notes || "",
   });
@@ -59,6 +61,8 @@ function ConfirmableCrewProfileFields({
     draft.rank !== (profile.rank || CREW_RANK_OPTIONS[0]) ||
     draft.department !== (profile.department || CREW_DEPARTMENT_OPTIONS[0]) ||
     draft.nationality !== (profile.nationality || "") ||
+    draft.passportNumber !== (profile.passportNumber || "") ||
+    draft.seamansBookNumber !== (profile.seamansBookNumber || "") ||
     draft.roleKey !== (profile.roleKey || "") ||
     draft.notes !== (profile.notes || "");
 
@@ -68,10 +72,12 @@ function ConfirmableCrewProfileFields({
       rank: profile.rank || CREW_RANK_OPTIONS[0],
       department: profile.department || CREW_DEPARTMENT_OPTIONS[0],
       nationality: profile.nationality || "",
+      passportNumber: profile.passportNumber || "",
+      seamansBookNumber: profile.seamansBookNumber || "",
       roleKey: profile.roleKey || "",
       notes: profile.notes || "",
     });
-  }, [profile.id, profile.fullName, profile.rank, profile.department, profile.nationality, profile.roleKey, profile.notes]);
+  }, [profile.id, profile.fullName, profile.rank, profile.department, profile.nationality, profile.passportNumber, profile.seamansBookNumber, profile.roleKey, profile.notes]);
 
   return (
     <div className={`rounded-lg p-4 ${theme.subtle}`}>
@@ -86,6 +92,8 @@ function ConfirmableCrewProfileFields({
           <SelectContent>{CREW_DEPARTMENT_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
         </Select>
         <Input disabled={!canEdit} value={draft.nationality} onChange={(event) => setDraft((prev) => ({ ...prev, nationality: event.target.value }))} placeholder="Nationality" className={`h-12 rounded-lg ${theme.input}`} />
+        <Input disabled={!canEdit} value={draft.passportNumber} onChange={(event) => setDraft((prev) => ({ ...prev, passportNumber: event.target.value }))} placeholder="Passport number" className={`h-12 rounded-lg ${theme.input}`} />
+        <Input disabled={!canEdit} value={draft.seamansBookNumber} onChange={(event) => setDraft((prev) => ({ ...prev, seamansBookNumber: event.target.value }))} placeholder="Seaman's book number" className={`h-12 rounded-lg ${theme.input}`} />
         <Select value={draft.roleKey || ROLE_OPTIONS[0]?.value || ""} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, roleKey: value }))}>
           <SelectTrigger className={`h-12 rounded-lg ${theme.input}`}><SelectValue /></SelectTrigger>
           <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
@@ -434,6 +442,8 @@ export function CrewView({
                       <SelectContent>{CREW_DEPARTMENT_OPTIONS.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
                     </Select>
                     <Input placeholder="Nationality" value={newCrewProfile.nationality} onChange={(event) => onNewCrewProfileChange({ nationality: event.target.value })} className={`h-12 ${theme.input}`} />
+                    <Input placeholder="Passport number" value={newCrewProfile.passportNumber || ""} onChange={(event) => onNewCrewProfileChange({ passportNumber: event.target.value })} className={`h-12 ${theme.input}`} />
+                    <Input placeholder="Seaman's book number" value={newCrewProfile.seamansBookNumber || ""} onChange={(event) => onNewCrewProfileChange({ seamansBookNumber: event.target.value })} className={`h-12 ${theme.input}`} />
                     <Select value={newCrewProfile.roleKey} onValueChange={(value) => onNewCrewProfileChange({ roleKey: value })}>
                       <SelectTrigger className={`h-12 ${theme.input}`}><SelectValue /></SelectTrigger>
                       <SelectContent>{ROLE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
@@ -500,6 +510,16 @@ export function CrewView({
                   <div className="app-kicker">Crew Profile</div>
                   <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>{selectedCrewProfile.fullName}</h2>
                   <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{selectedCrewProfile.rank} - {selectedCrewProfile.department} - {selectedCrewProfile.nationality || "Nationality not set"}</p>
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    <div className={`rounded-2xl border px-4 py-3 ${darkMode ? "border-white/10 bg-slate-800/70" : "border-slate-200/80 bg-slate-50/80"}`}>
+                      <p className="app-kicker">Passport No.</p>
+                      <p className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{selectedCrewProfile.passportNumber || "—"}</p>
+                    </div>
+                    <div className={`rounded-2xl border px-4 py-3 ${darkMode ? "border-white/10 bg-slate-800/70" : "border-slate-200/80 bg-slate-50/80"}`}>
+                      <p className="app-kicker">Seaman's Book No.</p>
+                      <p className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{selectedCrewProfile.seamansBookNumber || "—"}</p>
+                    </div>
+                  </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Badge className={neutralBadgeClass(darkMode)}>{selectedCrewProfile.roleKey ? ROLE_OPTIONS.find((option) => option.value === selectedCrewProfile.roleKey)?.label || selectedCrewProfile.roleKey : "Role not set"}</Badge>
                     <Badge className="vessel-pill">{selectedCrewProfile.certificates?.length || 0} certificates</Badge>

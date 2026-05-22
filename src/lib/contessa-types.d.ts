@@ -36,6 +36,9 @@ export interface CrewProfileRecord {
   rank?: string;
   department?: string;
   nationality?: string;
+  dateOfBirth?: string;
+  passportNumber?: string;
+  seamansBookNumber?: string;
   roleKey?: string;
   notes?: string;
   qrPlaceholder?: string;

@@ -168,26 +168,51 @@ body {
   border-collapse: collapse;
   border-top: 1.6px solid #071a3a;
   font-family: Inter, "Segoe UI", Arial, sans-serif;
+  table-layout: fixed;
+}
+
+.crew-print-col-name {
+  width: 21%;
+}
+
+.crew-print-col-position {
+  width: 18%;
+}
+
+.crew-print-col-nationality {
+  width: 14.5%;
+}
+
+.crew-print-col-dob,
+.crew-print-col-passport {
+  width: 15%;
+}
+
+.crew-print-col-seamans {
+  width: 16.5%;
 }
 
 .crew-print-table th {
   border-bottom: 1.6px solid #071a3a;
   color: #071a3a;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  padding: 14px 10px 12px;
+  letter-spacing: 0.13em;
+  padding: 13px 7px 11px;
   text-align: left;
+  vertical-align: bottom;
 }
 
 .crew-print-table td {
   border-bottom: 1px solid rgba(7, 26, 58, 0.16);
   color: #071a3a;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
-  min-height: 52px;
-  padding: 15px 10px;
+  line-height: 1.35;
+  min-height: 54px;
+  overflow-wrap: anywhere;
+  padding: 14px 7px;
+  vertical-align: middle;
 }
 
 .crew-print-table tbody tr:nth-child(even) td {

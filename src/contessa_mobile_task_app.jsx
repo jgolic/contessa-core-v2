@@ -201,7 +201,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [newTask, setNewTask] = useState({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
   const [newExpense, setNewExpense] = useState({ taskId: initialActiveWorkspace.tasks?.[0]?.id ?? "", supplier: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewExpense, setNewCrewExpense] = useState({ title: "", amount: 0, currency: initialAppState.currency, status: "requested" });
-  const [newCrewProfile, setNewCrewProfile] = useState({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", roleKey: "captain", notes: "" });
+  const [newCrewProfile, setNewCrewProfile] = useState({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", passportNumber: "", seamansBookNumber: "", roleKey: "captain", notes: "" });
   const [newCertificate, setNewCertificate] = useState(createEmptyCertificateDraft());
   const [newCertificateCrewId, setNewCertificateCrewId] = useState(initialActiveWorkspace.crewProfiles?.[0]?.id ?? "");
   const [isExtractingCertificate, setIsExtractingCertificate] = useState(false);
@@ -1170,7 +1170,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setNewTask({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
     setNewExpense({ taskId: nextTasks[0]?.id ?? "", supplier: "", amount: 0, currency: nextCurrency, status: "requested" });
     setNewCrewExpense({ title: "", amount: 0, currency: nextCurrency, status: "requested" });
-    setNewCrewProfile({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", roleKey: "captain", notes: "" });
+    setNewCrewProfile({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", passportNumber: "", seamansBookNumber: "", roleKey: "captain", notes: "" });
     setNewCertificate(createEmptyCertificateDraft());
     setNewCertificateCrewId(nextCrewProfiles[0]?.id ?? "");
     setNewMaintenance({
@@ -1674,7 +1674,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     });
     setCrewProfiles((prev) => [profile, ...prev]);
     setSelectedCrewId(profile.id);
-    setNewCrewProfile({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", roleKey: "captain", notes: "" });
+    setNewCrewProfile({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", passportNumber: "", seamansBookNumber: "", roleKey: "captain", notes: "" });
     setNewCrewProfileOpen(false);
     logChange("Crew", "Crew profile added", `${profile.fullName} added as ${profile.rank}.`);
     setAppBanner({ type: "success", title: "Crew profile added", message: `${profile.fullName} was added.` });

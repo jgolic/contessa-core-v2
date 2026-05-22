@@ -113,12 +113,22 @@ export function CrewListPrintView({ vessel }) {
         <div className="crew-print-rule" />
 
         <table className="crew-print-table">
+          <colgroup>
+            <col className="crew-print-col-name" />
+            <col className="crew-print-col-position" />
+            <col className="crew-print-col-nationality" />
+            <col className="crew-print-col-dob" />
+            <col className="crew-print-col-passport" />
+            <col className="crew-print-col-seamans" />
+          </colgroup>
           <thead>
             <tr>
               <th>NAME</th>
               <th>POSITION / TITLE</th>
               <th>NATIONALITY</th>
               <th>DATE OF BIRTH</th>
+              <th>PASSPORT NO.</th>
+              <th>SEAMAN'S BOOK NO.</th>
             </tr>
           </thead>
           <tbody>
@@ -129,8 +139,10 @@ export function CrewListPrintView({ vessel }) {
                 <tr key={person.id || fullName}>
                   <td className="crew-print-name">{fullName}</td>
                   <td>{getCrewPrintPosition(person)}</td>
-                  <td>{person.nationality || "-"}</td>
-                  <td>{person.dateOfBirth || person.dob || "-"}</td>
+                  <td>{person.nationality || "—"}</td>
+                  <td>{person.dateOfBirth || person.dob || "—"}</td>
+                  <td>{person.passportNumber || "—"}</td>
+                  <td>{person.seamansBookNumber || "—"}</td>
                 </tr>
               );
             })}
