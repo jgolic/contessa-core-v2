@@ -136,13 +136,15 @@ export function CrewListPrintView({ vessel }) {
         </table>
 
         <footer className="crew-print-footer">
-          <span />
+          <div className="crew-print-footer-lines">
+            <span />
+            <span />
+          </div>
+          <p className="crew-print-footer-text">Generated from vessel crew records</p>
           <div className="crew-print-footer-logo">
             <img src="/icon.svg" alt="Contessa" />
           </div>
-          <span />
         </footer>
-        <p className="crew-print-footer-text">Generated from vessel crew records</p>
       </main>
     </div>
   );

@@ -227,29 +227,45 @@ body {
 
 .crew-print-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 28px;
+  justify-content: center;
   margin: 42px auto 0;
   width: min(100%, 128mm);
   letter-spacing: 0;
+}
+
+.crew-print-footer-lines {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.crew-print-footer-lines span {
+  flex: 1;
+  height: 1px;
+  background: rgba(7, 26, 58, 0.22);
 }
 
 .crew-print-footer-logo {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 10px;
 }
 
 .crew-print-footer-logo img {
   display: block;
-  width: 18px;
+  width: 34px;
   height: auto;
   object-fit: contain;
-  opacity: 0.85;
+  opacity: 0.92;
 }
 
 .crew-print-footer-text {
-  margin: 10px 0 0;
+  margin: 0;
   color: rgba(7, 26, 58, 0.72);
   font: 600 10px/1 Inter, "Segoe UI", Arial, sans-serif;
   letter-spacing: 0.18em;
