@@ -10,20 +10,6 @@ function CrewPrintLogo() {
   );
 }
 
-function FooterAnchorMark() {
-  return (
-    <svg viewBox="0 0 48 48" className="crew-print-footer-icon" aria-hidden="true">
-      <path d="M24 10v24" />
-      <path d="M16 18h16" />
-      <path d="M18 34c-4 0-8-4-8-9" />
-      <path d="M30 34c4 0 8-4 8-9" />
-      <path d="M14 31l-4-6-4 6" />
-      <path d="M34 31l4-6 4 6" />
-      <circle cx="24" cy="8" r="3" />
-    </svg>
-  );
-}
-
 function PrintActions({ vesselId }) {
   return (
     <div className="crew-print-actions no-print">
@@ -151,12 +137,12 @@ export function CrewListPrintView({ vessel }) {
 
         <footer className="crew-print-footer">
           <span />
-          <div className="crew-print-footer-center">
-            <FooterAnchorMark />
-            <p>Generated from vessel crew records</p>
+          <div className="crew-print-footer-logo">
+            <img src="/icon.svg" alt="Contessa" />
           </div>
           <span />
         </footer>
+        <p className="crew-print-footer-text">Generated from vessel crew records</p>
       </main>
     </div>
   );

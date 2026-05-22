@@ -226,35 +226,35 @@ body {
 }
 
 .crew-print-footer {
-  margin: 38px auto 0;
-  width: min(100%, 118mm);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 42px auto 0;
+  width: min(100%, 128mm);
   letter-spacing: 0;
 }
 
-.crew-print-footer-center {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
+.crew-print-footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.crew-print-footer-center p {
-  margin: 0;
-  color: #42526b;
-  font: 600 9.5px/1 Inter, "Segoe UI", Arial, sans-serif;
-  letter-spacing: 0.12em;
+.crew-print-footer-logo img {
+  display: block;
+  width: 18px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
+.crew-print-footer-text {
+  margin: 10px 0 0;
+  color: rgba(7, 26, 58, 0.72);
+  font: 600 10px/1 Inter, "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0.18em;
+  text-align: center;
   text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.crew-print-footer-icon {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: #071a3a;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.9;
-  opacity: 0.88;
 }
 
 @media print {
