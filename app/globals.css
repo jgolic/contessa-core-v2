@@ -19,7 +19,7 @@ body {
 
 @page {
   size: A4 portrait;
-  margin: 12mm;
+  margin: 0;
 }
 
 .crew-print-screen {
@@ -60,8 +60,19 @@ body {
   color: white;
 }
 
+.crew-print-settings-note {
+  margin: -6px auto 18px;
+  width: min(100%, 210mm);
+  color: #42526b;
+  font: 600 12px/1.5 Inter, "Segoe UI", Arial, sans-serif;
+  text-align: right;
+}
+
 .crew-print-page {
+  display: flex;
+  flex-direction: column;
   width: 210mm;
+  height: 297mm;
   min-height: 297mm;
   margin: 0 auto;
   background: white;
@@ -71,15 +82,22 @@ body {
   box-shadow: 0 28px 80px rgba(7, 26, 58, 0.14);
 }
 
+.crew-print-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .crew-print-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .crew-print-logo {
   display: flex;
   justify-content: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .crew-print-logo img {
@@ -92,10 +110,10 @@ body {
 .crew-print-header h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 48px;
+  font-size: 44px;
   font-weight: 500;
   letter-spacing: 0.14em;
-  line-height: 0.98;
+  line-height: 1;
 }
 
 .crew-print-subtitle,
@@ -110,7 +128,7 @@ body {
 }
 
 .crew-print-subtitle {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .crew-print-subtitle span,
@@ -124,7 +142,7 @@ body {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
-  margin: 30px 0 28px;
+  margin: 24px 0 26px;
   width: 100%;
   border-bottom: 1px solid rgba(7, 26, 58, 0.22);
   border-top: 1px solid rgba(7, 26, 58, 0.22);
@@ -198,7 +216,7 @@ body {
   font-size: 9.5px;
   font-weight: 800;
   letter-spacing: 0.13em;
-  padding: 13px 7px 11px;
+  padding: 11px 7px 10px;
   text-align: left;
   vertical-align: bottom;
 }
@@ -209,9 +227,9 @@ body {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.35;
-  min-height: 54px;
+  min-height: 44px;
   overflow-wrap: anywhere;
-  padding: 14px 7px;
+  padding: 11px 7px;
   vertical-align: middle;
 }
 
@@ -230,7 +248,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 42px auto 0;
+  margin: 30px auto 0;
   width: min(100%, 128mm);
   letter-spacing: 0;
 }
@@ -276,7 +294,12 @@ body {
 @media print {
   html,
   body {
+    width: 210mm;
+    height: 297mm;
     background: white !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
   }
 
   .no-print {
@@ -284,15 +307,26 @@ body {
   }
 
   .crew-print-screen {
-    min-height: auto;
     background: white !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    min-height: 297mm !important;
+    overflow: hidden !important;
     padding: 0 !important;
+    width: 210mm !important;
   }
 
   .crew-print-page {
     box-shadow: none !important;
+    break-after: avoid !important;
+    break-before: avoid !important;
+    height: 297mm !important;
     margin: 0 !important;
-    width: 210mm !important;
     min-height: 297mm !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    padding: 16mm 18mm !important;
+    width: 210mm !important;
   }
 }
