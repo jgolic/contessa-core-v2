@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select.jsx";
-import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
   ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
@@ -91,18 +91,18 @@ function getVesselTitleSize(name = "") {
   const length = String(name || "").length;
 
   if (length <= 14) {
-    return "text-[clamp(22px,6vw,32px)] lg:text-[40px]";
+    return "text-[clamp(25px,7.8vw,36px)] lg:text-[40px]";
   }
 
   if (length <= 20) {
-    return "text-[clamp(20px,5.4vw,28px)] lg:text-[34px]";
+    return "text-[clamp(23px,6.8vw,32px)] lg:text-[34px]";
   }
 
   if (length <= 28) {
-    return "text-[clamp(18px,4.8vw,24px)] lg:text-[30px]";
+    return "text-[clamp(20px,5.8vw,28px)] lg:text-[30px]";
   }
 
-  return "text-[clamp(16px,4.2vw,20px)] lg:text-[26px]";
+  return "text-[clamp(18px,4.8vw,24px)] lg:text-[26px]";
 }
 
 function ControlCard({ darkMode = false, label, value, children }) {
@@ -748,7 +748,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`app-panel app-hero-surface relative mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}
+      className={`app-panel app-hero-surface relative mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] shadow-[0_22px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:rounded-[28px] md:px-5 md:py-4 ${darkMode ? "border-cyan-300/10 bg-slate-950/85 shadow-[0_24px_70px_rgba(0,0,0,0.42)]" : "border-slate-200/80 bg-white/88"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -903,11 +903,11 @@ export function AppShellHeader({
       <div className="relative z-[1000] mb-4 min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 md:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] md:items-center md:gap-6">
           <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border sm:h-14 sm:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
-              <ContessaUiLogo className="h-11 w-11 sm:h-[52px] sm:w-[52px]" />
+            <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-14 md:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
+              <ContessaUiLogo className="h-[52px] w-[52px]" />
             </div>
             <div className="min-w-0 flex-1 pr-2 md:pr-4">
-              <h1 className={`${vesselTitleClass} whitespace-nowrap font-semibold leading-none tracking-[0.10em] text-slate-950 md:tracking-[0.08em] dark:text-slate-50`}>
+              <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] text-slate-950 md:font-semibold md:tracking-[0.08em] dark:text-slate-50`}>
                 {vesselTitle}
               </h1>
               <p className="mt-2 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-sm md:tracking-[0.12em] dark:text-slate-400">
@@ -940,7 +940,7 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-11 md:w-11 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
               onClick={onToggleDarkMode}
               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -952,10 +952,10 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-11 w-11 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm sm:px-3.5 md:w-auto md:px-3 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm md:h-11 md:w-auto md:px-3 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
                   aria-label="Open settings"
                 >
-                  <span className="text-base md:mr-2" aria-hidden="true">⚙</span>
+                  <Settings className="h-4 w-4 md:mr-2" />
                   <span className="hidden md:inline">Settings</span>
                 </Button>
               </DialogTrigger>
@@ -1061,7 +1061,7 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-xs font-semibold shadow-sm transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold shadow-sm transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-100 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/85 text-slate-800 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
