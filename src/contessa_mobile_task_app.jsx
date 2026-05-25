@@ -10,6 +10,7 @@ import {
   buildDashboardSnapshot,
   buildCertificateAlerts,
   buildOperationalNotifications,
+  calculateConfidenceScore,
   CURRENCY_OPTIONS,
   CREW_DEPARTMENT_OPTIONS,
   CREW_RANK_OPTIONS,
@@ -42,6 +43,7 @@ import {
   getConfiguredPublicAppUrlEnvValue,
   getInitialAppState,
   getNextFleetTheme,
+  getVesselStateMoodForMode,
   getVesselMetrics,
   hasMaintenanceDuplicate,
   isLocalRuntimeLocation,
@@ -51,6 +53,7 @@ import {
   normalizeCrewProfile,
   normalizeImportedAppState,
   normalizeFleetVessel,
+  normalizeVesselState,
   normalizeMaintenanceItem,
   normalizeMoneyItem,
   parseAmountInput,
@@ -186,6 +189,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [crewCertificatesPanel, setCrewCertificatesPanel] = useState("crew");
   const [currentRole, setCurrentRole] = useState(initialAppState.currentRole || "captain");
   const [appMode, setAppMode] = useState(initialAppState.appMode === "editor" ? "editor" : "view");
+  const [vesselStateModes, setVesselStateModes] = useState({});
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [newExpenseOpen, setNewExpenseOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -286,6 +290,35 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       activeVesselId
     );
   }, [vessels, activeVesselId, vesselProfile, documents, tasks, history, declinedTasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning]);
+  const activeVesselState = useMemo(() => {
+    const baseState = normalizeVesselState(activeVesselWorkspace?.vesselState, activeVesselId);
+    const modeOverride = vesselStateModes[activeVesselId];
+    const nextMode = modeOverride || baseState.mode;
+    const confidenceScore = calculateConfidenceScore(activeVesselWorkspace);
+
+    return {
+      ...baseState,
+      mode: nextMode,
+      mood: modeOverride ? getVesselStateMoodForMode(nextMode) : baseState.mood,
+      confidenceScore,
+    };
+  }, [activeVesselWorkspace, activeVesselId, vesselStateModes]);
+  const handleVesselStateModeChange = (mode) => {
+    const mood = getVesselStateMoodForMode(mode);
+    setVesselStateModes((prev) => ({ ...prev, [activeVesselId]: mode }));
+    setVessels((prev) => prev.map((vessel) => (
+      vessel?.id === activeVesselId
+        ? {
+            ...vessel,
+            vesselState: normalizeVesselState({
+              ...(vessel.vesselState || activeVesselWorkspace?.vesselState || {}),
+              mode,
+              mood,
+            }, activeVesselId),
+          }
+        : vessel
+    )));
+  };
   const vesselsForPersistence = useMemo(() => {
     const nextFleet = Array.isArray(vessels) && vessels.length ? vessels : [activeVesselWorkspace];
     const hasActiveVessel = nextFleet.some((vessel) => vessel.id === activeVesselId);
@@ -845,6 +878,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       name: activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME,
       location: activeVesselWorkspace?.details?.homePort || "Home port not set",
       status: activeVesselWorkspace?.details?.status || "Operational",
+      vesselState: activeVesselState,
+      routeStatus: routePlanning?.status || "Planning",
       syncStatus: isOffline ? "Offline mode active" : "Live connection active",
       metrics: {
         activeTasks: stats.totalObjectives || 0,
@@ -945,6 +980,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     expiringCertificates,
     routeAlerts,
     currentRoleLabel,
+    activeVesselState,
   ]);
 
   const maintenancePopupItem = useMemo(() => {
@@ -1012,6 +1048,26 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleName: "documents" },
       { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
       { id: "section-alerts", type: "Section", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleName: "notifications" },
+      {
+        id: "section-vessel-state",
+        type: "Intelligence",
+        title: "Vessel State",
+        context: `${titleCase(String(activeVesselState?.mode || "standby").replaceAll("-", " "))} · ${activeVesselState?.confidenceScore || 0}% confidence`,
+        targetId: "vessel-state-section",
+        moduleName: "command",
+        searchText: buildCommandSearchText([
+          "vessel state",
+          "guest arrival mode",
+          "yard mode",
+          "yard refit",
+          "confidence score",
+          "owner view",
+          "captain view",
+          activeVesselState?.mode,
+          activeVesselState?.primaryFocus,
+          vesselName,
+        ]),
+      },
     ];
 
     const operationalItems = Array.isArray(vesselOperations?.items) ? vesselOperations.items : [];
@@ -1064,7 +1120,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       ...result,
       searchText: result.searchText || buildCommandSearchText([result.id, result.type, result.title, result.context]),
     }));
-  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents]);
+  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents, activeVesselState]);
 
   const handleCommandSearchJump = (result) => {
     if (!result) return;
@@ -2518,6 +2574,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           onCurrentRoleChange={setCurrentRole}
           appMode={appMode}
           onAppModeChange={handleAppModeChange}
+          vesselState={activeVesselState}
+          onVesselStateModeChange={handleVesselStateModeChange}
           visibleModuleKeys={visibleModuleKeys}
           canEditApp={canEditApp}
           historyOpen={historyOpen}
@@ -2610,6 +2668,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             currentRole={effectiveRole}
             currentRoleLabel={currentRoleLabel}
             currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
+            vesselState={activeVesselState}
             stats={stats}
             vesselOperations={vesselOperations}
             isOffline={isOffline}

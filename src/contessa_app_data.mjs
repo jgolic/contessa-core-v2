@@ -54,6 +54,13 @@ export const YACHT_AREA_OPTIONS = [
 ];
 export const MONEY_STATUS_OPTIONS = ["requested", "received", "approved", "declined", "paid"];
 export const APPROVAL_OPTIONS = ["pending", "approved", "rejected"];
+export const VESSEL_STATE_MODE_OPTIONS = [
+  { value: "guest-arrival", label: "Guest Arrival" },
+  { value: "yard-refit", label: "Yard / Refit" },
+  { value: "underway", label: "Underway" },
+  { value: "standby", label: "Standby" },
+  { value: "critical", label: "Critical" },
+];
 export const PAYMENT_OPTIONS = ["unpaid", "paid"];
 export const REJECTION_HOLD_MS = 24 * 60 * 60 * 1000;
 export const DECLINED_HOLD_MS = 10 * 60 * 1000;
@@ -125,6 +132,32 @@ export const APP_FOOTER_NOTICE = "Proprietary software © 2026 Josip Golic";
 const DEFAULT_FLEET_VESSEL_ID = "contessa";
 const CONTESSA_DEMO_SEED_VERSION = 4;
 const OCTOPUSSY_DEMO_SEED_VERSION = 4;
+const DEFAULT_VESSEL_STATES = {
+  contessa: {
+    mode: "yard-refit",
+    mood: "pressure",
+    ownerVisibility: "calm-summary",
+    captainStyle: "strict-maintenance",
+    primaryFocus: "Yard works and departure readiness",
+    confidenceScore: 74,
+  },
+  octopussy: {
+    mode: "guest-arrival",
+    mood: "calm",
+    ownerVisibility: "calm-summary",
+    captainStyle: "strict-maintenance",
+    primaryFocus: "Guest arrival preparation",
+    confidenceScore: 89,
+  },
+  default: {
+    mode: "standby",
+    mood: "calm",
+    ownerVisibility: "calm-summary",
+    captainStyle: "strict-maintenance",
+    primaryFocus: "Routine vessel readiness",
+    confidenceScore: 86,
+  },
+};
 const VESSEL_THEME_PRESETS = {
   contessa: {
     name: "Contessa",
@@ -638,6 +671,12 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
   return {
     history,
     declinedTasks: [],
+    vesselState: normalizeVesselState({
+      mode: "yard-refit",
+      mood: "pressure",
+      primaryFocus: "Yard works and departure readiness",
+      confidenceScore: 74,
+    }, "contessa"),
     vesselProfile,
     documents,
     tasks,
@@ -689,6 +728,7 @@ function normalizeWorkspaceState(state = {}) {
     workers: Array.isArray(state.workers) ? state.workers.map(normalizeCrewProfile) : [],
     maintenanceItems: Array.isArray(state.maintenanceItems) ? state.maintenanceItems.map(normalizeMaintenanceItem) : [],
     routePlanning,
+    vesselState: normalizeVesselState(state.vesselState, state.id || state.slug || DEFAULT_FLEET_VESSEL_ID),
   };
 }
 
@@ -993,6 +1033,12 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
   return {
     history,
     declinedTasks: [],
+    vesselState: normalizeVesselState({
+      mode: "guest-arrival",
+      mood: "calm",
+      primaryFocus: "Guest arrival preparation",
+      confidenceScore: 89,
+    }, "octopussy"),
     vesselProfile,
     documents,
     tasks,
@@ -1030,6 +1076,8 @@ export function createFleetVesselWorkspace({
       vesselProfile: normalizedProfile,
     },
   });
+  const vesselState = normalizeVesselState(workspace.vesselState || presetWorkspace.vesselState || details.vesselState, id);
+  const calculatedConfidenceScore = calculateConfidenceScore(normalizedWorkspace);
 
   return {
     id,
@@ -1048,6 +1096,10 @@ export function createFleetVesselWorkspace({
     theme: normalizeVesselTheme(theme || details.theme || {}, getImplicitThemeNameForVessel(id)),
     vesselPrintInfo: normalizeVesselPrintInfo(details.vesselPrintInfo || workspace.vesselPrintInfo || {}, id, displayName),
     ...normalizedWorkspace,
+    vesselState: {
+      ...vesselState,
+      confidenceScore: Number.isFinite(Number(vesselState.confidenceScore)) ? vesselState.confidenceScore : calculatedConfidenceScore,
+    },
   };
 }
 
@@ -1089,6 +1141,8 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
       },
     },
   });
+  const vesselState = normalizeVesselState(vessel.vesselState || vessel.details?.vesselState, vesselId);
+  const calculatedConfidenceScore = calculateConfidenceScore(normalizedWorkspace);
 
   return {
     id: vesselId,
@@ -1107,6 +1161,10 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
     theme: normalizeVesselTheme(vessel.theme || vessel.details?.theme || {}, getImplicitThemeNameForVessel(vesselId)),
     vesselPrintInfo: normalizeVesselPrintInfo(vessel.vesselPrintInfo || vessel.details?.vesselPrintInfo || {}, vesselId, name),
     ...normalizedWorkspace,
+    vesselState: {
+      ...vesselState,
+      confidenceScore: Number.isFinite(Number(vesselState.confidenceScore)) ? vesselState.confidenceScore : calculatedConfidenceScore,
+    },
   };
 }
 
@@ -1507,6 +1565,65 @@ export function formatMoney(value, currency) {
   const symbol = getCurrencySymbol(currency);
   const amount = safeNumber(value);
   return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+}
+
+export function getVesselStateDefaults(vesselId = "") {
+  const normalizedId = String(vesselId || "").trim().toLowerCase();
+  if (normalizedId === "octopussy") return { ...DEFAULT_VESSEL_STATES.octopussy };
+  if (normalizedId === DEFAULT_FLEET_VESSEL_ID || normalizedId === "contessa") return { ...DEFAULT_VESSEL_STATES.contessa };
+  return { ...DEFAULT_VESSEL_STATES.default };
+}
+
+export function getVesselStateMoodForMode(mode = "standby") {
+  const normalizedMode = String(mode || "").toLowerCase();
+  if (normalizedMode === "critical") return "critical";
+  if (normalizedMode === "yard-refit" || normalizedMode === "underway") return "pressure";
+  return "calm";
+}
+
+export function normalizeVesselState(state = {}, vesselId = "") {
+  const defaults = getVesselStateDefaults(vesselId);
+  const requestedMode = String(state?.mode || defaults.mode || "standby");
+  const validMode = VESSEL_STATE_MODE_OPTIONS.some((option) => option.value === requestedMode) ? requestedMode : defaults.mode;
+  const mood = ["calm", "pressure", "critical"].includes(state?.mood)
+    ? state.mood
+    : getVesselStateMoodForMode(validMode);
+  const confidenceScore = Number.isFinite(Number(state?.confidenceScore))
+    ? Math.max(0, Math.min(100, Math.round(Number(state.confidenceScore))))
+    : defaults.confidenceScore;
+
+  return {
+    ...defaults,
+    ...state,
+    mode: validMode,
+    mood,
+    ownerVisibility: state?.ownerVisibility || defaults.ownerVisibility,
+    captainStyle: state?.captainStyle || defaults.captainStyle,
+    primaryFocus: state?.primaryFocus || defaults.primaryFocus,
+    confidenceScore,
+  };
+}
+
+export function calculateConfidenceScore(vessel = {}) {
+  let score = 100;
+  const tasks = Array.isArray(vessel.tasks) ? vessel.tasks : [];
+  const crewProfiles = Array.isArray(vessel.crewProfiles) ? vessel.crewProfiles : [];
+  const certificates = [
+    ...(Array.isArray(vessel.certificates) ? vessel.certificates : []),
+    ...crewProfiles.flatMap((profile) => (Array.isArray(profile.certificates) ? profile.certificates : [])),
+  ];
+  const approvals = [
+    ...(Array.isArray(vessel.approvals) ? vessel.approvals : []),
+    ...(Array.isArray(vessel.crewExpenses) ? vessel.crewExpenses : []),
+    ...tasks.flatMap((task) => (Array.isArray(task.quotes) ? task.quotes : [])),
+  ];
+
+  score -= tasks.filter((task) => String(task.status || "").toLowerCase().includes("overdue") || isOverdue(task.dueDate, task.status)).length * 8;
+  score -= tasks.filter((task) => /critical|urgent/.test(String(task.priority || "").toLowerCase())).length * 6;
+  score -= certificates.filter((certificate) => /expired/.test(String(certificate.status || certificate.statusLabel || "").toLowerCase()) || daysUntil(certificate.expiryDate) < 0).length * 10;
+  score -= approvals.filter((approval) => /waiting approval|requested|pending|received/.test(String(approval.status || approval.approval || approval.approvalStatus || "").toLowerCase())).length * 3;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
 }
 
 export function convertMoney(value, fromCurrency, toCurrency, exchangeRates) {

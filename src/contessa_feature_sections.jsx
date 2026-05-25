@@ -28,6 +28,7 @@ import {
   PRIORITY_OPTIONS,
   TASK_DEPARTMENT_OPTIONS,
   TASK_STATUS_OPTIONS,
+  VESSEL_STATE_MODE_OPTIONS,
   YACHT_AREA_OPTIONS,
   buildObjectivesFilterTabs,
   clampMaintenanceDueDate,
@@ -515,6 +516,8 @@ export function AppShellHeader({
   onCurrentRoleChange,
   appMode = "view",
   onAppModeChange,
+  vesselState = {},
+  onVesselStateModeChange,
   visibleModuleKeys = [],
   canEditApp = true,
   historyOpen,
@@ -976,6 +979,23 @@ export function AppShellHeader({
                   <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-semibold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/15 dark:text-amber-100" : "border border-slate-200/80 bg-slate-50/80 text-slate-600 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300"}`}>
                     {canEditApp ? "Editor Mode" : "View Mode"}
                   </Badge>
+                </div>
+              </div>
+
+              <div className={`${premiumInnerClass(darkMode)} p-3`}>
+                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel State</div>
+                <Select value={vesselState?.mode || "standby"} onValueChange={onVesselStateModeChange}>
+                  <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VESSEL_STATE_MODE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>
+                  {vesselState?.primaryFocus || "Routine vessel readiness"} · {Number(vesselState?.confidenceScore || 0)}% confidence
                 </div>
               </div>
 

@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
 import { AlertCircle, Compass, Receipt, TriangleAlert, Users, Wifi, WifiOff } from "../../components/icons.jsx";
 import {
+  calculateConfidenceScore,
   formatHistoryTime,
   formatMoney,
   successBadgeClass,
@@ -176,6 +177,95 @@ function sortByPriority(items = []) {
     const rightWeight = PRIORITY_WEIGHT[String(right.priority || right.status || "neutral").toLowerCase()] ?? 99;
     if (leftWeight !== rightWeight) return leftWeight - rightWeight;
     return String(left.title || "").localeCompare(String(right.title || ""));
+  });
+}
+
+const VESSEL_STATE_CONFIG = {
+  "guest-arrival": {
+    label: "Guest Arrival Mode",
+    description: "Guest arrival preparation is active. Interior, provisioning, and deck presentation are prioritized.",
+    focusTerms: ["guest", "welcome", "provision", "interior", "deck", "presentation", "route", "weather", "certificate"],
+  },
+  "yard-refit": {
+    label: "Yard / Refit Mode",
+    description: "Technical works, quotes, and departure readiness are prioritized.",
+    focusTerms: ["maintenance", "yard", "quote", "paint", "thruster", "technical", "defect", "approval", "document", "epirb"],
+  },
+  underway: {
+    label: "Underway Mode",
+    description: "Route, weather, watchkeeping, fuel, and safety items are prioritized.",
+    focusTerms: ["route", "weather", "watch", "fuel", "safety", "navigation", "bridge", "alert"],
+  },
+  standby: {
+    label: "Standby Mode",
+    description: "Routine readiness is active. The system is watching tasks, documents, crew, and approvals quietly.",
+    focusTerms: ["readiness", "task", "crew", "document", "approval", "route"],
+  },
+  critical: {
+    label: "Critical Attention",
+    description: "Urgent operational risks require captain review.",
+    focusTerms: ["critical", "urgent", "overdue", "risk", "alert", "approval", "safety"],
+  },
+};
+
+function getVesselStateConfig(mode = "standby") {
+  return VESSEL_STATE_CONFIG[mode] || VESSEL_STATE_CONFIG.standby;
+}
+
+function getMoodClasses(darkMode = false, mood = "calm") {
+  if (mood === "critical") {
+    return darkMode
+      ? "border-rose-300/30 bg-rose-400/10 shadow-[0_0_34px_rgba(251,113,133,0.12)]"
+      : "border-rose-200/80 bg-rose-50/70 shadow-[0_18px_46px_rgba(225,29,72,0.08)]";
+  }
+  if (mood === "pressure") {
+    return darkMode
+      ? "border-amber-300/30 bg-amber-300/10 shadow-[0_0_34px_rgba(251,191,36,0.12)]"
+      : "border-amber-200/80 bg-amber-50/70 shadow-[0_18px_46px_rgba(180,83,9,0.08)]";
+  }
+  return darkMode
+    ? "border-cyan-300/25 bg-cyan-300/10 shadow-[0_0_34px_rgba(34,211,238,0.12)]"
+    : "border-cyan-200/80 bg-cyan-50/70 shadow-[0_18px_46px_rgba(14,165,233,0.08)]";
+}
+
+function getMoodTextClass(darkMode = false, mood = "calm") {
+  if (mood === "critical") return darkMode ? "text-rose-200" : "text-rose-700";
+  if (mood === "pressure") return darkMode ? "text-amber-200" : "text-amber-700";
+  return darkMode ? "text-cyan-200" : "text-cyan-700";
+}
+
+function vesselModeWeight(item = {}, mode = "standby") {
+  const config = getVesselStateConfig(mode);
+  const haystack = makeSearchText([
+    item.type,
+    item.title,
+    item.subtitle,
+    item.status,
+    item.priority,
+    item.assignedTo,
+    item.requester,
+    item.description,
+    item.checklist,
+    item.activity,
+  ]);
+  const matchCount = config.focusTerms.reduce((count, term) => count + (haystack.includes(term) ? 1 : 0), 0);
+  const type = String(item.type || "").toLowerCase();
+  let modeBoost = matchCount * -8;
+
+  if (mode === "guest-arrival" && ["approval", "quote", "task", "route", "certificate"].includes(type)) modeBoost -= 4;
+  if (mode === "yard-refit" && ["maintenance", "quote", "approval", "certificate"].includes(type)) modeBoost -= 6;
+  if (mode === "underway" && ["route", "alert", "maintenance"].includes(type)) modeBoost -= 7;
+  if (mode === "critical" && (item.tone === "critical" || /critical|urgent|overdue/i.test(`${item.priority} ${item.status}`))) modeBoost -= 10;
+
+  return modeBoost;
+}
+
+function sortByVesselState(items = [], mode = "standby") {
+  return sortByPriority(items).sort((left, right) => {
+    const leftWeight = vesselModeWeight(left, mode);
+    const rightWeight = vesselModeWeight(right, mode);
+    if (leftWeight !== rightWeight) return leftWeight - rightWeight;
+    return 0;
   });
 }
 
@@ -625,6 +715,72 @@ function IntelligencePanel({
   );
 }
 
+function VesselStateBanner({
+  darkMode = false,
+  vesselState = {},
+  confidenceScore = 0,
+  stats = {},
+  currentVessel = {},
+  role = "captain",
+  currency = "USD",
+}) {
+  const theme = themeClasses(darkMode);
+  const mode = vesselState?.mode || "standby";
+  const mood = vesselState?.mood || "calm";
+  const config = getVesselStateConfig(mode);
+  const isOwnerView = String(role || "").toLowerCase() === "owner";
+  const pendingSpend = currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency);
+  const routeStatus = currentVessel?.routeStatus || currentVessel?.routePlanning?.status || "Watched";
+  const ownerTiles = [
+    { label: "Vessel Confidence", value: `${confidenceScore}%`, note: "vessel state" },
+    { label: "Pending spend", value: pendingSpend, note: `${stats.pendingApprovals || 0} decisions` },
+    { label: "Guest ready", value: mode === "guest-arrival" ? "Active" : "Watched", note: vesselState?.primaryFocus || "Captain summary" },
+    { label: "Top risk", value: stats.overdueTasks || stats.routeReviewCount || stats.certificateDue || 0, note: "visible only if material" },
+  ];
+  const captainTiles = [
+    { label: "Vessel Confidence", value: `${confidenceScore}%`, note: "calculated live" },
+    { label: "Blocked", value: stats.overdueTasks || 0, note: "overdue items", tone: (stats.overdueTasks || 0) > 0 ? "critical" : "neutral" },
+    { label: "Approvals", value: stats.pendingApprovals || 0, note: "need decision", tone: (stats.pendingApprovals || 0) > 0 ? "warning" : "neutral" },
+    { label: "Crew", value: stats.certificateDue || 0, note: "cert reviews", tone: (stats.certificateDue || 0) > 0 ? "warning" : "neutral" },
+    { label: "Route", value: stats.routeReviewCount || 0, note: routeStatus, tone: (stats.routeReviewCount || 0) > 0 ? "warning" : "neutral" },
+  ];
+  const tiles = isOwnerView ? ownerTiles : captainTiles;
+
+  return (
+    <Card
+      id="vessel-state-section"
+      className={`app-panel min-w-0 overflow-hidden rounded-[24px] border ${getMoodClasses(darkMode, mood)}`}
+    >
+      <CardContent className="p-4 md:p-5">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+          <div className="min-w-0">
+            <div className={`app-kicker ${getMoodTextClass(darkMode, mood)}`}>Vessel State</div>
+            <div className={`mt-2 text-xl font-semibold tracking-tight ${theme.textPrimary}`}>{config.label}</div>
+            <p className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>
+              {config.description}
+            </p>
+            <div className={`mt-3 text-sm font-semibold ${getMoodTextClass(darkMode, mood)}`}>
+              {isOwnerView ? "Owner view: calm executive summary." : "Captain view: operational risks surfaced first."}
+            </div>
+          </div>
+          <div className="grid min-w-0 grid-cols-2 gap-2">
+            {tiles.map((tile) => (
+              <MetricTile
+                key={tile.label}
+                darkMode={darkMode}
+                label={tile.label}
+                value={tile.value}
+                note={tile.note}
+                tone={tile.tone || (mood === "pressure" ? "warning" : mood === "critical" ? "critical" : "neutral")}
+              />
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function DetailPanelBody({
   darkMode = false,
   item,
@@ -775,6 +931,7 @@ export function TodayOperationsView({
   currentRole = "captain",
   currentRoleLabel = "Captain",
   currentVesselName = "Contessa",
+  vesselState = {},
   stats = {},
   vesselOperations = null,
   isOffline = false,
@@ -853,6 +1010,10 @@ export function TodayOperationsView({
   const approvalItems = useMemo(() => operationItems.filter((item) => item.type === "approval" || item.type === "quote"), [operationItems]);
   const certificateItems = useMemo(() => operationItems.filter((item) => item.type === "certificate"), [operationItems]);
   const alertItems = useMemo(() => operationItems.filter((item) => item.type === "alert"), [operationItems]);
+  const resolvedVesselState = useMemo(() => ({
+    ...(currentVessel?.vesselState || {}),
+    ...(vesselState || {}),
+  }), [currentVessel?.vesselState, vesselState]);
 
   const routeReviewItems = useMemo(() => {
     if (alertItems.length) return alertItems;
@@ -878,20 +1039,26 @@ export function TodayOperationsView({
   }, [alertItems, currentVessel?.slug, stats.routeWaypoints, stats.routeDistanceNm, stats.routeReviewCount]);
 
   const priorityItems = useMemo(() => {
-    return sortByPriority([
+    const sourceItems = [
       ...alertItems,
       ...taskItems,
       ...maintenanceItems,
       ...approvalItems,
       ...certificateItems,
-    ]).slice(0, 4);
-  }, [alertItems, taskItems, maintenanceItems, approvalItems, certificateItems]);
+    ];
+
+    return sortByVesselState(sourceItems, resolvedVesselState?.mode).slice(0, String(currentRole).toLowerCase() === "owner" ? 3 : 4);
+  }, [alertItems, taskItems, maintenanceItems, approvalItems, certificateItems, resolvedVesselState?.mode, currentRole]);
   const priorityItemIds = useMemo(() => new Set(priorityItems.map((item) => item.id)), [priorityItems]);
 
   const activeFleetVessel = useMemo(
     () => (Array.isArray(fleetVessels) ? fleetVessels.find((vessel) => vessel?.id === activeVesselId) : null),
     [fleetVessels, activeVesselId]
   );
+  const confidenceScore = useMemo(() => {
+    const calculated = activeFleetVessel ? calculateConfidenceScore(activeFleetVessel) : Number(resolvedVesselState?.confidenceScore || 0);
+    return Math.max(0, Math.min(100, Math.round(Number(calculated) || 0)));
+  }, [activeFleetVessel, resolvedVesselState?.confidenceScore]);
 
   const crewReadinessNote = useMemo(() => {
     if (certificateItems.length) {
@@ -944,6 +1111,8 @@ export function TodayOperationsView({
   const urgentBriefCount = priorityItems.filter((item) => item.tone === "critical").length || stats.overdueTasks || 0;
   const crewBriefCount = crewReadinessNote.length || stats.certificateDue || 0;
   const nextMilestone = routeReviewItems[0]?.title || maintenanceItems[0]?.title || "Service plan standing by";
+  const vesselStateConfig = getVesselStateConfig(resolvedVesselState?.mode);
+  const isOwnerView = String(currentRole || "").toLowerCase() === "owner";
 
   const notificationsReady = notificationPermission === "granted";
   const notificationsUnsupported = notificationPermission === "unsupported";
@@ -972,6 +1141,34 @@ export function TodayOperationsView({
       makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
       makeSection({ id: "search-alerts", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleAction: onNavigateToAlerts }),
       makeSection({ id: "search-fleet", title: "Fleet Switcher", context: "Open another vessel workspace", targetId: "app-command-header", moduleAction: onOpenFleet }),
+      makeSection({
+        id: "search-vessel-state",
+        type: "Intelligence",
+        title: "Vessel State",
+        context: `${getVesselStateConfig(resolvedVesselState?.mode).label} · ${confidenceScore}% confidence`,
+        targetId: "vessel-state-section",
+      }),
+      makeSection({
+        id: "search-confidence-score",
+        type: "Intelligence",
+        title: "Confidence Score",
+        context: `Vessel confidence is ${confidenceScore}% for ${currentVessel?.name || currentVesselName}`,
+        targetId: "vessel-state-section",
+      }),
+      makeSection({
+        id: "search-owner-view",
+        type: "View",
+        title: "Owner View",
+        context: "Calm-summary vessel confidence, pending spend, top risks, and captain summary",
+        targetId: "vessel-state-section",
+      }),
+      makeSection({
+        id: "search-captain-view",
+        type: "View",
+        title: "Captain View",
+        context: "Operational risk view for overdue items, approvals, crew accountability, and certificates",
+        targetId: "vessel-state-section",
+      }),
     ];
 
     const itemResults = operationItems.map((item) => {
@@ -1047,6 +1244,9 @@ export function TodayOperationsView({
     onNavigateToDocuments,
     onNavigateToRoute,
     onNavigateToAlerts,
+    onOpenFleet,
+    resolvedVesselState?.mode,
+    confidenceScore,
   ]);
 
   function openInspector(item) {
@@ -1133,12 +1333,24 @@ export function TodayOperationsView({
       <div className="grid gap-4 md:gap-5">
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
+            <VesselStateBanner
+              darkMode={darkMode}
+              vesselState={resolvedVesselState}
+              confidenceScore={confidenceScore}
+              stats={stats}
+              currentVessel={currentVessel}
+              role={currentRole}
+              currency={currency}
+            />
+
             <Card id="mission-cards-section" className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
               <CardContent className="p-4 md:p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="app-kicker">Mission Cards</div>
-                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>Urgent work, approvals, and risk items are surfaced first.</div>
+                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>
+                      {isOwnerView ? "Only material owner-level signals are surfaced first." : `${vesselStateConfig.label} priorities are surfaced first.`}
+                    </div>
                   </div>
                   <Button
                     type="button"
