@@ -91,18 +91,18 @@ function getVesselTitleSize(name = "") {
   const length = String(name || "").length;
 
   if (length <= 14) {
-    return "text-[30px] lg:text-[40px]";
+    return "text-[clamp(22px,6vw,32px)] lg:text-[40px]";
   }
 
   if (length <= 20) {
-    return "text-[26px] lg:text-[34px]";
+    return "text-[clamp(20px,5.4vw,28px)] lg:text-[34px]";
   }
 
   if (length <= 28) {
-    return "text-[22px] lg:text-[30px]";
+    return "text-[clamp(18px,4.8vw,24px)] lg:text-[30px]";
   }
 
-  return "text-[18px] lg:text-[26px]";
+  return "text-[clamp(16px,4.2vw,20px)] lg:text-[26px]";
 }
 
 function ControlCard({ darkMode = false, label, value, children }) {
@@ -901,34 +901,34 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
       <div className="relative z-[1000] mb-4 min-w-0">
-        <div className="grid min-w-0 grid-cols-1 items-center gap-3 md:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] md:gap-6">
-          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 md:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] md:items-center md:gap-6">
+          <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border sm:h-14 sm:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-11 w-11 sm:h-[52px] sm:w-[52px]" />
             </div>
-            <div className="min-w-0 flex-1 pr-4">
-              <h1 className={`${vesselTitleClass} whitespace-nowrap font-semibold leading-none tracking-[0.08em] text-slate-950 dark:text-slate-50`}>
+            <div className="min-w-0 flex-1 pr-2 md:pr-4">
+              <h1 className={`${vesselTitleClass} whitespace-nowrap font-semibold leading-none tracking-[0.10em] text-slate-950 md:tracking-[0.08em] dark:text-slate-50`}>
                 {vesselTitle}
               </h1>
-              <p className="mt-1 whitespace-nowrap text-xs font-medium uppercase tracking-[0.12em] text-slate-500 sm:text-sm dark:text-slate-400">
+              <p className="mt-2 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-sm md:tracking-[0.12em] dark:text-slate-400">
                 {vesselIdentifier}
               </p>
             </div>
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[1000] flex w-full min-w-0 justify-center md:col-start-2 md:row-start-1">
+            <div className="relative z-[1000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-center md:col-span-1 md:col-start-2 md:row-start-1 md:mt-0">
               <div className="relative z-[1000] w-full min-w-0 md:max-w-3xl">
                 {commandSearchView}
               </div>
             </div>
           ) : null}
 
-          <div className="flex items-center justify-end gap-2 md:col-start-3">
+          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 md:col-start-3 md:items-center">
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`hidden h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 md:inline-flex ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
@@ -952,11 +952,11 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-11 shrink-0 rounded-2xl px-3 text-sm font-semibold shadow-sm sm:px-3.5 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-11 w-11 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm sm:px-3.5 md:w-auto md:px-3 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
                   aria-label="Open settings"
                 >
-                  <span className="text-base sm:mr-2" aria-hidden="true">⚙</span>
-                  <span className="hidden sm:inline">Settings</span>
+                  <span className="text-base md:mr-2" aria-hidden="true">⚙</span>
+                  <span className="hidden md:inline">Settings</span>
                 </Button>
               </DialogTrigger>
             <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
@@ -1053,8 +1053,21 @@ export function AppShellHeader({
                 </Button>
               </div>
             </div>
-            </DialogContent>
+              </DialogContent>
             </Dialog>
+          </div>
+
+          <div className="col-span-2 row-start-3 mt-1 flex justify-end md:hidden">
+            <Button
+              type="button"
+              variant="outline"
+              className={`inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-xs font-semibold shadow-sm transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              onClick={openFleetPanel}
+              aria-label="Open fleet switcher"
+            >
+              <Compass className="h-3.5 w-3.5 shrink-0" />
+              <span>Fleet</span>
+            </Button>
           </div>
         </div>
       </div>
