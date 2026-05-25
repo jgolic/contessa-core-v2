@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select.jsx";
-import { AlertCircle, CheckCircle2, LayoutDashboard, Moon, Plus, Receipt, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
   ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
@@ -607,17 +607,11 @@ export function AppShellHeader({
     visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates") ? { key: "crew-certificates", label: "Crew" } : null,
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs" } : null,
   ].filter(Boolean);
-  const fleetWorkspaceCards = [...fleetVessels]
-    .filter(Boolean)
-    .sort((left, right) => {
-      if (left.id === activeVesselId) return -1;
-      if (right.id === activeVesselId) return 1;
-      return String(left.name || "").localeCompare(String(right.name || ""));
-    });
   const activeFleetVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId) || null;
   const currentVesselMetrics = fleetMetricsByVessel?.[activeVesselId] || {};
   const recentHeaderHistory = Array.isArray(history) ? history.slice(0, 3) : [];
   const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
+  const compactVesselName = String(currentVesselName || "Fleet").replace(/^M\/Y\s+/i, "").trim() || "Fleet";
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
@@ -719,7 +713,10 @@ export function AppShellHeader({
   };
 
   return (
-    <div className={`app-panel app-hero-surface relative mb-4 min-w-0 max-w-full overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}>
+    <div
+      id="app-command-header"
+      className={`app-panel app-hero-surface relative mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[28px] border px-4 pb-4 pt-[calc(env(safe-area-inset-top)+0.875rem)] shadow-[0_24px_64px_-42px_rgba(15,50,43,0.22)] md:px-5 md:py-4 ${darkMode ? "app-section-shell-dark" : "app-section-shell"}`}
+    >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
           <DialogHeader>
@@ -900,6 +897,18 @@ export function AppShellHeader({
           ) : null}
 
           <div className="flex items-center justify-end gap-2 md:col-start-3">
+            <Button
+              type="button"
+              variant="outline"
+              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              onClick={openFleetPanel}
+              aria-label="Open fleet switcher"
+            >
+              <Compass className="h-4 w-4 shrink-0" />
+              <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
+              <span className="max-w-[5.5rem] truncate lg:hidden">Fleet</span>
+            </Button>
+
             <Button
               type="button"
               variant="outline"
@@ -1303,80 +1312,6 @@ export function AppShellHeader({
             >
               Alerts
             </AlertInboxButton>
-          </div>
-          <div className={`${premiumShellClass(darkMode)} mt-4 w-full min-w-0 max-w-full overflow-hidden p-4 md:p-6`}>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Fleet Switcher</div>
-                <div className={`mt-2 max-w-full text-sm leading-6 sm:max-w-3xl ${theme.textSecondary}`}>
-                  Keep vessel identity explicit. Open the other workspace directly from here without losing the current command layout.
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                className={`${primaryButtonClass} w-full sm:w-auto ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
-                onClick={openFleetPanel}
-              >
-                Manage
-              </Button>
-            </div>
-            <div className="mt-5 grid w-full min-w-0 grid-cols-1 gap-3 lg:grid-cols-2">
-              {fleetWorkspaceCards.map((vessel) => {
-                const isCurrent = vessel.id === activeVesselId;
-                const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
-
-                return (
-                  <div
-                    key={`fleet-switcher-${vessel.id}`}
-                    className={`flex h-full w-full min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border p-4 transition-all duration-200 sm:p-5 ${isCurrent ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}
-                  >
-                    <div className="flex min-w-0 items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel</div>
-                        <div className={`mt-0.5 truncate text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
-                        <div className={`mt-0.5 max-w-full truncate text-xs ${theme.textSecondary}`}>
-                          {vessel?.details?.status || "Operational"} · {vessel?.details?.homePort || "Home port not set"}
-                        </div>
-                      </div>
-                      <Badge className={`max-w-[42%] shrink-0 truncate px-2 py-0.5 text-[10px] ${isCurrent ? "vessel-pill" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-600"}`}>
-                        {isCurrent ? "Current" : "Available"}
-                      </Badge>
-                    </div>
-                    <div className="mt-4 grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
-                      <div className={`group min-w-0 rounded-2xl border p-3 sm:p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                        <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
-                      </div>
-                      <div className={`group min-w-0 rounded-2xl border p-3 sm:p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                        <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
-                      </div>
-                    </div>
-                    <div className="mt-auto pt-4">
-                      {isCurrent ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          disabled
-                          className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-400" : ""}`}
-                        >
-                          Current Workspace
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          onClick={() => onSwitchFleetVessel?.(vessel.id)}
-                          className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
-                        >
-                          Open Vessel
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
           <details className={`${premiumShellClass(darkMode)} group mt-4 w-full min-w-0 max-w-full overflow-hidden p-4`}>
             <summary className="flex cursor-pointer list-none flex-col gap-3 text-sm font-semibold min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">

@@ -2492,7 +2492,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   return (
     <div
-      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-5 lg:px-8 xl:px-10 ${theme.page}`}
+      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-8 lg:px-8 lg:pt-10 xl:px-10 ${theme.page}`}
       style={vesselThemeVars}
     >
       <AppDialogs
