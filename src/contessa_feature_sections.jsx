@@ -512,6 +512,7 @@ export function AppShellHeader({
   isOffline = false,
   onToggleDarkMode,
   currentVesselName = "Contessa",
+  currentVesselImo = "",
   currentRole,
   onCurrentRoleChange,
   appMode = "view",
@@ -617,6 +618,8 @@ export function AppShellHeader({
   const compactVesselName = String(currentVesselName || "Fleet").replace(/^M\/Y\s+/i, "").trim() || "Fleet";
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
+  const vesselOperationsTitle = `${String(currentVesselName || "Vessel").toUpperCase()} OPERATIONS`;
+  const vesselImoLabel = currentVesselImo || "—";
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
@@ -876,18 +879,13 @@ export function AppShellHeader({
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border sm:h-14 sm:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-11 w-11 sm:h-[52px] sm:w-[52px]" />
             </div>
-            <div className="hidden min-w-0 sm:block">
-              {isContessaWorkspace ? (
-                <img
-                  src="/branding/contessa-wordmark-extracted.png"
-                  alt="Contessa"
-                  className={`brand-wordmark-image ${darkMode ? "brand-wordmark-image--dark" : "brand-wordmark-image--light"} block h-[1.05rem] w-auto max-w-[140px] select-none opacity-90`}
-                  draggable="false"
-                />
-              ) : (
-                <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{currentVesselName}</div>
-              )}
-              <div className="app-kicker mt-1 truncate">{fleetWorkspaceLabel}</div>
+            <div className="min-w-0">
+              <h1 className="max-w-[54vw] truncate text-[20px] font-semibold uppercase tracking-[0.08em] text-slate-950 sm:max-w-[280px] sm:text-[24px] md:max-w-[320px] lg:max-w-[420px] lg:text-[34px] dark:text-slate-50">
+                {vesselOperationsTitle}
+              </h1>
+              <p className="mt-1 truncate text-xs font-medium uppercase tracking-[0.12em] text-slate-500 sm:text-sm dark:text-slate-400">
+                IMO {vesselImoLabel}
+              </p>
             </div>
           </div>
 
