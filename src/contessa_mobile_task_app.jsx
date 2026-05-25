@@ -244,6 +244,17 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const theme = themeClasses(darkMode);
   const canEditApp = appMode === "editor";
   const effectiveRole = currentRole;
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.classList.toggle("dark-mode", Boolean(darkMode));
+    document.documentElement.classList.toggle("dark", Boolean(darkMode));
+    return () => {
+      document.body.classList.remove("dark-mode");
+      document.documentElement.classList.remove("dark");
+    };
+  }, [darkMode]);
+
   const publicAppUrlStatus = useMemo(() => {
     return getCanonicalPublicAppUrlStatus(
       getConfiguredPublicAppUrlEnvValue(),

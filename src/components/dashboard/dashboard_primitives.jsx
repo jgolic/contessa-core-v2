@@ -81,6 +81,11 @@ function sectionModuleTheme(darkMode, module = "neutral", isOpen = false) {
   };
 }
 
+function normalizedModuleClass(module = "neutral") {
+  const safeModule = ["tasks", "approval", "crew", "docs", "route", "activity"].includes(module) ? module : "docs";
+  return safeModule;
+}
+
 function initialsFromName(name = "Ops") {
   return String(name || "Ops")
     .split(/\s+/)
@@ -108,10 +113,11 @@ export function SectionAccordion({
   const theme = themeClasses(darkMode);
   const normalizedModule = module || String(title || "").toLowerCase().replace(/\s+/g, "-");
   const moduleTheme = sectionModuleTheme(darkMode, normalizedModule, isOpen);
+  const moduleClass = normalizedModuleClass(normalizedModule);
 
   return (
-    <Card id={id} className={`app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
-      <div className={`pointer-events-none absolute inset-x-6 top-0 h-[3px] rounded-b-full bg-gradient-to-r ${moduleTheme.rail}`} />
+    <Card id={id} className={`module-row module-row--${moduleClass} app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
+      <div className={`module-row-rail module-row-rail--${moduleClass} pointer-events-none absolute inset-x-6 top-0 h-[3px] rounded-b-full bg-gradient-to-r ${moduleTheme.rail}`} />
       <CardContent className="p-3.5 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <button
@@ -120,10 +126,10 @@ export function SectionAccordion({
             className="min-w-0 flex-1 text-left"
           >
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <div className="app-kicker">{title}</div>
-              <Badge className={`${moduleTheme.badge} shrink-0`}>{count}</Badge>
+              <div className="module-row-label app-kicker">{title}</div>
+              <Badge className={`module-row-badge module-row-badge--${moduleClass} ${moduleTheme.badge} shrink-0`}>{count}</Badge>
             </div>
-            <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div>
+            <div className={`module-row-description mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div>
           </button>
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             {onAction ? (
@@ -131,7 +137,7 @@ export function SectionAccordion({
                 type="button"
                 variant="outline"
                 onClick={onAction}
-                className={`app-action-button w-full sm:w-auto ${moduleTheme.action}`}
+                className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
               >
                 {actionLabel}
               </Button>
@@ -140,7 +146,7 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={onToggle}
-              className={`app-action-button w-full sm:w-auto ${moduleTheme.action}`}
+              className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
             >
               {isOpen ? "Collapse" : "Expand"}
             </Button>

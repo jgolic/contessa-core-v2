@@ -346,6 +346,97 @@ body.dark-mode .button-vessel-primary {
   transform: translateY(-1px);
 }
 
+.module-row {
+  border-color: rgba(203, 213, 225, 0.8) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #020617 !important;
+  box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.42);
+}
+
+.module-row-label {
+  color: #334155 !important;
+}
+
+.module-row-description {
+  color: #475569 !important;
+}
+
+.module-row-badge {
+  color: #0f172a !important;
+}
+
+.module-row-action {
+  border-color: rgba(203, 213, 225, 0.95) !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  color: #0f172a !important;
+}
+
+.module-row--tasks,
+.module-row-action--tasks {
+  border-color: rgba(147, 197, 253, 0.7) !important;
+}
+
+.module-row--approval,
+.module-row-action--approval {
+  border-color: rgba(252, 211, 77, 0.72) !important;
+}
+
+.module-row--crew,
+.module-row-action--crew {
+  border-color: rgba(94, 234, 212, 0.7) !important;
+}
+
+.module-row--docs,
+.module-row-action--docs {
+  border-color: rgba(203, 213, 225, 0.85) !important;
+}
+
+.module-row--route,
+.module-row-action--route {
+  border-color: rgba(125, 211, 252, 0.72) !important;
+}
+
+.module-row--activity,
+.module-row-action--activity {
+  border-color: rgba(196, 181, 253, 0.68) !important;
+}
+
+.module-row-badge--tasks {
+  border-color: rgba(147, 197, 253, 0.8) !important;
+  background: rgba(219, 234, 254, 0.82) !important;
+  color: #1e40af !important;
+}
+
+.module-row-badge--approval {
+  border-color: rgba(252, 211, 77, 0.8) !important;
+  background: rgba(254, 243, 199, 0.9) !important;
+  color: #92400e !important;
+}
+
+.module-row-badge--crew {
+  border-color: rgba(94, 234, 212, 0.76) !important;
+  background: rgba(204, 251, 241, 0.8) !important;
+  color: #0f766e !important;
+}
+
+.module-row-badge--docs {
+  border-color: rgba(203, 213, 225, 0.92) !important;
+  background: rgba(248, 250, 252, 0.92) !important;
+  color: #334155 !important;
+}
+
+.module-row-badge--route {
+  border-color: rgba(125, 211, 252, 0.8) !important;
+  background: rgba(224, 242, 254, 0.85) !important;
+  color: #075985 !important;
+}
+
+.module-row-badge--activity {
+  border-color: rgba(196, 181, 253, 0.78) !important;
+  background: rgba(237, 233, 254, 0.82) !important;
+  color: #5b21b6 !important;
+}
+
 body.dark-mode .app-action-button,
 .dark .app-action-button {
   border-color: rgba(255, 255, 255, 0.1);
@@ -374,6 +465,145 @@ body.dark-mode .app-primary-action-button:hover,
 .dark .app-primary-action-button:hover {
   background: rgba(103, 232, 249, 0.2);
   box-shadow: 0 18px 40px -26px rgba(34, 211, 238, 0.48);
+}
+
+body.dark-mode .module-row,
+.dark .module-row {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32) !important;
+}
+
+body.dark-mode .module-row:hover,
+.dark .module-row:hover {
+  background: rgba(30, 41, 59, 0.92) !important;
+}
+
+body.dark-mode .module-row-label,
+.dark .module-row-label {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .module-row-description,
+.dark .module-row-description {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .module-row--tasks,
+.dark .module-row--tasks {
+  border-color: rgba(147, 197, 253, 0.25) !important;
+}
+
+body.dark-mode .module-row--approval,
+.dark .module-row--approval {
+  border-color: rgba(252, 211, 77, 0.25) !important;
+}
+
+body.dark-mode .module-row--crew,
+.dark .module-row--crew {
+  border-color: rgba(94, 234, 212, 0.25) !important;
+}
+
+body.dark-mode .module-row--docs,
+.dark .module-row--docs {
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
+body.dark-mode .module-row--route,
+.dark .module-row--route {
+  border-color: rgba(125, 211, 252, 0.25) !important;
+}
+
+body.dark-mode .module-row--activity,
+.dark .module-row--activity {
+  border-color: rgba(196, 181, 253, 0.22) !important;
+}
+
+body.dark-mode .module-row-rail--tasks,
+.dark .module-row-rail--tasks {
+  background: #60a5fa !important;
+}
+
+body.dark-mode .module-row-rail--approval,
+.dark .module-row-rail--approval {
+  background: #fcd34d !important;
+}
+
+body.dark-mode .module-row-rail--crew,
+.dark .module-row-rail--crew {
+  background: #5eead4 !important;
+}
+
+body.dark-mode .module-row-rail--docs,
+.dark .module-row-rail--docs {
+  background: #94a3b8 !important;
+}
+
+body.dark-mode .module-row-rail--route,
+.dark .module-row-rail--route {
+  background: #7dd3fc !important;
+}
+
+body.dark-mode .module-row-rail--activity,
+.dark .module-row-rail--activity {
+  background: #c4b5fd !important;
+}
+
+body.dark-mode .module-row-badge--tasks,
+.dark .module-row-badge--tasks {
+  border-color: rgba(147, 197, 253, 0.3) !important;
+  background: rgba(96, 165, 250, 0.15) !important;
+  color: #dbeafe !important;
+}
+
+body.dark-mode .module-row-badge--approval,
+.dark .module-row-badge--approval {
+  border-color: rgba(252, 211, 77, 0.3) !important;
+  background: rgba(251, 191, 36, 0.15) !important;
+  color: #fef3c7 !important;
+}
+
+body.dark-mode .module-row-badge--crew,
+.dark .module-row-badge--crew {
+  border-color: rgba(94, 234, 212, 0.3) !important;
+  background: rgba(45, 212, 191, 0.15) !important;
+  color: #ccfbf1 !important;
+}
+
+body.dark-mode .module-row-badge--docs,
+.dark .module-row-badge--docs {
+  border-color: rgba(203, 213, 225, 0.25) !important;
+  background: rgba(148, 163, 184, 0.15) !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .module-row-badge--route,
+.dark .module-row-badge--route {
+  border-color: rgba(125, 211, 252, 0.3) !important;
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #e0f2fe !important;
+}
+
+body.dark-mode .module-row-badge--activity,
+.dark .module-row-badge--activity {
+  border-color: rgba(196, 181, 253, 0.3) !important;
+  background: rgba(167, 139, 250, 0.15) !important;
+  color: #ede9fe !important;
+}
+
+body.dark-mode .module-row-action,
+.dark .module-row-action {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(30, 41, 59, 0.92) !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .module-row-action:hover,
+.dark .module-row-action:hover {
+  border-color: rgba(103, 232, 249, 0.4) !important;
+  background: rgba(51, 65, 85, 0.96) !important;
+  color: #ecfeff !important;
 }
 
 .vessel-outline-button {
