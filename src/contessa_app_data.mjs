@@ -318,16 +318,19 @@ const REQUIRED_FLEET_VESSELS = [
     details: {
       length: 32,
       vesselType: "Motor Yacht",
-      flag: "Cayman Islands",
+      flag: "Jamaica",
       homePort: "Fort Lauderdale / LMC Safe Harbor",
       status: "Yard / Refit",
       notes: "Independent Fort Lauderdale refit workspace.",
     },
     vesselPrintInfo: {
       displayName: "M/Y CONTESSA",
-      flag: "JAMAICA",
-      imo: "9876543",
-      callSign: "6YCT9",
+      flag: "Jamaica",
+      imo: "",
+      officialNumber: "",
+      mmsi: "",
+      callSign: "",
+      identifierStatus: "pending-verification",
       portOfRegistry: "KINGSTON",
       date: "14 MAY 2026",
     },
@@ -345,9 +348,12 @@ const REQUIRED_FLEET_VESSELS = [
     },
     vesselPrintInfo: {
       displayName: "M/Y OCTOPUSSY",
-      flag: "CAYMAN ISLANDS",
-      imo: "1010101",
-      callSign: "ZC1234",
+      flag: "Cayman Islands",
+      imo: "",
+      officialNumber: "",
+      mmsi: "",
+      callSign: "",
+      identifierStatus: "pending-verification",
       portOfRegistry: "GEORGE TOWN",
       date: "14 MAY 2026",
     },
@@ -435,9 +441,12 @@ function getDefaultVesselPrintInfo(vesselId = DEFAULT_FLEET_VESSEL_ID, name = "M
   if (vesselId === "octopussy") {
     return {
       displayName: "M/Y OCTOPUSSY",
-      flag: "CAYMAN ISLANDS",
-      imo: "1010101",
-      callSign: "ZC1234",
+      flag: "Cayman Islands",
+      imo: "",
+      officialNumber: "",
+      mmsi: "",
+      callSign: "",
+      identifierStatus: "pending-verification",
       portOfRegistry: "GEORGE TOWN",
       date: "14 MAY 2026",
     };
@@ -446,9 +455,12 @@ function getDefaultVesselPrintInfo(vesselId = DEFAULT_FLEET_VESSEL_ID, name = "M
   if (vesselId === DEFAULT_FLEET_VESSEL_ID) {
     return {
       displayName: "M/Y CONTESSA",
-      flag: "JAMAICA",
-      imo: "9876543",
-      callSign: "6YCT9",
+      flag: "Jamaica",
+      imo: "",
+      officialNumber: "",
+      mmsi: "",
+      callSign: "",
+      identifierStatus: "pending-verification",
       portOfRegistry: "KINGSTON",
       date: "14 MAY 2026",
     };
@@ -458,7 +470,10 @@ function getDefaultVesselPrintInfo(vesselId = DEFAULT_FLEET_VESSEL_ID, name = "M
     displayName: String(name || "VESSEL").toUpperCase(),
     flag: "",
     imo: "",
+    officialNumber: "",
+    mmsi: "",
     callSign: "",
+    identifierStatus: "pending-verification",
     portOfRegistry: "",
     date: "14 MAY 2026",
   };
@@ -470,7 +485,10 @@ function normalizeVesselPrintInfo(info = {}, vesselId = DEFAULT_FLEET_VESSEL_ID,
     displayName: info.displayName || fallback.displayName,
     flag: info.flag || fallback.flag,
     imo: info.imo || fallback.imo,
+    officialNumber: info.officialNumber || fallback.officialNumber,
+    mmsi: info.mmsi || fallback.mmsi,
     callSign: info.callSign || fallback.callSign,
+    identifierStatus: info.identifierStatus || fallback.identifierStatus,
     portOfRegistry: info.portOfRegistry || fallback.portOfRegistry,
     date: info.date || fallback.date,
   };
@@ -1078,6 +1096,7 @@ export function createFleetVesselWorkspace({
   });
   const vesselState = normalizeVesselState(workspace.vesselState || presetWorkspace.vesselState || details.vesselState, id);
   const calculatedConfidenceScore = calculateConfidenceScore(normalizedWorkspace);
+  const vesselPrintInfo = normalizeVesselPrintInfo(details.vesselPrintInfo || workspace.vesselPrintInfo || {}, id, displayName);
 
   return {
     id,
@@ -1085,7 +1104,7 @@ export function createFleetVesselWorkspace({
     details: {
       length: details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0),
       vesselType: details.vesselType || "Motor Yacht",
-      flag: details.flag || "Cayman Islands",
+      flag: details.flag || (isContessaPreset ? "Jamaica" : "Cayman Islands"),
       homePort: details.homePort || (isOctopussyPreset ? "Oracabessa, Jamaica" : isContessaPreset ? "Fort Lauderdale / LMC Safe Harbor" : ""),
       crewNumber: details.crewNumber ?? normalizedWorkspace.crewProfiles.length,
       notes: details.notes || "",
@@ -1094,8 +1113,15 @@ export function createFleetVesselWorkspace({
       demoSeedVersion: isOctopussyPreset ? OCTOPUSSY_DEMO_SEED_VERSION : isContessaPreset ? CONTESSA_DEMO_SEED_VERSION : undefined,
     },
     theme: normalizeVesselTheme(theme || details.theme || {}, getImplicitThemeNameForVessel(id)),
-    vesselPrintInfo: normalizeVesselPrintInfo(details.vesselPrintInfo || workspace.vesselPrintInfo || {}, id, displayName),
     ...normalizedWorkspace,
+    displayName: vesselPrintInfo.displayName,
+    flag: vesselPrintInfo.flag || details.flag || "",
+    imo: vesselPrintInfo.imo,
+    officialNumber: vesselPrintInfo.officialNumber,
+    mmsi: vesselPrintInfo.mmsi,
+    callSign: vesselPrintInfo.callSign,
+    identifierStatus: vesselPrintInfo.identifierStatus,
+    vesselPrintInfo,
     vesselState: {
       ...vesselState,
       confidenceScore: Number.isFinite(Number(vesselState.confidenceScore)) ? vesselState.confidenceScore : calculatedConfidenceScore,
@@ -1143,6 +1169,7 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
   });
   const vesselState = normalizeVesselState(vessel.vesselState || vessel.details?.vesselState, vesselId);
   const calculatedConfidenceScore = calculateConfidenceScore(normalizedWorkspace);
+  const vesselPrintInfo = normalizeVesselPrintInfo(vessel.vesselPrintInfo || vessel.details?.vesselPrintInfo || {}, vesselId, name);
 
   return {
     id: vesselId,
@@ -1159,8 +1186,15 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
       demoSeedVersion: vessel.details?.demoSeedVersion,
     },
     theme: normalizeVesselTheme(vessel.theme || vessel.details?.theme || {}, getImplicitThemeNameForVessel(vesselId)),
-    vesselPrintInfo: normalizeVesselPrintInfo(vessel.vesselPrintInfo || vessel.details?.vesselPrintInfo || {}, vesselId, name),
     ...normalizedWorkspace,
+    displayName: vesselPrintInfo.displayName,
+    flag: vesselPrintInfo.flag || vessel.details?.flag || vessel.flag || "",
+    imo: vesselPrintInfo.imo,
+    officialNumber: vesselPrintInfo.officialNumber,
+    mmsi: vesselPrintInfo.mmsi,
+    callSign: vesselPrintInfo.callSign,
+    identifierStatus: vesselPrintInfo.identifierStatus,
+    vesselPrintInfo,
     vesselState: {
       ...vesselState,
       confidenceScore: Number.isFinite(Number(vesselState.confidenceScore)) ? vesselState.confidenceScore : calculatedConfidenceScore,

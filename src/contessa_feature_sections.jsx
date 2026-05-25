@@ -80,22 +80,29 @@ const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 d
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
 
-function getVesselTitleClass(name = "") {
+function getVesselIdentifier(vessel) {
+  if (vessel?.imo) return `IMO ${vessel.imo}`;
+  if (vessel?.officialNumber) return `Official No. ${vessel.officialNumber}`;
+  if (vessel?.mmsi) return `MMSI ${vessel.mmsi}`;
+  return "IMO pending verification";
+}
+
+function getVesselTitleSize(name = "") {
   const length = String(name || "").length;
 
-  if (length <= 18) {
-    return "text-[20px] sm:text-[24px] md:text-[28px] lg:text-[34px]";
+  if (length <= 14) {
+    return "text-[30px] lg:text-[40px]";
   }
 
-  if (length <= 26) {
-    return "text-[18px] sm:text-[22px] md:text-[26px] lg:text-[30px]";
+  if (length <= 20) {
+    return "text-[26px] lg:text-[34px]";
   }
 
-  if (length <= 34) {
-    return "text-[16px] sm:text-[20px] md:text-[24px] lg:text-[28px]";
+  if (length <= 28) {
+    return "text-[22px] lg:text-[30px]";
   }
 
-  return "text-[14px] sm:text-[18px] md:text-[22px] lg:text-[26px]";
+  return "text-[18px] lg:text-[26px]";
 }
 
 function ControlCard({ darkMode = false, label, value, children }) {
@@ -530,7 +537,7 @@ export function AppShellHeader({
   isOffline = false,
   onToggleDarkMode,
   currentVesselName = "Contessa",
-  currentVesselImo = "",
+  currentVesselIdentity = null,
   currentRole,
   onCurrentRoleChange,
   appMode = "view",
@@ -636,9 +643,10 @@ export function AppShellHeader({
   const compactVesselName = String(currentVesselName || "Fleet").replace(/^M\/Y\s+/i, "").trim() || "Fleet";
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
-  const vesselOperationsTitle = `${String(currentVesselName || "Vessel").toUpperCase()} OPERATIONS`;
-  const vesselImoLabel = currentVesselImo || "—";
-  const vesselTitleClass = getVesselTitleClass(vesselOperationsTitle);
+  const vesselName = currentVesselIdentity?.displayName || currentVesselIdentity?.name || currentVesselName || "Vessel";
+  const vesselTitle = String(vesselName || "Vessel").toUpperCase();
+  const vesselIdentifier = getVesselIdentifier(currentVesselIdentity || {});
+  const vesselTitleClass = getVesselTitleSize(vesselTitle);
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
@@ -893,17 +901,17 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
       <div className="relative z-[1000] mb-4 min-w-0">
-        <div className="grid min-w-0 grid-cols-1 items-center gap-3 md:grid-cols-[minmax(0,1.1fr)_minmax(320px,1.25fr)_auto]">
+        <div className="grid min-w-0 grid-cols-1 items-center gap-3 md:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] md:gap-6">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border sm:h-14 sm:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-11 w-11 sm:h-[52px] sm:w-[52px]" />
             </div>
-            <div className="min-w-0 flex-1">
-              <h1 className={`${vesselTitleClass} whitespace-nowrap font-semibold uppercase leading-none tracking-[0.055em] text-slate-950 sm:tracking-[0.07em] lg:tracking-[0.08em] dark:text-slate-50`}>
-                {vesselOperationsTitle}
+            <div className="min-w-0 flex-1 pr-4">
+              <h1 className={`${vesselTitleClass} whitespace-nowrap font-semibold leading-none tracking-[0.08em] text-slate-950 dark:text-slate-50`}>
+                {vesselTitle}
               </h1>
               <p className="mt-1 whitespace-nowrap text-xs font-medium uppercase tracking-[0.12em] text-slate-500 sm:text-sm dark:text-slate-400">
-                IMO {vesselImoLabel}
+                {vesselIdentifier}
               </p>
             </div>
           </div>

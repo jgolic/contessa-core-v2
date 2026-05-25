@@ -2593,7 +2593,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           isOffline={isOffline}
           onToggleDarkMode={() => setDarkMode((prev) => !prev)}
           currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-          currentVesselImo={activeVesselWorkspace?.vesselPrintInfo?.imo || activeVesselWorkspace?.imo || "—"}
+          currentVesselIdentity={{
+            name: activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME,
+            displayName: activeVesselWorkspace?.vesselPrintInfo?.displayName || activeVesselWorkspace?.displayName,
+            imo: activeVesselWorkspace?.vesselPrintInfo?.imo || activeVesselWorkspace?.imo || "",
+            officialNumber: activeVesselWorkspace?.vesselPrintInfo?.officialNumber || activeVesselWorkspace?.officialNumber || "",
+            mmsi: activeVesselWorkspace?.vesselPrintInfo?.mmsi || activeVesselWorkspace?.mmsi || "",
+            identifierStatus: activeVesselWorkspace?.vesselPrintInfo?.identifierStatus || activeVesselWorkspace?.identifierStatus || "pending-verification",
+          }}
           currentRole={effectiveRole}
           onCurrentRoleChange={setCurrentRole}
           appMode={appMode}
