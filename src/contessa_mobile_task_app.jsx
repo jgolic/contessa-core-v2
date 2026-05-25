@@ -116,6 +116,15 @@ function DeferredFeatureFallback() {
   );
 }
 
+function scrollToSection(id) {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.scrollIntoView({ behavior: "smooth", block: "start" });
+  element.classList.add("search-jump-highlight");
+  window.setTimeout(() => element.classList.remove("search-jump-highlight"), 1200);
+}
+
 const RoutePlanningView = dynamic(
   () => import("./features/route-planning/route-planning-view.jsx").then((module) => module.RoutePlanningView),
   { ssr: false, loading: () => <DeferredFeatureFallback /> }
@@ -1035,6 +1044,20 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setPendingSectionNavigation({ sectionId, moduleName, options, requestedAt: Date.now() });
   };
 
+  const openModule = (moduleId, options = {}) => {
+    const sectionIdByModule = {
+      command: "dashboard-section",
+      "tasks-maintenance": "tasks-section",
+      "expenses-approvals": "approvals-section",
+      "crew-certificates": options.panel === "certificates" ? "certificates-section" : "crew-section",
+      documents: "documents-section",
+      route: "route-section",
+      notifications: "alerts-section",
+      settings: "settings-section",
+    };
+    navigateToSection(sectionIdByModule[moduleId] || `${moduleId}-section`, moduleId, options);
+  };
+
   const commandSearchResults = useMemo(() => {
     const vesselName = activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME;
     const sectionResults = [
@@ -1045,7 +1068,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       { id: "section-crew", type: "Section", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" } },
       { id: "section-crew-list", type: "Document", title: "Crew List", context: `Printable crew list for ${vesselName}`, targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
       { id: "section-certificates", type: "Section", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleName: "crew-certificates", options: { panel: "certificates" } },
-      { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleName: "documents" },
+      { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleName: "documents" },
       { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
       { id: "section-alerts", type: "Section", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleName: "notifications" },
       {
@@ -1111,7 +1134,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       type: "Document",
       title: document?.title || document?.name || "Document",
       context: [vesselName, document?.category || document?.type || "Document vault", document?.status].filter(Boolean).join(" · "),
-      targetId: "docs-section",
+      targetId: "documents-section",
       moduleName: "documents",
       searchText: buildCommandSearchText([document?.id, document?.title, document?.name, document?.category, document?.type, document?.status, "documents docs vault"]),
     }));
@@ -1157,7 +1180,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const tryScroll = () => {
       const element = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.sectionId) : null;
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollToSection(pendingSectionNavigation.sectionId);
         setPendingSectionNavigation(null);
         sectionNavigationTimeoutRef.current = null;
         return;
@@ -2611,21 +2634,17 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           currency={currency}
           routeWarningCount={routeAlerts.length}
           quickActionItems={mobileQuickActionItems || []}
-          onOpenCommand={() => setExpenseView("command")}
-          onOpenTasksMaintenance={() => {
-            navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
-          }}
-          onOpenApprovals={() => {
-            navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" });
-          }}
-          onOpenRoute={() => navigateToSection("route-section", "route")}
+          onOpenCommand={() => openModule("command")}
+          onOpenTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
+          onOpenApprovals={() => openModule("expenses-approvals", { bucket: "boat" })}
+          onOpenRoute={() => openModule("route")}
           onOpenCrewCertificates={() => {
-            navigateToSection("certificates-section", "crew-certificates", { panel: "certificates" });
+            openModule("crew-certificates", { panel: "certificates" });
           }}
-          onOpenDocuments={() => navigateToSection("docs-section", "documents")}
-          onOpenSettingsWorkspace={() => navigateToSection("settings-section", "settings")}
+          onOpenDocuments={() => openModule("documents")}
+          onOpenSettingsWorkspace={() => openModule("settings")}
           notificationCount={accessibleNotifications.length}
-          onOpenNotifications={() => navigateToSection("alerts-section", "notifications")}
+          onOpenNotifications={() => openModule("notifications")}
           commandSearchView={
             <DashboardCommandSearch
               darkMode={darkMode}
@@ -2645,18 +2664,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           fleetCount={vesselsForPersistence.length}
           routeWarningCount={routeAlerts.length}
           quickActionItems={mobileQuickActionItems || []}
-          onShowCommand={() => setExpenseView("command")}
-          onShowRoute={() => navigateToSection("route-section", "route")}
-          onShowTasksMaintenance={() => {
-            navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
-          }}
+          onShowCommand={() => openModule("command")}
+          onShowRoute={() => openModule("route")}
+          onShowTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
           onShowCrewCertificates={() => {
-            navigateToSection("crew-section", "crew-certificates", { panel: "crew" });
+            openModule("crew-certificates", { panel: "crew" });
           }}
-          onShowExpenses={() => navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" })}
-          onShowDocuments={() => navigateToSection("docs-section", "documents")}
+          onShowExpenses={() => openModule("expenses-approvals", { bucket: "boat" })}
+          onShowDocuments={() => openModule("documents")}
           onShowFleet={() => setFleetOpen(true)}
-          onShowSettings={() => navigateToSection("settings-section", "settings")}
+          onShowSettings={() => openModule("settings")}
         />
 
         {expenseView === "command" ? (
@@ -2687,14 +2704,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onSwitchFleetVessel={openVesselWorkspace}
             onOpenTask={openTodayTask}
             onApprovalAction={handleTodayApprovalAction}
-            onNavigateToTasks={() => navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" })}
+            onNavigateToTasks={() => openModule("tasks-maintenance", { panel: "tasks" })}
             onNavigateToMaintenance={() => navigateToSection("maintenance-section", "tasks-maintenance", { panel: "maintenance" })}
-            onNavigateToCrew={() => navigateToSection("crew-section", "crew-certificates", { panel: "crew" })}
-            onNavigateToCertificates={() => navigateToSection("certificates-section", "crew-certificates", { panel: "certificates" })}
-            onNavigateToApprovals={() => navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" })}
-            onNavigateToRoute={() => navigateToSection("route-section", "route")}
-            onNavigateToAlerts={() => navigateToSection("alerts-section", "notifications")}
-            onNavigateToDocuments={() => navigateToSection("docs-section", "documents")}
+            onNavigateToCrew={() => openModule("crew-certificates", { panel: "crew" })}
+            onNavigateToCertificates={() => openModule("crew-certificates", { panel: "certificates" })}
+            onNavigateToApprovals={() => openModule("expenses-approvals", { bucket: "boat" })}
+            onNavigateToRoute={() => openModule("route")}
+            onNavigateToAlerts={() => openModule("notifications")}
+            onNavigateToDocuments={() => openModule("documents")}
           />
         ) : expenseView === "route" ? (
           <div id="route-section" className="scroll-mt-24 md:scroll-mt-28">
@@ -2831,7 +2848,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             /></div>}
           />
         ) : expenseView === "documents" ? (
-          <div id="docs-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="documents-section" className="scroll-mt-24 md:scroll-mt-28">
             <DocumentsView
               darkMode={darkMode}
               documents={documents}

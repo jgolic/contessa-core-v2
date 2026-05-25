@@ -1098,7 +1098,7 @@ export function AppShellHeader({
         </DialogContent>
       </Dialog>
 
-      <div id="dashboard-section" className="relative grid gap-3 md:gap-4 xl:grid-cols-[minmax(0,0.96fr)_minmax(360px,1.04fr)] xl:items-start">
+      {false ? <div id="legacy-dashboard-header" className="hidden">
         <div className="min-w-0">
           <div className="md:hidden">
             <div className="brand-hero relative flex flex-col items-center text-center">
@@ -1565,7 +1565,7 @@ export function AppShellHeader({
             );
           })}
         </section>
-      </div>
+      </div> : null}
 
     </div>
   );

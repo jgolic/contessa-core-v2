@@ -1137,7 +1137,7 @@ export function TodayOperationsView({
       makeSection({ id: "search-approvals", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleAction: onNavigateToApprovals }),
       makeSection({ id: "search-crew", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
       makeSection({ id: "search-certificates", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleAction: onNavigateToCertificates }),
-      makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "docs-section", moduleAction: onNavigateToDocuments }),
+      makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleAction: onNavigateToDocuments }),
       makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
       makeSection({ id: "search-alerts", title: "Alerts", context: "Operational warnings and notifications", targetId: "alerts-section", moduleAction: onNavigateToAlerts }),
       makeSection({ id: "search-fleet", title: "Fleet Switcher", context: "Open another vessel workspace", targetId: "app-command-header", moduleAction: onOpenFleet }),
@@ -1224,7 +1224,7 @@ export function TodayOperationsView({
       type: "Document",
       title: document.name || document.title || "Vessel document",
       context: [currentVessel?.name || currentVesselName, document.category || document.type || "Document vault", document.status].filter(Boolean).join(" · "),
-      targetId: "docs-section",
+      targetId: "documents-section",
       moduleAction: onNavigateToDocuments,
       searchText: makeSearchText([document.id, document.name, document.title, document.category, document.type, document.status, "documents docs vault"]),
     }));
@@ -1260,7 +1260,18 @@ export function TodayOperationsView({
   }
 
   function toggleSection(key) {
-    setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
+    setExpandedSections((prev) => {
+      const nextOpen = !prev[key];
+      return {
+        tasksMaintenance: false,
+        expensesApprovals: false,
+        certificatesCrew: false,
+        documents: false,
+        routePlanning: false,
+        activity: false,
+        [key]: nextOpen,
+      };
+    });
   }
 
   function highlightTarget(targetId) {
@@ -1278,7 +1289,15 @@ export function TodayOperationsView({
     if (!result) return;
 
     if (result.sectionKey) {
-      setExpandedSections((prev) => ({ ...prev, [result.sectionKey]: true }));
+      setExpandedSections({
+        tasksMaintenance: false,
+        expensesApprovals: false,
+        certificatesCrew: false,
+        documents: false,
+        routePlanning: false,
+        activity: false,
+        [result.sectionKey]: true,
+      });
     }
 
     if (typeof result.moduleAction === "function") {
@@ -1309,7 +1328,15 @@ export function TodayOperationsView({
 
       const sectionKey = itemSectionForSearch(item);
       if (sectionKey) {
-        setExpandedSections((prev) => ({ ...prev, [sectionKey]: true }));
+        setExpandedSections({
+          tasksMaintenance: false,
+          expensesApprovals: false,
+          certificatesCrew: false,
+          documents: false,
+          routePlanning: false,
+          activity: false,
+          [sectionKey]: true,
+        });
       }
       openInspector(item);
       window.setTimeout(() => highlightTarget(itemTargetForSearch(item, priorityItemIds)), sectionKey ? 180 : 80);
@@ -1330,7 +1357,7 @@ export function TodayOperationsView({
 
   return (
     <>
-      <div className="grid gap-4 md:gap-5">
+      <div id="dashboard-section" className="grid gap-4 scroll-mt-24 md:gap-5 md:scroll-mt-28">
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
             <VesselStateBanner
@@ -1388,7 +1415,7 @@ export function TodayOperationsView({
             </Card>
 
             <SectionAccordion
-              id="tasks-dashboard-section"
+              id="tasks-section"
               darkMode={darkMode}
               title="Tasks"
               subtitle="Compact queue of work orders, overdue actions, and due-today upkeep."
@@ -1426,7 +1453,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
-              id="approvals-dashboard-section"
+              id="approvals-section"
               darkMode={darkMode}
               title="Approval"
               subtitle="Quotes, expenses, and service decisions stay folded until selected."
@@ -1464,7 +1491,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
-              id="crew-dashboard-section"
+              id="crew-section"
               darkMode={darkMode}
               title="Crew"
               subtitle="Crew readiness stays collapsed until documentation or review is needed."
@@ -1501,7 +1528,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
-              id="documents-dashboard-section"
+              id="documents-section"
               darkMode={darkMode}
               title="Docs"
               subtitle="Document controls stay collapsed until someone needs the vault."
@@ -1531,7 +1558,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
-              id="route-dashboard-section"
+              id="route-section"
               darkMode={darkMode}
               title="Route"
               subtitle="Navigation review stays concise until the bridge team needs detail."
@@ -1558,7 +1585,7 @@ export function TodayOperationsView({
             </SectionAccordion>
 
             <SectionAccordion
-              id="activity-dashboard-section"
+              id="activity-section"
               darkMode={darkMode}
               title="Activity"
               subtitle="A compact running log instead of a full-width empty history panel."

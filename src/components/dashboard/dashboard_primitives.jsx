@@ -1,5 +1,5 @@
 import { Card, CardContent } from "../ui/card.jsx";
-import { Button } from "../ui/button.jsx";
+import { ActionButton, Button } from "../ui/button.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { themeClasses } from "../../contessa_app_data.mjs";
 
@@ -133,23 +133,23 @@ export function SectionAccordion({
           </button>
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             {onAction ? (
-              <Button
+              <ActionButton
                 type="button"
                 variant="outline"
                 onClick={onAction}
                 className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
               >
                 {actionLabel}
-              </Button>
+              </ActionButton>
             ) : null}
-            <Button
+            <ActionButton
               type="button"
               variant="outline"
               onClick={onToggle}
               className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
             >
               {isOpen ? "Collapse" : "Expand"}
-            </Button>
+            </ActionButton>
           </div>
         </div>
         {isOpen ? <div className="mt-4">{children}</div> : null}
