@@ -923,7 +923,7 @@ export function AppShellHeader({
             </div>
           ) : null}
 
-          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 md:-translate-y-1.5 md:gap-3">
+          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 md:-translate-y-3 md:gap-3 lg:-translate-y-4">
             <Button
               type="button"
               variant="outline"
@@ -934,16 +934,6 @@ export function AppShellHeader({
               <Compass className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-              onClick={onToggleDarkMode}
-              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {darkMode ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
             </Button>
 
             <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
@@ -1054,6 +1044,16 @@ export function AppShellHeader({
             </div>
               </DialogContent>
             </Dialog>
+
+            <Button
+              type="button"
+              variant="outline"
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              onClick={onToggleDarkMode}
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
+            </Button>
           </div>
 
         </div>
