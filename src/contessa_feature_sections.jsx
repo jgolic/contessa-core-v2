@@ -900,7 +900,7 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute -left-10 top-1 h-32 w-32 rounded-full blur-3xl ${darkMode ? "bg-[rgba(var(--vessel-primary-rgb),0.12)]" : "bg-[rgba(var(--vessel-primary-rgb),0.14)]"}`} />
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="relative z-[1000] mb-4 min-w-0">
+      <div className="relative z-[5000] mb-4 min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 2xl:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] 2xl:items-center 2xl:gap-6">
           <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
             <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-14 md:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
@@ -917,8 +917,8 @@ export function AppShellHeader({
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[1000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-center 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1 2xl:mt-0">
-              <div className="relative z-[1000] w-full min-w-0 2xl:max-w-3xl">
+            <div className="relative z-[5000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-center 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1 2xl:mt-0">
+              <div className="relative z-[5000] w-full min-w-0 2xl:max-w-3xl">
                 {commandSearchView}
               </div>
             </div>

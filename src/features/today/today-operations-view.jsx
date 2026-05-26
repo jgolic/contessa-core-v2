@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Card, CardContent } from "../../components/ui/card.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
@@ -387,6 +388,8 @@ export function CommandJumpBar({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef(null);
+  const containerRef = useRef(null);
+  const [dropdownRect, setDropdownRect] = useState(null);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredResults = useMemo(() => {
     if (!normalizedQuery) return [];
@@ -399,6 +402,32 @@ export function CommandJumpBar({
   useEffect(() => {
     setActiveIndex(0);
   }, [normalizedQuery]);
+
+  useEffect(() => {
+    if (!compact || !open || !normalizedQuery || typeof window === "undefined") {
+      setDropdownRect(null);
+      return undefined;
+    }
+
+    const updateDropdownRect = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setDropdownRect({
+        left: rect.left,
+        top: rect.bottom + 12,
+        width: rect.width,
+      });
+    };
+
+    updateDropdownRect();
+    window.addEventListener("resize", updateDropdownRect);
+    window.addEventListener("scroll", updateDropdownRect, true);
+
+    return () => {
+      window.removeEventListener("resize", updateDropdownRect);
+      window.removeEventListener("scroll", updateDropdownRect, true);
+    };
+  }, [compact, open, normalizedQuery]);
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -456,7 +485,7 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div className="search-command-card relative z-[1000] w-full min-w-0 md:max-w-[720px]">
+      <div ref={containerRef} className="search-command-card relative z-[5000] w-full min-w-0 md:max-w-[720px]">
         <div className={`group flex h-16 w-full items-center gap-3 rounded-[26px] border px-4 backdrop-blur-xl transition-all duration-200 md:h-14 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/25 bg-slate-950/80 text-slate-50 shadow-[0_18px_60px_rgba(34,211,238,0.14)] hover:border-cyan-300/40 focus-within:border-cyan-300/50 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.14),0_18px_60px_rgba(34,211,238,0.18)]" : "border-blue-200/80 bg-white/85 text-slate-800 shadow-[0_16px_42px_rgba(59,130,246,0.10)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_18px_54px_rgba(59,130,246,0.14)]"}`}>
           <button
             type="button"
@@ -482,7 +511,7 @@ export function CommandJumpBar({
             }}
             onFocus={() => setOpen(Boolean(query.trim()))}
             onKeyDown={handleKeyDown}
-            placeholder="Search crew, tasks, docs…"
+            placeholder="Search crew, tasks, docs..."
             className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-800 outline-none placeholder:text-slate-500 md:text-[15px] ${darkMode ? "text-slate-50 placeholder:text-slate-400" : ""}`}
             aria-label="Search tasks, crew, approvals, documents"
           />
@@ -504,8 +533,15 @@ export function CommandJumpBar({
           ) : null}
         </div>
 
-        {open && normalizedQuery ? (
-          <div className={`absolute left-0 right-0 top-full z-[2000] mt-3 max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}>
+        {open && normalizedQuery && dropdownRect && typeof document !== "undefined" ? createPortal(
+          <div
+            className={`fixed z-[9999] max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}
+            style={{
+              left: dropdownRect.left,
+              top: dropdownRect.top,
+              width: dropdownRect.width,
+            }}
+          >
             {filteredResults.length ? (
               <div className="grid gap-2">
                 {filteredResults.map((result, index) => (
@@ -542,14 +578,15 @@ export function CommandJumpBar({
                 No matching command found.
               </div>
             )}
-          </div>
+          </div>,
+          document.body
         ) : null}
       </div>
     );
   }
 
   return (
-    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative z-[5000] w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="app-kicker">Command Search</div>
@@ -602,7 +639,7 @@ export function CommandJumpBar({
           </div>
 
           {open && normalizedQuery ? (
-            <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}>
+            <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-[6000] max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}>
               {filteredResults.length ? (
                 <div className="grid gap-1.5">
                   {filteredResults.map((result, index) => (
@@ -1753,3 +1790,4 @@ export function DashboardCommandSearch({
     />
   );
 }
+
