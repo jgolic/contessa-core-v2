@@ -748,7 +748,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`app-panel app-hero-surface relative mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] shadow-[0_22px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:rounded-[28px] md:px-5 md:py-4 ${darkMode ? "border-cyan-300/10 bg-slate-950/85 shadow-[0_24px_70px_rgba(0,0,0,0.42)]" : "border-slate-200/80 bg-white/88"}`}
+      className={`app-panel relative mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] shadow-[0_22px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:rounded-[28px] md:px-5 md:py-4 ${darkMode ? "border-cyan-300/10 bg-slate-950/90 text-slate-50 shadow-[0_24px_70px_rgba(0,0,0,0.42)]" : "border-slate-200/80 bg-white/90 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -907,10 +907,10 @@ export function AppShellHeader({
               <ContessaUiLogo className="h-[52px] w-[52px]" />
             </div>
             <div className="min-w-0 flex-1 pr-2 lg:pr-4">
-              <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] text-slate-950 lg:font-semibold lg:tracking-[0.08em] dark:text-slate-50`}>
+              <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] lg:font-semibold lg:tracking-[0.08em] ${darkMode ? "text-slate-50" : "text-[#071A3A]"}`}>
                 {vesselTitle}
               </h1>
-              <p className="mt-2 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-sm lg:tracking-[0.12em] dark:text-slate-400">
+              <p className={`mt-2 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-sm lg:tracking-[0.12em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
                 {vesselIdentifier}
               </p>
             </div>
@@ -928,13 +928,13 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`hidden h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 2xl:inline-flex ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 2xl:h-11 2xl:px-4 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
               <Compass className="h-4 w-4 shrink-0" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
-              <span className="max-w-[5.5rem] truncate 2xl:hidden">Fleet</span>
+              <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
 
             <Button
@@ -1057,18 +1057,6 @@ export function AppShellHeader({
             </Dialog>
           </div>
 
-          <div className="col-span-2 row-start-3 mt-1 flex justify-end md:hidden">
-            <Button
-              type="button"
-              variant="outline"
-              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold shadow-sm transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-100 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/85 text-slate-800 hover:border-blue-300 hover:bg-blue-50"}`}
-              onClick={openFleetPanel}
-              aria-label="Open fleet switcher"
-            >
-              <Compass className="h-3.5 w-3.5 shrink-0" />
-              <span>Fleet</span>
-            </Button>
-          </div>
         </div>
       </div>
 
