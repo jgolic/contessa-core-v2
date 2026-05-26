@@ -969,6 +969,46 @@ body.dark-mode .text-premium-metric {
   opacity: 0.42;
 }
 
+.vessel-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+}
+
+.vessel-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      520px 260px at 10% 0%,
+      rgba(var(--vessel-primary-rgb), 0.18),
+      rgba(var(--vessel-primary-rgb), 0.08) 38%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 24%);
+}
+
+.vessel-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.dark-mode .vessel-hero-card::before,
+.dark .vessel-hero-card::before {
+  background:
+    radial-gradient(
+      520px 260px at 10% 0%,
+      rgba(67, 255, 220, 0.22),
+      rgba(67, 255, 220, 0.08) 38%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 24%);
+}
+
 .app-panel-active {
   box-shadow:
     0 22px 54px rgba(15, 23, 42, 0.08),
