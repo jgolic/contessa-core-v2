@@ -901,7 +901,7 @@ export function AppShellHeader({
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
       <div className="relative z-[1000] mb-4 min-w-0">
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 lg:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] lg:items-center lg:gap-6">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 2xl:grid-cols-[minmax(320px,1fr)_minmax(420px,720px)_auto] 2xl:items-center 2xl:gap-6">
           <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
             <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-14 md:w-14 ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-[52px] w-[52px]" />
@@ -917,30 +917,30 @@ export function AppShellHeader({
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[1000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-center lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:mt-0">
-              <div className="relative z-[1000] w-full min-w-0 lg:max-w-3xl">
+            <div className="relative z-[1000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-center 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1 2xl:mt-0">
+              <div className="relative z-[1000] w-full min-w-0 2xl:max-w-3xl">
                 {commandSearchView}
               </div>
             </div>
           ) : null}
 
-          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 lg:col-start-3 lg:items-center">
+          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 2xl:col-start-3 2xl:items-center">
             <Button
               type="button"
               variant="outline"
-              className={`hidden h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 lg:inline-flex ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`hidden h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 sm:px-4 2xl:inline-flex ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
               <Compass className="h-4 w-4 shrink-0" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
-              <span className="max-w-[5.5rem] truncate lg:hidden">Fleet</span>
+              <span className="max-w-[5.5rem] truncate 2xl:hidden">Fleet</span>
             </Button>
 
             <Button
               type="button"
               variant="outline"
-              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm lg:h-11 lg:w-11 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm 2xl:h-11 2xl:w-11 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
               onClick={onToggleDarkMode}
               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -952,11 +952,11 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm lg:h-11 lg:w-auto lg:px-3 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm 2xl:h-11 2xl:w-auto 2xl:px-3 ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
                   aria-label="Open settings"
                 >
-                  <Settings className="h-4 w-4 lg:mr-2" />
-                  <span className="hidden lg:inline">Settings</span>
+                  <Settings className="h-4 w-4 2xl:mr-2" />
+                  <span className="hidden 2xl:inline">Settings</span>
                 </Button>
               </DialogTrigger>
             <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
