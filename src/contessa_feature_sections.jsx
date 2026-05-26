@@ -901,7 +901,7 @@ export function AppShellHeader({
 
       <div className="relative z-[5000] min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0 md:gap-x-6">
-          <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="col-span-2 row-start-2 mt-4 flex min-w-0 items-center gap-3 sm:gap-4 md:col-span-1 md:col-start-1 md:row-start-1 md:mt-0">
             <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-[72px] md:w-[72px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-[52px] w-[52px] md:h-[66px] md:w-[66px]" />
             </div>
@@ -916,14 +916,14 @@ export function AppShellHeader({
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[5000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-start md:mt-8">
+            <div className="relative z-[5000] col-span-2 row-start-3 mt-5 flex w-full min-w-0 justify-start md:row-start-2 md:mt-8">
               <div className="relative z-[5000] w-full min-w-0 max-w-[760px]">
                 {commandSearchView}
               </div>
             </div>
           ) : null}
 
-          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 md:-translate-y-3 md:gap-3 lg:-translate-y-4">
+          <div className="col-span-2 col-start-1 row-start-1 flex shrink-0 items-start justify-end gap-2 md:col-span-1 md:col-start-2 md:-translate-y-3 md:gap-3 lg:-translate-y-4">
             <Button
               type="button"
               variant="outline"
@@ -1636,7 +1636,7 @@ export function AppSectionCards({
     crewAndCertificatesVisible ? { key: "crew-certificates", label: "Crew", value: `${stats.crewProfiles || 0}`, icon: Users, onClick: onShowCrewCertificates } : null,
     visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: `${stats.documentCount || 0}`, icon: Receipt, onClick: onShowDocuments } : null,
   ].filter(Boolean);
-  const mobileNavItems = mobileItems;
+  const mobileNavItems = mobileItems.filter((item) => item?.key && item?.label && item?.value !== undefined);
 
   return (
     <>

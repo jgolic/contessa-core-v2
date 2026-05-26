@@ -114,7 +114,7 @@ export function BottomNavButton({
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
-            : "app-panel-active border-vessel bg-[linear-gradient(135deg,rgba(var(--vessel-primary-rgb),0.96),rgba(var(--vessel-secondary-rgb),0.92))] text-white"
+            : "app-panel-active border-vessel bg-[rgba(var(--vessel-primary-rgb),0.12)] text-[#0f2f2a]"
           : darkMode
             ? "app-panel-soft app-dark-card border text-slate-100"
             : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
@@ -123,7 +123,7 @@ export function BottomNavButton({
       {...props}
     >
       {Icon ? (
-        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? "bg-white/16 text-current" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
+        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? darkMode ? "bg-white/16 text-current" : "bg-white/72 text-[var(--vessel-text-accent)]" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
           <Icon className="h-3 w-3 min-[390px]:h-3.5 min-[390px]:w-3.5" />
         </span>
       ) : null}
