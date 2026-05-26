@@ -973,6 +973,15 @@ body.dark-mode .text-premium-metric {
   position: relative;
   overflow: hidden;
   border-radius: 34px;
+  isolation: isolate;
+  contain: paint;
+  clip-path: inset(0 round 34px);
+  background: rgba(255, 255, 255, 0.90);
+  background-clip: padding-box;
+  box-shadow:
+    0 22px 60px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(24px);
 }
 
 .vessel-hero-card::before {
@@ -997,6 +1006,14 @@ body.dark-mode .text-premium-metric {
   z-index: 1;
 }
 
+body.dark-mode .vessel-hero-card,
+.dark .vessel-hero-card {
+  background: rgba(2, 6, 23, 0.90);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
 body.dark-mode .vessel-hero-card::before,
 .dark .vessel-hero-card::before {
   background:
@@ -1007,6 +1024,13 @@ body.dark-mode .vessel-hero-card::before,
       transparent 72%
     ),
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 24%);
+}
+
+@media (min-width: 768px) {
+  .vessel-hero-card {
+    border-radius: 28px;
+    clip-path: inset(0 round 28px);
+  }
 }
 
 .app-panel-active {
