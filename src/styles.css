@@ -974,14 +974,16 @@ body.dark-mode .text-premium-metric {
   overflow: hidden;
   border-radius: 34px;
   isolation: isolate;
-  contain: paint;
-  clip-path: inset(0 round 34px);
-  background: rgba(255, 255, 255, 0.90);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.94),
+      rgba(241, 248, 246, 0.90)
+    );
   background-clip: padding-box;
   box-shadow:
     0 22px 60px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.62);
-  backdrop-filter: blur(24px);
 }
 
 .vessel-hero-card::before {
@@ -993,12 +995,26 @@ body.dark-mode .text-premium-metric {
   border-radius: inherit;
   background:
     radial-gradient(
-      520px 260px at 10% 0%,
-      rgba(var(--vessel-primary-rgb), 0.18),
-      rgba(var(--vessel-primary-rgb), 0.08) 38%,
+      420px 220px at 18% 12%,
+      rgba(var(--vessel-primary-rgb), 0.12),
+      rgba(var(--vessel-primary-rgb), 0.05) 38%,
       transparent 72%
-    ),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 24%);
+    );
+}
+
+.vessel-hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      transparent 28%
+    );
 }
 
 .vessel-hero-card > * {
@@ -1008,29 +1024,36 @@ body.dark-mode .text-premium-metric {
 
 body.dark-mode .vessel-hero-card,
 .dark .vessel-hero-card {
-  background: rgba(2, 6, 23, 0.90);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(14, 59, 63, 0.96),
+      rgba(6, 28, 34, 0.98)
+    );
   box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 18px 50px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 body.dark-mode .vessel-hero-card::before,
 .dark .vessel-hero-card::before {
   background:
     radial-gradient(
-      520px 260px at 10% 0%,
-      rgba(67, 255, 220, 0.22),
-      rgba(67, 255, 220, 0.08) 38%,
+      420px 220px at 18% 12%,
+      rgba(72, 230, 210, 0.16),
+      rgba(72, 230, 210, 0.07) 38%,
       transparent 72%
-    ),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 24%);
+    );
 }
 
-@media (min-width: 768px) {
-  .vessel-hero-card {
-    border-radius: 28px;
-    clip-path: inset(0 round 28px);
-  }
+body.dark-mode .vessel-hero-card::after,
+.dark .vessel-hero-card::after {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      transparent 28%
+    );
 }
 
 .app-panel-active {

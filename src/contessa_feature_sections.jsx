@@ -748,7 +748,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] md:rounded-[28px] md:px-5 md:py-4 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
+      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] md:px-5 md:py-4 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
