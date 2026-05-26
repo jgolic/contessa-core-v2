@@ -1089,8 +1089,8 @@ body.dark-mode .vessel-hero-card::after,
   min-width: 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(var(--vessel-primary-rgb), 0.035), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(238, 245, 242, 0.10));
+    radial-gradient(900px 520px at 50% -14%, rgba(var(--vessel-primary-rgb), 0.026), transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(238, 245, 242, 0.04));
 }
 
 .app-card-grid {
@@ -1366,8 +1366,8 @@ body.dark-mode .app-panel {
 
 body.dark-mode .app-page-frame {
   background:
-    radial-gradient(circle at top left, var(--vessel-primary-soft-dark, rgba(45, 212, 191, 0.06)), transparent 30%),
-    linear-gradient(180deg, rgba(2, 6, 23, 0.10), rgba(2, 6, 23, 0.02));
+    radial-gradient(900px 520px at 50% -14%, rgba(72, 230, 210, 0.032), transparent 72%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.06), rgba(2, 6, 23, 0.01));
 }
 
 @media (hover: hover) and (pointer: fine) {
