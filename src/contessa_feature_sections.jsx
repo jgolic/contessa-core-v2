@@ -748,7 +748,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[34px] border px-4 pb-6 pt-[calc(env(safe-area-inset-top)+1rem)] sm:px-5 md:px-8 md:pb-8 md:pt-7 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
+      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] md:px-8 md:pb-8 md:pt-7 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -902,8 +902,8 @@ export function AppShellHeader({
       <div className="relative z-[5000] min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0 md:gap-x-6">
           <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3 sm:gap-4">
-            <div className={`flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[18px] border md:h-[72px] md:w-[72px] md:rounded-[22px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
-              <ContessaUiLogo className="h-[50px] w-[50px] md:h-[66px] md:w-[66px]" />
+            <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-[72px] md:w-[72px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
+              <ContessaUiLogo className="h-[52px] w-[52px] md:h-[66px] md:w-[66px]" />
             </div>
             <div className="min-w-0 flex-1 pr-2 lg:pr-4">
               <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] lg:font-semibold lg:tracking-[0.08em] ${darkMode ? "text-slate-50" : "text-[#071A3A]"}`}>
@@ -916,18 +916,18 @@ export function AppShellHeader({
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[5000] col-span-2 row-start-2 mt-6 flex w-full min-w-0 justify-start md:mt-8">
+            <div className="relative z-[5000] col-span-2 row-start-2 mt-2 flex w-full min-w-0 justify-start md:mt-8">
               <div className="relative z-[5000] w-full min-w-0 max-w-[760px]">
                 {commandSearchView}
               </div>
             </div>
           ) : null}
 
-          <div className="col-start-2 row-start-1 flex shrink-0 -translate-y-1 items-start justify-end gap-2 md:-translate-y-1.5 md:gap-3">
+          <div className="col-start-2 row-start-1 flex shrink-0 items-start justify-end gap-2 md:-translate-y-1.5 md:gap-3">
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex h-12 min-w-0 shrink-0 items-center justify-center gap-2 rounded-[18px] px-3 text-sm font-bold shadow-sm transition-all duration-200 md:h-14 md:rounded-[22px] md:px-5 md:text-base ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 md:h-14 md:rounded-[22px] md:px-5 md:text-base md:font-bold ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
@@ -939,7 +939,7 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`h-12 w-12 shrink-0 rounded-[18px] p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
               onClick={onToggleDarkMode}
               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -951,7 +951,7 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-12 w-12 shrink-0 rounded-[18px] p-0 text-sm font-bold shadow-sm md:h-14 md:w-auto md:rounded-[22px] md:px-4 md:text-base ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm md:h-14 md:w-auto md:rounded-[22px] md:px-4 md:text-base md:font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
                   aria-label="Open settings"
                 >
                   <Settings className="h-4 w-4 md:mr-2 md:h-5 md:w-5" />
