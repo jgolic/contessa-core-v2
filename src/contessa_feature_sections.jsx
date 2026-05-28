@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select.jsx";
-import { AlertCircle, Bell, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
   ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
@@ -80,7 +80,31 @@ const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 d
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
 
-function NotificationButton({ count = 0, darkMode = false, onClick }) {
+function NotificationSignalIcon({ className = "" }) {
+  return (
+    <svg
+      className={["inline-flex", className].filter(Boolean).join(" ")}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path d="M12 5.25a6.75 6.75 0 0 0-6.75 6.75v2.75l-1.2 2.1h15.9l-1.2-2.1V12A6.75 6.75 0 0 0 12 5.25Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path d="M9.6 19.05a2.55 2.55 0 0 0 4.8 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M5.1 5.1 3.45 3.45M18.9 5.1l1.65-1.65M12 3.4V1.75" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function NotificationTypeIcon({ type = "" }) {
+  const normalized = String(type || "").toLowerCase();
+  if (normalized.includes("approval")) return <Wallet className="h-4 w-4" />;
+  if (normalized.includes("certificate")) return <Users className="h-4 w-4" />;
+  if (normalized.includes("maintenance")) return <TriangleAlert className="h-4 w-4" />;
+  if (normalized.includes("task")) return <CheckCircle2 className="h-4 w-4" />;
+  return <NotificationSignalIcon className="h-4 w-4" />;
+}
+
+function NotificationButton({ count = 0, darkMode = false, onClick, open = false }) {
   const safeCount = Number.isFinite(Number(count)) ? Number(count) : 0;
   const displayCount = safeCount > 99 ? "99+" : String(safeCount);
 
@@ -89,16 +113,18 @@ function NotificationButton({ count = 0, darkMode = false, onClick }) {
       type="button"
       variant="outline"
       onClick={onClick}
+      aria-expanded={open}
       aria-label={`Open notifications${safeCount ? `, ${safeCount} unread` : ""}`}
-      className={`relative h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${
+      className={`relative h-10 w-10 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-14 md:w-14 md:rounded-[22px] ${
         darkMode
-          ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10"
-          : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"
+          ? "border-cyan-300/25 bg-slate-900/90 text-cyan-100 shadow-[0_12px_34px_rgba(0,0,0,0.35)] hover:border-cyan-300/50 hover:bg-cyan-300/10"
+          : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_36px_rgba(59,130,246,0.14)]"
       }`}
     >
-      <Bell className="h-4 w-4 md:h-5 md:w-5" />
+      {safeCount > 0 ? <span className="absolute inset-0 animate-pulse rounded-2xl border border-rose-400/40" /> : null}
+      <NotificationSignalIcon className="relative h-4 w-4 md:h-5 md:w-5" />
       {safeCount > 0 ? (
-        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border border-white bg-rose-500 px-1.5 text-[10px] font-bold leading-none text-white shadow-[0_6px_18px_rgba(244,63,94,0.35)] dark:border-slate-950">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1.5 text-[10px] font-bold leading-none text-white shadow-[0_6px_18px_rgba(244,63,94,0.45)] dark:border-slate-950">
           {displayCount}
         </span>
       ) : null}
@@ -110,7 +136,6 @@ function NotificationsPanel({
   open = false,
   darkMode = false,
   notifications = [],
-  onClose,
   onSelect,
 }) {
   if (!open) return null;
@@ -127,36 +152,28 @@ function NotificationsPanel({
   const priorityLabel = (item = {}) => titleCase(item.level || item.priority || "Notice");
 
   return (
-    <div className="fixed inset-0 z-[3000] sm:pointer-events-none">
-      <button
-        type="button"
-        aria-label="Close notifications"
-        className="absolute inset-0 bg-black/20 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0"
-        onClick={onClose}
-      />
-
+    <div className="fixed right-3 top-20 z-[2600] w-[calc(100vw-24px)] max-h-[70vh] sm:absolute sm:right-0 sm:top-[calc(100%+12px)] sm:w-[380px] sm:max-w-[calc(100vw-24px)]">
       <aside
-        className={`absolute inset-x-3 top-20 max-h-[75vh] overflow-y-auto rounded-3xl border p-4 shadow-2xl sm:inset-x-auto sm:right-6 sm:top-20 sm:w-[420px] sm:pointer-events-auto ${
+        className={`relative overflow-hidden rounded-3xl border shadow-[0_24px_80px_rgba(15,23,42,0.22)] backdrop-blur-xl ${
           darkMode
-            ? "border-white/10 bg-slate-950 text-slate-50"
+            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.55)]"
             : "border-slate-200 bg-white text-slate-950"
         }`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">Notifications</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
+        <div className={`absolute -top-2 right-5 h-4 w-4 rotate-45 border-l border-t ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`} />
+        <div className="border-b border-slate-200 px-5 py-4 dark:border-white/10">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-semibold text-slate-950 dark:text-slate-50">Notifications</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
+            </div>
+            <span className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+              {notificationItems.length}
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10"
-          >
-            Close
-          </button>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className="max-h-[460px] overflow-y-auto p-2">
           {notificationItems.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
               No notifications for this vessel.
@@ -167,25 +184,25 @@ function NotificationsPanel({
                 key={notification.id || `${notification.section}-${notification.title}`}
                 type="button"
                 onClick={() => onSelect?.(notification)}
-                className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/60 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10"
+                className="flex w-full items-start gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:bg-blue-50 dark:hover:bg-cyan-300/10"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-cyan-200">
-                      {typeLabel(notification)}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-cyan-300/25 dark:bg-cyan-300/10 dark:text-cyan-100">
+                  <NotificationTypeIcon type={typeLabel(notification)} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
                       {notification.title || "Vessel alert"}
                     </p>
-                    {notification.detail || notification.context ? (
-                      <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
-                        {notification.detail || notification.context}
-                      </p>
-                    ) : null}
+                    <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-300/10 dark:text-amber-100">
+                      {priorityLabel(notification)}
+                    </span>
                   </div>
-                  <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100">
-                    {priorityLabel(notification)}
-                  </span>
+                  {notification.detail || notification.context ? (
+                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-600 dark:text-slate-300">
+                      {notification.detail || notification.context}
+                    </p>
+                  ) : null}
                 </div>
               </button>
             ))
@@ -730,7 +747,6 @@ export function AppShellHeader({
     }
     onFleetOpenChange?.(true);
   };
-  const openNotificationsPanel = () => setNotificationsOpen(true);
   const handleNotificationSelect = (notification) => {
     setNotificationsOpen(false);
     if (onSelectNotification) {
@@ -739,6 +755,29 @@ export function AppShellHeader({
     }
     onOpenNotifications?.();
   };
+  useEffect(() => {
+    if (!notificationsOpen) return undefined;
+
+    const handleClickOutside = (event) => {
+      const root = typeof document !== "undefined" ? document.getElementById("header-notifications-control") : null;
+      if (root && !root.contains(event.target)) {
+        setNotificationsOpen(false);
+      }
+    };
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setNotificationsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [notificationsOpen]);
   useEffect(() => {
     if (!fleetOpen) {
       setFleetFormOpen(false);
@@ -1064,11 +1103,20 @@ export function AppShellHeader({
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
 
-            <NotificationButton
-              count={notificationCount}
-              darkMode={darkMode}
-              onClick={openNotificationsPanel}
-            />
+            <div id="header-notifications-control" className="relative z-[2500] shrink-0">
+              <NotificationButton
+                count={notificationCount}
+                darkMode={darkMode}
+                open={notificationsOpen}
+                onClick={() => setNotificationsOpen((current) => !current)}
+              />
+              <NotificationsPanel
+                open={notificationsOpen}
+                darkMode={darkMode}
+                notifications={notifications}
+                onSelect={handleNotificationSelect}
+              />
+            </div>
 
             <Button
               type="button"
@@ -1181,14 +1229,6 @@ export function AppShellHeader({
 
         </div>
       </div>
-
-      <NotificationsPanel
-        open={notificationsOpen}
-        darkMode={darkMode}
-        notifications={notifications}
-        onClose={() => setNotificationsOpen(false)}
-        onSelect={handleNotificationSelect}
-      />
 
       <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
         <DialogContent className={`rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>
