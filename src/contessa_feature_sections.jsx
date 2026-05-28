@@ -1,4 +1,6 @@
 ﻿import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useLayoutEffect, useRef } from "react";
 import { Card, CardContent } from "./components/ui/card.jsx";
 import { Button } from "./components/ui/button.jsx";
 import { Input } from "./components/ui/input.jsx";
@@ -134,11 +136,59 @@ function NotificationButton({ count = 0, darkMode = false, onClick, open = false
 
 function NotificationsPanel({
   open = false,
+  anchorRef,
   darkMode = false,
   notifications = [],
+  onClose,
   onSelect,
 }) {
-  if (!open) return null;
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState({ top: 0, right: 12 });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!open || !anchorRef?.current) return undefined;
+
+    const updatePosition = () => {
+      const rect = anchorRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+
+      setPosition({
+        top: rect.bottom + 12,
+        right: Math.max(12, viewportWidth - rect.right),
+      });
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, anchorRef]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose?.();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  if (!mounted || !open) return null;
 
   const notificationItems = Array.isArray(notifications) ? notifications.filter(Boolean) : [];
   const typeLabel = (item = {}) => {
@@ -151,16 +201,27 @@ function NotificationsPanel({
   };
   const priorityLabel = (item = {}) => titleCase(item.level || item.priority || "Notice");
 
-  return (
-    <div className="fixed right-3 top-20 z-[2600] w-[calc(100vw-24px)] max-h-[70vh] sm:absolute sm:right-0 sm:top-[calc(100%+12px)] sm:w-[380px] sm:max-w-[calc(100vw-24px)]">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999]">
+      <button
+        type="button"
+        aria-label="Close notifications"
+        className="absolute inset-0 cursor-default bg-transparent"
+        onClick={onClose}
+      />
       <aside
-        className={`relative overflow-hidden rounded-3xl border shadow-[0_24px_80px_rgba(15,23,42,0.22)] backdrop-blur-xl ${
+        style={{
+          top: `${position.top}px`,
+          right: `${position.right}px`,
+        }}
+        className={`fixed z-[10000] w-[min(420px,calc(100vw-24px))] max-h-[72vh] overflow-hidden rounded-3xl border shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
           darkMode
-            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_28px_90px_rgba(0,0,0,0.55)]"
+            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_35px_120px_rgba(0,0,0,0.72)]"
             : "border-slate-200 bg-white text-slate-950"
         }`}
+        onClick={(event) => event.stopPropagation()}
       >
-        <div className={`absolute -top-2 right-5 h-4 w-4 rotate-45 border-l border-t ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`} />
+        <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`} />
         <div className="border-b border-slate-200 px-5 py-4 dark:border-white/10">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -183,7 +244,10 @@ function NotificationsPanel({
               <button
                 key={notification.id || `${notification.section}-${notification.title}`}
                 type="button"
-                onClick={() => onSelect?.(notification)}
+                onClick={() => {
+                  onSelect?.(notification);
+                  onClose?.();
+                }}
                 className="flex w-full items-start gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:bg-blue-50 dark:hover:bg-cyan-300/10"
               >
                 <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-cyan-300/25 dark:bg-cyan-300/10 dark:text-cyan-100">
@@ -209,7 +273,8 @@ function NotificationsPanel({
           )}
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -728,6 +793,7 @@ export function AppShellHeader({
   const [legalOpen, setLegalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const notificationAnchorRef = useRef(null);
   const [fleetDraft, setFleetDraft] = useState({
     vesselName: "",
     vesselLength: "",
@@ -755,29 +821,6 @@ export function AppShellHeader({
     }
     onOpenNotifications?.();
   };
-  useEffect(() => {
-    if (!notificationsOpen) return undefined;
-
-    const handleClickOutside = (event) => {
-      const root = typeof document !== "undefined" ? document.getElementById("header-notifications-control") : null;
-      if (root && !root.contains(event.target)) {
-        setNotificationsOpen(false);
-      }
-    };
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setNotificationsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [notificationsOpen]);
   useEffect(() => {
     if (!fleetOpen) {
       setFleetFormOpen(false);
@@ -1103,7 +1146,7 @@ export function AppShellHeader({
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
 
-            <div id="header-notifications-control" className="relative z-[2500] shrink-0">
+            <div ref={notificationAnchorRef} className="relative z-[2500] shrink-0">
               <NotificationButton
                 count={notificationCount}
                 darkMode={darkMode}
@@ -1112,8 +1155,10 @@ export function AppShellHeader({
               />
               <NotificationsPanel
                 open={notificationsOpen}
+                anchorRef={notificationAnchorRef}
                 darkMode={darkMode}
                 notifications={notifications}
+                onClose={() => setNotificationsOpen(false)}
                 onSelect={handleNotificationSelect}
               />
             </div>
