@@ -1147,11 +1147,11 @@ export function AppShellHeader({
 
       <div className="relative z-[5000] min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0 md:gap-x-6">
-          <div className="col-span-2 row-start-2 mt-4 flex min-w-0 items-center gap-3 sm:gap-4 md:col-span-1 md:col-start-1 md:row-start-1 md:mt-0">
+          <div className="col-span-2 row-start-1 mt-14 flex min-w-0 items-center gap-3 sm:mt-16 sm:gap-4 md:col-span-1 md:col-start-1 md:mt-0">
             <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-[72px] md:w-[72px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
               <ContessaUiLogo className="h-[52px] w-[52px] md:h-[66px] md:w-[66px]" />
             </div>
-            <div className="min-w-0 flex-1 pr-2 lg:pr-4">
+            <div className="min-w-0 flex-1 pr-0 md:pr-[300px] lg:pr-[340px]">
               <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] lg:font-semibold lg:tracking-[0.08em] ${darkMode ? "text-slate-50" : "text-[#071A3A]"}`}>
                 {vesselTitle}
               </h1>
@@ -1162,14 +1162,14 @@ export function AppShellHeader({
           </div>
 
           {commandSearchView ? (
-            <div className="relative z-[5000] col-span-2 row-start-3 mt-5 flex w-full min-w-0 justify-start md:row-start-2 md:mt-8">
+            <div className="relative z-[5000] col-span-2 row-start-2 mt-5 flex w-full min-w-0 justify-start md:row-start-2 md:mt-8">
               <div className="relative z-[5000] w-full min-w-0 max-w-[760px]">
                 {commandSearchView}
               </div>
             </div>
           ) : null}
 
-          <div className="col-span-2 col-start-1 row-start-1 flex min-w-0 shrink-0 items-start justify-end gap-1.5 sm:gap-2 md:col-span-1 md:col-start-2 md:-translate-y-2 lg:-translate-y-3">
+          <div className="absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2">
             <Button
               type="button"
               variant="outline"
@@ -1181,23 +1181,6 @@ export function AppShellHeader({
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
-
-            <div ref={notificationAnchorRef} className="relative z-[2500] shrink-0">
-              <NotificationButton
-                count={notificationCount}
-                darkMode={darkMode}
-                open={notificationsOpen}
-                onClick={() => setNotificationsOpen((current) => !current)}
-              />
-              <NotificationsPanel
-                open={notificationsOpen}
-                anchorRef={notificationAnchorRef}
-                darkMode={darkMode}
-                notifications={notifications}
-                onClose={() => setNotificationsOpen(false)}
-                onSelect={handleNotificationSelect}
-              />
-            </div>
 
             <Button
               type="button"
@@ -1306,6 +1289,23 @@ export function AppShellHeader({
             </div>
               </DialogContent>
             </Dialog>
+
+            <div ref={notificationAnchorRef} className="relative z-[9200] shrink-0">
+              <NotificationButton
+                count={notificationCount}
+                darkMode={darkMode}
+                open={notificationsOpen}
+                onClick={() => setNotificationsOpen((current) => !current)}
+              />
+              <NotificationsPanel
+                open={notificationsOpen}
+                anchorRef={notificationAnchorRef}
+                darkMode={darkMode}
+                notifications={notifications}
+                onClose={() => setNotificationsOpen(false)}
+                onSelect={handleNotificationSelect}
+              />
+            </div>
           </div>
 
         </div>
