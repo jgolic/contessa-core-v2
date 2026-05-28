@@ -114,11 +114,38 @@ canvas {
   max-width: 100%;
 }
 
+.app-fit {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.app-page-frame,
+.app-section-grid,
+.app-card-grid,
+.app-panel,
+.app-panel-soft,
+.app-card,
+.app-card-soft,
+.app-module-row,
+.app-command-header {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.app-page-frame,
+.app-shell {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 button,
 input,
 select,
 textarea {
   font: inherit;
+  max-width: 100%;
 }
 
 button {

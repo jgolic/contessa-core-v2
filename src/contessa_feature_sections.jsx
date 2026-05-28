@@ -106,6 +106,38 @@ function NotificationTypeIcon({ type = "" }) {
   return <NotificationSignalIcon className="h-4 w-4" />;
 }
 
+function clampPopoverValue(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getNotificationPopoverPosition(anchorRect) {
+  if (typeof window === "undefined") {
+    return { top: 12, left: 12, width: 360, maxHeight: 420 };
+  }
+
+  const margin = 12;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const isMobile = viewportWidth < 640;
+  const width = isMobile
+    ? Math.max(280, viewportWidth - margin * 2)
+    : Math.min(420, viewportWidth - margin * 2);
+  const left = isMobile
+    ? margin
+    : clampPopoverValue(anchorRect.right - width, margin, viewportWidth - width - margin);
+  const top = clampPopoverValue(anchorRect.bottom + 10, margin, Math.max(margin, viewportHeight - 160));
+  const maxHeight = isMobile
+    ? viewportHeight - top - 96
+    : Math.min(520, viewportHeight - top - 24);
+
+  return {
+    top,
+    left,
+    width,
+    maxHeight: Math.max(280, maxHeight),
+  };
+}
+
 function NotificationButton({ count = 0, darkMode = false, onClick, open = false }) {
   const safeCount = Number.isFinite(Number(count)) ? Number(count) : 0;
   const displayCount = safeCount > 99 ? "99+" : String(safeCount);
@@ -117,10 +149,10 @@ function NotificationButton({ count = 0, darkMode = false, onClick, open = false
       onClick={onClick}
       aria-expanded={open}
       aria-label={`Open notifications${safeCount ? `, ${safeCount} unread` : ""}`}
-      className={`relative h-10 w-10 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-14 md:w-14 md:rounded-[22px] ${
+      className={`relative h-11 w-11 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_26px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-12 md:w-12 md:rounded-[20px] ${
         darkMode
-          ? "border-cyan-300/25 bg-slate-900/90 text-cyan-100 shadow-[0_12px_34px_rgba(0,0,0,0.35)] hover:border-cyan-300/50 hover:bg-cyan-300/10"
-          : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_36px_rgba(59,130,246,0.14)]"
+          ? "border-cyan-300/25 bg-slate-900/90 text-cyan-100 shadow-[0_14px_36px_rgba(0,0,0,0.38)] hover:border-cyan-300/50 hover:bg-cyan-300/10"
+          : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_34px_rgba(59,130,246,0.16)]"
       }`}
     >
       {safeCount > 0 ? <span className="absolute inset-0 animate-pulse rounded-2xl border border-rose-400/40" /> : null}
@@ -143,7 +175,7 @@ function NotificationsPanel({
   onSelect,
 }) {
   const [mounted, setMounted] = useState(false);
-  const [position, setPosition] = useState({ top: 0, right: 12 });
+  const [position, setPosition] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -154,12 +186,7 @@ function NotificationsPanel({
 
     const updatePosition = () => {
       const rect = anchorRef.current.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-
-      setPosition({
-        top: rect.bottom + 12,
-        right: Math.max(12, viewportWidth - rect.right),
-      });
+      setPosition(getNotificationPopoverPosition(rect));
     };
 
     updatePosition();
@@ -188,7 +215,7 @@ function NotificationsPanel({
     };
   }, [open, onClose]);
 
-  if (!mounted || !open) return null;
+  if (!mounted || !open || !position) return null;
 
   const notificationItems = Array.isArray(notifications) ? notifications.filter(Boolean) : [];
   const typeLabel = (item = {}) => {
@@ -206,35 +233,37 @@ function NotificationsPanel({
       <button
         type="button"
         aria-label="Close notifications"
-        className="absolute inset-0 cursor-default bg-transparent"
+        className="absolute inset-0 cursor-default bg-black/10 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0"
         onClick={onClose}
       />
       <aside
         style={{
-          top: `${position.top}px`,
-          right: `${position.right}px`,
+          top: position.top,
+          left: position.left,
+          width: position.width,
+          maxHeight: position.maxHeight,
         }}
-        className={`fixed z-[10000] w-[min(420px,calc(100vw-24px))] max-h-[72vh] overflow-hidden rounded-3xl border shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-xl ${
+        className={`fixed z-[10000] overflow-hidden rounded-3xl border shadow-[0_28px_90px_rgba(15,23,42,0.26)] backdrop-blur-xl ${
           darkMode
-            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_35px_120px_rgba(0,0,0,0.72)]"
+            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
             : "border-slate-200 bg-white text-slate-950"
         }`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`} />
-        <div className="border-b border-slate-200 px-5 py-4 dark:border-white/10">
+        <div className="border-b border-slate-200 px-4 py-3 dark:border-white/10">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base font-semibold text-slate-950 dark:text-slate-50">Notifications</h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
+            <div className="min-w-0">
+              <h3 className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">Notifications</h3>
+              <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
             </div>
-            <span className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+            <span className="shrink-0 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
               {notificationItems.length}
             </span>
           </div>
         </div>
 
-        <div className="max-h-[460px] overflow-y-auto p-2">
+        <div style={{ maxHeight: Math.max(180, position.maxHeight - 68) }} className="overflow-y-auto p-2">
           {notificationItems.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
               No notifications for this vessel.
@@ -255,7 +284,7 @@ function NotificationsPanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
+                    <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
                       {notification.title || "Vessel alert"}
                     </p>
                     <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-300/10 dark:text-amber-100">
@@ -1140,15 +1169,15 @@ export function AppShellHeader({
             </div>
           ) : null}
 
-          <div className="col-span-2 col-start-1 row-start-1 flex shrink-0 items-start justify-end gap-2 md:col-span-1 md:col-start-2 md:-translate-y-3 md:gap-3 lg:-translate-y-4">
+          <div className="col-span-2 col-start-1 row-start-1 flex min-w-0 shrink-0 items-start justify-end gap-1.5 sm:gap-2 md:col-span-1 md:col-start-2 md:-translate-y-2 lg:-translate-y-3">
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 md:h-14 md:rounded-[22px] md:px-5 md:text-base md:font-bold ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 md:h-12 md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
-              <Compass className="h-4 w-4 shrink-0 md:h-5 md:w-5" />
+              <Compass className="h-4 w-4 shrink-0" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
@@ -1173,7 +1202,7 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm md:h-12 md:w-12 md:rounded-[20px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
               onClick={onToggleDarkMode}
               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -1185,7 +1214,7 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm md:h-14 md:w-auto md:rounded-[22px] md:px-4 md:text-base md:font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-11 w-11 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm md:h-12 md:w-auto md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
                   aria-label="Open settings"
                 >
                   <Settings className="h-4 w-4 md:mr-2 md:h-5 md:w-5" />
