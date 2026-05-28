@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select.jsx";
-import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { AlertCircle, Bell, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
   ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
@@ -79,6 +79,122 @@ const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] tex
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
+
+function NotificationButton({ count = 0, darkMode = false, onClick }) {
+  const safeCount = Number.isFinite(Number(count)) ? Number(count) : 0;
+  const displayCount = safeCount > 99 ? "99+" : String(safeCount);
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={onClick}
+      aria-label={`Open notifications${safeCount ? `, ${safeCount} unread` : ""}`}
+      className={`relative h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${
+        darkMode
+          ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10"
+          : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"
+      }`}
+    >
+      <Bell className="h-4 w-4 md:h-5 md:w-5" />
+      {safeCount > 0 ? (
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border border-white bg-rose-500 px-1.5 text-[10px] font-bold leading-none text-white shadow-[0_6px_18px_rgba(244,63,94,0.35)] dark:border-slate-950">
+          {displayCount}
+        </span>
+      ) : null}
+    </Button>
+  );
+}
+
+function NotificationsPanel({
+  open = false,
+  darkMode = false,
+  notifications = [],
+  onClose,
+  onSelect,
+}) {
+  if (!open) return null;
+
+  const notificationItems = Array.isArray(notifications) ? notifications.filter(Boolean) : [];
+  const typeLabel = (item = {}) => {
+    if (item.type) return item.type;
+    if (item.section === "expenses") return "Approval";
+    if (item.section === "certificates") return "Certificate";
+    if (item.section === "maintenance") return "Maintenance";
+    if (item.section === "tasks") return "Task";
+    return "Alert";
+  };
+  const priorityLabel = (item = {}) => titleCase(item.level || item.priority || "Notice");
+
+  return (
+    <div className="fixed inset-0 z-[3000] sm:pointer-events-none">
+      <button
+        type="button"
+        aria-label="Close notifications"
+        className="absolute inset-0 bg-black/20 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0"
+        onClick={onClose}
+      />
+
+      <aside
+        className={`absolute inset-x-3 top-20 max-h-[75vh] overflow-y-auto rounded-3xl border p-4 shadow-2xl sm:inset-x-auto sm:right-6 sm:top-20 sm:w-[420px] sm:pointer-events-auto ${
+          darkMode
+            ? "border-white/10 bg-slate-950 text-slate-50"
+            : "border-slate-200 bg-white text-slate-950"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">Notifications</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="mt-4 space-y-2">
+          {notificationItems.length === 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
+              No notifications for this vessel.
+            </div>
+          ) : (
+            notificationItems.map((notification) => (
+              <button
+                key={notification.id || `${notification.section}-${notification.title}`}
+                type="button"
+                onClick={() => onSelect?.(notification)}
+                className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/60 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-cyan-200">
+                      {typeLabel(notification)}
+                    </p>
+                    <p className="mt-1 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
+                      {notification.title || "Vessel alert"}
+                    </p>
+                    {notification.detail || notification.context ? (
+                      <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
+                        {notification.detail || notification.context}
+                      </p>
+                    ) : null}
+                  </div>
+                  <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100">
+                    {priorityLabel(notification)}
+                  </span>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}
 
 function getVesselIdentifier(vessel) {
   if (vessel?.imo) return `IMO ${vessel.imo}`;
@@ -586,12 +702,15 @@ export function AppShellHeader({
   onOpenDocuments,
   onOpenSettingsWorkspace,
   notificationCount = 0,
+  notifications = [],
   onOpenNotifications,
+  onSelectNotification,
   commandSearchView = null,
 }) {
   const theme = themeClasses(darkMode);
   const [legalOpen, setLegalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [fleetDraft, setFleetDraft] = useState({
     vesselName: "",
     vesselLength: "",
@@ -610,6 +729,15 @@ export function AppShellHeader({
       return;
     }
     onFleetOpenChange?.(true);
+  };
+  const openNotificationsPanel = () => setNotificationsOpen(true);
+  const handleNotificationSelect = (notification) => {
+    setNotificationsOpen(false);
+    if (onSelectNotification) {
+      onSelectNotification(notification);
+      return;
+    }
+    onOpenNotifications?.();
   };
   useEffect(() => {
     if (!fleetOpen) {
@@ -936,6 +1064,22 @@ export function AppShellHeader({
               <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
 
+            <NotificationButton
+              count={notificationCount}
+              darkMode={darkMode}
+              onClick={openNotificationsPanel}
+            />
+
+            <Button
+              type="button"
+              variant="outline"
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              onClick={onToggleDarkMode}
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
+            </Button>
+
             <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -1014,17 +1158,6 @@ export function AppShellHeader({
               </div>
 
               <div className="grid gap-2">
-                <AlertInboxButton
-                  onClick={() => {
-                    setSettingsOpen(false);
-                    onOpenNotifications?.();
-                  }}
-                  darkMode={darkMode}
-                  notificationCount={notificationCount}
-                  className="min-h-11 w-full justify-start px-4 py-3"
-                >
-                  Alerts
-                </AlertInboxButton>
                 <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); openFleetPanel(); }}>
                   Fleet management
                 </Button>
@@ -1044,20 +1177,18 @@ export function AppShellHeader({
             </div>
               </DialogContent>
             </Dialog>
-
-            <Button
-              type="button"
-              variant="outline"
-              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-sm md:h-14 md:w-14 md:rounded-[22px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
-              onClick={onToggleDarkMode}
-              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {darkMode ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
-            </Button>
           </div>
 
         </div>
       </div>
+
+      <NotificationsPanel
+        open={notificationsOpen}
+        darkMode={darkMode}
+        notifications={notifications}
+        onClose={() => setNotificationsOpen(false)}
+        onSelect={handleNotificationSelect}
+      />
 
       <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
         <DialogContent className={`rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>

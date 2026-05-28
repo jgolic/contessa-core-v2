@@ -78,7 +78,6 @@ import {
   DashboardCommandSearch,
   DocumentsView,
   SettingsWorkspaceView,
-  MaintenanceReminderModal,
   ObjectivesView,
   TaskMaintenanceWorkspace,
   TodayOperationsView,
@@ -2265,6 +2264,33 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
   };
 
+  const handleHeaderNotificationSelect = (item) => {
+    if (!item) return;
+    openNotificationItem(item);
+
+    const sectionIdByNotificationSection = {
+      tasks: "tasks-section",
+      expenses: "approvals-section",
+      maintenance: "maintenance-section",
+      certificates: "certificates-section",
+    };
+    const moduleByNotificationSection = {
+      tasks: "tasks-maintenance",
+      expenses: "expenses-approvals",
+      maintenance: "tasks-maintenance",
+      certificates: "crew-certificates",
+    };
+
+    const sectionId = sectionIdByNotificationSection[item.section] || "alerts-section";
+    const moduleName = moduleByNotificationSection[item.section] || "";
+    setPendingSectionNavigation({
+      sectionId,
+      moduleName,
+      options: {},
+      requestedAt: Date.now(),
+    });
+  };
+
   const requestDeviceNotifications = () => {
     if (typeof window === "undefined" || !("Notification" in window)) {
       setAppBanner({ type: "error", title: "Alerts unavailable", message: "Push alerts are not supported on this device." });
@@ -2652,7 +2678,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           onOpenDocuments={() => openModule("documents")}
           onOpenSettingsWorkspace={() => openModule("settings")}
           notificationCount={accessibleNotifications.length}
+          notifications={accessibleNotifications}
           onOpenNotifications={() => openModule("notifications")}
+          onSelectNotification={handleHeaderNotificationSelect}
           commandSearchView={
             <DashboardCommandSearch
               darkMode={darkMode}
@@ -2926,18 +2954,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           </div>
         )}
       </div>
-      <MaintenanceReminderModal
-        darkMode={darkMode}
-        maintenancePopupItem={maintenancePopupItem}
-        maintenancePopupFollowUp={maintenancePopupFollowUp}
-        postponeDate={postponeDate}
-        onPostponeDateChange={setPostponeDate}
-        onCompleteMaintenanceItem={completeMaintenanceItem}
-        onPostponeMaintenanceTomorrow={postponeMaintenanceTomorrow}
-        onNoteMaintenanceReminder={noteMaintenanceReminder}
-        onRemindMaintenanceLater={remindMaintenanceLater}
-        onPostponeMaintenanceReminder={postponeMaintenanceReminder}
-      />
       <div className="hidden print:fixed print:bottom-0 print:left-0 print:right-0 print:block print:border-t print:border-[#d8e7df] print:bg-white print:px-6 print:py-2 print:text-center print:text-[11px] print:text-[#64756b]">
         {APP_FOOTER_NOTICE}
       </div>
