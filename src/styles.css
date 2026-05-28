@@ -1108,6 +1108,11 @@ body.dark-mode .text-premium-metric {
   z-index: 1;
 }
 
+.vessel-hero-card > .vessel-header-flow {
+  position: static;
+  z-index: auto;
+}
+
 body.dark-mode .vessel-hero-card,
 .dark .vessel-hero-card {
   background:

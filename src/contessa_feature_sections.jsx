@@ -1145,7 +1145,7 @@ export function AppShellHeader({
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="min-w-0">
+      <div className="vessel-header-flow min-w-0">
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0 md:gap-x-6">
           <div className="col-span-2 row-start-1 mt-14 flex min-w-0 items-center gap-3 sm:mt-16 sm:gap-4 md:col-span-1 md:col-start-1 md:mt-0">
             <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-[72px] md:w-[72px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
