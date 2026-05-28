@@ -455,6 +455,7 @@ export function CrewView({
               </Dialog> : null}
               {crewListPrintHref ? (
                 <Button
+                  id="crew-list-action"
                   type="button"
                   variant="outline"
                   onClick={() => setCrewListOpen(true)}
@@ -478,9 +479,16 @@ export function CrewView({
 
                 return (
                 <button
+                  id={`item-${profile.id}`}
                   key={profile.id}
                   type="button"
-                  onClick={() => onSelectCrewProfile(profile.id)}
+                  onClick={(event) => {
+                    event.currentTarget.classList.remove("action-jump-highlight");
+                    void event.currentTarget.offsetWidth;
+                    event.currentTarget.classList.add("action-jump-highlight");
+                    window.setTimeout(() => event.currentTarget.classList.remove("action-jump-highlight"), 2200);
+                    onSelectCrewProfile(profile.id);
+                  }}
                   className={`w-full rounded-2xl border px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 md:rounded-2xl ${selectedCrewProfile?.id === profile.id ? (darkMode ? "border-cyan-300/40 bg-cyan-300/10" : "border-blue-300 bg-blue-50/70") : darkMode ? "border-white/10 bg-white/[0.04] hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white hover:border-blue-300 hover:bg-blue-50/40"}`}
                 >
                   <div className="flex min-w-0 flex-col gap-3 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">

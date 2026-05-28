@@ -658,9 +658,16 @@ export function ObjectivesView({
                       <div className="mt-3 grid gap-2">
                         {columnTasks.length ? columnTasks.map((task) => (
                           <button
+                            id={`item-${task.id}`}
                             key={task.id}
                             type="button"
-                            onClick={() => handleSelectTask(task.id)}
+                            onClick={(event) => {
+                              event.currentTarget.classList.remove("action-jump-highlight");
+                              void event.currentTarget.offsetWidth;
+                              event.currentTarget.classList.add("action-jump-highlight");
+                              window.setTimeout(() => event.currentTarget.classList.remove("action-jump-highlight"), 2200);
+                              handleSelectTask(task.id);
+                            }}
                             className={`group relative overflow-hidden rounded-2xl border p-3 pl-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)] hover:bg-slate-800/80" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
                           >
                             <div className={`absolute inset-y-0 left-0 w-1 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
@@ -1755,6 +1762,7 @@ export function AppShellHeader({
 
             return (
               <div
+                id={card.key === "priority-queue" ? "priority-queue-section" : `${card.key}-section`}
                 key={card.key}
                 className={`app-panel app-panel-soft flex h-full min-h-[204px] flex-col justify-between rounded-[22px] border p-3 shadow-[0_12px_34px_rgba(15,23,42,0.055)] transition-all duration-200 hover:-translate-y-0.5 ${darkMode ? "app-section-shell-dark shadow-[0_18px_46px_rgba(0,0,0,0.30)]" : "app-section-shell"}`}
               >
@@ -2486,7 +2494,7 @@ export function DocumentsView({ darkMode = false, documents = [], vesselName = "
       </Card>
       <div className="grid gap-4 md:grid-cols-2">
         {documents.map((document) => (
-          <Card key={document.id} className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
+          <Card id={`item-${document.id}`} key={document.id} className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>

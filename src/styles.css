@@ -154,6 +154,65 @@ body.dark-mode {
   background: var(--vessel-bg-dark, var(--app-bg-dark));
 }
 
+.search-jump-highlight,
+.action-jump-highlight {
+  position: relative;
+  z-index: 20;
+  outline: 2px solid rgba(59, 130, 246, 0.75);
+  outline-offset: 5px;
+  box-shadow:
+    0 0 0 8px rgba(59, 130, 246, 0.14),
+    0 18px 60px rgba(59, 130, 246, 0.22);
+  background-image: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.10),
+    rgba(34, 211, 238, 0.08)
+  );
+  animation: targetRevealPulse 1.8s ease-out;
+}
+
+.dark .search-jump-highlight,
+.dark .action-jump-highlight,
+body.dark-mode .search-jump-highlight,
+body.dark-mode .action-jump-highlight {
+  outline-color: rgba(34, 211, 238, 0.85);
+  box-shadow:
+    0 0 0 8px rgba(34, 211, 238, 0.14),
+    0 22px 70px rgba(34, 211, 238, 0.24);
+  background-image: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.12),
+    rgba(14, 165, 233, 0.08)
+  );
+}
+
+@keyframes targetRevealPulse {
+  0% {
+    outline-offset: 12px;
+    box-shadow:
+      0 0 0 16px rgba(59, 130, 246, 0.24),
+      0 24px 80px rgba(59, 130, 246, 0.28);
+    transform: scale(1.012);
+  }
+
+  45% {
+    outline-offset: 5px;
+    transform: scale(1);
+  }
+
+  100% {
+    outline-offset: 5px;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-jump-highlight,
+  .action-jump-highlight {
+    animation: none;
+  }
+}
+
 .app-bg {
   background: var(--vessel-bg-light, var(--app-bg-light));
 }

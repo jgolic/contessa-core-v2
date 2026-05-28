@@ -114,6 +114,16 @@ export function SectionAccordion({
   const normalizedModule = module || String(title || "").toLowerCase().replace(/\s+/g, "-");
   const moduleTheme = sectionModuleTheme(darkMode, normalizedModule, isOpen);
   const moduleClass = normalizedModuleClass(normalizedModule);
+  const revealSection = () => {
+    const target = id && typeof document !== "undefined" ? document.getElementById(id) : null;
+    if (target) {
+      target.classList.remove("action-jump-highlight");
+      void target.offsetWidth;
+      target.classList.add("action-jump-highlight");
+      window.setTimeout(() => target.classList.remove("action-jump-highlight"), 2200);
+    }
+    onToggle?.();
+  };
 
   return (
     <Card id={id} className={`module-row module-row--${moduleClass} app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
@@ -122,7 +132,7 @@ export function SectionAccordion({
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <button
             type="button"
-            onClick={onToggle}
+            onClick={revealSection}
             className="min-w-0 flex-1 text-left"
           >
             <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -145,7 +155,7 @@ export function SectionAccordion({
             <ActionButton
               type="button"
               variant="outline"
-              onClick={onToggle}
+              onClick={revealSection}
               className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
             >
               {isOpen ? "Collapse" : "Expand"}
@@ -176,7 +186,15 @@ export function CompactItemCard({
     <button
       id={htmlId}
       type="button"
-      onClick={onClick}
+      onClick={(event) => {
+        if (htmlId) {
+          event.currentTarget.classList.remove("action-jump-highlight");
+          void event.currentTarget.offsetWidth;
+          event.currentTarget.classList.add("action-jump-highlight");
+          window.setTimeout(() => event.currentTarget.classList.remove("action-jump-highlight"), 2200);
+        }
+        onClick?.(event);
+      }}
       className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] md:rounded-[22px] ${
         selected
           ? darkMode

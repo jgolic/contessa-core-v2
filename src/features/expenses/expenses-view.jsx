@@ -68,7 +68,7 @@ function ConfirmableCrewExpenseRow({
   }, [item.title, item.amount, item.currency, item.status]);
 
   return (
-    <div className={`relative rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
+    <div id={`item-${item.id}`} className={`relative rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
       {canEdit ? (
         <button
           type="button"
@@ -315,7 +315,7 @@ export function ExpensesView({
                 </div>
               ) : (
                 boatExpenses.map((item) => (
-                  <div key={`${item.kind}-${item.id}`} className={`rounded-xl border p-4 md:rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
+                  <div id={`item-${item.taskId || item.id}`} key={`${item.kind}-${item.id}`} className={`rounded-xl border p-4 md:rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
                     <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <div className={`text-sm ${theme.textSecondary}`}>{item.taskId} - Quotation</div>

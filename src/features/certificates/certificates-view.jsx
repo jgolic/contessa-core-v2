@@ -159,7 +159,7 @@ export function CertificatesView({
               <div className={`rounded-[22px] border border-dashed p-6 text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>No visible certificates yet.</div>
             ) : (
               visibleCertificates.map((certificate) => (
-                <div key={`${certificate.crewId}-${certificate.id}`} className={`app-card-hover rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#233630] bg-[#111a17]/88" : "border-white/80 bg-white/88"}`}>
+                <div id={`item-${certificate.crewId}`} key={`${certificate.crewId}-${certificate.id}`} className={`app-card-hover rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#233630] bg-[#111a17]/88" : "border-white/80 bg-white/88"}`}>
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
                       <div className={`font-semibold ${theme.textPrimary}`}>{certificate.name}</div>

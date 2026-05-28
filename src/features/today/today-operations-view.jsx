@@ -1173,6 +1173,7 @@ export function TodayOperationsView({
       makeSection({ id: "search-maintenance", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleAction: onNavigateToMaintenance }),
       makeSection({ id: "search-approvals", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleAction: onNavigateToApprovals }),
       makeSection({ id: "search-crew", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
+      makeSection({ id: "search-crew-list", type: "Document", title: "Crew List", context: "Printable crew list for current vessel", targetId: "crew-list-action", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
       makeSection({ id: "search-certificates", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleAction: onNavigateToCertificates }),
       makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleAction: onNavigateToDocuments }),
       makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
@@ -1251,8 +1252,9 @@ export function TodayOperationsView({
       type: "Crew",
       title: profile.fullName || "Crew member",
       context: [currentVessel?.name || currentVesselName, profile.rank, profile.department, `${profile.certificates?.length || 0} certificates`].filter(Boolean).join(" · "),
-      targetId: "crew-section",
+      targetId: profile.id ? `item-${profile.id}` : "crew-section",
       moduleAction: onNavigateToCrew || onNavigateToCertificates,
+      item: profile,
       searchText: makeSearchText([profile.id, profile.fullName, profile.rank, profile.department, profile.notes, currentVessel?.name, "crew readiness certificates"]),
     }));
 
@@ -1261,8 +1263,9 @@ export function TodayOperationsView({
       type: "Document",
       title: document.name || document.title || "Vessel document",
       context: [currentVessel?.name || currentVesselName, document.category || document.type || "Document vault", document.status].filter(Boolean).join(" · "),
-      targetId: "documents-section",
+      targetId: document.id ? `item-${document.id}` : "documents-section",
       moduleAction: onNavigateToDocuments,
+      item: document,
       searchText: makeSearchText([document.id, document.name, document.title, document.category, document.type, document.status, "documents docs vault"]),
     }));
 
@@ -1316,10 +1319,13 @@ export function TodayOperationsView({
     const element = document.getElementById(targetId);
     if (!element) return;
     element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.classList.remove("search-jump-highlight");
+    element.classList.remove("action-jump-highlight");
+    void element.offsetWidth;
     element.classList.add("search-jump-highlight");
     window.setTimeout(() => {
       element.classList.remove("search-jump-highlight");
-    }, 1400);
+    }, 2200);
   }
 
   function jumpToResult(result) {
@@ -1341,6 +1347,9 @@ export function TodayOperationsView({
       result.moduleAction();
       if (typeof window !== "undefined") {
         window.setTimeout(() => highlightTarget(result.targetId), 260);
+      }
+      if (result.item) {
+        openInspector(result.item);
       }
       return;
     }

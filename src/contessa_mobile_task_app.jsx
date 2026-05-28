@@ -115,13 +115,40 @@ function DeferredFeatureFallback() {
   );
 }
 
-function scrollToSection(id) {
-  if (typeof window === "undefined" || typeof document === "undefined") return;
-  const element = document.getElementById(id);
+function highlightElement(element, className = "action-jump-highlight") {
   if (!element) return;
-  element.scrollIntoView({ behavior: "smooth", block: "start" });
-  element.classList.add("search-jump-highlight");
-  window.setTimeout(() => element.classList.remove("search-jump-highlight"), 1200);
+  element.classList.remove(className);
+  element.classList.remove("search-jump-highlight");
+  element.classList.remove("action-jump-highlight");
+  void element.offsetWidth;
+  element.classList.add(className);
+  window.setTimeout(() => element.classList.remove(className), 2200);
+}
+
+function scrollAndHighlight(targetId, options = {}) {
+  if (typeof window === "undefined" || typeof document === "undefined" || !targetId) return false;
+  const element = document.getElementById(targetId);
+  if (!element) return false;
+
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: options.block || "center",
+    inline: "nearest",
+  });
+
+  window.setTimeout(() => {
+    highlightElement(element, options.className || "action-jump-highlight");
+    if (typeof element.focus === "function") {
+      element.setAttribute("tabindex", "-1");
+      element.focus({ preventScroll: true });
+    }
+  }, options.delay || 420);
+
+  return true;
+}
+
+function scrollToSection(id) {
+  return scrollAndHighlight(id, { block: "start", className: "search-jump-highlight", delay: 180 });
 }
 
 const RoutePlanningView = dynamic(
@@ -1035,12 +1062,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
   };
 
-  const navigateToSection = (sectionId, moduleName = "", options = {}) => {
+  const navigateToSection = (sectionId, moduleName = "", options = {}, targetId = sectionId) => {
     if (!sectionId) return;
     if (moduleName) {
       activateModuleForSection(moduleName, options);
     }
-    setPendingSectionNavigation({ sectionId, moduleName, options, requestedAt: Date.now() });
+    setPendingSectionNavigation({ sectionId, targetId: targetId || sectionId, moduleName, options, requestedAt: Date.now() });
   };
 
   const openModule = (moduleId, options = {}) => {
@@ -1057,6 +1084,41 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     navigateToSection(sectionIdByModule[moduleId] || `${moduleId}-section`, moduleId, options);
   };
 
+  const jumpToAppTarget = ({
+    sectionId,
+    targetId,
+    moduleName = "",
+    moduleId = "",
+    options = {},
+    item,
+    openDetails = false,
+  } = {}) => {
+    const resolvedModule = moduleName || moduleId;
+    const resolvedSection = sectionId || targetId || "dashboard-section";
+    const resolvedTarget = targetId || sectionId || resolvedSection;
+
+    if (resolvedModule) {
+      activateModuleForSection(resolvedModule, options);
+    }
+
+    setFleetOpen(false);
+    setSharingOpen(false);
+
+    if (openDetails && item) {
+      if (item.section) {
+        openNotificationItem(item);
+      }
+    }
+
+    setPendingSectionNavigation({
+      sectionId: resolvedSection,
+      targetId: resolvedTarget,
+      moduleName: resolvedModule,
+      options,
+      requestedAt: Date.now(),
+    });
+  };
+
   const commandSearchResults = useMemo(() => {
     const vesselName = activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME;
     const sectionResults = [
@@ -1065,7 +1127,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       { id: "section-maintenance", type: "Section", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleName: "tasks-maintenance", options: { panel: "maintenance" } },
       { id: "section-approvals", type: "Section", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleName: "expenses-approvals", options: { bucket: "boat" } },
       { id: "section-crew", type: "Section", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" } },
-      { id: "section-crew-list", type: "Document", title: "Crew List", context: `Printable crew list for ${vesselName}`, targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
+      { id: "section-crew-list", type: "Document", title: "Crew List", context: `Printable crew list for ${vesselName}`, targetId: "crew-list-action", sectionId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
       { id: "section-certificates", type: "Section", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleName: "crew-certificates", options: { panel: "certificates" } },
       { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleName: "documents" },
       { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
@@ -1122,9 +1184,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       type: "Crew",
       title: profile?.fullName || "Crew member",
       context: [vesselName, profile?.rank, profile?.department, `${profile?.certificates?.length || 0} certificates`].filter(Boolean).join(" · "),
-      targetId: "crew-section",
+      targetId: profile?.id ? `item-${profile.id}` : "crew-section",
+      sectionId: "crew-section",
       moduleName: "crew-certificates",
       options: { panel: "crew" },
+      item: profile,
       searchText: buildCommandSearchText([profile?.id, profile?.fullName, profile?.rank, profile?.department, profile?.notes, "crew readiness certificates"]),
     }));
 
@@ -1133,8 +1197,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       type: "Document",
       title: document?.title || document?.name || "Document",
       context: [vesselName, document?.category || document?.type || "Document vault", document?.status].filter(Boolean).join(" · "),
-      targetId: "documents-section",
+      targetId: document?.id ? `item-${document.id}` : "documents-section",
+      sectionId: "documents-section",
       moduleName: "documents",
+      item: document,
       searchText: buildCommandSearchText([document?.id, document?.title, document?.name, document?.category, document?.type, document?.status, "documents docs vault"]),
     }));
 
@@ -1148,12 +1214,32 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!result) return;
 
     if (result.action === "crew-list") {
-      navigateToSection(result.targetId || "crew-section", result.moduleName || "crew-certificates", result.options || { panel: "crew" });
+      jumpToAppTarget({
+        sectionId: result.sectionId || "crew-section",
+        targetId: result.targetId || "crew-list-action",
+        moduleName: result.moduleName || "crew-certificates",
+        options: result.options || { panel: "crew" },
+      });
       if (typeof window !== "undefined") {
         window.setTimeout(() => {
           window.dispatchEvent(new CustomEvent("contessa:open-crew-list"));
         }, 260);
       }
+      return;
+    }
+
+    if (result.moduleName && result.moduleName !== "command") {
+      if (result.type === "Crew" && result.item?.id) {
+        setSelectedCrewId(result.item.id);
+      }
+      jumpToAppTarget({
+        sectionId: result.sectionId || result.targetId || "dashboard-section",
+        targetId: result.targetId,
+        moduleName: result.moduleName,
+        options: result.options || {},
+        item: result.item,
+        openDetails: Boolean(result.item),
+      });
       return;
     }
 
@@ -1167,7 +1253,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       return;
     }
 
-    navigateToSection(result.targetId || "dashboard-section", result.moduleName || "", result.options || {});
+    jumpToAppTarget({
+      sectionId: result.sectionId || result.targetId || "dashboard-section",
+      targetId: result.targetId || result.sectionId || "dashboard-section",
+      moduleName: result.moduleName || "",
+      options: result.options || {},
+    });
   };
 
   useEffect(() => {
@@ -1177,9 +1268,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const maxAttempts = 18;
 
     const tryScroll = () => {
-      const element = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.sectionId) : null;
-      if (element) {
-        scrollToSection(pendingSectionNavigation.sectionId);
+      const sectionElement = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.sectionId) : null;
+      const targetElement = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId) : null;
+      if (sectionElement || targetElement) {
+        const highlighted = scrollAndHighlight(pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId, {
+          block: pendingSectionNavigation.targetId && pendingSectionNavigation.targetId !== pendingSectionNavigation.sectionId ? "center" : "start",
+          className: pendingSectionNavigation.targetId && pendingSectionNavigation.targetId !== pendingSectionNavigation.sectionId ? "action-jump-highlight" : "search-jump-highlight",
+        });
+        if (!highlighted && pendingSectionNavigation.sectionId) {
+          scrollAndHighlight(pendingSectionNavigation.sectionId, { block: "start", className: "search-jump-highlight" });
+        }
         setPendingSectionNavigation(null);
         sectionNavigationTimeoutRef.current = null;
         return;
@@ -2188,10 +2286,17 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   };
 
   const openLinkedTaskFromExpense = (taskId) => {
-      setExpenseView("tasks-maintenance");
-      setTasksMaintenancePanel("tasks");
+    setExpenseView("tasks-maintenance");
+    setTasksMaintenancePanel("tasks");
     setStatusFilter("all");
     setSelectedId(taskId);
+    setPendingSectionNavigation({
+      sectionId: "tasks-section",
+      targetId: taskId ? `item-${taskId}` : "tasks-section",
+      moduleName: "tasks-maintenance",
+      options: { panel: "tasks" },
+      requestedAt: Date.now(),
+    });
   };
 
   const openTodayTask = (taskId) => {
@@ -2283,8 +2388,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     const sectionId = sectionIdByNotificationSection[item.section] || "alerts-section";
     const moduleName = moduleByNotificationSection[item.section] || "";
+    const targetIdByNotificationSection = {
+      tasks: item.targetId ? `item-${item.targetId}` : sectionId,
+      expenses: item.targetId ? `item-${item.targetId}` : sectionId,
+      maintenance: item.targetId ? `item-${item.targetId}` : sectionId,
+      certificates: item.targetId ? `item-${item.targetId}` : sectionId,
+    };
     setPendingSectionNavigation({
       sectionId,
+      targetId: targetIdByNotificationSection[item.section] || item.targetId || sectionId,
       moduleName,
       options: {},
       requestedAt: Date.now(),
@@ -2916,7 +3028,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             <NotificationsView
               darkMode={darkMode}
               notifications={accessibleNotifications}
-              onOpenNotification={openNotificationItem}
+              onOpenNotification={handleHeaderNotificationSelect}
             />
           </div>
         ) : (

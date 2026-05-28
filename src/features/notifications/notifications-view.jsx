@@ -79,7 +79,7 @@ export function NotificationsView({
           </div>
           <div className="space-y-3">
             {notifications.length ? notifications.map((item) => (
-              <div key={item.id} className={`app-card-hover app-panel ${item.level === "critical" ? "app-panel-active" : "app-panel-soft"} rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
+              <div id={`item-${item.id}`} key={item.id} className={`app-card-hover app-panel ${item.level === "critical" ? "app-panel-active" : "app-panel-soft"} rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">
                     <div className={`font-semibold ${theme.textPrimary}`}>{item.title}</div>
