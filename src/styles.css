@@ -140,6 +140,36 @@ canvas {
   overflow-x: hidden;
 }
 
+.notification-popover-list {
+  scrollbar-color: rgba(148, 163, 184, 0.9) transparent;
+  scrollbar-width: thin;
+}
+
+.notification-popover-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-popover-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-popover-list::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.9);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.notification-popover-list-dark {
+  scrollbar-color: rgba(51, 65, 85, 0.95) transparent;
+}
+
+.notification-popover-list-dark::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.95);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 button,
 input,
 select,

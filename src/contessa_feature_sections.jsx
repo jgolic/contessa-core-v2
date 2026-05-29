@@ -227,13 +227,50 @@ function NotificationsPanel({
     return "Alert";
   };
   const priorityLabel = (item = {}) => titleCase(item.level || item.priority || "Notice");
+  const priorityBadgeClass = (item = {}) => {
+    const normalized = priorityLabel(item).toLowerCase();
+    if (normalized.includes("critical") || normalized.includes("urgent")) {
+      return darkMode
+        ? "border border-rose-300/30 bg-rose-300/10 text-rose-100"
+        : "border border-rose-200 bg-rose-50 text-rose-700";
+    }
+    if (normalized.includes("warning") || normalized.includes("review")) {
+      return darkMode
+        ? "border border-amber-300/30 bg-amber-300/10 text-amber-100"
+        : "border border-amber-200 bg-amber-50 text-amber-800";
+    }
+    return darkMode
+      ? "border border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
+      : "border border-blue-200 bg-blue-50 text-blue-800";
+  };
+  const panelSurfaceClass = darkMode
+    ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
+    : "border-slate-200/90 bg-white text-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)]";
+  const headerBorderClass = darkMode ? "border-white/10" : "border-slate-200";
+  const headerTitleClass = darkMode ? "text-slate-50" : "text-slate-950";
+  const headerSubtitleClass = darkMode ? "text-slate-300" : "text-slate-600";
+  const countBadgeClass = darkMode
+    ? "border-rose-300/30 bg-rose-300/10 text-rose-100"
+    : "border-rose-200 bg-rose-50 text-rose-700";
+  const emptyStateClass = darkMode
+    ? "border-white/10 bg-white/[0.04] text-slate-300"
+    : "border-slate-200 bg-slate-50 text-slate-700";
+  const rowClass = darkMode
+    ? "border-transparent hover:border-cyan-300/30 hover:bg-cyan-300/10"
+    : "border-transparent hover:border-blue-200 hover:bg-blue-50/80";
+  const iconClass = darkMode
+    ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
+    : "border-blue-200 bg-blue-50 text-blue-700";
+  const titleTextClass = darkMode ? "text-slate-50" : "text-slate-950";
+  const contextTextClass = darkMode ? "text-slate-300" : "text-slate-600";
+  const arrowClass = darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white";
 
   return createPortal(
     <div className="fixed inset-0 z-[9999]">
       <button
         type="button"
         aria-label="Close notifications"
-        className="absolute inset-0 cursor-default bg-black/10 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0"
+        className={`absolute inset-0 cursor-default ${darkMode ? "bg-black/30" : "bg-black/5"}`}
         onClick={onClose}
       />
       <aside
@@ -243,29 +280,25 @@ function NotificationsPanel({
           width: position.width,
           maxHeight: position.maxHeight,
         }}
-        className={`fixed z-[10000] overflow-hidden rounded-3xl border shadow-[0_28px_90px_rgba(15,23,42,0.26)] backdrop-blur-xl ${
-          darkMode
-            ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
-            : "border-slate-200 bg-white text-slate-950"
-        }`}
+        className={`fixed z-[10000] overflow-hidden rounded-3xl border backdrop-blur-xl ${panelSurfaceClass}`}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`} />
-        <div className="border-b border-slate-200 px-4 py-3 dark:border-white/10">
+        <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${arrowClass}`} />
+        <div className={`border-b px-4 py-3 ${headerBorderClass}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">Notifications</h3>
-              <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300">Current vessel attention items.</p>
+              <h3 className={`truncate text-base font-semibold ${headerTitleClass}`}>Notifications</h3>
+              <p className={`mt-1 truncate text-sm font-medium ${headerSubtitleClass}`}>Current vessel attention items.</p>
             </div>
-            <span className="shrink-0 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+            <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold ${countBadgeClass}`}>
               {notificationItems.length}
             </span>
           </div>
         </div>
 
-        <div style={{ maxHeight: Math.max(180, position.maxHeight - 68) }} className="overflow-y-auto p-2">
+        <div style={{ maxHeight: Math.max(180, position.maxHeight - 68) }} className={`notification-popover-list overflow-y-auto p-2 ${darkMode ? "notification-popover-list-dark" : ""}`}>
           {notificationItems.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
+            <div className={`rounded-2xl border p-4 text-sm font-medium ${emptyStateClass}`}>
               No notifications for this vessel.
             </div>
           ) : (
@@ -277,22 +310,22 @@ function NotificationsPanel({
                   onSelect?.(notification);
                   onClose?.();
                 }}
-                className="flex w-full items-start gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:bg-blue-50 dark:hover:bg-cyan-300/10"
+                className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-left transition-all duration-200 ${rowClass}`}
               >
-                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-cyan-300/25 dark:bg-cyan-300/10 dark:text-cyan-100">
+                <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border ${iconClass}`}>
                   <NotificationTypeIcon type={typeLabel(notification)} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
+                    <p className={`min-w-0 flex-1 truncate text-sm font-semibold ${titleTextClass}`}>
                       {notification.title || "Vessel alert"}
                     </p>
-                    <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-300/10 dark:text-amber-100">
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${priorityBadgeClass(notification)}`}>
                       {priorityLabel(notification)}
                     </span>
                   </div>
                   {notification.detail || notification.context ? (
-                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-600 dark:text-slate-300">
+                    <p className={`mt-1 line-clamp-2 text-sm leading-5 ${contextTextClass}`}>
                       {notification.detail || notification.context}
                     </p>
                   ) : null}
