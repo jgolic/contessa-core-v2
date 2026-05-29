@@ -115,19 +115,36 @@ function DeferredFeatureFallback() {
   );
 }
 
-function highlightElement(element, className = "action-jump-highlight") {
+function getJumpTargetElement(targetId) {
+  if (typeof document === "undefined" || !targetId) return null;
+  const element = document.getElementById(targetId);
+  if (!element) return null;
+
+  if (element.matches("[data-jump-target]")) {
+    return element;
+  }
+
+  return (
+    element.querySelector("[data-jump-target]") ||
+    element.closest("[data-jump-target]") ||
+    element
+  );
+}
+
+function highlightJumpTarget(element) {
   if (!element) return;
-  element.classList.remove(className);
+  element.classList.remove("jump-highlight-active");
   element.classList.remove("search-jump-highlight");
   element.classList.remove("action-jump-highlight");
   void element.offsetWidth;
-  element.classList.add(className);
-  window.setTimeout(() => element.classList.remove(className), 2200);
+  element.classList.add("jump-highlight-target");
+  element.classList.add("jump-highlight-active");
+  window.setTimeout(() => element.classList.remove("jump-highlight-active"), 1900);
 }
 
 function scrollAndHighlight(targetId, options = {}) {
   if (typeof window === "undefined" || typeof document === "undefined" || !targetId) return false;
-  const element = document.getElementById(targetId);
+  const element = getJumpTargetElement(targetId);
   if (!element) return false;
 
   element.scrollIntoView({
@@ -137,7 +154,7 @@ function scrollAndHighlight(targetId, options = {}) {
   });
 
   window.setTimeout(() => {
-    highlightElement(element, options.className || "action-jump-highlight");
+    highlightJumpTarget(element);
     if (typeof element.focus === "function") {
       element.setAttribute("tabindex", "-1");
       element.focus({ preventScroll: true });
@@ -148,7 +165,7 @@ function scrollAndHighlight(targetId, options = {}) {
 }
 
 function scrollToSection(id) {
-  return scrollAndHighlight(id, { block: "start", className: "search-jump-highlight", delay: 180 });
+  return scrollAndHighlight(id, { block: "start", delay: 180 });
 }
 
 const RoutePlanningView = dynamic(
@@ -1273,10 +1290,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       if (sectionElement || targetElement) {
         const highlighted = scrollAndHighlight(pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId, {
           block: pendingSectionNavigation.targetId && pendingSectionNavigation.targetId !== pendingSectionNavigation.sectionId ? "center" : "start",
-          className: pendingSectionNavigation.targetId && pendingSectionNavigation.targetId !== pendingSectionNavigation.sectionId ? "action-jump-highlight" : "search-jump-highlight",
         });
         if (!highlighted && pendingSectionNavigation.sectionId) {
-          scrollAndHighlight(pendingSectionNavigation.sectionId, { block: "start", className: "search-jump-highlight" });
+          scrollAndHighlight(pendingSectionNavigation.sectionId, { block: "start" });
         }
         setPendingSectionNavigation(null);
         sectionNavigationTimeoutRef.current = null;
@@ -2862,7 +2878,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onNavigateToDocuments={() => openModule("documents")}
           />
         ) : expenseView === "route" ? (
-          <div id="route-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="route-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <RoutePlanningView
               darkMode={darkMode}
               canEdit={canEditApp}
@@ -2880,7 +2896,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             darkMode={darkMode}
             activePanel={tasksMaintenancePanel}
             onChangePanel={setTasksMaintenancePanel}
-            tasksView={<div id="tasks-section" className="scroll-mt-24 md:scroll-mt-28"><ObjectivesView
+            tasksView={<div id="tasks-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"><ObjectivesView
               darkMode={darkMode}
               canEdit={canEditApp}
               stats={stats}
@@ -2912,7 +2928,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onQuoteReceiptUpload={handleReceiptUpload}
               onQuoteRemoveRequest={setQuoteDeleteRequest}
             /></div>}
-            maintenanceView={<div id="maintenance-section" className="scroll-mt-24 md:scroll-mt-28"><MaintenanceView
+            maintenanceView={<div id="maintenance-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"><MaintenanceView
               darkMode={darkMode}
               canEdit={canEditApp}
               maintenanceError={maintenanceError}
@@ -2935,7 +2951,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             darkMode={darkMode}
             activePanel={crewCertificatesPanel}
             onChangePanel={setCrewCertificatesPanel}
-            crewView={<div id="crew-section" className="scroll-mt-24 md:scroll-mt-28"><CrewView
+            crewView={<div id="crew-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"><CrewView
               darkMode={darkMode}
               canEdit={canEditApp}
               currentRole={effectiveRole}
@@ -2968,7 +2984,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onDeleteCertificate={deleteCertificate}
               crewListPrintHref={`/vessels/${activeVesselId}/crew-list/print`}
             /></div>}
-            certificatesView={<div id="certificates-section" className="scroll-mt-24 md:scroll-mt-28"><CertificatesView
+            certificatesView={<div id="certificates-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"><CertificatesView
               darkMode={darkMode}
               canEdit={canEditApp}
               currentRole={effectiveRole}
@@ -2996,7 +3012,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             /></div>}
           />
         ) : expenseView === "documents" ? (
-          <div id="documents-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="documents-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <DocumentsView
               darkMode={darkMode}
               documents={documents}
@@ -3004,7 +3020,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         ) : expenseView === "settings" ? (
-          <div id="settings-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="settings-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <SettingsWorkspaceView
               darkMode={darkMode}
               vesselProfile={vesselProfile}
@@ -3024,7 +3040,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         ) : expenseView === "notifications" ? (
-          <div id="alerts-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="alerts-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <NotificationsView
               darkMode={darkMode}
               notifications={accessibleNotifications}
@@ -3032,7 +3048,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         ) : (
-          <div id="approvals-section" className="scroll-mt-24 md:scroll-mt-28">
+          <div id="approvals-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <ExpensesView
               darkMode={darkMode}
               canEdit={canEditApp}

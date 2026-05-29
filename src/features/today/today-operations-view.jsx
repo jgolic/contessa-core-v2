@@ -586,7 +586,7 @@ export function CommandJumpBar({
   }
 
   return (
-    <div id="dashboard-section" className={`app-panel app-panel-soft search-command-card relative z-[5000] w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
+    <div id="command-search-section" data-jump-target style={{ "--jump-radius": "24px" }} className={`jump-highlight-target app-panel app-panel-soft search-command-card relative z-[5000] w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="app-kicker">Command Search</div>
@@ -1316,16 +1316,19 @@ export function TodayOperationsView({
 
   function highlightTarget(targetId) {
     if (!targetId || typeof window === "undefined" || typeof document === "undefined") return;
-    const element = document.getElementById(targetId);
+    const baseElement = document.getElementById(targetId);
+    const element = baseElement?.matches("[data-jump-target]")
+      ? baseElement
+      : baseElement?.querySelector("[data-jump-target]") || baseElement?.closest("[data-jump-target]") || baseElement;
     if (!element) return;
     element.scrollIntoView({ behavior: "smooth", block: "center" });
-    element.classList.remove("search-jump-highlight");
-    element.classList.remove("action-jump-highlight");
+    element.classList.remove("jump-highlight-active");
     void element.offsetWidth;
-    element.classList.add("search-jump-highlight");
+    element.classList.add("jump-highlight-target");
+    element.classList.add("jump-highlight-active");
     window.setTimeout(() => {
-      element.classList.remove("search-jump-highlight");
-    }, 2200);
+      element.classList.remove("jump-highlight-active");
+    }, 1900);
   }
 
   function jumpToResult(result) {
@@ -1403,7 +1406,7 @@ export function TodayOperationsView({
 
   return (
     <>
-      <div id="dashboard-section" className="grid gap-4 scroll-mt-24 md:gap-5 md:scroll-mt-28">
+      <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target grid gap-4 rounded-[28px] scroll-mt-24 md:gap-5 md:scroll-mt-28">
         <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
           <div className="grid gap-4 xl:col-span-8">
             <VesselStateBanner

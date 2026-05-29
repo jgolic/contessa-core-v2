@@ -72,7 +72,7 @@ function ConfirmableMaintenanceItemRow({
   }, [item.id, item.title, item.area, item.frequencyMonths, item.nextDueDate, item.notes, item.alertEnabled]);
 
   return (
-    <div id={`item-${item.id}`} className={`rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
+    <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "16px" }} className={`jump-highlight-target rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
           <div className={`text-sm ${theme.textSecondary}`}>{item.id}</div>
@@ -304,7 +304,7 @@ export function MaintenanceView({
             {maintenanceAlerts.map((item) => {
               const alertText = item.daysRemaining < 0 ? `${Math.abs(item.daysRemaining)} days overdue` : item.daysRemaining === 0 ? "Due today" : "Due tomorrow";
               return (
-                <div id={`item-${item.id}`} key={`${item.id}-alert`} className={`rounded-lg border p-4 ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+                <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "16px" }} key={`${item.id}-alert`} className={`jump-highlight-target rounded-lg border p-4 ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
                   <div className="font-semibold">{alertText}: {item.title}</div>
                   <div className="text-sm">{item.area} - Due {item.nextDueDate}</div>
                 </div>

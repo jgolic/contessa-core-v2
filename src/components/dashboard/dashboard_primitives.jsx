@@ -117,16 +117,17 @@ export function SectionAccordion({
   const revealSection = () => {
     const target = id && typeof document !== "undefined" ? document.getElementById(id) : null;
     if (target) {
-      target.classList.remove("action-jump-highlight");
+      target.classList.remove("jump-highlight-active");
       void target.offsetWidth;
-      target.classList.add("action-jump-highlight");
-      window.setTimeout(() => target.classList.remove("action-jump-highlight"), 2200);
+      target.classList.add("jump-highlight-target");
+      target.classList.add("jump-highlight-active");
+      window.setTimeout(() => target.classList.remove("jump-highlight-active"), 1900);
     }
     onToggle?.();
   };
 
   return (
-    <Card id={id} className={`module-row module-row--${moduleClass} app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
+    <Card id={id} data-jump-target style={{ "--jump-radius": "24px" }} className={`jump-highlight-target module-row module-row--${moduleClass} app-panel app-card-hover relative min-w-0 overflow-hidden rounded-[22px] border transition-all duration-200 hover:-translate-y-[1px] md:rounded-[24px] ${moduleTheme.shell}`}>
       <div className={`module-row-rail module-row-rail--${moduleClass} pointer-events-none absolute inset-x-6 top-0 h-[3px] rounded-b-full bg-gradient-to-r ${moduleTheme.rail}`} />
       <CardContent className="p-3.5 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -185,17 +186,20 @@ export function CompactItemCard({
   return (
     <button
       id={htmlId}
+      data-jump-target
+      style={{ "--jump-radius": "22px" }}
       type="button"
       onClick={(event) => {
         if (htmlId) {
-          event.currentTarget.classList.remove("action-jump-highlight");
+          event.currentTarget.classList.remove("jump-highlight-active");
           void event.currentTarget.offsetWidth;
-          event.currentTarget.classList.add("action-jump-highlight");
-          window.setTimeout(() => event.currentTarget.classList.remove("action-jump-highlight"), 2200);
+          event.currentTarget.classList.add("jump-highlight-target");
+          event.currentTarget.classList.add("jump-highlight-active");
+          window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
         }
         onClick?.(event);
       }}
-      className={`app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] md:rounded-[22px] ${
+      className={`jump-highlight-target app-card-hover app-panel group relative w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border p-0 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] md:rounded-[22px] ${
         selected
           ? darkMode
             ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] shadow-[0_18px_36px_-26px_var(--vessel-glow-dark)]"
