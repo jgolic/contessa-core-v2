@@ -139,7 +139,7 @@ function highlightJumpTarget(element) {
   void element.offsetWidth;
   element.classList.add("jump-highlight-target");
   element.classList.add("jump-highlight-active");
-  window.setTimeout(() => element.classList.remove("jump-highlight-active"), 1900);
+  window.setTimeout(() => element.classList.remove("jump-highlight-active"), 2000);
 }
 
 function scrollAndHighlight(targetId, options = {}) {
@@ -159,7 +159,7 @@ function scrollAndHighlight(targetId, options = {}) {
       element.setAttribute("tabindex", "-1");
       element.focus({ preventScroll: true });
     }
-  }, options.delay || 420);
+  }, options.delay || 350);
 
   return true;
 }
@@ -3012,13 +3012,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             /></div>}
           />
         ) : expenseView === "documents" ? (
-          <div id="documents-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
-            <DocumentsView
-              darkMode={darkMode}
-              documents={documents}
-              vesselName={vesselProfile?.vesselName || APP_BRAND_NAME}
-            />
-          </div>
+          <DocumentsView
+            darkMode={darkMode}
+            documents={documents}
+            vesselName={vesselProfile?.vesselName || APP_BRAND_NAME}
+          />
         ) : expenseView === "settings" ? (
           <div id="settings-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
             <SettingsWorkspaceView

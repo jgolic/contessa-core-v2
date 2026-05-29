@@ -2551,15 +2551,22 @@ export function CrewCertificatesWorkspace({
 export function DocumentsView({ darkMode = false, documents = [], vesselName = "Contessa" }) {
   const theme = themeClasses(darkMode);
   return (
-    <div className="grid gap-4">
-      <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-        <CardContent className="p-5">
-          <div className="app-kicker">Documents</div>
-          <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Vessel records, legal notices, manuals, and placeholders.</h2>
-          <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>A dedicated document room for {vesselName}, keeping legal/IP notices separate from daily command decisions.</p>
-        </CardContent>
-      </Card>
-      <div className="grid gap-4 md:grid-cols-2">
+    <div
+      id="documents-section"
+      data-jump-target
+      style={{ "--jump-radius": "28px" }}
+      className={`jump-highlight-target scroll-mt-24 rounded-[28px] border p-5 shadow-sm md:scroll-mt-28 ${
+        darkMode
+          ? "border-white/10 bg-slate-900/90"
+          : "border-slate-200/80 bg-white/90"
+      }`}
+    >
+      <div className="min-w-0">
+        <div className="app-kicker">Documents</div>
+        <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Vessel records, legal notices, manuals, and placeholders.</h2>
+        <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>A dedicated document room for {vesselName}, keeping legal/IP notices separate from daily command decisions.</p>
+      </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         {documents.map((document) => (
           <Card id={`item-${document.id}`} data-jump-target style={{ "--jump-radius": "22px" }} key={document.id} className={`jump-highlight-target rounded-[24px] md:rounded-[22px] ${theme.card}`}>
             <CardContent className="p-5">
