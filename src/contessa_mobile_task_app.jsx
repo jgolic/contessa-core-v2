@@ -1412,8 +1412,28 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const handleAddFleetVessel = (draft) => {
     if (!requireAdminEdit("Adding vessels")) return false;
     const vesselName = String(draft?.vesselName || "").trim();
+    const lengthFeet = Number(draft?.lengthFeet ?? draft?.vesselLength ?? 0);
+    const vesselType = String(draft?.vesselType || draft?.type || "").trim();
+    const flag = String(draft?.flag || "").trim();
+    const homePort = String(draft?.homePort || "").trim();
     if (!vesselName) {
       setAppBanner({ type: "error", title: "Vessel name required", message: "Enter a vessel name before creating a new boat." });
+      return false;
+    }
+    if (!Number.isFinite(lengthFeet) || lengthFeet <= 0) {
+      setAppBanner({ type: "error", title: "Length required", message: "Length must be entered in feet." });
+      return false;
+    }
+    if (!vesselType) {
+      setAppBanner({ type: "error", title: "Yacht type required", message: "Choose yacht type before creating a vessel." });
+      return false;
+    }
+    if (!flag) {
+      setAppBanner({ type: "error", title: "Flag required", message: "Select a flag before choosing home port." });
+      return false;
+    }
+    if (!homePort) {
+      setAppBanner({ type: "error", title: "Home port required", message: "Choose a home port for the selected flag." });
       return false;
     }
 
@@ -1423,13 +1443,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       name: vesselName,
       theme: getNextFleetTheme(vesselsForPersistence),
       details: {
-        length: draft?.vesselLength || "",
-        type: draft?.vesselType || "",
-        flag: draft?.flag || "",
-        homePort: draft?.homePort || "",
+        length: lengthFeet,
+        lengthFeet,
+        vesselType,
+        type: vesselType,
+        flag,
+        homePort,
         crewNumber: Number(draft?.crewNumber || 0) || 0,
         notes: draft?.notes || "",
-        status: "Operational",
+        status: "New Vessel",
       },
       workspace: {
         documents: [],

@@ -1102,7 +1102,8 @@ export function createFleetVesselWorkspace({
     id,
     name: displayName,
     details: {
-      length: details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0),
+      length: details.length ?? details.lengthFeet ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0),
+      lengthFeet: Number(details.lengthFeet ?? details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0)) || 0,
       vesselType: details.vesselType || "Motor Yacht",
       flag: details.flag || (isContessaPreset ? "Jamaica" : "Cayman Islands"),
       homePort: details.homePort || (isOctopussyPreset ? "Oracabessa, Jamaica" : isContessaPreset ? "Fort Lauderdale / LMC Safe Harbor" : ""),
@@ -1176,6 +1177,7 @@ export function normalizeFleetVessel(vessel = {}, fallbackId = DEFAULT_FLEET_VES
     name,
     details: {
       length: Number(vessel.details?.length ?? vessel.length ?? 0) || 0,
+      lengthFeet: Number(vessel.details?.lengthFeet ?? vessel.details?.length ?? vessel.length ?? 0) || 0,
       vesselType: vessel.details?.vesselType || vessel.vesselType || "Motor Yacht",
       flag: vessel.details?.flag || vessel.flag || "",
       homePort: vessel.details?.homePort || vessel.homePort || "",

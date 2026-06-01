@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLayoutEffect, useRef } from "react";
+import { useMemo } from "react";
 import { Card, CardContent } from "./components/ui/card.jsx";
 import { Button } from "./components/ui/button.jsx";
 import { Input } from "./components/ui/input.jsx";
@@ -81,6 +82,200 @@ const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] tex
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
+
+const yachtTypeOptions = [
+  "Motor Yacht",
+  "Sailing Yacht",
+  "Explorer Yacht",
+  "Sport Yacht",
+  "Classic Yacht",
+  "Catamaran",
+  "Trimaran",
+  "Support Vessel",
+  "Chase Boat",
+  "Tender",
+  "Commercial Yacht",
+  "Private Yacht",
+];
+
+const flagOptions = [
+  "Cayman Islands",
+  "Jamaica",
+  "Malta",
+  "Marshall Islands",
+  "Isle of Man",
+  "United Kingdom",
+  "United States",
+  "Bahamas",
+  "Bermuda",
+  "Panama",
+  "Netherlands",
+  "France",
+  "Italy",
+  "Croatia",
+  "Greece",
+  "Spain",
+  "Monaco",
+  "Gibraltar",
+  "Cook Islands",
+  "British Virgin Islands",
+];
+
+const flagOptionAliases = {
+  "Cayman Islands": "cayman cayman island ci",
+  "United States": "usa us america",
+  "United Kingdom": "uk britain british great britain",
+};
+
+const homePortsByFlag = {
+  "Cayman Islands": ["George Town", "Cayman Brac", "West Bay"],
+  Jamaica: ["Kingston", "Montego Bay", "Ocho Rios", "Port Antonio", "Oracabessa"],
+  Malta: ["Valletta", "Sliema", "Birgu", "Marsamxett"],
+  "Marshall Islands": ["Majuro", "Kwajalein"],
+  "Isle of Man": ["Douglas"],
+  "United Kingdom": ["London", "Southampton", "Portsmouth", "Plymouth", "Cowes"],
+  "United States": ["Fort Lauderdale", "Miami", "Newport", "Palm Beach", "San Diego", "Seattle", "New York"],
+  Bahamas: ["Nassau", "Freeport", "Marsh Harbour", "George Town"],
+  Bermuda: ["Hamilton", "St. George's"],
+  Panama: ["Panama City", "Colon", "Balboa"],
+  Netherlands: ["Amsterdam", "Rotterdam", "Dordrecht"],
+  France: ["Marseille", "Nice", "Cannes", "Antibes"],
+  Italy: ["Genoa", "La Spezia", "Naples", "Sanremo", "Viareggio"],
+  Croatia: ["Split", "Dubrovnik", "Rijeka", "Zadar", "Sibenik"],
+  Greece: ["Piraeus", "Athens", "Rhodes", "Corfu"],
+  Spain: ["Palma de Mallorca", "Barcelona", "Valencia", "Malaga"],
+  Monaco: ["Monaco"],
+  Gibraltar: ["Gibraltar"],
+  "Cook Islands": ["Avarua"],
+  "British Virgin Islands": ["Road Town"],
+};
+
+function normalizeFlag(value = "") {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) return "";
+  if (["cayman", "cayman island", "cayman islands"].includes(normalized)) return "Cayman Islands";
+  if (["usa", "us", "u.s.", "u.s.a.", "united states"].includes(normalized)) return "United States";
+  if (["uk", "u.k.", "britain", "great britain", "united kingdom"].includes(normalized)) return "United Kingdom";
+  return flagOptions.find((option) => option.toLowerCase() === normalized) || value;
+}
+
+function SearchableSelect({
+  label,
+  value,
+  options = [],
+  optionAliases = {},
+  placeholder,
+  onChange,
+  disabled = false,
+  required = false,
+}) {
+  const [query, setQuery] = useState(value || "");
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const wrapperRef = useRef(null);
+
+  const filteredOptions = useMemo(() => {
+    const cleanQuery = query.trim().toLowerCase();
+    if (!cleanQuery) return options;
+    return options.filter((option) =>
+      `${option} ${optionAliases[option] || ""}`.toLowerCase().includes(cleanQuery)
+    );
+  }, [optionAliases, options, query]);
+
+  useEffect(() => {
+    setQuery(value || "");
+  }, [value]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function selectOption(option) {
+    onChange?.(option);
+    setQuery(option);
+    setOpen(false);
+  }
+
+  function handleKeyDown(event) {
+    if (disabled) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((current) => Math.min(current + 1, Math.max(filteredOptions.length - 1, 0)));
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((current) => Math.max(current - 1, 0));
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const option = filteredOptions[activeIndex];
+      if (option) selectOption(option);
+    }
+
+    if (event.key === "Escape") {
+      setOpen(false);
+    }
+  }
+
+  return (
+    <div ref={wrapperRef} className="relative min-w-0">
+      <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+        {label}
+        {required ? <span className="ml-1 text-rose-500">*</span> : null}
+      </label>
+      <input
+        type="text"
+        value={query}
+        disabled={disabled}
+        placeholder={placeholder}
+        onFocus={() => !disabled && setOpen(true)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setOpen(true);
+          setActiveIndex(0);
+        }}
+        onKeyDown={handleKeyDown}
+        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20 dark:disabled:bg-slate-900 dark:disabled:text-slate-600"
+      />
+      {open && !disabled ? (
+        <div className="absolute left-0 right-0 top-full z-[10000] mt-2 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-white/10 dark:bg-slate-950">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => selectOption(option)}
+                className={[
+                  "w-full rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition",
+                  index === activeIndex
+                    ? "bg-blue-50 text-blue-800 dark:bg-cyan-300/10 dark:text-cyan-100"
+                    : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/10",
+                ].join(" ")}
+              >
+                {option}
+              </button>
+            ))
+          ) : (
+            <div className="px-3 py-3 text-sm text-slate-500 dark:text-slate-400">
+              No matching options
+            </div>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function NotificationSignalIcon({ className = "" }) {
   return (
@@ -868,13 +1063,14 @@ export function AppShellHeader({
   const notificationAnchorRef = useRef(null);
   const [fleetDraft, setFleetDraft] = useState({
     vesselName: "",
-    vesselLength: "",
+    lengthFeet: "",
     vesselType: "",
     flag: "",
     homePort: "",
     crewNumber: "",
     notes: "",
   });
+  const [fleetDraftError, setFleetDraftError] = useState("");
   const [fleetFormOpen, setFleetFormOpen] = useState(false);
   const [headerClock, setHeaderClock] = useState(() => new Date());
   const fleetWorkspaceLabel = `${currentVesselName} Operations`;
@@ -896,9 +1092,10 @@ export function AppShellHeader({
   useEffect(() => {
     if (!fleetOpen) {
       setFleetFormOpen(false);
+      setFleetDraftError("");
       setFleetDraft({
         vesselName: "",
-        vesselLength: "",
+        lengthFeet: "",
         vesselType: "",
         flag: "",
         homePort: "",
@@ -930,6 +1127,8 @@ export function AppShellHeader({
   const vesselIdentifier = getVesselIdentifier(currentVesselIdentity || {});
   const vesselTitleClass = getVesselTitleSize(vesselTitle);
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
+  const selectedFleetFlag = normalizeFlag(fleetDraft.flag);
+  const fleetHomePortOptions = homePortsByFlag[selectedFleetFlag] || [];
   const heroMetrics = [
     { label: "Urgent", value: stats.overdueTasks || routeWarningCount || 0, note: "needs review" },
     { label: "Approval", value: stats.pendingApprovals || 0, note: "waiting" },
@@ -1050,7 +1249,7 @@ export function AppShellHeader({
         </DialogContent>
       </Dialog>
       <Dialog open={fleetOpen} onOpenChange={onFleetOpenChange}>
-        <DialogContent className={`max-h-[82vh] w-full max-w-[1100px] overflow-hidden rounded-[32px] border p-5 backdrop-blur-2xl transition-all duration-200 ${premiumShellClass(darkMode)} ${darkMode ? "text-[#f4fbf6]" : "text-[#1d2b24]"}`}>
+        <DialogContent className={`max-h-[82vh] w-full max-w-[1100px] overflow-y-auto rounded-[32px] border p-5 backdrop-blur-2xl transition-all duration-200 ${premiumShellClass(darkMode)} ${darkMode ? "text-[#f4fbf6]" : "text-[#1d2b24]"}`}>
           <DialogHeader>
             <DialogTitle>Fleet</DialogTitle>
           </DialogHeader>
@@ -1063,13 +1262,54 @@ export function AppShellHeader({
             {fleetFormOpen ? (
               <div className={`${premiumInnerClass(darkMode)} p-4`}>
                 <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>New Vessel</div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <Input placeholder="Vessel name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
-                  <Input placeholder="Vessel length" value={fleetDraft.vesselLength} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselLength: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
-                  <Input placeholder="Vessel type" value={fleetDraft.vesselType} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselType: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
-                  <Input placeholder="Flag" value={fleetDraft.flag} onChange={(event) => setFleetDraft((prev) => ({ ...prev, flag: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
-                  <Input placeholder="Home port" value={fleetDraft.homePort} onChange={(event) => setFleetDraft((prev) => ({ ...prev, homePort: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
-                  <Input placeholder="Crew number" value={fleetDraft.crewNumber} onChange={(event) => setFleetDraft((prev) => ({ ...prev, crewNumber: event.target.value }))} className={`h-12 rounded-2xl ${theme.input}`} />
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                      Vessel Name <span className="text-rose-500">*</span>
+                    </label>
+                    <Input placeholder="M/Y Vessel Name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                      Length <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input type="number" min="1" step="0.1" inputMode="decimal" placeholder="125" value={fleetDraft.lengthFeet} onChange={(event) => setFleetDraft((prev) => ({ ...prev, lengthFeet: event.target.value }))} className={`h-14 rounded-2xl pr-12 text-base font-semibold ${theme.input}`} />
+                      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500 dark:text-slate-400">ft</span>
+                    </div>
+                  </div>
+                  <SearchableSelect
+                    label="Type of Yacht"
+                    value={fleetDraft.vesselType}
+                    options={yachtTypeOptions}
+                    placeholder="Select yacht type"
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, vesselType: value }))}
+                    required
+                  />
+                  <SearchableSelect
+                    label="Flag"
+                    value={fleetDraft.flag}
+                    options={flagOptions}
+                    optionAliases={flagOptionAliases}
+                    placeholder="Select flag"
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, flag: normalizeFlag(value), homePort: "" }))}
+                    required
+                  />
+                  <SearchableSelect
+                    label="Home Port"
+                    value={fleetDraft.homePort}
+                    options={fleetHomePortOptions}
+                    placeholder={selectedFleetFlag ? "Select home port" : "Select flag first"}
+                    disabled={!selectedFleetFlag}
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, homePort: value }))}
+                    required
+                  />
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                      Crew Number
+                    </label>
+                    <Input type="number" min="0" step="1" inputMode="numeric" placeholder="6" value={fleetDraft.crewNumber} onChange={(event) => setFleetDraft((prev) => ({ ...prev, crewNumber: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
+                  </div>
                 </div>
                 <textarea
                   placeholder="Optional notes"
@@ -1077,14 +1317,43 @@ export function AppShellHeader({
                   onChange={(event) => setFleetDraft((prev) => ({ ...prev, notes: event.target.value }))}
                   className={`mt-3 min-h-24 w-full rounded-2xl border px-3 py-3 outline-none ${theme.input}`}
                 />
+                {fleetDraftError ? (
+                  <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+                    {fleetDraftError}
+                  </div>
+                ) : null}
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <Button type="button" variant="outline" className={`${mutedButtonClass} rounded-2xl px-4 py-3 ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => setFleetFormOpen(false)}>
+                  <Button type="button" variant="outline" className={`${mutedButtonClass} rounded-2xl px-4 py-3 ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setFleetDraftError(""); setFleetFormOpen(false); }}>
                     Cancel
                   </Button>
                   <Button
                     type="button"
                     className="button-vessel-primary rounded-2xl px-4 py-3"
                     onClick={() => {
+                      const cleanName = String(fleetDraft.vesselName || "").trim();
+                      const cleanLength = Number(fleetDraft.lengthFeet);
+                      const cleanFlag = normalizeFlag(fleetDraft.flag);
+                      if (!cleanName) {
+                        setFleetDraftError("Enter a vessel name before creating a new vessel.");
+                        return;
+                      }
+                      if (!Number.isFinite(cleanLength) || cleanLength <= 0) {
+                        setFleetDraftError("Length must be entered in feet.");
+                        return;
+                      }
+                      if (!fleetDraft.vesselType) {
+                        setFleetDraftError("Choose yacht type.");
+                        return;
+                      }
+                      if (!cleanFlag) {
+                        setFleetDraftError("Select a flag before choosing home port.");
+                        return;
+                      }
+                      if (!fleetDraft.homePort) {
+                        setFleetDraftError("Choose a home port for the selected flag.");
+                        return;
+                      }
+                      setFleetDraftError("");
                       const didCreate = onAddFleetVessel?.(fleetDraft);
                       if (didCreate !== false) {
                         setFleetFormOpen(false);
@@ -1167,7 +1436,7 @@ export function AppShellHeader({
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
-                  onClick={() => setFleetFormOpen(true)}
+                  onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
                   className="button-vessel-primary rounded-2xl px-4 py-3"
                 >
                   <Plus className="mr-2 h-4 w-4" />
