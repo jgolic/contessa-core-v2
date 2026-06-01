@@ -15,6 +15,8 @@ export function CrewCvQr({
   const canonicalVesselSlug = useMemo(() => getCanonicalVesselSlug(vesselSlug), [vesselSlug]);
   const relativeHref = `/vessels/${canonicalVesselSlug}/crew/${crewRouteId}/cv`;
   const [url, setUrl] = useState(relativeHref);
+  const actionButtonClass =
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[#071A3A] bg-[#071A3A] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-blue-700 hover:bg-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/14 dark:text-cyan-50 dark:hover:bg-cyan-300/22";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -44,19 +46,9 @@ export function CrewCvQr({
         href={relativeHref}
         target="_blank"
         rel="noreferrer"
-        className={`${primaryActionClass || "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300 bg-blue-50 px-4 text-sm font-semibold text-blue-800"} mt-4 w-full`}
+        className={`${actionButtonClass} mt-4 w-full`}
       >
         View Demo CV
-      </a>
-
-      <a
-        href={relativeHref}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-3 block max-w-full truncate text-xs font-semibold text-blue-700 dark:text-cyan-200"
-        title={relativeHref}
-      >
-        {relativeHref}
       </a>
     </div>
   );

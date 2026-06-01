@@ -25,10 +25,15 @@ function getClientVessel(vesselId = "") {
 
 export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
   const [mounted, setMounted] = useState(false);
+  const [portraitDataUrl, setPortraitDataUrl] = useState("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setPortraitDataUrl("");
+  }, [vesselId, crewId]);
 
   const vessel = useMemo(() => {
     if (!mounted || !vesselId) return null;
@@ -135,7 +140,13 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
               </div>
 
               <div className="shrink-0 self-center sm:self-auto">
-                <CrewDemoIdPortrait person={person} />
+                <CrewDemoIdPortrait
+                  person={person}
+                  vessel={vessel}
+                  allowGenerate
+                  generatedImageDataUrl={portraitDataUrl}
+                  onImageGenerated={setPortraitDataUrl}
+                />
               </div>
             </div>
           </header>
@@ -188,13 +199,13 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
           </section>
         </article>
 
-        <CrewCvPrintSheet cv={cv} person={person} />
+        <CrewCvPrintSheet cv={cv} person={person} vessel={vessel} portraitDataUrl={portraitDataUrl} />
       </div>
     </main>
   );
 }
 
-function CrewCvPrintSheet({ cv, person }) {
+function CrewCvPrintSheet({ cv, person, vessel, portraitDataUrl }) {
   return (
     <article className="crew-cv-print-sheet print-only">
       <header className="cv-print-header">
@@ -204,11 +215,16 @@ function CrewCvPrintSheet({ cv, person }) {
           <p>{cv.position} &middot; {cv.department}</p>
           <p>{cv.vesselName}</p>
         </div>
-        <CrewDemoIdPortrait person={person} size="print" />
+        <CrewDemoIdPortrait
+          person={person}
+          vessel={vessel}
+          size="print"
+          generatedImageDataUrl={portraitDataUrl}
+        />
       </header>
 
       <div className="cv-print-demo-warning">
-        DEMO CV - GENERATED FOR TESTING ONLY. NOT AN OFFICIAL CREW DOCUMENT.
+        DEMO CV — GENERATED FOR TESTING ONLY. NOT AN OFFICIAL CREW DOCUMENT.
       </div>
 
       <section className="cv-print-info-grid">

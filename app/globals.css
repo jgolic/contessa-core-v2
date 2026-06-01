@@ -388,7 +388,7 @@ body {
     height: 297mm !important;
     inset: 0 !important;
     overflow: hidden !important;
-    padding: 14mm 16mm !important;
+    padding: 12mm 14mm !important;
     page-break-after: avoid !important;
     page-break-before: avoid !important;
     position: fixed !important;
@@ -399,9 +399,9 @@ body {
     align-items: flex-start;
     border-bottom: 1.5px solid #071a3a;
     display: flex;
-    gap: 10mm;
+    gap: 8mm;
     justify-content: space-between;
-    padding-bottom: 8mm;
+    padding-bottom: 6mm;
   }
 
   .cv-print-kicker {
@@ -435,16 +435,16 @@ body {
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 0.08em;
-    margin-top: 6mm;
+    margin-top: 5mm;
     padding: 3mm 4mm;
     text-transform: uppercase;
   }
 
   .cv-print-info-grid {
     display: grid;
-    gap: 3mm;
+    gap: 2.5mm;
     grid-template-columns: repeat(4, 1fr);
-    margin-top: 6mm;
+    margin-top: 5mm;
   }
 
   .cv-print-info-grid div {
@@ -469,7 +469,7 @@ body {
   }
 
   .cv-print-section {
-    margin-top: 6mm;
+    margin-top: 5mm;
   }
 
   .cv-print-section h2 {
@@ -490,9 +490,9 @@ body {
 
   .cv-print-two-col {
     display: grid;
-    gap: 7mm;
+    gap: 6mm;
     grid-template-columns: 1fr 1fr;
-    margin-top: 6mm;
+    margin-top: 5mm;
   }
 
   .cv-print-section ul {
@@ -507,12 +507,24 @@ body {
     margin-bottom: 1.8mm;
   }
 
+  .crew-cv-print-sheet .crew-demo-id-portrait-shell {
+    align-items: center !important;
+    display: flex !important;
+    width: 32mm !important;
+  }
+
   .crew-cv-print-sheet .crew-demo-id-portrait,
   .crew-cv-print-sheet figure {
     border-radius: 5mm !important;
     box-shadow: none !important;
     height: 40mm !important;
     width: 32mm !important;
+  }
+
+  .crew-cv-print-sheet .crew-demo-id-portrait img {
+    height: 100% !important;
+    object-fit: cover !important;
+    width: 100% !important;
   }
 
   .crew-print-screen {
