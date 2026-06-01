@@ -10,22 +10,15 @@ import {
   findCrewById,
   generateDemoCrewCv,
   getCrewFullName,
-  slugify,
 } from "../../../../../../src/lib/demo_crew_cv.mjs";
+import {
+  findVesselBySlug,
+  getCanonicalVesselSlug,
+} from "../../../../../../src/lib/vessel_lookup.mjs";
 
 function getCvVessel(vesselId: string) {
   const state = getInitialAppState();
-  const requestedId = slugify(vesselId);
-  const vessel = Array.isArray(state.vessels)
-    ? state.vessels.find((item) => {
-        const vesselItem = item as any;
-        const candidates = [vesselItem?.id, vesselItem?.slug, vesselItem?.name, vesselItem?.displayName]
-          .map((value) => slugify(value || ""))
-          .filter(Boolean);
-
-        return candidates.includes(requestedId);
-      })
-    : null;
+  const vessel = findVesselBySlug(state.vessels, vesselId);
 
   return vessel ? normalizeFleetVessel(vessel, vesselId) : null;
 }
@@ -58,6 +51,9 @@ export default async function CrewCvPage(
           <p className="mt-3 text-slate-300">
             This demo CV link does not match an available vessel workspace.
           </p>
+          <pre className="mt-4 overflow-x-auto rounded-2xl bg-black/30 p-4 text-xs text-slate-300">
+            Requested vessel slug: {vesselId}
+          </pre>
           <Link href="/vessels/contessa" className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
             Back to Contessa
           </Link>
@@ -67,6 +63,7 @@ export default async function CrewCvPage(
   }
 
   const person = findCrewById(vessel, crewId);
+  const canonicalVesselSlug = getCanonicalVesselSlug(vessel);
 
   if (!person) {
     return (
@@ -76,7 +73,10 @@ export default async function CrewCvPage(
           <p className="mt-3 text-slate-300">
             This demo CV link does not match a crew member in {vessel.name}.
           </p>
-          <Link href={`/vessels/${vesselId}`} className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+          <pre className="mt-4 overflow-x-auto rounded-2xl bg-black/30 p-4 text-xs text-slate-300">
+            Requested crew id: {crewId}
+          </pre>
+          <Link href={`/vessels/${canonicalVesselSlug}`} className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
             Back to vessel
           </Link>
         </div>
@@ -91,7 +91,7 @@ export default async function CrewCvPage(
       <div className="mx-auto max-w-4xl">
         <div className="no-print mb-5 flex items-center justify-between gap-3">
           <Link
-            href={`/vessels/${vesselId}`}
+            href={`/vessels/${canonicalVesselSlug}`}
             className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
           >
             Back to vessel

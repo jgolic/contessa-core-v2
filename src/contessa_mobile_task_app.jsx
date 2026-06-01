@@ -99,6 +99,7 @@ import {
   setStoredJson,
 } from "./lib/browser_storage.mjs";
 import { getCrewId } from "./lib/demo_crew_cv.mjs";
+import { getCanonicalVesselSlug } from "./lib/vessel_lookup.mjs";
 
 const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
 
@@ -1236,6 +1237,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const crewCvResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => {
       const crewName = profile?.fullName || profile?.name || "Crew member";
       const crewRouteId = getCrewId(profile);
+      const vesselSlug = getCanonicalVesselSlug(activeVesselWorkspace || activeVesselId);
       return {
         id: `command-crew-cv-${profile?.id || crewRouteId}`,
         type: "Crew CV",
@@ -1245,7 +1247,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         sectionId: "crew-section",
         moduleName: "crew-certificates",
         options: { panel: "crew" },
-        href: `/vessels/${activeVesselId}/crew/${crewRouteId}/cv`,
+        href: `/vessels/${vesselSlug}/crew/${crewRouteId}/cv`,
         action: "crew-cv",
         item: profile,
         searchText: buildCommandSearchText([profile?.id, crewName, profile?.rank, profile?.department, "crew cv", "demo cv", "digital passport", vesselName]),

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { getCrewId } from "../../lib/demo_crew_cv.mjs";
+import { getCanonicalVesselSlug } from "../../lib/vessel_lookup.mjs";
 
 export function CrewCvQr({
   vesselSlug = "contessa",
@@ -11,7 +12,8 @@ export function CrewCvQr({
   primaryActionClass = "",
 }) {
   const crewRouteId = useMemo(() => getCrewId(person), [person]);
-  const relativeHref = `/vessels/${vesselSlug}/crew/${crewRouteId}/cv`;
+  const canonicalVesselSlug = useMemo(() => getCanonicalVesselSlug(vesselSlug), [vesselSlug]);
+  const relativeHref = `/vessels/${canonicalVesselSlug}/crew/${crewRouteId}/cv`;
   const [url, setUrl] = useState(relativeHref);
 
   useEffect(() => {
