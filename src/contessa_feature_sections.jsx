@@ -22,7 +22,6 @@ import {
 } from "./components/ui/select.jsx";
 import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
 import {
-  ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
   APP_LEGAL_COPY,
   APP_LEGAL_SHORT_COPY,
@@ -595,9 +594,11 @@ function ConfirmableTaskFields({
   task,
   darkMode = false,
   canEdit = true,
+  assigneeOptions = [],
   onConfirm,
 }) {
   const theme = themeClasses(darkMode);
+  const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
   const [draft, setDraft] = useState({
     assignee: task.assignee || "",
     department: task.department || "General",
@@ -625,12 +626,13 @@ function ConfirmableTaskFields({
   return (
     <div className={`mb-5 rounded-lg p-4 ${theme.subtle}`}>
       <div className="grid gap-3 md:grid-cols-2">
-        <Input
+        <SearchableSelect
+          label="Assignee"
           disabled={!canEdit}
           value={draft.assignee}
-          onChange={(event) => setDraft((prev) => ({ ...prev, assignee: event.target.value }))}
-          placeholder="Assignee"
-          className={`rounded-lg h-12 ${theme.input}`}
+          options={scopedAssigneeOptions}
+          placeholder={scopedAssigneeOptions.length ? "Select crew member" : "No crew for this vessel"}
+          onChange={(value) => setDraft((prev) => ({ ...prev, assignee: value }))}
         />
         <Select value={draft.department} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, department: value }))}>
           <SelectTrigger className={`rounded-lg h-12 ${theme.input}`}>
@@ -719,6 +721,7 @@ export function ObjectivesView({
   onUpdateQuote,
   onQuoteReceiptUpload,
   onQuoteRemoveRequest,
+  assigneeOptions = [],
 }) {
   const theme = themeClasses(darkMode);
   const filterTabs = buildObjectivesFilterTabs(stats, statusFilter);
@@ -763,6 +766,7 @@ export function ObjectivesView({
     },
   ];
   const visibleTasks = Array.isArray(filteredTasks) ? filteredTasks : [];
+  const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
 
   return (
     <>
@@ -808,16 +812,13 @@ export function ObjectivesView({
                     ))}
                   </datalist>
                 </div>
-                <Select value={newTask.assignee} onValueChange={(value) => onNewTaskChange({ assignee: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ASSIGNEE_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  label="Assigned To"
+                  value={newTask.assignee}
+                  options={scopedAssigneeOptions}
+                  placeholder={scopedAssigneeOptions.length ? "Select crew member" : "No crew for this vessel"}
+                  onChange={(value) => onNewTaskChange({ assignee: value })}
+                />
                 <Select value={newTask.department} onValueChange={(value) => onNewTaskChange({ department: value })}>
                   <SelectTrigger className={`h-12 ${theme.input}`}>
                     <SelectValue />
@@ -2553,7 +2554,7 @@ export function TaskDetails({
         </div>
       </div>
 
-      <ConfirmableTaskFields task={selectedTask} darkMode={darkMode} canEdit={canEdit} onConfirm={onUpdateTask} />
+      <ConfirmableTaskFields task={selectedTask} darkMode={darkMode} canEdit={canEdit} assigneeOptions={scopedAssigneeOptions} onConfirm={onUpdateTask} />
 
       <div className="mb-5 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <div className={`rounded-lg p-4 ${theme.subtle}`}>

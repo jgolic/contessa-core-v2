@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
-  ASSIGNEE_OPTIONS,
   APP_FOOTER_NOTICE,
   buildBoatExpenseSummaryItems,
   buildTodayOperationsSnapshot,
@@ -41,6 +40,9 @@ import {
   formatVesselNameFromId,
   formatMoney,
   getConfiguredPublicAppUrlEnvValue,
+  findCrewByName,
+  getCrewDisplayName,
+  getCrewOptionsForVessel,
   getInitialAppState,
   getNextFleetTheme,
   getVesselStateMoodForMode,
@@ -64,6 +66,7 @@ import {
   themeClasses,
   titleCase,
   todayDateString,
+  validateAssignedCrewBelongsToVessel,
 } from "./contessa_app_data.mjs";
 import {
   createEmptyCertificateDraft,
@@ -193,6 +196,21 @@ const ExpensesView = dynamic(
   { loading: () => <DeferredFeatureFallback /> }
 );
 
+function createEmptyTaskDraft(vessel = {}) {
+  const firstCrew = getCrewOptionsForVessel(vessel)[0]?.value || "";
+  return {
+    name: "",
+    area: "",
+    department: TASK_DEPARTMENT_OPTIONS[0],
+    status: "pending",
+    priority: "medium",
+    assignee: firstCrew,
+    assignedCrewId: null,
+    dueDate: "",
+    notes: "",
+  };
+}
+
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
   const initialAppState = useMemo(() => {
     const state = getInitialAppState();
@@ -254,7 +272,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [newMaintenanceOpen, setNewMaintenanceOpen] = useState(false);
   const [maintenanceError, setMaintenanceError] = useState("");
   const [appBanner, setAppBanner] = useState(null);
-  const [newTask, setNewTask] = useState({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
+  const [newTask, setNewTask] = useState(() => createEmptyTaskDraft(initialActiveWorkspace));
   const [newExpense, setNewExpense] = useState({ taskId: initialActiveWorkspace.tasks?.[0]?.id ?? "", supplier: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewExpense, setNewCrewExpense] = useState({ title: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewProfile, setNewCrewProfile] = useState({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", passportNumber: "", seamansBookNumber: "", roleKey: "captain", notes: "" });
@@ -342,6 +360,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       activeVesselId
     );
   }, [vessels, activeVesselId, vesselProfile, documents, tasks, history, declinedTasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning]);
+  const currentCrewOptions = useMemo(() => getCrewOptionsForVessel(activeVesselWorkspace), [activeVesselWorkspace]);
+  const currentCrewNames = useMemo(() => currentCrewOptions.map((crew) => crew.value), [currentCrewOptions]);
   const activeVesselState = useMemo(() => {
     const baseState = normalizeVesselState(activeVesselWorkspace?.vesselState, activeVesselId);
     const modeOverride = vesselStateModes[activeVesselId];
@@ -355,6 +375,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       confidenceScore,
     };
   }, [activeVesselWorkspace, activeVesselId, vesselStateModes]);
+  useEffect(() => {
+    setNewTask(createEmptyTaskDraft(activeVesselWorkspace));
+  }, [activeVesselId]);
   const handleVesselStateModeChange = (mode) => {
     const mood = getVesselStateMoodForMode(mode);
     setVesselStateModes((prev) => ({ ...prev, [activeVesselId]: mode }));
@@ -1370,7 +1393,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setExpenseBucket("boat");
     setTasksMaintenancePanel("tasks");
     setCrewCertificatesPanel("crew");
-    setNewTask({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
+    setNewTask(createEmptyTaskDraft({ ...vesselWorkspace, crewProfiles: nextCrewProfiles, workers: nextCrewProfiles }));
     setNewExpense({ taskId: nextTasks[0]?.id ?? "", supplier: "", amount: 0, currency: nextCurrency, status: "requested" });
     setNewCrewExpense({ title: "", amount: 0, currency: nextCurrency, status: "requested" });
     setNewCrewProfile({ fullName: "", rank: CREW_RANK_OPTIONS[0], department: CREW_DEPARTMENT_OPTIONS[0], nationality: "", passportNumber: "", seamansBookNumber: "", roleKey: "captain", notes: "" });
@@ -1520,8 +1543,27 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const updateTask = (taskId, patch) => {
     if (!requireAdminEdit("Updating tasks")) return;
     const task = tasks.find((item) => item.id === taskId);
-    logChange("Objectives", "Task updated", `${task?.name || taskId}: ${describePatch(patch)}`);
-    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...patch } : task)));
+    const nextPatch = { ...patch };
+
+    if (Object.prototype.hasOwnProperty.call(nextPatch, "assignee")) {
+      const requestedAssignee = String(nextPatch.assignee || "").trim();
+      if (requestedAssignee && !validateAssignedCrewBelongsToVessel(activeVesselWorkspace, requestedAssignee)) {
+        setAppBanner({
+          type: "error",
+          title: "Crew assignment blocked",
+          message: "Assigned crew must belong to the current vessel workspace.",
+        });
+        return;
+      }
+
+      const assignedCrew = findCrewByName(activeVesselWorkspace, requestedAssignee);
+      nextPatch.assignee = assignedCrew ? getCrewDisplayName(assignedCrew) : requestedAssignee || "Unassigned";
+      nextPatch.assignedCrewId = assignedCrew?.id || null;
+      nextPatch.vesselSlug = task?.vesselSlug || activeVesselId;
+    }
+
+    logChange("Objectives", "Task updated", `${task?.name || taskId}: ${describePatch(nextPatch)}`);
+    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...nextPatch } : task)));
   };
 
   const updateQuote = (taskId, quoteId, patch) => {
@@ -1793,15 +1835,30 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const name = newTask.name.trim();
     const area = newTask.area.trim();
     if (!name || !area) return;
+    const requestedAssignee = String(newTask.assignee || "").trim();
+
+    if (requestedAssignee && !validateAssignedCrewBelongsToVessel(activeVesselWorkspace, requestedAssignee)) {
+      setAppBanner({
+        type: "error",
+        title: "Crew assignment blocked",
+        message: "Assigned crew must belong to the current vessel workspace.",
+      });
+      setNewTask((prev) => ({ ...prev, assignee: currentCrewOptions[0]?.value || "", assignedCrewId: null }));
+      return;
+    }
+
+    const assignedCrew = findCrewByName(activeVesselWorkspace, requestedAssignee);
 
     const task = {
       id: createNextTaskId(tasks),
+      vesselSlug: activeVesselId,
       name,
       area,
       department: TASK_DEPARTMENT_OPTIONS.includes(newTask.department) ? newTask.department : TASK_DEPARTMENT_OPTIONS[0],
       status: STATUS_OPTIONS.includes(newTask.status) ? newTask.status : "pending",
       priority: PRIORITY_OPTIONS.includes(newTask.priority) ? newTask.priority : "medium",
-      assignee: newTask.assignee.trim() || "Unassigned",
+      assignee: assignedCrew ? getCrewDisplayName(assignedCrew) : requestedAssignee || "Unassigned",
+      assignedCrewId: assignedCrew?.id || null,
       dueDate: newTask.dueDate,
       notes: newTask.notes.trim(),
       photos: [],
@@ -1814,7 +1871,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setTasks((prev) => [task, ...prev]);
     logChange("Objectives", "Task added", `${task.name} added in ${task.area}.`);
     setSelectedId(task.id);
-    setNewTask({ name: "", area: "", department: TASK_DEPARTMENT_OPTIONS[0], status: "pending", priority: "medium", assignee: ASSIGNEE_OPTIONS[0], dueDate: "", notes: "" });
+    setNewTask(createEmptyTaskDraft(activeVesselWorkspace));
     setNewTaskOpen(false);
     setAppBanner({ type: "success", title: "Task added", message: `${task.name} was created in ${task.area}.` });
   };
@@ -2949,6 +3006,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onUpdateQuote={(taskId, quoteId, patch) => updateQuote(taskId, quoteId, patch.amount !== undefined ? { ...patch, amount: parseAmountInput(patch.amount) } : patch)}
               onQuoteReceiptUpload={handleReceiptUpload}
               onQuoteRemoveRequest={setQuoteDeleteRequest}
+              assigneeOptions={currentCrewNames}
             /></div>}
             maintenanceView={<div id="maintenance-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"><MaintenanceView
               darkMode={darkMode}

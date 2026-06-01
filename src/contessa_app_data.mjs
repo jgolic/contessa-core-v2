@@ -61,6 +61,76 @@ export const VESSEL_STATE_MODE_OPTIONS = [
   { value: "standby", label: "Standby" },
   { value: "critical", label: "Critical" },
 ];
+
+export function getCrewDisplayName(person = {}) {
+  return (
+    person.name ||
+    person.fullName ||
+    [person.firstName, person.lastName].filter(Boolean).join(" ") ||
+    ""
+  ).trim();
+}
+
+function getCrewRoleLabel(person = {}) {
+  return person.position || person.title || person.rank || person.role || "Crew";
+}
+
+function getScopedCrewList(vessel = {}) {
+  if (Array.isArray(vessel?.crew)) return vessel.crew;
+  if (Array.isArray(vessel?.crewProfiles)) return vessel.crewProfiles;
+  if (Array.isArray(vessel?.workers)) return vessel.workers;
+  return [];
+}
+
+function normalizeCrewMatchValue(value = "") {
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+export function getCrewOptionsForVessel(vessel = {}) {
+  return getScopedCrewList(vessel)
+    .map((person) => {
+      const label = getCrewDisplayName(person) || "Unnamed crew";
+      return {
+        id: person.id || label,
+        label,
+        value: label,
+        role: getCrewRoleLabel(person),
+        department: person.department || "General",
+      };
+    })
+    .filter((option) => option.value);
+}
+
+export function findCrewByName(vessel = {}, assignedTo = "") {
+  const normalizedAssignedTo = normalizeCrewMatchValue(assignedTo);
+  if (!normalizedAssignedTo) return null;
+
+  return getScopedCrewList(vessel).find((person) => {
+    const name = getCrewDisplayName(person);
+    const role = getCrewRoleLabel(person);
+    const normalizedName = normalizeCrewMatchValue(name);
+    const normalizedRoleName = normalizeCrewMatchValue(`${role} ${name}`);
+    return normalizedAssignedTo === normalizedName || normalizedAssignedTo === normalizedRoleName || normalizedAssignedTo === normalizeCrewMatchValue(person.id);
+  }) || null;
+}
+
+export function validateAssignedCrewBelongsToVessel(vessel = {}, assignedTo = "") {
+  if (!String(assignedTo || "").trim()) return true;
+  return Boolean(findCrewByName(vessel, assignedTo));
+}
+
+export function getVesselScopedOptions(currentVessel = {}) {
+  return {
+    crew: getScopedCrewList(currentVessel),
+    tasks: Array.isArray(currentVessel?.tasks) ? currentVessel.tasks : [],
+    maintenance: Array.isArray(currentVessel?.maintenanceItems) ? currentVessel.maintenanceItems : Array.isArray(currentVessel?.maintenance) ? currentVessel.maintenance : [],
+    approvals: Array.isArray(currentVessel?.approvals) ? currentVessel.approvals : [],
+    expenses: Array.isArray(currentVessel?.expenses) ? currentVessel.expenses : Array.isArray(currentVessel?.crewExpenses) ? currentVessel.crewExpenses : [],
+    documents: Array.isArray(currentVessel?.documents) ? currentVessel.documents : [],
+    certificates: Array.isArray(currentVessel?.certificates) ? currentVessel.certificates : [],
+    route: currentVessel?.route || currentVessel?.routePlanning || null,
+  };
+}
 export const PAYMENT_OPTIONS = ["unpaid", "paid"];
 export const REJECTION_HOLD_MS = 24 * 60 * 60 * 1000;
 export const DECLINED_HOLD_MS = 10 * 60 * 1000;
