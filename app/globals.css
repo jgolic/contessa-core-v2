@@ -310,6 +310,10 @@ body {
   text-transform: uppercase;
 }
 
+.print-only {
+  display: none;
+}
+
 @media screen and (max-width: 768px) {
   .crew-print-screen .no-print {
     padding: 18px 10px 0;
@@ -363,6 +367,152 @@ body {
 
   .no-print {
     display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .crew-cv-print-sheet,
+  .crew-cv-print-sheet * {
+    visibility: visible !important;
+  }
+
+  .crew-cv-print-sheet {
+    background: #ffffff !important;
+    box-sizing: border-box;
+    break-after: avoid !important;
+    break-before: avoid !important;
+    color: #071a3a !important;
+    font-family: Arial, sans-serif !important;
+    height: 297mm !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    padding: 14mm 16mm !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    position: fixed !important;
+    width: 210mm !important;
+  }
+
+  .cv-print-header {
+    align-items: flex-start;
+    border-bottom: 1.5px solid #071a3a;
+    display: flex;
+    gap: 10mm;
+    justify-content: space-between;
+    padding-bottom: 8mm;
+  }
+
+  .cv-print-kicker {
+    color: #42526b;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    margin: 0 0 4mm;
+    text-transform: uppercase;
+  }
+
+  .cv-print-header h1 {
+    color: #071a3a;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  .cv-print-header p {
+    color: #42526b;
+    font-size: 12px;
+    margin: 2mm 0 0;
+  }
+
+  .cv-print-demo-warning {
+    background: #fff7ed;
+    border: 1px solid rgba(180, 83, 9, 0.35);
+    color: #92400e;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-top: 6mm;
+    padding: 3mm 4mm;
+    text-transform: uppercase;
+  }
+
+  .cv-print-info-grid {
+    display: grid;
+    gap: 3mm;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 6mm;
+  }
+
+  .cv-print-info-grid div {
+    border: 1px solid rgba(7, 26, 58, 0.14);
+    padding: 3mm;
+  }
+
+  .cv-print-info-grid span {
+    color: #64748b;
+    display: block;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .cv-print-info-grid strong {
+    color: #071a3a;
+    display: block;
+    font-size: 10px;
+    margin-top: 2mm;
+  }
+
+  .cv-print-section {
+    margin-top: 6mm;
+  }
+
+  .cv-print-section h2 {
+    color: #071a3a;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    margin: 0 0 2.5mm;
+    text-transform: uppercase;
+  }
+
+  .cv-print-section p {
+    color: #1f2937;
+    font-size: 10.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .cv-print-two-col {
+    display: grid;
+    gap: 7mm;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 6mm;
+  }
+
+  .cv-print-section ul {
+    margin: 0;
+    padding-left: 4mm;
+  }
+
+  .cv-print-section li {
+    color: #1f2937;
+    font-size: 10px;
+    line-height: 1.35;
+    margin-bottom: 1.8mm;
+  }
+
+  .crew-cv-print-sheet .crew-demo-id-portrait,
+  .crew-cv-print-sheet figure {
+    border-radius: 5mm !important;
+    box-shadow: none !important;
+    height: 40mm !important;
+    width: 32mm !important;
   }
 
   .crew-print-screen {
