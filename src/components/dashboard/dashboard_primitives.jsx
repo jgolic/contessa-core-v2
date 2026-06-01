@@ -238,7 +238,7 @@ export function CompactItemCard({
               </Badge>
             ))}
           </div>
-          <span className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 max-[430px]:w-full ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
+          <span className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-2xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 max-[430px]:w-full ${darkMode ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100 group-hover:border-cyan-300/60 group-hover:bg-cyan-300/25" : "border-blue-300 bg-blue-50 text-blue-800 group-hover:border-blue-400 group-hover:bg-blue-100 group-hover:text-blue-900"}`}>
             {actionLabel}
           </span>
         </div>

@@ -379,8 +379,16 @@ export function CrewView({
 }) {
   const theme = themeClasses(darkMode);
   const [crewListOpen, setCrewListOpen] = useState(false);
-  const primaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300/70 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition hover:border-blue-400 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100 dark:hover:bg-cyan-300/20";
-  const secondaryButtonClass = "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/15";
+  const primaryActionButton =
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-blue-300 bg-blue-50 text-blue-800 shadow-sm hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100 dark:hover:border-cyan-300/60 dark:hover:bg-cyan-300/25";
+  const secondaryActionButton =
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-slate-300 bg-white text-slate-800 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-slate-700";
+  const smallOpenButton =
+    "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border px-3.5 text-xs font-semibold transition-all duration-200 border-blue-300 bg-blue-50 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100 dark:hover:border-cyan-300/60 dark:hover:bg-cyan-300/25";
+  const crewCardClass =
+    "w-full rounded-3xl border p-4 text-left transition-all duration-200 border-slate-200 bg-white text-slate-950 shadow-sm hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10";
+  const crewCardSelectedClass =
+    "border-blue-400 bg-blue-50/70 shadow-[0_0_0_1px_rgba(59,130,246,0.35),0_18px_45px_rgba(59,130,246,0.12)] dark:border-cyan-300/60 dark:bg-cyan-300/12 dark:shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_20px_50px_rgba(34,211,238,0.18)]";
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -424,7 +432,7 @@ export function CrewView({
             <div className="grid min-w-0 gap-2 sm:grid-cols-2">
               {canEdit ? <Dialog open={newCrewProfileOpen} onOpenChange={onNewCrewProfileOpenChange}>
                 <DialogTrigger asChild>
-                  <Button className={`${primaryButtonClass} w-full sm:w-auto`}>
+                  <Button className={`${primaryActionButton} w-full sm:w-auto`}>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Crew
                   </Button>
@@ -461,7 +469,7 @@ export function CrewView({
                   type="button"
                   variant="outline"
                   onClick={() => setCrewListOpen(true)}
-                  className={`jump-highlight-target ${secondaryButtonClass} w-full sm:w-auto`}
+                  className={`jump-highlight-target ${secondaryActionButton} w-full sm:w-auto`}
                 >
                   Crew List
                 </Button>
@@ -494,15 +502,15 @@ export function CrewView({
                     window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
                     onSelectCrewProfile(profile.id);
                   }}
-                  className={`jump-highlight-target w-full rounded-2xl border px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 md:rounded-2xl ${selectedCrewProfile?.id === profile.id ? (darkMode ? "border-cyan-300/40 bg-cyan-300/10" : "border-blue-300 bg-blue-50/70") : darkMode ? "border-white/10 bg-white/[0.04] hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white hover:border-blue-300 hover:bg-blue-50/40"}`}
+                  className={`jump-highlight-target ${crewCardClass} ${selectedCrewProfile?.id === profile.id ? crewCardSelectedClass : ""}`}
                 >
                   <div className="flex min-w-0 flex-col gap-3 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
                     <div className="min-w-0">
-                      <p className={`truncate text-base font-semibold ${darkMode ? "text-slate-50" : "text-slate-950"}`}>{crewName}</p>
-                      <p className={`mt-1 truncate text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}>{position} &middot; {department}</p>
-                      <p className={`mt-2 text-xs font-medium ${darkMode ? "text-slate-400" : "text-slate-500"}`}>{certificateCount} certificate{certificateCount === 1 ? "" : "s"}</p>
+                      <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{crewName}</p>
+                      <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{position} &middot; {department}</p>
+                      <p className="mt-2 text-sm font-semibold text-slate-500 dark:text-slate-400">{certificateCount} certificate{certificateCount === 1 ? "" : "s"}</p>
                     </div>
-                    <span className="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">
+                    <span className={smallOpenButton}>
                       Open
                     </span>
                   </div>

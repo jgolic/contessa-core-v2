@@ -420,20 +420,20 @@ body.dark-mode .button-vessel-primary {
   min-height: 44px;
   gap: 0.5rem;
   border-radius: 1rem;
-  border: 1px solid rgba(203, 213, 225, 0.95);
-  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgb(203, 213, 225);
+  background: rgba(255, 255, 255, 0.96);
   color: #1e293b;
   padding: 0.625rem 1rem;
   font-size: 0.875rem;
   font-weight: 700;
-  box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.42);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .app-action-button:hover {
-  border-color: rgba(147, 197, 253, 0.95);
-  background: rgba(239, 246, 255, 0.92);
-  color: #1d4ed8;
-  box-shadow: 0 16px 30px -22px rgba(37, 99, 235, 0.42);
+  border-color: rgb(147, 197, 253);
+  background: rgb(239, 246, 255);
+  color: #1e40af;
+  box-shadow: 0 8px 18px -14px rgba(37, 99, 235, 0.50);
   transform: translateY(-1px);
 }
 
@@ -441,19 +441,20 @@ body.dark-mode .button-vessel-primary {
   min-height: 44px;
   gap: 0.5rem;
   border-radius: 1rem;
-  border: 1px solid rgba(147, 197, 253, 0.95);
-  background: rgba(239, 246, 255, 0.92);
+  border: 1px solid rgb(147, 197, 253);
+  background: rgb(239, 246, 255);
   color: #1e40af;
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 700;
-  box-shadow: 0 14px 30px -22px rgba(37, 99, 235, 0.46);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.10);
 }
 
 .app-primary-action-button:hover {
-  border-color: rgba(96, 165, 250, 1);
-  background: rgba(219, 234, 254, 0.96);
-  box-shadow: 0 18px 36px -24px rgba(37, 99, 235, 0.5);
+  border-color: rgb(96, 165, 250);
+  background: rgb(219, 234, 254);
+  color: #1e3a8a;
+  box-shadow: 0 8px 20px -14px rgba(37, 99, 235, 0.52);
   transform: translateY(-1px);
 }
 
@@ -477,9 +478,10 @@ body.dark-mode .button-vessel-primary {
 }
 
 .module-row-action {
-  border-color: rgba(203, 213, 225, 0.95) !important;
-  background: rgba(255, 255, 255, 0.86) !important;
+  border-color: rgb(203, 213, 225) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
   color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
 }
 
 .module-row--tasks,
@@ -551,7 +553,7 @@ body.dark-mode .button-vessel-primary {
 body.dark-mode .app-action-button,
 .dark .app-action-button {
   border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgb(30, 41, 59);
   color: #f1f5f9;
   box-shadow: 0 14px 30px -24px rgba(0, 0, 0, 0.7);
 }
@@ -567,7 +569,7 @@ body.dark-mode .app-action-button:hover,
 body.dark-mode .app-primary-action-button,
 .dark .app-primary-action-button {
   border-color: rgba(103, 232, 249, 0.4);
-  background: rgba(103, 232, 249, 0.12);
+  background: rgba(103, 232, 249, 0.15);
   color: #cffafe;
   box-shadow: 0 16px 34px -24px rgba(34, 211, 238, 0.38);
 }
