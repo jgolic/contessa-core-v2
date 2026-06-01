@@ -16,6 +16,7 @@ import {
   findVesselBySlug,
   getCanonicalVesselSlug,
 } from "../lib/vessel_lookup.mjs";
+import PirateCrewAvatar from "../components/PirateCrewAvatar";
 import { CrewCvPrintButton } from "./crew-cv-print-button";
 
 function getClientVessel(vesselId = "") {
@@ -116,16 +117,27 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
           </div>
 
           <header className="mt-8 border-b border-slate-200 pb-8 dark:border-white/10">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">
-              Crew Digital Passport
-            </p>
-            <h1 className="mt-3 font-serif text-4xl font-semibold tracking-[0.06em] text-[#071A3A] dark:text-slate-50 sm:text-5xl">
-              {cv.name}
-            </h1>
-            <p className="mt-3 text-lg font-semibold text-slate-700 dark:text-slate-300">
-              {cv.position} · {cv.department}
-            </p>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{cv.vesselName}</p>
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">
+                  Crew Digital Passport
+                </p>
+                <h1 className="mt-3 font-serif text-4xl font-semibold tracking-[0.06em] text-[#071A3A] dark:text-slate-50 sm:text-5xl">
+                  {cv.name}
+                </h1>
+                <p className="mt-3 text-lg font-semibold text-slate-700 dark:text-slate-300">
+                  {cv.position} &middot; {cv.department}
+                </p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{cv.vesselName}</p>
+                <p className="mt-4 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100">
+                  Playful demo avatar - not an official passport image
+                </p>
+              </div>
+
+              <div className="shrink-0 self-center sm:self-start">
+                <PirateCrewAvatar person={person} size={164} />
+              </div>
+            </div>
           </header>
 
           <section className="mt-8 grid gap-4 sm:grid-cols-2">
