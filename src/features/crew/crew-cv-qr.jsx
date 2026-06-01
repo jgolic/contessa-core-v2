@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { getCrewCvRouteId } from "../../lib/demo_crew_cv.mjs";
+import { getCrewId } from "../../lib/demo_crew_cv.mjs";
 
 export function CrewCvQr({
   vesselSlug = "contessa",
@@ -10,7 +10,7 @@ export function CrewCvQr({
   darkMode = false,
   primaryActionClass = "",
 }) {
-  const crewRouteId = useMemo(() => getCrewCvRouteId(person), [person]);
+  const crewRouteId = useMemo(() => getCrewId(person), [person]);
   const relativeHref = `/vessels/${vesselSlug}/crew/${crewRouteId}/cv`;
   const [url, setUrl] = useState(relativeHref);
 
@@ -45,6 +45,16 @@ export function CrewCvQr({
         className={`${primaryActionClass || "inline-flex min-h-11 items-center justify-center rounded-2xl border border-blue-300 bg-blue-50 px-4 text-sm font-semibold text-blue-800"} mt-4 w-full`}
       >
         View Demo CV
+      </a>
+
+      <a
+        href={relativeHref}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-3 block max-w-full truncate text-xs font-semibold text-blue-700 dark:text-cyan-200"
+        title={relativeHref}
+      >
+        {relativeHref}
       </a>
     </div>
   );

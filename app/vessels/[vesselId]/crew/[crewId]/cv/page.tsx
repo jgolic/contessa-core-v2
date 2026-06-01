@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { CrewCvPrintButton } from "../../../../../../src/next-shell/crew-cv-print-button";
 import {
   formatVesselNameFromId,
@@ -8,36 +7,27 @@ import {
   normalizeFleetVessel,
 } from "../../../../../../src/contessa_app_data.mjs";
 import {
+  findCrewById,
   generateDemoCrewCv,
-  getCrewCvRouteId,
   getCrewFullName,
   slugify,
 } from "../../../../../../src/lib/demo_crew_cv.mjs";
 
 function getCvVessel(vesselId: string) {
   const state = getInitialAppState();
+  const requestedId = slugify(vesselId);
   const vessel = Array.isArray(state.vessels)
-    ? state.vessels.find((item) => item?.id === vesselId)
+    ? state.vessels.find((item) => {
+        const vesselItem = item as any;
+        const candidates = [vesselItem?.id, vesselItem?.slug, vesselItem?.name, vesselItem?.displayName]
+          .map((value) => slugify(value || ""))
+          .filter(Boolean);
+
+        return candidates.includes(requestedId);
+      })
     : null;
 
   return vessel ? normalizeFleetVessel(vessel, vesselId) : null;
-}
-
-function getCrewList(vessel: any) {
-  if (Array.isArray(vessel?.crew)) return vessel.crew;
-  if (Array.isArray(vessel?.crewProfiles)) return vessel.crewProfiles;
-  if (Array.isArray(vessel?.workers)) return vessel.workers;
-  return [];
-}
-
-function findCrewMember(vessel: any, crewId: string) {
-  const requestedId = slugify(crewId);
-  return getCrewList(vessel).find((member: any) => {
-    const storedId = slugify(member?.id || "");
-    const nameId = getCrewCvRouteId(member);
-    const fullNameId = slugify(getCrewFullName(member));
-    return [storedId, nameId, fullNameId].filter(Boolean).includes(requestedId);
-  });
 }
 
 export async function generateMetadata(
@@ -45,7 +35,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { vesselId, crewId } = await params;
   const vessel = getCvVessel(vesselId);
-  const person = vessel ? findCrewMember(vessel, crewId) : null;
+  const person = vessel ? findCrewById(vessel, crewId) : null;
   const vesselName = vessel?.name || formatVesselNameFromId(vesselId);
   const crewName = person ? getCrewFullName(person) : "Crew";
 
@@ -61,10 +51,22 @@ export default async function CrewCvPage(
   const vessel = getCvVessel(vesselId);
 
   if (!vessel) {
-    notFound();
+    return (
+      <main className="min-h-screen bg-slate-950 p-6 text-white">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <h1 className="text-2xl font-semibold">Vessel not found</h1>
+          <p className="mt-3 text-slate-300">
+            This demo CV link does not match an available vessel workspace.
+          </p>
+          <Link href="/vessels/contessa" className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+            Back to Contessa
+          </Link>
+        </div>
+      </main>
+    );
   }
 
-  const person = findCrewMember(vessel, crewId);
+  const person = findCrewById(vessel, crewId);
 
   if (!person) {
     return (

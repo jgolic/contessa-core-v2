@@ -27,6 +27,34 @@ export function getCrewCvRouteId(person = {}) {
   return slugify(getCrewFullName(person) || person.id || "crew");
 }
 
+export function getCrewId(person = {}) {
+  return getCrewCvRouteId(person);
+}
+
+export function getCrewListForVessel(vessel = {}) {
+  if (Array.isArray(vessel?.crew)) return vessel.crew;
+  if (Array.isArray(vessel?.crewProfiles)) return vessel.crewProfiles;
+  if (Array.isArray(vessel?.workers)) return vessel.workers;
+  return [];
+}
+
+export function findCrewById(vessel = {}, crewId = "") {
+  const requestedId = slugify(crewId);
+  if (!requestedId) return null;
+
+  return (
+    getCrewListForVessel(vessel).find((person) => {
+      const routeId = getCrewId(person);
+      const storedId = slugify(person?.id || "");
+      const nameId = slugify(getCrewFullName(person));
+
+      return [routeId, storedId, nameId, storedId.replace(/^crew-/, "")]
+        .filter(Boolean)
+        .includes(requestedId);
+    }) || null
+  );
+}
+
 const roleProfiles = {
   Captain: {
     summary:

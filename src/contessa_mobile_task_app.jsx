@@ -98,7 +98,7 @@ import {
   removeStoredKey,
   setStoredJson,
 } from "./lib/browser_storage.mjs";
-import { getCrewCvRouteId } from "./lib/demo_crew_cv.mjs";
+import { getCrewId } from "./lib/demo_crew_cv.mjs";
 
 const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
 
@@ -1235,7 +1235,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     const crewCvResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => {
       const crewName = profile?.fullName || profile?.name || "Crew member";
-      const crewRouteId = getCrewCvRouteId(profile);
+      const crewRouteId = getCrewId(profile);
       return {
         id: `command-crew-cv-${profile?.id || crewRouteId}`,
         type: "Crew CV",
