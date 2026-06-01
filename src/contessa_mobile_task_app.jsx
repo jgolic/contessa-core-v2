@@ -98,6 +98,7 @@ import {
   removeStoredKey,
   setStoredJson,
 } from "./lib/browser_storage.mjs";
+import { getCrewCvRouteId } from "./lib/demo_crew_cv.mjs";
 
 const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
 
@@ -1232,6 +1233,25 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       searchText: buildCommandSearchText([profile?.id, profile?.fullName, profile?.rank, profile?.department, profile?.notes, "crew readiness certificates"]),
     }));
 
+    const crewCvResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => {
+      const crewName = profile?.fullName || profile?.name || "Crew member";
+      const crewRouteId = getCrewCvRouteId(profile);
+      return {
+        id: `command-crew-cv-${profile?.id || crewRouteId}`,
+        type: "Crew CV",
+        title: `${crewName} CV`,
+        context: [`Demo CV`, profile?.rank || profile?.position || "Crew", vesselName].filter(Boolean).join(" · "),
+        targetId: profile?.id ? `item-${profile.id}` : "crew-section",
+        sectionId: "crew-section",
+        moduleName: "crew-certificates",
+        options: { panel: "crew" },
+        href: `/vessels/${activeVesselId}/crew/${crewRouteId}/cv`,
+        action: "crew-cv",
+        item: profile,
+        searchText: buildCommandSearchText([profile?.id, crewName, profile?.rank, profile?.department, "crew cv", "demo cv", "digital passport", vesselName]),
+      };
+    });
+
     const documentResults = (Array.isArray(documents) ? documents : []).map((document) => ({
       id: `command-document-${document?.id || document?.title}`,
       type: "Document",
@@ -1244,11 +1264,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       searchText: buildCommandSearchText([document?.id, document?.title, document?.name, document?.category, document?.type, document?.status, "documents docs vault"]),
     }));
 
-    return [...sectionResults, ...itemResults, ...crewResults, ...documentResults].map((result) => ({
+    return [...sectionResults, ...itemResults, ...crewResults, ...crewCvResults, ...documentResults].map((result) => ({
       ...result,
       searchText: result.searchText || buildCommandSearchText([result.id, result.type, result.title, result.context]),
     }));
-  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents, activeVesselState]);
+  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents, activeVesselState, activeVesselId]);
 
   const handleCommandSearchJump = (result) => {
     if (!result) return;
@@ -1264,6 +1284,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         window.setTimeout(() => {
           window.dispatchEvent(new CustomEvent("contessa:open-crew-list"));
         }, 260);
+      }
+      return;
+    }
+
+    if (result.action === "crew-cv" && result.href) {
+      if (typeof window !== "undefined") {
+        window.open(result.href, "_blank", "noopener,noreferrer");
       }
       return;
     }
@@ -3038,6 +3065,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onCurrentRoleChange={setCurrentRole}
               actorName={actorName}
               canViewCrew={canAccessModule(effectiveRole, "crew")}
+              vesselSlug={activeVesselId}
               visibleCrewProfiles={visibleCrewProfiles}
               selectedCrewProfile={selectedCrewProfile}
               onSelectCrewProfile={setSelectedCrewId}

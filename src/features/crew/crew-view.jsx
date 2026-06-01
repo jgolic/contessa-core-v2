@@ -33,6 +33,7 @@ import {
 } from "../../contessa_certificate_extraction.mjs";
 import { ROLE_OPTIONS } from "../../contessa_access.mjs";
 import { CertificateExtractionPanel, CertificateReviewFields } from "../../components/certificate_extraction_panel.jsx";
+import { CrewCvQr } from "./crew-cv-qr.jsx";
 
 /**
  * @typedef {import("../../lib/contessa-types").CrewProfileRecord} CrewProfileRecord
@@ -353,6 +354,7 @@ export function CrewView({
   darkMode = false,
   canEdit = true,
   canViewCrew = false,
+  vesselSlug = "contessa",
   visibleCrewProfiles,
   selectedCrewProfile,
   onSelectCrewProfile,
@@ -546,10 +548,12 @@ export function CrewView({
                     <Badge className="vessel-pill">{selectedCrewProfile.certificates?.length || 0} certificates</Badge>
                   </div>
                 </div>
-                <div className={`rounded-[22px] border p-4 text-sm md:rounded-xl ${darkMode ? "border-[#284038] bg-[#0f1715]/92" : "border-white/80 bg-white/84"}`}>
-                  <div className="app-kicker">QR Placeholder</div>
-                  <div className={`mt-2 leading-6 ${theme.textSecondary}`}>{selectedCrewProfile.qrPlaceholder}</div>
-                </div>
+                <CrewCvQr
+                  vesselSlug={vesselSlug}
+                  person={selectedCrewProfile}
+                  darkMode={darkMode}
+                  primaryActionClass={primaryActionButton}
+                />
               </div>
 
               <ConfirmableCrewProfileFields profile={selectedCrewProfile} darkMode={darkMode} canEdit={canEdit} onConfirm={onUpdateCrewProfile} />

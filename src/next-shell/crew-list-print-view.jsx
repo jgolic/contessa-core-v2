@@ -52,6 +52,7 @@ function getCrewPrintPosition(person = {}) {
 }
 
 export function CrewListPrintView({ vessel }) {
+  // Do not render crew CV QR codes in the official printable crew list.
   const vesselId = vessel?.id || "contessa";
   const info = vessel?.vesselPrintInfo || {};
   const crew = Array.isArray(vessel?.crew)
