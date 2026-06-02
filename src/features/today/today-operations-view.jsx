@@ -786,7 +786,9 @@ function VesselStateBanner({
   return (
     <Card
       id="vessel-state-section"
-      className={`app-panel min-w-0 overflow-hidden rounded-[24px] border ${getMoodClasses(darkMode, mood)}`}
+      data-jump-target
+      style={{ "--jump-radius": "24px" }}
+      className={`jump-highlight-target app-panel min-w-0 overflow-hidden rounded-[24px] border ${getMoodClasses(darkMode, mood)}`}
     >
       <CardContent className="p-4 md:p-5">
         <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr] lg:items-center">
@@ -1419,7 +1421,12 @@ export function TodayOperationsView({
               currency={currency}
             />
 
-            <Card id="mission-cards-section" className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
+            <Card
+              id="mission-cards-section"
+              data-jump-target
+              style={{ "--jump-radius": "24px" }}
+              className={`jump-highlight-target app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}
+            >
               <CardContent className="p-4 md:p-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>

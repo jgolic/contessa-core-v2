@@ -211,42 +211,34 @@ body.dark-mode {
   background: var(--vessel-bg-dark, var(--app-bg-dark));
 }
 
-.jump-highlight-target,
-.search-jump-highlight,
-.action-jump-highlight {
+.jump-highlight-target {
   position: relative;
   isolation: isolate;
   border-radius: var(--jump-radius, 28px);
 }
 
-.jump-highlight-target.jump-highlight-active::after,
-.search-jump-highlight::after,
-.action-jump-highlight::after {
+.jump-highlight-target.jump-highlight-active::after {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 35;
+  inset: 4px;
+  z-index: 40;
   pointer-events: none;
-  border-radius: inherit;
-  border: 2px solid rgba(59, 130, 246, 0.72);
+  border-radius: calc(var(--jump-radius, 28px) - 4px);
+  border: 2px solid rgba(59, 130, 246, 0.78);
   box-shadow:
-    inset 0 0 0 2px rgba(59, 130, 246, 0.18),
-    0 0 0 5px rgba(59, 130, 246, 0.10),
-    0 18px 55px rgba(59, 130, 246, 0.20);
-  animation: premiumJumpHighlight 1.9s ease-out;
+    inset 0 0 0 1px rgba(59, 130, 246, 0.22),
+    0 0 0 4px rgba(59, 130, 246, 0.10),
+    0 16px 48px rgba(59, 130, 246, 0.18);
+  animation: premiumJumpHighlight 1.8s ease-out;
 }
 
 .dark .jump-highlight-target.jump-highlight-active::after,
-.dark .search-jump-highlight::after,
-.dark .action-jump-highlight::after,
-body.dark-mode .jump-highlight-target.jump-highlight-active::after,
-body.dark-mode .search-jump-highlight::after,
-body.dark-mode .action-jump-highlight::after {
-  border-color: rgba(34, 211, 238, 0.82);
+body.dark-mode .jump-highlight-target.jump-highlight-active::after {
+  border-color: rgba(34, 211, 238, 0.86);
   box-shadow:
-    inset 0 0 0 2px rgba(34, 211, 238, 0.20),
-    0 0 0 5px rgba(34, 211, 238, 0.12),
-    0 22px 65px rgba(34, 211, 238, 0.24);
+    inset 0 0 0 1px rgba(34, 211, 238, 0.24),
+    0 0 0 4px rgba(34, 211, 238, 0.12),
+    0 20px 56px rgba(34, 211, 238, 0.22);
 }
 
 @keyframes premiumJumpHighlight {
@@ -255,12 +247,12 @@ body.dark-mode .action-jump-highlight::after {
     transform: scale(0.992);
   }
 
-  16% {
+  18% {
     opacity: 1;
     transform: scale(1.006);
   }
 
-  70% {
+  72% {
     opacity: 1;
     transform: scale(1);
   }
@@ -272,9 +264,7 @@ body.dark-mode .action-jump-highlight::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .jump-highlight-target.jump-highlight-active::after,
-  .search-jump-highlight::after,
-  .action-jump-highlight::after {
+  .jump-highlight-target.jump-highlight-active::after {
     animation: none;
   }
 }
