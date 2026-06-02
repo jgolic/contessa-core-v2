@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
 import { AlertCircle, Compass, Plus, TriangleAlert, Wifi, WifiOff } from "../../components/icons.jsx";
+import { ExpandableMetricGroup } from "../../components/expandable_metric_group.jsx";
 import { SmartLabel } from "../../components/smart_label.jsx";
 import { neutralBadgeClass, successBadgeClass, themeClasses, warningBadgeClass } from "../../contessa_app_data.mjs";
 import { ensureMapLibre } from "../../lib/maplibre_loader.mjs";
@@ -416,6 +417,53 @@ export function RoutePlanningView({
     : passageSummary.remainingFuelAfterReserve <= passageSummary.fuelReserveAmount * 0.25
       ? "warning"
       : "neutral";
+  const routeMetrics = [
+    {
+      id: "distance",
+      label: "Distance",
+      shortLabel: "Distance",
+      value: formatRouteDistanceNm(passageSummary.totalDistanceNm),
+      note: `${passageSummary.totalLegs} leg${passageSummary.totalLegs === 1 ? "" : "s"}`,
+      description: "Total planned route distance across all currently published route legs.",
+    },
+    {
+      id: "eta",
+      label: "Estimated Time",
+      shortLabel: "ETA",
+      value: canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--",
+      note: canComputeEta ? "Cruising speed planning" : "Set cruising speed",
+      description: "Estimated passage time based on planned cruising speed and route distance.",
+      tone: canComputeEta ? "neutral" : "warning",
+    },
+    {
+      id: "fuel",
+      label: "Fuel Demand",
+      shortLabel: "Fuel",
+      value: canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--",
+      note: canComputeFuel ? "Estimated route demand" : "Set fuel burn",
+      description: "Estimated fuel required for the planned route using the vessel fuel burn profile.",
+      tone: canComputeFuel ? "neutral" : "warning",
+    },
+    {
+      id: "min-depth",
+      label: "Minimum Depth",
+      shortLabel: "Min Depth",
+      value: minimumSafeDepth.toFixed(1),
+      unit: "m",
+      note: depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target",
+      description: "Minimum required safe water depth based on vessel draft and under-keel clearance settings.",
+      tone: routeCrossesUnsafeShallowWater ? "critical" : "neutral",
+    },
+    {
+      id: "reserve",
+      label: "Fuel Reserve",
+      shortLabel: "Reserve",
+      value: formatPercentValue(vesselProfile.fuelReservePercentage || 0),
+      note: canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target",
+      description: "Fuel reserve retained for safety, delays, weather, or operational margin after route planning.",
+      tone: remainingFuelTone,
+    },
+  ];
 
   const markUserInteraction = () => {
     userInteractingRef.current = true;
@@ -1715,32 +1763,12 @@ export function RoutePlanningView({
                 </div>
               ) : null}
 
-              <div className="mt-3 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2 xl:grid-cols-5">
-                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Distance" /></div>
-                  <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatRouteDistanceNm(passageSummary.totalDistanceNm)}</div>
-                  <div className={`mt-1 text-xs ${theme.textSecondary}`}>{passageSummary.totalLegs} leg{passageSummary.totalLegs === 1 ? "" : "s"}</div>
-                </div>
-                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="ETA" /></div>
-                  <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--"}</div>
-                  <div className={`mt-1 text-xs ${theme.textSecondary}`}>Cruising speed planning</div>
-                </div>
-                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Fuel" /></div>
-                  <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--"}</div>
-                  <div className={`mt-1 text-xs ${theme.textSecondary}`}>Estimated route demand</div>
-                </div>
-                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${routeCrossesUnsafeShallowWater ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Min Depth" /></div>
-                  <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{`${minimumSafeDepth.toFixed(1)} m`}</div>
-                  <div className={`mt-1 text-xs ${theme.textSecondary}`}>{depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target"}</div>
-                </div>
-                <div className={`group app-panel app-panel-soft min-w-0 rounded-[22px] border px-4 py-3 md:rounded-xl ${remainingFuelTone === "critical" ? darkMode ? "border-[#6c3027] bg-[#2a1613]" : "border-[#efb0a6] bg-[#fff1ed]" : remainingFuelTone === "warning" ? darkMode ? "border-[#5a4820] bg-[#2f2611]" : "border-[#f0d58d] bg-[#fff7de]" : darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
-                  <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label="Reserve" /></div>
-                  <div className={`mt-2 truncate text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>{formatPercentValue(vesselProfile.fuelReservePercentage || 0)}</div>
-                  <div className={`mt-1 text-xs ${theme.textSecondary}`}>{canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target"}</div>
-                </div>
+              <div className="mt-3">
+                <ExpandableMetricGroup
+                  title="Route Metrics"
+                  metrics={routeMetrics}
+                  darkMode={darkMode}
+                />
               </div>
             </CardContent>
           </Card>
