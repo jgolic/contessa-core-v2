@@ -15,6 +15,19 @@ export const DEFAULT_VESSEL_PROFILE = {
   fuelReservePercentage: 15,
 };
 
+export const DEFAULT_ROUTE_SPECS = {
+  lengthFeet: 0,
+  beamFeet: 0,
+  draftMeters: 0,
+  cruisingSpeedKnots: 0,
+  maxSpeedKnots: 0,
+  fuelCapacityLitres: 0,
+  fuelBurnLitresPerHour: 0,
+  reservePercent: 15,
+  safeDepthMeters: 0,
+  cautionDepthMeters: 0,
+};
+
 export const ROUTE_OVERLAY_DEFINITIONS = [
   { key: "depth", label: "Depth layer" },
   { key: "depthShading", label: "Depth Shading" },
@@ -505,6 +518,40 @@ export function normalizeVesselProfile(rawProfile = {}) {
   };
 }
 
+export function normalizeRouteSpecs(rawSpecs = {}, fallbackProfile = {}) {
+  const profile = normalizeVesselProfile(fallbackProfile || {});
+  const draftMeters = safeNumber(rawSpecs.draftMeters ?? rawSpecs.draft ?? profile.draft);
+  const safeDepthMeters = safeNumber(rawSpecs.safeDepthMeters, draftMeters ? draftMeters + DEFAULT_ROUTE_SAFETY_MARGIN : 0);
+
+  return {
+    ...DEFAULT_ROUTE_SPECS,
+    lengthFeet: safeNumber(rawSpecs.lengthFeet ?? rawSpecs.length),
+    beamFeet: safeNumber(rawSpecs.beamFeet),
+    draftMeters,
+    cruisingSpeedKnots: safeNumber(rawSpecs.cruisingSpeedKnots ?? profile.cruisingSpeedKnots),
+    maxSpeedKnots: safeNumber(rawSpecs.maxSpeedKnots),
+    fuelCapacityLitres: safeNumber(rawSpecs.fuelCapacityLitres ?? rawSpecs.fuelCapacity ?? profile.fuelCapacity),
+    fuelBurnLitresPerHour: safeNumber(rawSpecs.fuelBurnLitresPerHour ?? rawSpecs.fuelBurnPerHour ?? profile.fuelBurnPerHour),
+    reservePercent: clampNumber(safeNumber(rawSpecs.reservePercent ?? rawSpecs.fuelReservePercentage ?? profile.fuelReservePercentage, DEFAULT_ROUTE_SPECS.reservePercent), 0, 100),
+    safeDepthMeters,
+    cautionDepthMeters: safeNumber(rawSpecs.cautionDepthMeters, safeDepthMeters ? Math.max(draftMeters, safeDepthMeters - 2) : 0),
+  };
+}
+
+export function routeSpecsToVesselProfile(routeSpecs = {}, vesselName = "") {
+  const specs = normalizeRouteSpecs(routeSpecs);
+
+  return normalizeVesselProfile({
+    vesselName,
+    draft: specs.draftMeters,
+    beam: specs.beamFeet,
+    cruisingSpeedKnots: specs.cruisingSpeedKnots,
+    fuelBurnPerHour: specs.fuelBurnLitresPerHour,
+    fuelCapacity: specs.fuelCapacityLitres,
+    fuelReservePercentage: specs.reservePercent,
+  });
+}
+
 export function getMinimumSafeDepth(vesselDraft = 0, safetyMargin = DEFAULT_ROUTE_SAFETY_MARGIN) {
   return Number((safeNumber(vesselDraft) + safeNumber(safetyMargin, DEFAULT_ROUTE_SAFETY_MARGIN)).toFixed(2));
 }
@@ -529,6 +576,7 @@ export function normalizeRoutePlanningState(rawState = {}) {
     rawState?.profile ||
     {}
   );
+  const routeSpecs = normalizeRouteSpecs(rawState?.routeSpecs || rawState?.specs || {}, vesselProfile);
 
   const safetyMargin = safeNumber(
     rawState?.safetyMargin ??
@@ -546,7 +594,10 @@ export function normalizeRoutePlanningState(rawState = {}) {
 
   return {
     vesselProfile,
+    routeSpecs,
     safetyMargin,
+    status: cleanText(rawState?.status, "Planning"),
+    riskNote: cleanText(rawState?.riskNote),
     depthLayer: normalizeDepthLayerState(
       rawState?.depthLayer ||
       rawState?.depth ||

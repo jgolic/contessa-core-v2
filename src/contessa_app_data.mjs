@@ -574,6 +574,18 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
     fuelCapacity: 18200,
     fuelReservePercentage: 18,
   });
+  const routeSpecs = {
+    lengthFeet: 97,
+    beamFeet: 21,
+    draftMeters: 1.95,
+    cruisingSpeedKnots: 18,
+    maxSpeedKnots: 28,
+    fuelCapacityLitres: 8500,
+    fuelBurnLitresPerHour: 260,
+    reservePercent: 20,
+    safeDepthMeters: 5,
+    cautionDepthMeters: 3,
+  };
 
   const crewProfiles = [
     {
@@ -742,6 +754,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
 
   const routePlanning = normalizeRoutePlanningState({
     vesselProfile,
+    routeSpecs,
     safetyMargin: 1.2,
     status: "Planning",
     riskNote: "Gulf Stream weather window required",
@@ -860,6 +873,18 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
     fuelCapacity: 14200,
     fuelReservePercentage: 18,
   });
+  const routeSpecs = {
+    lengthFeet: 143,
+    beamFeet: 27,
+    draftMeters: 2.2,
+    cruisingSpeedKnots: 14,
+    maxSpeedKnots: 21,
+    fuelCapacityLitres: 16000,
+    fuelBurnLitresPerHour: 310,
+    reservePercent: 18,
+    safeDepthMeters: 6,
+    cautionDepthMeters: 3.5,
+  };
 
   const crewProfiles = [
     {
@@ -1105,6 +1130,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
 
   const routePlanning = normalizeRoutePlanningState({
     vesselProfile,
+    routeSpecs,
     safetyMargin: 1.1,
     depthLayer: {
       connected: false,

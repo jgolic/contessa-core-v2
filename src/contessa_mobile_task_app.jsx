@@ -2729,14 +2729,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const updateRouteVesselProfile = (patch) => {
     if (!requireAdminEdit("Updating route planning vessel profile")) return;
-    setVesselProfile((prev) => ({ ...(prev || {}), ...patch }));
+    const { routeSpecs, ...profilePatch } = patch || {};
+    setVesselProfile((prev) => ({ ...(prev || {}), ...profilePatch }));
     setRoutePlanning((prev) =>
       normalizeRoutePlanningState({
         ...prev,
         vesselProfile: {
           ...(prev?.vesselProfile || {}),
-          ...patch,
+          ...profilePatch,
         },
+        routeSpecs: routeSpecs ? { ...(prev?.routeSpecs || {}), ...routeSpecs } : prev?.routeSpecs,
       })
     );
   };

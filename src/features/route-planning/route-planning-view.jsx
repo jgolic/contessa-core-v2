@@ -30,6 +30,8 @@ import {
   formatRouteDistanceNm,
   getRouteMinimumAvailableDepthMeters,
   hasConnectedDepthLayer,
+  normalizeRouteSpecs,
+  routeSpecsToVesselProfile,
 } from "../../lib/route_planning.mjs";
 
 const MAP_LOAD_FAILURE_MESSAGE = "Map could not load. Check internet connection or tile style URL.";
@@ -74,6 +76,100 @@ function formatPercentDisplay(value) {
 
 function formatHoursDisplay(value, ready = true) {
   return ready ? Number(value || 0).toFixed(1) : "Not set";
+}
+
+function formatCompactNumber(value, digits = 0) {
+  return Number(value || 0).toLocaleString(undefined, {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  });
+}
+
+function calculateRoutePlan(route = {}, specs = {}) {
+  const distanceNm = Number(route?.distanceNm || 0);
+  const cruisingSpeedKnots = Number(specs?.cruisingSpeedKnots || 0);
+  const fuelBurnLitresPerHour = Number(specs?.fuelBurnLitresPerHour || 0);
+  const fuelCapacityLitres = Number(specs?.fuelCapacityLitres || 0);
+  const reservePercent = Number(specs?.reservePercent || 0);
+  const etaHours = cruisingSpeedKnots > 0 ? distanceNm / cruisingSpeedKnots : 0;
+  const fuelRequiredLitres = etaHours > 0 ? etaHours * fuelBurnLitresPerHour : 0;
+  const reserveLitres = fuelCapacityLitres * (reservePercent / 100);
+  const usableFuelLitres = Math.max(0, fuelCapacityLitres - reserveLitres);
+  const remainingAfterRoute = usableFuelLitres - fuelRequiredLitres;
+  const fuelStatus = remainingAfterRoute < 0
+    ? "Insufficient"
+    : remainingAfterRoute < fuelCapacityLitres * 0.1
+      ? "Tight"
+      : "Safe";
+
+  return {
+    distanceNm,
+    etaHours,
+    fuelRequiredLitres,
+    reserveLitres,
+    usableFuelLitres,
+    remainingAfterRoute,
+    fuelStatus,
+  };
+}
+
+function RouteControlBracket({ title, subtitle, open, onToggle, children, darkMode = false }) {
+  return (
+    <section className={`rounded-3xl border p-4 shadow-sm ${darkMode ? "border-white/10 bg-slate-800/80" : "border-slate-200/80 bg-white/90"}`}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-start justify-between gap-3 text-left"
+      >
+        <div className="min-w-0">
+          <p className={`text-[11px] font-bold uppercase tracking-[0.14em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+            {title}
+          </p>
+          {subtitle ? (
+            <p className={`mt-1 text-sm leading-5 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+
+        <span className={`shrink-0 rounded-xl border px-2.5 py-1 text-xs font-semibold ${darkMode ? "border-white/10 bg-slate-900 text-slate-200" : "border-slate-200 bg-white text-slate-700"}`}>
+          {open ? "Close" : "Open"}
+        </span>
+      </button>
+
+      {open ? (
+        <div className={`mt-4 border-t pt-4 ${darkMode ? "border-white/10" : "border-slate-200"}`}>
+          {children}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function SpecInput({ darkMode = false, disabled = false, label, unit, value, step = "1", onChange }) {
+  return (
+    <label className="block min-w-0">
+      <span className={`mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+        {label}
+      </span>
+
+      <div className={`flex h-11 items-center rounded-2xl border px-3 ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}>
+        <input
+          disabled={disabled}
+          type="number"
+          step={step}
+          value={value ?? ""}
+          onChange={(event) => onChange(event.target.value === "" ? "" : Number(event.target.value))}
+          className={`min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none disabled:cursor-not-allowed disabled:opacity-60 ${darkMode ? "text-slate-50" : "text-slate-950"}`}
+        />
+        {unit ? (
+          <span className={`ml-2 text-xs font-semibold ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+            {unit}
+          </span>
+        ) : null}
+      </div>
+    </label>
+  );
 }
 
 function ensureGeoJsonSource(map, sourceId, data) {
@@ -232,6 +328,14 @@ export function RoutePlanningView({
   const [isMapLocked, setIsMapLocked] = useState(false);
   const [showMapLayerPanel, setShowMapLayerPanel] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [openRouteControls, setOpenRouteControls] = useState({
+    view: true,
+    route: false,
+    vesselSpecs: true,
+    fuelModel: false,
+    safetyDepth: false,
+    layers: false,
+  });
 
   const overlayDefinitions = useMemo(
     () => ROUTE_OVERLAY_DEFINITIONS.filter((overlay) => ACTIVE_OVERLAY_KEYS.includes(overlay.key)),
@@ -250,8 +354,16 @@ export function RoutePlanningView({
       source: "route-start",
     };
   }, [waypoints]);
-  const vesselProfile = routePlanning?.vesselProfile || {};
-  const safetyMargin = Number(routePlanning?.safetyMargin || 1);
+  const baseVesselProfile = routePlanning?.vesselProfile || {};
+  const routeSpecs = useMemo(
+    () => normalizeRouteSpecs(routePlanning?.routeSpecs || {}, baseVesselProfile),
+    [baseVesselProfile, routePlanning?.routeSpecs]
+  );
+  const vesselProfile = useMemo(
+    () => routeSpecsToVesselProfile(routeSpecs, baseVesselProfile.vesselName),
+    [baseVesselProfile.vesselName, routeSpecs]
+  );
+  const safetyMargin = Math.max(0, Number(routeSpecs.safeDepthMeters || 0) - Number(routeSpecs.draftMeters || 0)) || Number(routePlanning?.safetyMargin || 1);
   const depthLayer = publicDepthLayer || routePlanning?.depthLayer || {};
   const routeLegs = useMemo(
     () => buildRouteLegs(waypoints, vesselProfile.cruisingSpeedKnots),
@@ -373,9 +485,16 @@ export function RoutePlanningView({
   );
   const canComputeEta = Number(vesselProfile.cruisingSpeedKnots || 0) > 0;
   const canComputeFuel = canComputeEta && Number(vesselProfile.fuelBurnPerHour || 0) > 0;
-  const routeCrossesUnsafeShallowWater = depthDataConnected &&
-    routeMinimumAvailableDepth !== null &&
-    routeMinimumAvailableDepth < minimumSafeDepth;
+  const routeDepthStatus = depthDataConnected && routeMinimumAvailableDepth !== null
+    ? routeMinimumAvailableDepth < Number(routeSpecs.draftMeters || 0)
+      ? "critical"
+      : routeMinimumAvailableDepth < Number(routeSpecs.cautionDepthMeters || 0)
+        ? "warning"
+        : routeMinimumAvailableDepth >= Number(routeSpecs.safeDepthMeters || minimumSafeDepth)
+          ? "safe"
+          : "warning"
+    : "unknown";
+  const routeCrossesUnsafeShallowWater = routeDepthStatus === "critical" || routeDepthStatus === "warning";
   const depthSourcePresentation = useMemo(() => getDepthSourcePresentation(depthLayer), [depthLayer]);
   const depthSourceLabel = bathymetryShading.isDemo
     ? "Estimated planning layer"
@@ -417,12 +536,19 @@ export function RoutePlanningView({
     : passageSummary.remainingFuelAfterReserve <= passageSummary.fuelReserveAmount * 0.25
       ? "warning"
       : "neutral";
+  const routePlan = calculateRoutePlan({ distanceNm: passageSummary.totalDistanceNm }, routeSpecs);
+  const routeFuelTone = routePlan.remainingAfterRoute < 0
+    ? "critical"
+    : routePlan.fuelStatus === "Tight"
+      ? "warning"
+      : "neutral";
   const routeMetrics = [
     {
       id: "distance",
       label: "Distance",
       shortLabel: "Distance",
-      value: formatRouteDistanceNm(passageSummary.totalDistanceNm),
+      value: routePlan.distanceNm.toFixed(1),
+      unit: "nm",
       note: `${passageSummary.totalLegs} leg${passageSummary.totalLegs === 1 ? "" : "s"}`,
       description: "Total planned route distance across all currently published route legs.",
     },
@@ -430,38 +556,59 @@ export function RoutePlanningView({
       id: "eta",
       label: "Estimated Time",
       shortLabel: "ETA",
-      value: canComputeEta ? formatHoursValue(passageSummary.estimatedHours) : "--",
-      note: canComputeEta ? "Cruising speed planning" : "Set cruising speed",
+      value: routePlan.etaHours ? routePlan.etaHours.toFixed(1) : "--",
+      unit: routePlan.etaHours ? "h" : "",
+      note: routeSpecs.cruisingSpeedKnots ? `${routeSpecs.cruisingSpeedKnots} kn cruise` : "Set cruise speed",
       description: "Estimated passage time based on planned cruising speed and route distance.",
-      tone: canComputeEta ? "neutral" : "warning",
+      tone: routePlan.etaHours ? "neutral" : "warning",
     },
     {
       id: "fuel",
-      label: "Fuel Demand",
-      shortLabel: "Fuel",
-      value: canComputeFuel ? formatFuelValue(passageSummary.estimatedFuelBurn) : "--",
-      note: canComputeFuel ? "Estimated route demand" : "Set fuel burn",
+      label: "Fuel Required",
+      shortLabel: "Fuel Required",
+      value: routePlan.fuelRequiredLitres ? formatCompactNumber(routePlan.fuelRequiredLitres) : "--",
+      unit: routePlan.fuelRequiredLitres ? "L" : "",
+      note: routeSpecs.fuelBurnLitresPerHour ? `${routeSpecs.fuelBurnLitresPerHour} L/h` : "Set fuel burn",
       description: "Estimated fuel required for the planned route using the vessel fuel burn profile.",
-      tone: canComputeFuel ? "neutral" : "warning",
+      tone: routePlan.fuelRequiredLitres ? "neutral" : "warning",
     },
     {
-      id: "min-depth",
-      label: "Minimum Depth",
-      shortLabel: "Min Depth",
-      value: minimumSafeDepth.toFixed(1),
-      unit: "m",
-      note: depthDataConnected ? routeCrossesUnsafeShallowWater ? "Unsafe section flagged" : "Sampled against depth data" : "Draft + clearance target",
-      description: "Minimum required safe water depth based on vessel draft and under-keel clearance settings.",
-      tone: routeCrossesUnsafeShallowWater ? "critical" : "neutral",
-    },
-    {
-      id: "reserve",
+      id: "fuel-reserve",
       label: "Fuel Reserve",
       shortLabel: "Reserve",
-      value: formatPercentValue(vesselProfile.fuelReservePercentage || 0),
-      note: canComputeFuel ? `${formatFuelValue(passageSummary.fuelReserveAmount)} held back` : "Safety reserve target",
+      value: formatCompactNumber(routePlan.reserveLitres),
+      unit: "L",
+      note: `${routeSpecs.reservePercent}% reserve`,
       description: "Fuel reserve retained for safety, delays, weather, or operational margin after route planning.",
-      tone: remainingFuelTone,
+      tone: routeFuelTone,
+    },
+    {
+      id: "fuel-status",
+      label: "Fuel Status",
+      shortLabel: "Fuel Status",
+      value: routePlan.fuelStatus,
+      note: `${formatCompactNumber(routePlan.remainingAfterRoute)} L margin`,
+      description: "Fuel status after holding reserve fuel back and subtracting estimated route demand.",
+      tone: routePlan.fuelStatus === "Insufficient" ? "critical" : routePlan.fuelStatus === "Tight" ? "warning" : "neutral",
+    },
+    {
+      id: "draft",
+      label: "Draft",
+      shortLabel: "Draft",
+      value: Number(routeSpecs.draftMeters || 0).toFixed(1),
+      unit: "m",
+      note: "Vessel draft",
+      description: "Distance from the waterline to the lowest point of the vessel.",
+    },
+    {
+      id: "safe-depth",
+      label: "Safe Depth",
+      shortLabel: "Safe Depth",
+      value: Number(routeSpecs.safeDepthMeters || minimumSafeDepth).toFixed(1),
+      unit: "m",
+      note: routeDepthStatus === "critical" ? "Depth below draft" : routeDepthStatus === "warning" ? "Caution section detected" : "Planning threshold",
+      description: "Minimum planning threshold used to flag shallow or caution-depth sections.",
+      tone: routeDepthStatus === "critical" ? "critical" : routeDepthStatus === "warning" ? "warning" : "neutral",
     },
   ];
 
@@ -1383,6 +1530,31 @@ export function RoutePlanningView({
     setOverlayToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const toggleRouteControlBracket = (key) => {
+    setOpenRouteControls((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleRouteSpecPatch = (patch) => {
+    const nextSpecs = normalizeRouteSpecs({ ...routeSpecs, ...patch }, baseVesselProfile);
+    const nextProfile = routeSpecsToVesselProfile(nextSpecs, baseVesselProfile.vesselName);
+
+    onUpdateVesselProfile({
+      ...nextProfile,
+      routeSpecs: nextSpecs,
+    });
+  };
+
+  const routeToggleButtonClass = (active) =>
+    `min-h-10 rounded-2xl border px-3 py-2 text-xs font-semibold transition-all duration-200 ${
+      active
+        ? darkMode
+          ? "border-cyan-300/40 bg-cyan-300/12 text-cyan-100"
+          : "border-blue-300 bg-blue-50 text-blue-800"
+        : darkMode
+          ? "border-white/10 bg-slate-900 text-slate-200 hover:border-cyan-300/30 hover:bg-cyan-300/10"
+          : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"
+    }`;
+
   const handleFitRoute = () => {
     fitRouteToViewport();
   };
@@ -1450,87 +1622,7 @@ export function RoutePlanningView({
         </CardContent>
       </Card>
 
-      <div className="grid min-w-0 max-w-full gap-4 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
-        <Card className={`route-waypoint-pane order-2 app-panel app-panel-soft rounded-[26px] md:rounded-[24px] xl:order-1 xl:sticky xl:top-6 ${theme.card}`}>
-          <CardContent className="p-5 md:p-6">
-            <div className="mb-4">
-              <div className="app-kicker">Route List</div>
-              <div className={`mt-2 text-xl font-semibold ${theme.textPrimary}`}>Waypoints</div>
-              <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>Review waypoint order, coordinates, leg distance, and bearing before using the plan onboard.</div>
-            </div>
-
-            <div className="space-y-3 xl:max-h-[calc(100vh-210px)] xl:overflow-y-auto xl:pr-1">
-              {waypoints.length ? waypoints.map((waypoint, index) => {
-                const inboundLeg = routeLegByToId[waypoint.id];
-                return (
-                  <div
-                    key={waypoint.id}
-                    draggable={canEdit}
-                    onDragStart={() => { draggingWaypointIdRef.current = waypoint.id; }}
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={() => handleDropWaypoint(waypoint.id)}
-                    onDragEnd={() => { draggingWaypointIdRef.current = ""; }}
-                    className={`app-card-hover app-panel app-panel-soft rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3">
-                        <div className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl text-sm font-semibold md:rounded-xl ${darkMode ? "bg-[#183029] text-[#d7f6e9]" : "bg-[#ebf6f1] text-[#166155]"}`}>{index + 1}</div>
-                        <div className="min-w-0 flex-1">
-                          <Input
-                            disabled={!canEdit}
-                            value={waypoint.name || ""}
-                            onChange={(event) => onUpdateWaypoint(waypoint.id, { name: event.target.value })}
-                            className={`h-11 rounded-xl ${theme.input}`}
-                          />
-                          <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>Lat {formatCoordinate(waypoint.lat)}</div>
-                          <div className={`text-xs leading-5 ${theme.textSecondary}`}>Lng {formatCoordinate(waypoint.lng)}</div>
-                          {waypointDepthDisplays[waypoint.id] ? (
-                            <div className="mt-2">
-                              <Badge className={getWaypointDepthBadgeClass(darkMode, waypointDepthDisplays[waypoint.id].depthMeters, minimumSafeDepth)}>
-                                Depth: {waypointDepthDisplays[waypoint.id].depthMeters.toFixed(1)} m
-                              </Badge>
-                            </div>
-                          ) : null}
-                          <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>
-                            {inboundLeg
-                              ? `Leg ${inboundLeg.legIndex} - ${formatRouteDistanceNm(inboundLeg.distanceNm)} - ${formatBearingDegrees(inboundLeg.bearingDegrees)} - ${canComputeEta ? formatPassageHours(inboundLeg.estimatedHours) : "Set speed for ETA"}`
-                              : "Departure reference point"}
-                          </div>
-                        </div>
-                      </div>
-
-                      {canEdit ? (
-                        <button
-                          type="button"
-                          onClick={() => onDeleteWaypoint(waypoint.id)}
-                          className={`flex h-8 w-8 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-[#2b231f] text-[#ffd8cf] hover:bg-[#432d28]" : "bg-[#fff0ed] text-[#9b2c20] hover:bg-[#ffe0da]"}`}
-                          aria-label={`Delete ${waypoint.name || `Waypoint ${index + 1}`}`}
-                        >
-                          x
-                        </button>
-                      ) : null}
-                    </div>
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Button type="button" variant="outline" onClick={() => handleMoveWaypoint(index, "up")} disabled={!canEdit || index === 0} className={`app-action-reveal rounded-2xl px-3 py-2 text-xs md:rounded-xl ${darkMode ? "border-[#284038] bg-[#0f1715]/92 text-[#dce9e1] hover:bg-[#16211d]" : "border-white/70 bg-white/84 text-[#365248] hover:bg-[#f7fbf9]"}`}>
-                        Move Up
-                      </Button>
-                      <Button type="button" variant="outline" onClick={() => handleMoveWaypoint(index, "down")} disabled={!canEdit || index === waypoints.length - 1} className={`app-action-reveal rounded-2xl px-3 py-2 text-xs md:rounded-xl ${darkMode ? "border-[#284038] bg-[#0f1715]/92 text-[#dce9e1] hover:bg-[#16211d]" : "border-white/70 bg-white/84 text-[#365248] hover:bg-[#f7fbf9]"}`}>
-                        Move Down
-                      </Button>
-                      <Badge className="vessel-pill">Drag to reorder</Badge>
-                    </div>
-                  </div>
-                );
-              }) : (
-                <div className={`app-empty-state rounded-[22px] border border-dashed text-center text-sm leading-6 md:rounded-xl ${theme.textSecondary} ${darkMode ? "border-[#294038] bg-[#0d1513]/88" : "border-[#d5e1da] bg-[#f7faf8]"}`}>
-                  Use <span className="font-semibold">+ Add Waypoint</span>, then click the map once to place the next point.
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid min-w-0 max-w-full gap-5 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
         <div className="grid gap-4">
           <Card className={`app-panel app-panel-soft min-w-0 rounded-[26px] md:rounded-[24px] ${theme.card}`}>
             <CardContent className="p-4 md:p-5">
@@ -1563,67 +1655,6 @@ export function RoutePlanningView({
                       </Button>
                     ) : null}
                   </div>
-                </div>
-
-                <div className={`-mx-1 flex max-w-[calc(100%+0.5rem)] gap-2 overflow-x-auto rounded-[22px] border p-2 px-1 md:mx-0 md:max-w-full md:flex-wrap md:px-2 md:rounded-2xl ${darkMode ? "border-[#284038] bg-[#0f1715]/86" : "border-white/80 bg-white/88"}`}>
-                  {[
-                    { key: "planning", label: "Route", active: overlayToggles.route, onClick: () => toggleOverlay("route") },
-                    { key: "depthShading", label: "Depth", active: overlayToggles.depthShading, onClick: () => toggleOverlay("depthShading") },
-                    { key: "weather", label: "Weather", active: overlayToggles.weather, onClick: () => toggleOverlay("weather") },
-                    { key: "waypoints", label: "Waypoints", active: overlayToggles.waypoints, onClick: () => toggleOverlay("waypoints") },
-                    { key: "follow", label: "Follow", active: followVesselPosition, onClick: () => setFollowVesselPosition((value) => !value) },
-                  ].map((control) => (
-                    <Button
-                      key={control.key}
-                      type="button"
-                      onClick={control.onClick}
-                      className={`h-10 shrink-0 rounded-2xl px-4 text-sm font-medium md:rounded-xl ${control.active ? "vessel-active" : darkMode ? "text-[#dce9e1] hover:bg-white/5" : "text-[#365248] hover:bg-white/80"}`}
-                    >
-                      {control.label}
-                    </Button>
-                  ))}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleFitRoute}
-                    disabled={!waypoints.length}
-                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
-                  >
-                    Fit Route
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCenterVessel}
-                    disabled={!vesselPosition}
-                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
-                  >
-                    Center Vessel
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleToggleMapLock}
-                    className={`h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl ${isMapLocked ? darkMode ? "border-[#5a4820] bg-[#2f2611] text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de] text-[#7a5416]" : "vessel-outline-button"}`}
-                  >
-                    {isMapLocked ? "Unlock Map" : "Lock Map"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowMapLayerPanel((value) => !value)}
-                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
-                  >
-                    {showMapLayerPanel ? "Hide Layers" : "Layers"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleToggleFullscreen}
-                    className="vessel-outline-button h-10 shrink-0 rounded-2xl px-4 text-sm md:rounded-xl"
-                  >
-                    {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                  </Button>
                 </div>
               </div>
 
@@ -1668,90 +1699,8 @@ export function RoutePlanningView({
                 ) : null}
               </div>
 
-              <div className="mt-3 grid gap-3">
-                {showMapLayerPanel ? (
-                  <div className={`app-panel app-panel-soft rounded-[24px] border px-4 py-4 text-xs ${darkMode ? "border-[#2b4048] bg-[#0d1519]/92 text-[#dce9e1]" : "border-white/84 bg-white/92 text-[#365248]"}`}>
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <div>
-                        <div className="app-kicker">Layers</div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>Advanced chart controls</div>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className={depthDataConnected ? successBadgeClass(darkMode) : bathymetryShading.isDemo ? warningBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                          {depthSourceLoading ? "Loading" : depthDataConnected ? "NOAA / GEBCO" : bathymetryShading.isDemo ? "Estimated" : "Offline"}
-                        </Badge>
-                        <Badge className={followVesselPosition ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                          Follow {followVesselPosition ? "on" : "off"}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>Depth source: {depthSourceLoading ? "Loading..." : depthSourceLabel}</div>
-
-                    <div className="mt-4 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 xl:grid-cols-5">
-                      {[
-                        ["depthShading", "Shading"],
-                        ["depthContours", "Contours"],
-                        ["route", "Route"],
-                        ["waypoints", "Waypoints"],
-                        ["legend", "Legend"],
-                      ].map(([key, label]) => (
-                        <Button
-                          key={`mobile-${key}`}
-                          type="button"
-                          variant="outline"
-                          onClick={() => toggleOverlay(key)}
-                          className={`min-h-11 justify-between rounded-2xl px-3 py-2 text-xs ${overlayToggles[key] ? "vessel-pill-strong border-vessel" : "vessel-outline-button"}`}
-                        >
-                          <span>{label}</span>
-                        </Button>
-                      ))}
-                    </div>
-
-                    <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.7fr)]">
-                    <div className="rounded-[18px] border border-white/10 px-3 py-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="app-kicker">Depth opacity</div>
-                        <div className={`app-compact-label ${theme.textSecondary}`}><SmartLabel label={`${Math.round(depthShadingOpacity * 100)}%`} /></div>
-                      </div>
-                      <input
-                        type="range"
-                        min="20"
-                        max="100"
-                        step="5"
-                        value={Math.round(depthShadingOpacity * 100)}
-                        onChange={(event) => setDepthShadingOpacity(Number(event.target.value) / 100)}
-                        className="mt-3 w-full accent-cyan-500"
-                      />
-                    </div>
-
-                    <div className="rounded-[18px] border border-white/10 px-3 py-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="app-kicker">Follow vessel</div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setFollowVesselPosition((value) => !value)}
-                          className="vessel-outline-button rounded-2xl px-3 py-2 text-xs"
-                        >
-                          {followVesselPosition ? "Disable" : "Enable"}
-                        </Button>
-                      </div>
-                      <div className={`mt-2 text-[11px] leading-5 ${theme.textSecondary}`}>When off, GPS never recenters the chart automatically.</div>
-                    </div>
-                    </div>
-                  </div>
-                ) : null}
-
-                {(overlayToggles.depth && !depthDataConnected) ? (
-                  <div className={`rounded-[22px] border px-4 py-3 text-sm ${darkMode ? "border-[#5a4820] bg-[#2f2611]/94 text-[#ffe7aa]" : "border-[#f0d58d] bg-[#fff7de]/94 text-[#7a5416]"}`}>
-                    <div className="font-semibold">Depth data unavailable</div>
-                    <div className="mt-1 text-xs opacity-90">{DEPTH_LAYER_UNAVAILABLE_MESSAGE}</div>
-                  </div>
-                ) : null}
-
-                <div className={`rounded-[22px] border px-4 py-3 text-sm leading-6 ${darkMode ? "border-[#294038] bg-[#0d1513]/94 text-[#dce9e1]" : "border-white/84 bg-white/92 text-[#365248]"}`}>
-                  Planning aid only. Verify route against official charts and onboard instruments.
-                </div>
+              <div className={`mt-3 rounded-[22px] border px-4 py-3 text-sm leading-6 ${darkMode ? "border-[#294038] bg-[#0d1513]/80 text-[#dce9e1]" : "border-white/84 bg-white/78 text-[#365248]"}`}>
+                Planning aid only. Verify route against official charts, notices, weather, traffic, and onboard bridge procedures.
               </div>
 
               {unsafeLegDetails.length ? (
@@ -1773,7 +1722,212 @@ export function RoutePlanningView({
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_320px]">
+        </div>
+
+        <aside className="grid gap-3 xl:sticky xl:top-6">
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="View"
+            subtitle="Chart display and camera controls."
+            open={openRouteControls.view}
+            onToggle={() => toggleRouteControlBracket("view")}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { key: "route", label: "Route line", active: overlayToggles.route, onClick: () => toggleOverlay("route") },
+                { key: "waypoints", label: "Waypoints", active: overlayToggles.waypoints, onClick: () => toggleOverlay("waypoints") },
+                { key: "depthShading", label: "Depth", active: overlayToggles.depthShading, onClick: () => toggleOverlay("depthShading") },
+                { key: "weather", label: "Weather", active: overlayToggles.weather, onClick: () => toggleOverlay("weather") },
+                { key: "follow", label: "Follow", active: followVesselPosition, onClick: () => setFollowVesselPosition((value) => !value) },
+                { key: "lock", label: isMapLocked ? "Unlock" : "Lock", active: isMapLocked, onClick: handleToggleMapLock },
+              ].map((control) => (
+                <button key={control.key} type="button" onClick={control.onClick} className={routeToggleButtonClass(control.active)}>
+                  {control.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Button type="button" variant="outline" onClick={handleFitRoute} disabled={!waypoints.length} className="vessel-outline-button min-h-10 rounded-2xl px-3 text-xs">
+                Fit Route
+              </Button>
+              <Button type="button" variant="outline" onClick={handleCenterVessel} disabled={!vesselPosition} className="vessel-outline-button min-h-10 rounded-2xl px-3 text-xs">
+                Center
+              </Button>
+              <Button type="button" variant="outline" onClick={handleToggleFullscreen} className="vessel-outline-button col-span-2 min-h-10 rounded-2xl px-3 text-xs">
+                {isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}
+              </Button>
+            </div>
+          </RouteControlBracket>
+
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="Route"
+            subtitle={`${waypoints.length || 0} waypoint${waypoints.length === 1 ? "" : "s"} · ${routePlan.distanceNm.toFixed(1)} nm`}
+            open={openRouteControls.route}
+            onToggle={() => toggleRouteControlBracket("route")}
+          >
+            <div className="space-y-3">
+              {waypoints.length ? waypoints.map((waypoint, index) => {
+                const inboundLeg = routeLegByToId[waypoint.id];
+                return (
+                  <div
+                    key={waypoint.id}
+                    draggable={canEdit}
+                    onDragStart={() => { draggingWaypointIdRef.current = waypoint.id; }}
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={() => handleDropWaypoint(waypoint.id)}
+                    onDragEnd={() => { draggingWaypointIdRef.current = ""; }}
+                    className={`rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-cyan-300/10 text-cyan-100" : "bg-blue-50 text-blue-800"}`}>{index + 1}</div>
+                      <div className="min-w-0 flex-1">
+                        <Input
+                          disabled={!canEdit}
+                          value={waypoint.name || ""}
+                          onChange={(event) => onUpdateWaypoint(waypoint.id, { name: event.target.value })}
+                          className={`h-10 rounded-xl ${theme.input}`}
+                        />
+                        <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>
+                          {inboundLeg
+                            ? `Leg ${inboundLeg.legIndex} - ${formatRouteDistanceNm(inboundLeg.distanceNm)} - ${formatBearingDegrees(inboundLeg.bearingDegrees)}`
+                            : "Departure reference point"}
+                        </div>
+                      </div>
+                      {canEdit ? (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteWaypoint(waypoint.id)}
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-rose-300/10 text-rose-100 hover:bg-rose-300/15" : "bg-rose-50 text-rose-700 hover:bg-rose-100"}`}
+                          aria-label={`Delete ${waypoint.name || `Waypoint ${index + 1}`}`}
+                        >
+                          x
+                        </button>
+                      ) : null}
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button type="button" variant="outline" onClick={() => handleMoveWaypoint(index, "up")} disabled={!canEdit || index === 0} className="vessel-outline-button rounded-2xl px-3 py-2 text-xs">
+                        Up
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => handleMoveWaypoint(index, "down")} disabled={!canEdit || index === waypoints.length - 1} className="vessel-outline-button rounded-2xl px-3 py-2 text-xs">
+                        Down
+                      </Button>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <div className={`rounded-2xl border border-dashed p-4 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                  Use Add Waypoint, then click the chart to place the next point.
+                </div>
+              )}
+            </div>
+          </RouteControlBracket>
+
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="Vessel Specs"
+            subtitle="Editable route-planning vessel profile."
+            open={openRouteControls.vesselSpecs}
+            onToggle={() => toggleRouteControlBracket("vesselSpecs")}
+          >
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Length" unit="ft" value={routeSpecs.lengthFeet} onChange={(value) => handleRouteSpecPatch({ lengthFeet: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Beam" unit="ft" value={routeSpecs.beamFeet} onChange={(value) => handleRouteSpecPatch({ beamFeet: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Draft" unit="m" step="0.1" value={routeSpecs.draftMeters} onChange={(value) => handleRouteSpecPatch({ draftMeters: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Cruise" unit="kn" step="0.1" value={routeSpecs.cruisingSpeedKnots} onChange={(value) => handleRouteSpecPatch({ cruisingSpeedKnots: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Max Speed" unit="kn" step="0.1" value={routeSpecs.maxSpeedKnots} onChange={(value) => handleRouteSpecPatch({ maxSpeedKnots: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Fuel Cap." unit="L" value={routeSpecs.fuelCapacityLitres} onChange={(value) => handleRouteSpecPatch({ fuelCapacityLitres: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Fuel Burn" unit="L/h" value={routeSpecs.fuelBurnLitresPerHour} onChange={(value) => handleRouteSpecPatch({ fuelBurnLitresPerHour: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Reserve" unit="%" value={routeSpecs.reservePercent} onChange={(value) => handleRouteSpecPatch({ reservePercent: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Safe Depth" unit="m" step="0.1" value={routeSpecs.safeDepthMeters} onChange={(value) => handleRouteSpecPatch({ safeDepthMeters: value })} />
+              <SpecInput darkMode={darkMode} disabled={!canEdit} label="Caution" unit="m" step="0.1" value={routeSpecs.cautionDepthMeters} onChange={(value) => handleRouteSpecPatch({ cautionDepthMeters: value })} />
+            </div>
+          </RouteControlBracket>
+
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="Fuel Model"
+            subtitle={`${formatCompactNumber(routePlan.fuelRequiredLitres)} L required - ${routePlan.fuelStatus}`}
+            open={openRouteControls.fuelModel}
+            onToggle={() => toggleRouteControlBracket("fuelModel")}
+          >
+            <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeFuelTone === "critical" ? darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-800" : routeFuelTone === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-800"}`}>
+              <div className="font-semibold">{routePlan.fuelStatus} fuel margin</div>
+              <div className="mt-1">Usable fuel after reserve: {formatCompactNumber(routePlan.usableFuelLitres)} L.</div>
+              <div>Remaining after route: {formatCompactNumber(routePlan.remainingAfterRoute)} L.</div>
+            </div>
+          </RouteControlBracket>
+
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="Safety Depth"
+            subtitle={routeDepthStatus === "critical" ? "Depth below vessel draft" : routeDepthStatus === "warning" ? "Caution depth section detected" : "Depth review ready"}
+            open={openRouteControls.safetyDepth}
+            onToggle={() => toggleRouteControlBracket("safetyDepth")}
+          >
+            <div className="space-y-3">
+              {routeMinimumAvailableDepth !== null ? (
+                <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeDepthStatus === "critical" ? darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-800" : routeDepthStatus === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-800"}`}>
+                  Sampled minimum: {routeMinimumAvailableDepth.toFixed(1)} m - Draft: {Number(routeSpecs.draftMeters || 0).toFixed(1)} m - Safe depth: {Number(routeSpecs.safeDepthMeters || 0).toFixed(1)} m.
+                </div>
+              ) : (
+                <div className={`rounded-2xl border border-dashed p-4 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                  Connect depth data or add waypoints to produce depth-review reminders.
+                </div>
+              )}
+              {depthWarnings.length ? depthWarnings.map((warning) => (
+                <div key={warning.id} className={`rounded-2xl border p-3 text-sm leading-6 ${warning.severity === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                  {warning.message}
+                </div>
+              )) : null}
+            </div>
+          </RouteControlBracket>
+
+          <RouteControlBracket
+            darkMode={darkMode}
+            title="Layers"
+            subtitle={`Depth source: ${depthSourceLoading ? "Loading" : depthSourceLabel}`}
+            open={openRouteControls.layers}
+            onToggle={() => toggleRouteControlBracket("layers")}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                ["depth", "Depth"],
+                ["depthShading", "Shading"],
+                ["depthContours", "Contours"],
+                ["shallow", "Shallow"],
+                ["hazards", "Hazards"],
+                ["legend", "Legend"],
+              ].map(([key, label]) => (
+                <button key={key} type="button" onClick={() => toggleOverlay(key)} className={routeToggleButtonClass(Boolean(overlayToggles[key]))}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 rounded-2xl border border-white/10 px-3 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className={`text-[11px] font-bold uppercase tracking-[0.14em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>Depth opacity</div>
+                <div className={`text-xs font-semibold ${theme.textSecondary}`}>{Math.round(depthShadingOpacity * 100)}%</div>
+              </div>
+              <input
+                type="range"
+                min="20"
+                max="100"
+                step="5"
+                value={Math.round(depthShadingOpacity * 100)}
+                onChange={(event) => setDepthShadingOpacity(Number(event.target.value) / 100)}
+                className="mt-3 w-full accent-cyan-500"
+              />
+            </div>
+            {(overlayToggles.depth && !depthDataConnected) ? (
+              <div className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+                {DEPTH_LAYER_UNAVAILABLE_MESSAGE}
+              </div>
+            ) : null}
+          </RouteControlBracket>
+        </aside>
+
+          <div className="hidden">
             <Card className={`app-panel app-panel-soft rounded-[26px] md:rounded-[24px] ${theme.card}`}>
               <CardContent className="p-5">
                 <div className="app-kicker">Vessel Safety & Passage Parameters</div>
@@ -1968,6 +2122,5 @@ export function RoutePlanningView({
           </div>
         </div>
       </div>
-    </div>
   );
 }
