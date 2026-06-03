@@ -579,31 +579,29 @@ function DesktopVesselIdentityLockup({
   const chipBase = "rounded-full border px-4 py-2 text-sm font-semibold";
 
   return (
-    <div className="hidden min-w-0 pr-[360px] lg:block xl:pr-[390px]">
-      <div className="flex min-w-0 items-center gap-7">
-        <div
-          className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl ${
-            darkMode
-              ? "border-white/10 bg-slate-900/80 shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
-              : "border-slate-200/80 bg-white/84 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_20px_48px_rgba(15,23,42,0.10)]"
+    <div className="hidden min-w-0 pl-32 pr-[360px] pt-20 lg:block xl:pl-36 xl:pr-[390px]">
+      <div
+        className={`absolute left-8 top-8 z-10 hidden h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl lg:flex ${
+          darkMode
+            ? "border-white/10 bg-slate-900/80 shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
+            : "border-slate-200/80 bg-white/84 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_20px_48px_rgba(15,23,42,0.10)]"
+        }`}
+      >
+        <ContessaUiLogo className="h-16 w-16 object-contain" />
+      </div>
+
+      <div className="min-w-0">
+        <h1
+          className={`${getDesktopVesselTitleSize(vesselTitle)} vessel-display-title whitespace-nowrap font-semibold leading-[0.88] tracking-[0.065em] ${
+            darkMode ? "text-slate-50" : "text-[#071A3A]"
           }`}
         >
-          <ContessaUiLogo className="h-16 w-16 object-contain" />
-        </div>
-
-        <div className="min-w-0">
-          <h1
-            className={`${getDesktopVesselTitleSize(vesselTitle)} vessel-display-title whitespace-nowrap font-semibold leading-[0.88] tracking-[0.065em] ${
-              darkMode ? "text-slate-50" : "text-[#071A3A]"
-            }`}
-          >
-            {vesselTitle}
-          </h1>
-          <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-            {vesselIdentifier}
-          </p>
-          <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
-        </div>
+          {vesselTitle}
+        </h1>
+        <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+          {vesselIdentifier}
+        </p>
+        <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
       </div>
 
       <p className={`mt-8 max-w-3xl text-lg leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
@@ -1561,7 +1559,7 @@ export function AppShellHeader({
         />
 
         {commandSearchView ? (
-          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start lg:mt-8">
+          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start lg:mt-8 lg:pl-32 xl:pl-36">
             <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
               {commandSearchView}
             </div>
