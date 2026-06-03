@@ -2493,10 +2493,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
   };
 
-  const handleHeaderNotificationSelect = (item) => {
-    if (!item) return;
-    openNotificationItem(item);
-
+  const normalizeNotificationNavigation = (item = {}) => {
     const sectionIdByNotificationSection = {
       tasks: "tasks-section",
       expenses: "approvals-section",
@@ -2509,22 +2506,54 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       maintenance: "tasks-maintenance",
       certificates: "crew-certificates",
     };
+    const optionsByNotificationSection = {
+      tasks: { panel: "tasks" },
+      expenses: { bucket: item.bucket === "crew" ? "crew" : "boat" },
+      maintenance: { panel: "maintenance" },
+      certificates: { panel: "certificates" },
+    };
+    const asDomItemId = (value) => {
+      if (!value || typeof value !== "string") return "";
+      return value.startsWith("item-") ? value : `item-${value}`;
+    };
 
     const sectionId = sectionIdByNotificationSection[item.section] || "alerts-section";
-    const moduleName = moduleByNotificationSection[item.section] || "";
-    const targetIdByNotificationSection = {
-      tasks: item.targetId ? `item-${item.targetId}` : sectionId,
-      expenses: item.targetId ? `item-${item.targetId}` : sectionId,
-      maintenance: item.targetId ? `item-${item.targetId}` : sectionId,
-      certificates: item.targetId ? `item-${item.targetId}` : sectionId,
-    };
-    setPendingSectionNavigation({
+    const moduleName = moduleByNotificationSection[item.section] || "notifications";
+    const rawTargetId = item.section === "expenses" && item.taskId ? item.taskId : item.targetId;
+    const targetId = ["tasks", "expenses", "maintenance", "certificates"].includes(item.section)
+      ? asDomItemId(rawTargetId) || sectionId
+      : item.targetId || sectionId;
+
+    return {
       sectionId,
-      targetId: targetIdByNotificationSection[item.section] || item.targetId || sectionId,
       moduleName,
-      options: {},
-      requestedAt: Date.now(),
-    });
+      options: optionsByNotificationSection[item.section] || {},
+      targetId,
+    };
+  };
+
+  const handleHeaderNotificationSelect = (item) => {
+    if (!item) return;
+
+    try {
+      openNotificationItem(item);
+      const navigation = normalizeNotificationNavigation(item);
+
+      setPendingSectionNavigation({
+        ...navigation,
+        requestedAt: Date.now(),
+      });
+    } catch (error) {
+      console.error("Notification selection failed:", error);
+      const fallback = normalizeNotificationNavigation(item);
+      setPendingSectionNavigation({
+        sectionId: fallback.sectionId,
+        targetId: fallback.sectionId,
+        moduleName: fallback.moduleName,
+        options: fallback.options,
+        requestedAt: Date.now(),
+      });
+    }
   };
 
   const requestDeviceNotifications = () => {

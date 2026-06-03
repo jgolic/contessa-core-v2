@@ -511,7 +511,7 @@ function NotificationsPanel({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className={`min-w-0 flex-1 truncate text-sm font-semibold ${titleTextClass}`}>
-                      {notification.title || "Vessel alert"}
+                      {safeText(notification.title, "Vessel alert")}
                     </p>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${priorityBadgeClass(notification)}`}>
                       {priorityLabel(notification)}
@@ -519,7 +519,7 @@ function NotificationsPanel({
                   </div>
                   {notification.detail || notification.context ? (
                     <p className={`mt-1 line-clamp-2 text-sm leading-5 ${contextTextClass}`}>
-                      {notification.detail || notification.context}
+                      {safeText(notification.detail || notification.context, "")}
                     </p>
                   ) : null}
                 </div>
@@ -1243,6 +1243,7 @@ export function ObjectivesView({
               selectedTask={selectedTask}
               canEdit={canEdit}
               darkMode={darkMode}
+              assigneeOptions={scopedAssigneeOptions}
               currency={currency}
               exchangeRates={exchangeRates}
               onDeleteTaskRequest={onDeleteTaskRequest}
@@ -2865,6 +2866,7 @@ export function TaskDetails({
   selectedTask,
   darkMode = false,
   canEdit = true,
+  assigneeOptions = [],
   currency,
   exchangeRates,
   onDeleteTaskRequest,
@@ -2881,6 +2883,7 @@ export function TaskDetails({
   onQuoteRemoveRequest,
 }) {
   const theme = themeClasses(darkMode);
+  const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
   const [commentDraft, setCommentDraft] = useState("");
 
   useEffect(() => {
