@@ -575,11 +575,12 @@ function DesktopVesselIdentityLockup({
   vesselIdentifier,
   vesselMode = "Command workspace",
   currentRoleLabel = "Captain",
+  commandStatement = "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.",
 }) {
   const chipBase = "rounded-full border px-4 py-2 text-sm font-semibold";
 
   return (
-    <div className="hidden min-w-0 pl-32 pr-[360px] pt-20 lg:block xl:pl-36 xl:pr-[390px]">
+    <div className="hidden min-w-0 pl-32 pt-20 lg:block xl:pl-36">
       <div
         className={`absolute left-8 top-8 z-10 hidden h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl lg:flex ${
           darkMode
@@ -604,8 +605,8 @@ function DesktopVesselIdentityLockup({
         <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
       </div>
 
-      <p className={`mt-8 max-w-3xl text-lg leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
-        Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.
+      <p className={`mt-8 max-w-3xl text-lg font-medium leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+        {commandStatement}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -619,6 +620,137 @@ function DesktopVesselIdentityLockup({
           {currentRoleLabel} view
         </span>
       </div>
+    </div>
+  );
+}
+
+function HeroLensTile({ darkMode = false, label, value, tone = "neutral" }) {
+  const toneClass = {
+    cyan: darkMode
+      ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100"
+      : "border-cyan-200 bg-cyan-50/80 text-cyan-900",
+    amber: darkMode
+      ? "border-amber-300/25 bg-amber-300/10 text-amber-100"
+      : "border-amber-200 bg-amber-50/90 text-amber-900",
+    teal: darkMode
+      ? "border-teal-300/25 bg-teal-300/10 text-teal-100"
+      : "border-teal-200 bg-teal-50/80 text-teal-900",
+    rose: darkMode
+      ? "border-rose-300/25 bg-rose-300/10 text-rose-100"
+      : "border-rose-200 bg-rose-50/80 text-rose-900",
+    neutral: darkMode
+      ? "border-white/10 bg-white/[0.04] text-slate-100"
+      : "border-slate-200/80 bg-white/82 text-slate-900",
+  }[tone] || (darkMode ? "border-white/10 bg-white/[0.04] text-slate-100" : "border-slate-200/80 bg-white/82 text-slate-900");
+
+  return (
+    <div className={`rounded-2xl border px-4 py-3 ${toneClass}`}>
+      <div className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-75">{label}</div>
+      <div className="mt-1 truncate text-base font-bold leading-6">{value}</div>
+    </div>
+  );
+}
+
+function HeroCommandLens({
+  darkMode = false,
+  confidence = 0,
+  nextAction = "Review priorities",
+  routeStatus = "Confirmed",
+  pendingSpend = "$0",
+  pendingApprovals = 0,
+  crewReadiness = "Stable",
+  latestActivity = "No recent activity logged.",
+  onReviewPriorities,
+  onOpenApprovals,
+}) {
+  const confidenceTone = confidence >= 82 ? "teal" : confidence >= 65 ? "amber" : "rose";
+  const panelClass = darkMode
+    ? "border-cyan-300/15 bg-slate-950/58 text-slate-50 shadow-[0_26px_70px_rgba(0,0,0,0.34)]"
+    : "border-white/80 bg-white/76 text-[#071A3A] shadow-[0_28px_80px_rgba(15,23,42,0.10)]";
+
+  return (
+    <aside className={`relative min-w-0 overflow-hidden rounded-[34px] border p-5 backdrop-blur-2xl ${panelClass}`}>
+      <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className={`text-[11px] font-bold uppercase tracking-[0.2em] ${darkMode ? "text-cyan-100" : "text-cyan-800"}`}>
+            Command Lens
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight">Vessel intelligence</h2>
+          <p className={`mt-2 text-sm leading-6 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+            Live signals condensed for captain decisions.
+          </p>
+        </div>
+
+        <div className={`flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-[26px] border ${confidenceTone === "teal" ? (darkMode ? "border-teal-300/30 bg-teal-300/10 text-teal-100" : "border-teal-200 bg-teal-50 text-teal-900") : confidenceTone === "amber" ? (darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-900") : (darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-900")}`}>
+          <span className="text-2xl font-black leading-none">{confidence}%</span>
+          <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em]">Ready</span>
+        </div>
+      </div>
+
+      <div className={`mt-5 rounded-[26px] border p-4 ${darkMode ? "border-amber-300/20 bg-amber-300/10" : "border-amber-200/80 bg-amber-50/65"}`}>
+        <p className={`text-[10px] font-bold uppercase tracking-[0.18em] ${darkMode ? "text-amber-100" : "text-amber-800"}`}>
+          Next best action
+        </p>
+        <p className={`mt-2 text-base font-semibold leading-6 ${darkMode ? "text-slate-50" : "text-slate-950"}`}>
+          {nextAction}
+        </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <HeroLensTile darkMode={darkMode} label="Route" value={routeStatus} tone="cyan" />
+        <HeroLensTile darkMode={darkMode} label="Pending spend" value={pendingSpend} tone="amber" />
+        <HeroLensTile darkMode={darkMode} label="Approval" value={`${pendingApprovals} waiting`} tone={pendingApprovals ? "amber" : "neutral"} />
+        <HeroLensTile darkMode={darkMode} label="Crew" value={crewReadiness} tone="teal" />
+      </div>
+
+      <div className={`mt-4 rounded-[24px] border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/82"}`}>
+        <p className={`text-[10px] font-bold uppercase tracking-[0.18em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+          Latest activity
+        </p>
+        <p className={`mt-2 line-clamp-2 text-sm font-medium leading-6 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+          {latestActivity}
+        </p>
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <Button type="button" onClick={onReviewPriorities} className="app-primary-action-button rounded-2xl px-4 py-3">
+          Review priorities
+        </Button>
+        <Button type="button" variant="outline" onClick={onOpenApprovals} className={`app-action-button rounded-2xl px-4 py-3 ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-100" : ""}`}>
+          Open approvals
+        </Button>
+      </div>
+    </aside>
+  );
+}
+
+function HeroSignalStrip({ darkMode = false, signals = [] }) {
+  return (
+    <div className={`mt-6 grid gap-3 rounded-[32px] border p-3 backdrop-blur-xl lg:grid-cols-5 ${darkMode ? "border-white/10 bg-slate-950/34" : "border-white/80 bg-white/58"}`}>
+      {signals.map((signal) => (
+        <button
+          key={signal.key}
+          type="button"
+          onClick={signal.onClick}
+          className={`group min-w-0 rounded-[24px] border px-4 py-4 text-left transition-all duration-200 hover:-translate-y-0.5 ${
+            darkMode
+              ? "border-white/10 bg-white/[0.04] text-slate-50 hover:border-cyan-300/30 hover:bg-cyan-300/10"
+              : "border-slate-200/80 bg-white/82 text-slate-950 hover:border-blue-300/70 hover:bg-blue-50/80"
+          }`}
+        >
+          <div className={`text-[10px] font-bold uppercase tracking-[0.18em] ${signal.tone === "amber" ? (darkMode ? "text-amber-100" : "text-amber-700") : signal.tone === "teal" ? (darkMode ? "text-teal-100" : "text-teal-700") : signal.tone === "sky" ? (darkMode ? "text-sky-100" : "text-sky-700") : signal.tone === "slate" ? (darkMode ? "text-slate-300" : "text-slate-600") : (darkMode ? "text-cyan-100" : "text-blue-700")}`}>
+            {signal.label}
+          </div>
+          <div className="mt-2 flex items-end justify-between gap-3">
+            <span className="truncate text-2xl font-bold leading-none">{signal.value}</span>
+            <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-300" : "border-slate-200 bg-white/80 text-slate-600"}`}>
+              Open
+            </span>
+          </div>
+          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>{signal.note}</p>
+        </button>
+      ))}
     </div>
   );
 }
@@ -1318,6 +1450,76 @@ export function AppShellHeader({
     if (/urgent|overdue|alert/.test(normalizedLabel)) return "premium-label-urgent";
     return "";
   };
+  const heroConfidence = Math.max(
+    0,
+    Math.min(
+      100,
+      Number(
+        vesselState?.confidenceScore ??
+          currentVesselMetrics.confidenceScore ??
+          (stats.overdueTasks || stats.pendingApprovals || stats.certificateDue ? 74 : 88)
+      ) || 0
+    )
+  );
+  const heroCommandStatement = vesselState?.primaryFocus
+    ? `${vesselState.primaryFocus}. Crew, approvals, routing, and documents stay synchronized from this command surface.`
+    : "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.";
+  const heroNextAction = vesselState?.primaryFocus
+    || ((stats.overdueTasks || 0) > 0
+      ? "Clear overdue operational items before the next handoff."
+      : (stats.pendingApprovals || 0) > 0
+        ? "Review pending approvals and spend movement."
+        : routeWarningCount > 0
+          ? "Review route and bridge readiness."
+          : "Confirm today's vessel readiness.");
+  const heroCrewReadiness = (stats.certificateDue || 0) > 0
+    ? `${stats.certificateDue} cert${stats.certificateDue === 1 ? "" : "s"} due`
+    : `${stats.crewProfiles || currentVesselMetrics.crewCount || 0} crew ready`;
+  const heroLatestActivity = recentHeaderHistory[0]
+    ? `${recentHeaderHistory[0].action}: ${recentHeaderHistory[0].detail}`
+    : "No recent activity logged for this vessel.";
+  const heroSignals = [
+    {
+      key: "tasks",
+      label: "Tasks",
+      value: stats.totalObjectives || currentVesselMetrics.taskCount || 0,
+      note: (stats.overdueTasks || 0) > 0 ? `${stats.overdueTasks} overdue` : "active queue",
+      tone: "blue",
+      onClick: onOpenTasksMaintenance,
+    },
+    {
+      key: "approvals",
+      label: "Approvals",
+      value: stats.pendingApprovals || currentVesselMetrics.approvalCount || 0,
+      note: (stats.pendingApprovals || 0) > 0 ? "waiting decision" : "queue calm",
+      tone: "amber",
+      onClick: onOpenApprovals,
+    },
+    {
+      key: "crew",
+      label: "Crew",
+      value: stats.crewProfiles || currentVesselMetrics.crewCount || 0,
+      note: (stats.certificateDue || 0) > 0 ? `${stats.certificateDue} certs due` : "readiness stable",
+      tone: "teal",
+      onClick: onOpenCrewCertificates,
+    },
+    {
+      key: "route",
+      label: "Route",
+      value: routeWarningCount || routeStatusLabel,
+      note: routeWarningCount ? "bridge review" : "navigation status",
+      tone: "sky",
+      onClick: onOpenRoute,
+    },
+    {
+      key: "documents",
+      label: "Docs",
+      value: stats.documentCount || currentVesselMetrics.documentCount || 0,
+      note: "vessel records",
+      tone: "slate",
+      onClick: onOpenDocuments,
+    },
+  ];
 
   return (
     <div
@@ -1542,31 +1744,68 @@ export function AppShellHeader({
       </Dialog>
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
+      <div className="pointer-events-none absolute inset-0 hidden opacity-80 lg:block">
+        <div className={`absolute right-20 top-24 h-72 w-72 rounded-full border ${darkMode ? "border-cyan-300/10" : "border-cyan-200/30"}`} />
+        <div className={`absolute right-40 top-48 h-40 w-40 rounded-full border ${darkMode ? "border-amber-300/10" : "border-amber-200/35"}`} />
+        <div className={`absolute bottom-10 right-12 h-px w-80 bg-gradient-to-r from-transparent to-transparent ${darkMode ? "via-cyan-300/20" : "via-cyan-300/35"}`} />
+      </div>
 
       <div className="vessel-header-flow min-w-0 pt-16 lg:pt-0">
-        <MobileVesselIdentityLockup
-          darkMode={darkMode}
-          vesselTitle={vesselTitle}
-          vesselIdentifier={vesselIdentifier}
-        />
+        <div className="lg:hidden">
+          <MobileVesselIdentityLockup
+            darkMode={darkMode}
+            vesselTitle={vesselTitle}
+            vesselIdentifier={vesselIdentifier}
+          />
 
-        <DesktopVesselIdentityLockup
-          darkMode={darkMode}
-          vesselTitle={vesselTitle}
-          vesselIdentifier={vesselIdentifier}
-          vesselMode={vesselModeLabel}
-          currentRoleLabel={currentRoleLabel}
-        />
-
-        {commandSearchView ? (
-          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start lg:mt-8 lg:pl-32 xl:pl-36">
-            <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
-              {commandSearchView}
+          {commandSearchView ? (
+            <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start">
+              <div className="relative z-[5000] w-full min-w-0">
+                {commandSearchView}
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
-          <div className="absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2 lg:right-8 lg:top-8 lg:gap-3">
+        <div className="hidden min-w-0 lg:block">
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] xl:grid-cols-[minmax(0,1.15fr)_minmax(420px,0.85fr)]">
+            <div className="min-w-0">
+              <DesktopVesselIdentityLockup
+                darkMode={darkMode}
+                vesselTitle={vesselTitle}
+                vesselIdentifier={vesselIdentifier}
+                vesselMode={vesselModeLabel}
+                currentRoleLabel={currentRoleLabel}
+                commandStatement={heroCommandStatement}
+              />
+
+              {commandSearchView ? (
+                <div className="relative z-[5000] mt-8 flex w-full min-w-0 justify-start pl-32 xl:pl-36">
+                  <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
+                    {commandSearchView}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            <HeroCommandLens
+              darkMode={darkMode}
+              confidence={heroConfidence}
+              nextAction={heroNextAction}
+              routeStatus={routeStatusLabel}
+              pendingSpend={formatMoney(stats.totalExpenses || 0, currency)}
+              pendingApprovals={stats.pendingApprovals || 0}
+              crewReadiness={heroCrewReadiness}
+              latestActivity={heroLatestActivity}
+              onReviewPriorities={onOpenCommand}
+              onOpenApprovals={onOpenApprovals}
+            />
+          </div>
+
+          <HeroSignalStrip darkMode={darkMode} signals={heroSignals} />
+        </div>
+
+          <div className={`absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2 lg:right-8 lg:top-8 lg:gap-3 lg:rounded-[30px] lg:border lg:p-2 lg:backdrop-blur-2xl ${darkMode ? "lg:border-white/10 lg:bg-slate-950/28" : "lg:border-white/70 lg:bg-white/42"}`}>
             <Button
               type="button"
               variant="outline"
