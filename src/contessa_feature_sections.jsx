@@ -543,22 +543,13 @@ function getVesselIdentifier(vessel) {
   return "IMO pending verification";
 }
 
-function getVesselTitleSize(name = "") {
+function getDesktopVesselTitleSize(name = "") {
   const length = String(name || "").length;
 
-  if (length <= 12) {
-    return "text-[clamp(30px,8.4vw,36px)] sm:text-[44px] lg:text-[64px]";
-  }
-
-  if (length <= 18) {
-    return "text-[clamp(28px,7.8vw,34px)] sm:text-[40px] lg:text-[58px]";
-  }
-
-  if (length <= 24) {
-    return "text-[clamp(24px,6.9vw,30px)] sm:text-[36px] lg:text-[52px]";
-  }
-
-  return "text-[clamp(21px,5.8vw,26px)] sm:text-[32px] lg:text-[46px]";
+  if (length <= 12) return "text-[64px] xl:text-[88px]";
+  if (length <= 18) return "text-[58px] xl:text-[78px]";
+  if (length <= 24) return "text-[52px] xl:text-[68px]";
+  return "text-[44px] xl:text-[58px]";
 }
 
 function getMobileVesselTitleSize(name = "") {
@@ -578,31 +569,57 @@ function getCleanVesselTitle(name = "") {
   return (cleanName || "M/Y VESSEL").toUpperCase();
 }
 
-function VesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier, vesselTitleClass }) {
-  return (
-    <div className="flex min-w-0 max-w-full items-center gap-3 sm:gap-4 md:gap-5 md:pr-[270px] lg:pr-[310px]">
-      <div
-        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border backdrop-blur-xl sm:h-16 sm:w-16 sm:rounded-[24px] md:h-[72px] md:w-[72px] ${
-          darkMode
-            ? "border-white/10 bg-slate-900/80 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
-            : "border-slate-200/80 bg-white/82 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_34px_rgba(15,23,42,0.08)]"
-        }`}
-      >
-        <ContessaUiLogo className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
-      </div>
+function DesktopVesselIdentityLockup({
+  darkMode = false,
+  vesselTitle,
+  vesselIdentifier,
+  vesselMode = "Command workspace",
+  currentRoleLabel = "Captain",
+}) {
+  const chipBase = "rounded-full border px-4 py-2 text-sm font-semibold";
 
-      <div className="min-w-0 flex-1">
-        <h1
-          className={`${vesselTitleClass} vessel-display-title max-w-full whitespace-nowrap font-semibold leading-[0.9] tracking-[0.035em] sm:tracking-[0.055em] ${
-            darkMode ? "text-slate-50" : "text-[#071A3A]"
+  return (
+    <div className="hidden min-w-0 pr-[360px] lg:block xl:pr-[390px]">
+      <div className="flex min-w-0 items-center gap-7">
+        <div
+          className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl ${
+            darkMode
+              ? "border-white/10 bg-slate-900/80 shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
+              : "border-slate-200/80 bg-white/84 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_20px_48px_rgba(15,23,42,0.10)]"
           }`}
         >
-          {vesselTitle}
-        </h1>
-        <p className={`mt-3 whitespace-nowrap text-xs font-bold uppercase tracking-[0.22em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-          {vesselIdentifier}
-        </p>
-        <div className="mt-3 h-px w-32 bg-gradient-to-r from-transparent via-amber-400/55 to-transparent dark:via-amber-300/55" />
+          <ContessaUiLogo className="h-16 w-16 object-contain" />
+        </div>
+
+        <div className="min-w-0">
+          <h1
+            className={`${getDesktopVesselTitleSize(vesselTitle)} vessel-display-title whitespace-nowrap font-semibold leading-[0.88] tracking-[0.065em] ${
+              darkMode ? "text-slate-50" : "text-[#071A3A]"
+            }`}
+          >
+            {vesselTitle}
+          </h1>
+          <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+            {vesselIdentifier}
+          </p>
+          <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
+        </div>
+      </div>
+
+      <p className={`mt-8 max-w-3xl text-lg leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+        Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.
+      </p>
+
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <span className={`${chipBase} border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-300/30 dark:bg-teal-300/10 dark:text-teal-100`}>
+          Live vessel workspace
+        </span>
+        <span className={`${chipBase} border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100`}>
+          {vesselMode}
+        </span>
+        <span className={`${chipBase} border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100`}>
+          {currentRoleLabel} view
+        </span>
       </div>
     </div>
   );
@@ -610,7 +627,7 @@ function VesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier,
 
 function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier }) {
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <div
         className={`mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] border backdrop-blur-xl ${
           darkMode
@@ -1203,7 +1220,7 @@ export function AppShellHeader({
   const vesselName = currentVesselIdentity?.displayName || currentVesselIdentity?.name || currentVesselName || "Vessel";
   const vesselTitle = getCleanVesselTitle(vesselName);
   const vesselIdentifier = getVesselIdentifier(currentVesselIdentity || {});
-  const vesselTitleClass = getVesselTitleSize(vesselTitle);
+  const vesselModeLabel = vesselState?.modeLabel || (vesselState?.mode ? titleCase(String(vesselState.mode).replace(/-/g, " / ")) : activeFleetVessel?.details?.status || "Command workspace");
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const selectedFleetFlag = normalizeFlag(fleetDraft.flag);
   const fleetHomePortOptions = homePortsByFlag[selectedFleetFlag] || [];
@@ -1307,7 +1324,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[38px] border p-5 md:p-8 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
+      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[38px] border p-5 md:p-8 lg:px-10 lg:py-10 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -1528,31 +1545,30 @@ export function AppShellHeader({
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="vessel-header-flow min-w-0 pt-16 md:pt-5">
+      <div className="vessel-header-flow min-w-0 pt-16 lg:pt-0">
         <MobileVesselIdentityLockup
           darkMode={darkMode}
           vesselTitle={vesselTitle}
           vesselIdentifier={vesselIdentifier}
         />
 
-        <div className="hidden md:block">
-          <VesselIdentityLockup
-            darkMode={darkMode}
-            vesselTitle={vesselTitle}
-            vesselIdentifier={vesselIdentifier}
-            vesselTitleClass={vesselTitleClass}
-          />
-        </div>
+        <DesktopVesselIdentityLockup
+          darkMode={darkMode}
+          vesselTitle={vesselTitle}
+          vesselIdentifier={vesselIdentifier}
+          vesselMode={vesselModeLabel}
+          currentRoleLabel={currentRoleLabel}
+        />
 
         {commandSearchView ? (
-          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start md:mt-7">
+          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start lg:mt-8">
             <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
               {commandSearchView}
             </div>
           </div>
         ) : null}
 
-          <div className="absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2">
+          <div className="absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2 lg:right-8 lg:top-8 lg:gap-3">
             <Button
               type="button"
               variant="outline"
