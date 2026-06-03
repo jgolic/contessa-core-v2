@@ -59,7 +59,6 @@ import { AlertInboxButton, BottomNavButton, SectionNavCard, ShellControlButton }
 import { SmartLabel } from "./components/smart_label.jsx";
 import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
-import { VesselTitle } from "./components/vessel_title.jsx";
 
 const premiumShellClass = (darkMode = false) =>
   [
@@ -536,27 +535,68 @@ function NotificationsPanel({
 
 function getVesselIdentifier(vessel) {
   if (vessel?.imo) return `IMO ${vessel.imo}`;
+  if (vessel?.vesselPrintInfo?.imo) return `IMO ${vessel.vesselPrintInfo.imo}`;
   if (vessel?.officialNumber) return `Official No. ${vessel.officialNumber}`;
+  if (vessel?.vesselPrintInfo?.officialNumber) return `Official No. ${vessel.vesselPrintInfo.officialNumber}`;
   if (vessel?.mmsi) return `MMSI ${vessel.mmsi}`;
+  if (vessel?.vesselPrintInfo?.mmsi) return `MMSI ${vessel.vesselPrintInfo.mmsi}`;
   return "IMO pending verification";
 }
 
 function getVesselTitleSize(name = "") {
   const length = String(name || "").length;
 
-  if (length <= 14) {
-    return "text-[clamp(25px,7.8vw,36px)] lg:text-[40px]";
+  if (length <= 12) {
+    return "text-[clamp(30px,8.4vw,36px)] sm:text-[44px] lg:text-[64px]";
   }
 
-  if (length <= 20) {
-    return "text-[clamp(23px,6.8vw,32px)] lg:text-[34px]";
+  if (length <= 18) {
+    return "text-[clamp(28px,7.8vw,34px)] sm:text-[40px] lg:text-[58px]";
   }
 
-  if (length <= 28) {
-    return "text-[clamp(20px,5.8vw,28px)] lg:text-[30px]";
+  if (length <= 24) {
+    return "text-[clamp(24px,6.9vw,30px)] sm:text-[36px] lg:text-[52px]";
   }
 
-  return "text-[clamp(18px,4.8vw,24px)] lg:text-[26px]";
+  return "text-[clamp(21px,5.8vw,26px)] sm:text-[32px] lg:text-[46px]";
+}
+
+function getCleanVesselTitle(name = "") {
+  const cleanName = String(name || "M/Y VESSEL")
+    .replace(/\s+OPERATIONS$/i, "")
+    .trim();
+
+  return (cleanName || "M/Y VESSEL").toUpperCase();
+}
+
+function VesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier, vesselTitleClass }) {
+  return (
+    <div className="flex min-w-0 max-w-full items-center gap-3 sm:gap-4 md:gap-5 md:pr-[270px] lg:pr-[310px]">
+      <div
+        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border backdrop-blur-xl sm:h-16 sm:w-16 sm:rounded-[24px] md:h-[72px] md:w-[72px] ${
+          darkMode
+            ? "border-white/10 bg-slate-900/80 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+            : "border-slate-200/80 bg-white/82 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_34px_rgba(15,23,42,0.08)]"
+        }`}
+      >
+        <ContessaUiLogo className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <h1
+          className={`${vesselTitleClass} vessel-display-title max-w-full whitespace-nowrap font-semibold leading-[0.9] tracking-[0.035em] sm:tracking-[0.055em] ${
+            darkMode ? "text-slate-50" : "text-[#071A3A]"
+          }`}
+        >
+          {vesselTitle}
+        </h1>
+        <p className={`mt-3 whitespace-nowrap text-xs font-bold uppercase tracking-[0.22em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+          {vesselIdentifier}
+        </p>
+        <div className="mt-3 h-px w-32 bg-gradient-to-r from-transparent via-amber-400/55 to-transparent dark:via-amber-300/55" />
+      </div>
+    </div>
+  );
 }
 
 function ControlCard({ darkMode = false, label, value, children }) {
@@ -1124,7 +1164,7 @@ export function AppShellHeader({
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
   const vesselName = currentVesselIdentity?.displayName || currentVesselIdentity?.name || currentVesselName || "Vessel";
-  const vesselTitle = String(vesselName || "Vessel").toUpperCase();
+  const vesselTitle = getCleanVesselTitle(vesselName);
   const vesselIdentifier = getVesselIdentifier(currentVesselIdentity || {});
   const vesselTitleClass = getVesselTitleSize(vesselTitle);
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
@@ -1230,7 +1270,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[34px] border px-5 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] md:px-8 md:pb-8 md:pt-7 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
+      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[38px] border p-5 md:p-8 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -1451,29 +1491,21 @@ export function AppShellHeader({
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="vessel-header-flow min-w-0">
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0 md:gap-x-6">
-          <div className="col-span-2 row-start-1 mt-14 flex min-w-0 items-center gap-3 sm:mt-16 sm:gap-4 md:col-span-1 md:col-start-1 md:mt-0">
-            <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] border md:h-[72px] md:w-[72px] ${darkMode ? "vessel-card-dark" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.72)] shadow-[0_18px_34px_-28px_rgba(19,52,43,0.24)]"}`}>
-              <ContessaUiLogo className="h-[52px] w-[52px] md:h-[66px] md:w-[66px]" />
-            </div>
-            <div className="min-w-0 flex-1 pr-0 md:pr-[300px] lg:pr-[340px]">
-              <h1 className={`${vesselTitleClass} whitespace-nowrap font-serif font-medium leading-none tracking-[0.075em] lg:font-semibold lg:tracking-[0.08em] ${darkMode ? "text-slate-50" : "text-[#071A3A]"}`}>
-                {vesselTitle}
-              </h1>
-              <p className={`mt-2 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-sm lg:tracking-[0.12em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
-                {vesselIdentifier}
-              </p>
+      <div className="vessel-header-flow min-w-0 pt-20 sm:pt-16 md:pt-5">
+        <VesselIdentityLockup
+          darkMode={darkMode}
+          vesselTitle={vesselTitle}
+          vesselIdentifier={vesselIdentifier}
+          vesselTitleClass={vesselTitleClass}
+        />
+
+        {commandSearchView ? (
+          <div className="relative z-[5000] mt-7 flex w-full min-w-0 justify-start">
+            <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
+              {commandSearchView}
             </div>
           </div>
-
-          {commandSearchView ? (
-            <div className="relative z-[5000] col-span-2 row-start-2 mt-5 flex w-full min-w-0 justify-start md:row-start-2 md:mt-8">
-              <div className="relative z-[5000] w-full min-w-0 max-w-[760px]">
-                {commandSearchView}
-              </div>
-            </div>
-          ) : null}
+        ) : null}
 
           <div className="absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2">
             <Button
@@ -1613,8 +1645,6 @@ export function AppShellHeader({
               />
             </div>
           </div>
-
-        </div>
       </div>
 
       <Dialog open={legalOpen} onOpenChange={setLegalOpen}>

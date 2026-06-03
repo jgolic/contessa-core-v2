@@ -485,15 +485,15 @@ export function CommandJumpBar({
 
   if (compact) {
     return (
-      <div ref={containerRef} className="search-command-card relative z-[5000] w-full min-w-0 md:max-w-[720px]">
-        <div className={`group flex h-16 w-full items-center gap-3 rounded-[26px] border px-4 backdrop-blur-xl transition-all duration-200 md:h-14 md:rounded-3xl md:px-5 ${darkMode ? "border-cyan-300/25 bg-slate-950/80 text-slate-50 shadow-[0_18px_60px_rgba(34,211,238,0.14)] hover:border-cyan-300/40 focus-within:border-cyan-300/50 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.14),0_18px_60px_rgba(34,211,238,0.18)]" : "border-blue-200/80 bg-white/85 text-slate-800 shadow-[0_16px_42px_rgba(59,130,246,0.10)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_18px_54px_rgba(59,130,246,0.14)]"}`}>
+      <div ref={containerRef} className="search-command-card relative z-[5000] w-full min-w-0 md:max-w-4xl">
+        <div className={`group flex min-h-[60px] w-full items-center gap-3 rounded-[28px] border px-4 backdrop-blur-xl transition-all duration-200 ${darkMode ? "border-cyan-300/25 bg-slate-950/76 text-slate-50 shadow-[0_18px_60px_rgba(34,211,238,0.14)] hover:border-cyan-300/40 focus-within:border-cyan-300/55 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.14),0_24px_70px_rgba(34,211,238,0.18)]" : "border-blue-200/80 bg-white/88 text-slate-800 shadow-[0_18px_55px_rgba(59,130,246,0.12)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_22px_65px_rgba(59,130,246,0.14)]"}`}>
           <button
             type="button"
             onClick={() => {
               inputRef.current?.focus();
               setOpen(Boolean(query.trim()));
             }}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all duration-200 hover:scale-[1.03] ${
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-inner transition-all duration-200 hover:scale-[1.03] ${
               darkMode
                 ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 focus:outline-none focus:ring-2 focus:ring-cyan-300/35"
                 : "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
@@ -512,7 +512,7 @@ export function CommandJumpBar({
             onFocus={() => setOpen(Boolean(query.trim()))}
             onKeyDown={handleKeyDown}
             placeholder="Search crew, tasks, docs..."
-            className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-800 outline-none placeholder:text-slate-500 md:text-[15px] ${darkMode ? "text-slate-50 placeholder:text-slate-400" : ""}`}
+            className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-800 outline-none placeholder:text-slate-500 ${darkMode ? "text-slate-50 placeholder:text-slate-400" : ""}`}
             aria-label="Search tasks, crew, approvals, documents"
           />
           <div className={`hidden shrink-0 items-center gap-2 text-xs font-semibold lg:flex ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
