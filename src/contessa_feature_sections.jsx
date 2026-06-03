@@ -569,6 +569,48 @@ function getCleanVesselTitle(name = "") {
   return (cleanName || "M/Y VESSEL").toUpperCase();
 }
 
+function safeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function safeText(value, fallback = "-") {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+
+  if (value && typeof value === "object") {
+    return (
+      safeText(value.title, "") ||
+      safeText(value.message, "") ||
+      safeText(value.description, "") ||
+      safeText(value.context, "") ||
+      safeText(value.note, "") ||
+      fallback
+    );
+  }
+
+  return fallback;
+}
+
+function formatActivity(activity) {
+  if (!activity) return "No recent activity logged.";
+  if (typeof activity === "string") return activity;
+
+  if (activity && typeof activity === "object") {
+    const action = safeText(activity.action, "");
+    const detail = safeText(activity.detail, "");
+    const directText = safeText(activity, "");
+
+    if (action && detail) return `${action}: ${detail}`;
+    if (action) return action;
+    if (detail) return detail;
+    if (directText) return directText;
+    return "Activity logged.";
+  }
+
+  return "Activity logged.";
+}
+
 function DesktopVesselIdentityLockup({
   darkMode = false,
   vesselTitle,
@@ -593,20 +635,20 @@ function DesktopVesselIdentityLockup({
 
       <div className="min-w-0">
         <h1
-          className={`${getDesktopVesselTitleSize(vesselTitle)} vessel-display-title whitespace-nowrap font-semibold leading-[0.88] tracking-[0.065em] ${
+          className={`vessel-display-title max-w-full whitespace-normal text-[clamp(3rem,4.2vw,4.75rem)] font-semibold leading-[0.92] tracking-[0.055em] 2xl:whitespace-nowrap ${
             darkMode ? "text-slate-50" : "text-[#071A3A]"
           }`}
         >
-          {vesselTitle}
+          {safeText(vesselTitle, "M/Y VESSEL")}
         </h1>
         <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-          {vesselIdentifier}
+          {safeText(vesselIdentifier, "IMO pending verification")}
         </p>
         <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
       </div>
 
       <p className={`mt-8 max-w-3xl text-lg font-medium leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
-        {commandStatement}
+        {safeText(commandStatement, "Private yacht command workspace for daily readiness.")}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -614,10 +656,10 @@ function DesktopVesselIdentityLockup({
           Live vessel workspace
         </span>
         <span className={`${chipBase} border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100`}>
-          {vesselMode}
+          {safeText(vesselMode, "Command mode")}
         </span>
         <span className={`${chipBase} border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100`}>
-          {currentRoleLabel} view
+          {safeText(currentRoleLabel, "Captain")} view
         </span>
       </div>
     </div>
@@ -646,7 +688,7 @@ function HeroLensTile({ darkMode = false, label, value, tone = "neutral" }) {
   return (
     <div className={`rounded-2xl border px-4 py-3 ${toneClass}`}>
       <div className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-75">{label}</div>
-      <div className="mt-1 truncate text-base font-bold leading-6">{value}</div>
+      <div className="mt-1 truncate text-base font-bold leading-6">{safeText(value)}</div>
     </div>
   );
 }
@@ -663,7 +705,8 @@ function HeroCommandLens({
   onReviewPriorities,
   onOpenApprovals,
 }) {
-  const confidenceTone = confidence >= 82 ? "teal" : confidence >= 65 ? "amber" : "rose";
+  const safeConfidence = Math.round(Math.max(0, Math.min(100, Number(confidence) || 0)));
+  const confidenceTone = safeConfidence >= 82 ? "teal" : safeConfidence >= 65 ? "amber" : "rose";
   const panelClass = darkMode
     ? "border-cyan-300/15 bg-slate-950/58 text-slate-50 shadow-[0_26px_70px_rgba(0,0,0,0.34)]"
     : "border-white/80 bg-white/76 text-[#071A3A] shadow-[0_28px_80px_rgba(15,23,42,0.10)]";
@@ -683,7 +726,7 @@ function HeroCommandLens({
         </div>
 
         <div className={`flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-[26px] border ${confidenceTone === "teal" ? (darkMode ? "border-teal-300/30 bg-teal-300/10 text-teal-100" : "border-teal-200 bg-teal-50 text-teal-900") : confidenceTone === "amber" ? (darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-900") : (darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-900")}`}>
-          <span className="text-2xl font-black leading-none">{confidence}%</span>
+          <span className="text-2xl font-black leading-none">{safeConfidence}%</span>
           <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em]">Ready</span>
         </div>
       </div>
@@ -693,14 +736,14 @@ function HeroCommandLens({
           Next best action
         </p>
         <p className={`mt-2 text-base font-semibold leading-6 ${darkMode ? "text-slate-50" : "text-slate-950"}`}>
-          {nextAction}
+          {safeText(nextAction, "Review today's priorities.")}
         </p>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         <HeroLensTile darkMode={darkMode} label="Route" value={routeStatus} tone="cyan" />
         <HeroLensTile darkMode={darkMode} label="Pending spend" value={pendingSpend} tone="amber" />
-        <HeroLensTile darkMode={darkMode} label="Approval" value={`${pendingApprovals} waiting`} tone={pendingApprovals ? "amber" : "neutral"} />
+        <HeroLensTile darkMode={darkMode} label="Approval" value={`${Number(pendingApprovals) || 0} waiting`} tone={pendingApprovals ? "amber" : "neutral"} />
         <HeroLensTile darkMode={darkMode} label="Crew" value={crewReadiness} tone="teal" />
       </div>
 
@@ -709,7 +752,7 @@ function HeroCommandLens({
           Latest activity
         </p>
         <p className={`mt-2 line-clamp-2 text-sm font-medium leading-6 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
-          {latestActivity}
+          {safeText(latestActivity, "No recent activity logged.")}
         </p>
       </div>
 
@@ -743,12 +786,12 @@ function HeroSignalStrip({ darkMode = false, signals = [] }) {
             {signal.label}
           </div>
           <div className="mt-2 flex items-end justify-between gap-3">
-            <span className="truncate text-2xl font-bold leading-none">{signal.value}</span>
+            <span className="truncate text-2xl font-bold leading-none">{safeText(signal.value)}</span>
             <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-300" : "border-slate-200 bg-white/80 text-slate-600"}`}>
               Open
             </span>
           </div>
-          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>{signal.note}</p>
+          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>{safeText(signal.note)}</p>
         </button>
       ))}
     </div>
@@ -1244,7 +1287,7 @@ export function AppShellHeader({
   onToggleRetrieve,
   declinedTasks,
   onRetrieveDeclinedTask,
-  history,
+  history = [],
   sharingOpen,
   onSharingOpenChange,
   jsonImportInputRef,
@@ -1342,15 +1385,19 @@ export function AppShellHeader({
   ].filter(Boolean);
   const activeFleetVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId) || null;
   const currentVesselMetrics = fleetMetricsByVessel?.[activeVesselId] || {};
-  const recentHeaderHistory = Array.isArray(history) ? history.slice(0, 3) : [];
+  const recentHeaderHistory = safeArray(history).slice(0, 3);
   const currentRoleLabel = DEMO_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label || "Owner";
   const compactVesselName = String(currentVesselName || "Fleet").replace(/^M\/Y\s+/i, "").trim() || "Fleet";
   const normalizedWorkspaceName = String(currentVesselName || "").trim().toLowerCase();
   const isContessaWorkspace = normalizedWorkspaceName === "contessa" || normalizedWorkspaceName === "m/y contessa";
-  const vesselName = currentVesselIdentity?.displayName || currentVesselIdentity?.name || currentVesselName || "Vessel";
+  const vesselName = safeText(currentVesselIdentity?.displayName || currentVesselIdentity?.name || currentVesselName, "Vessel");
   const vesselTitle = getCleanVesselTitle(vesselName);
   const vesselIdentifier = getVesselIdentifier(currentVesselIdentity || {});
-  const vesselModeLabel = vesselState?.modeLabel || (vesselState?.mode ? titleCase(String(vesselState.mode).replace(/-/g, " / ")) : activeFleetVessel?.details?.status || "Command workspace");
+  const vesselModeLabel = safeText(
+    vesselState?.modeLabel ||
+      (vesselState?.mode ? titleCase(String(vesselState.mode).replace(/-/g, " / ")) : activeFleetVessel?.details?.status),
+    "Command workspace"
+  );
   const greeting = headerClock.getHours() < 12 ? "Good morning" : headerClock.getHours() < 18 ? "Good afternoon" : "Good evening";
   const selectedFleetFlag = normalizeFlag(fleetDraft.flag);
   const fleetHomePortOptions = homePortsByFlag[selectedFleetFlag] || [];
@@ -1363,7 +1410,7 @@ export function AppShellHeader({
   const heroSummary = (stats.overdueTasks || stats.pendingApprovals || routeWarningCount)
     ? `${stats.overdueTasks || 0} overdue, ${stats.pendingApprovals || 0} approval${stats.pendingApprovals === 1 ? "" : "s"} waiting, and ${routeWarningCount || 0} route review${routeWarningCount === 1 ? "" : "s"} need attention.`
     : "Vessel operations are calm. Crew readiness, approvals, and route status are available at a glance.";
-  const routeStatusLabel = activeFleetVessel?.routePlanning?.status || (routeWarningCount ? "Review" : "Confirmed");
+  const routeStatusLabel = safeText(activeFleetVessel?.routePlanning?.status, routeWarningCount ? "Review" : "Confirmed");
   const operationalSnapshot = [
     { label: "Vessel", value: activeFleetVessel?.details?.status || currentVesselMetrics.status || "Operational", tone: "neutral" },
     { label: "Route", value: routeStatusLabel, tone: routeWarningCount ? "warning" : "active" },
@@ -1461,10 +1508,11 @@ export function AppShellHeader({
       ) || 0
     )
   );
-  const heroCommandStatement = vesselState?.primaryFocus
-    ? `${vesselState.primaryFocus}. Crew, approvals, routing, and documents stay synchronized from this command surface.`
+  const heroPrimaryFocus = safeText(vesselState?.primaryFocus, "");
+  const heroCommandStatement = heroPrimaryFocus
+    ? `${heroPrimaryFocus}. Crew, approvals, routing, and documents stay synchronized from this command surface.`
     : "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.";
-  const heroNextAction = vesselState?.primaryFocus
+  const heroNextAction = heroPrimaryFocus
     || ((stats.overdueTasks || 0) > 0
       ? "Clear overdue operational items before the next handoff."
       : (stats.pendingApprovals || 0) > 0
@@ -1475,9 +1523,7 @@ export function AppShellHeader({
   const heroCrewReadiness = (stats.certificateDue || 0) > 0
     ? `${stats.certificateDue} cert${stats.certificateDue === 1 ? "" : "s"} due`
     : `${stats.crewProfiles || currentVesselMetrics.crewCount || 0} crew ready`;
-  const heroLatestActivity = recentHeaderHistory[0]
-    ? `${recentHeaderHistory[0].action}: ${recentHeaderHistory[0].detail}`
-    : "No recent activity logged for this vessel.";
+  const heroLatestActivity = formatActivity(recentHeaderHistory[0]);
   const heroSignals = [
     {
       key: "tasks",
