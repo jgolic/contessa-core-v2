@@ -342,7 +342,7 @@ function NotificationButton({ count = 0, darkMode = false, onClick, open = false
       onClick={onClick}
       aria-expanded={open}
       aria-label={`Open notifications${safeCount ? `, ${safeCount} unread` : ""}`}
-      className={`relative h-11 w-11 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_26px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-12 md:w-12 md:rounded-[20px] ${
+      className={`relative h-10 w-10 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_26px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-12 md:w-12 md:rounded-[20px] ${
         darkMode
           ? "border-cyan-300/25 bg-slate-900/90 text-cyan-100 shadow-[0_14px_36px_rgba(0,0,0,0.38)] hover:border-cyan-300/50 hover:bg-cyan-300/10"
           : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_34px_rgba(59,130,246,0.16)]"
@@ -561,6 +561,15 @@ function getVesselTitleSize(name = "") {
   return "text-[clamp(21px,5.8vw,26px)] sm:text-[32px] lg:text-[46px]";
 }
 
+function getMobileVesselTitleSize(name = "") {
+  const length = String(name || "").length;
+
+  if (length <= 12) return "text-[40px]";
+  if (length <= 18) return "text-[36px]";
+  if (length <= 24) return "text-[31px]";
+  return "text-[27px]";
+}
+
 function getCleanVesselTitle(name = "") {
   const cleanName = String(name || "M/Y VESSEL")
     .replace(/\s+OPERATIONS$/i, "")
@@ -595,6 +604,34 @@ function VesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier,
         </p>
         <div className="mt-3 h-px w-32 bg-gradient-to-r from-transparent via-amber-400/55 to-transparent dark:via-amber-300/55" />
       </div>
+    </div>
+  );
+}
+
+function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier }) {
+  return (
+    <div className="md:hidden">
+      <div
+        className={`mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] border backdrop-blur-xl ${
+          darkMode
+            ? "border-white/10 bg-slate-900/80 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+            : "border-slate-200/80 bg-white/86 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_34px_rgba(15,23,42,0.08)]"
+        }`}
+      >
+        <ContessaUiLogo className="h-11 w-11 object-contain" />
+      </div>
+
+      <h1
+        className={`${getMobileVesselTitleSize(vesselTitle)} vessel-display-title mt-5 whitespace-nowrap text-center font-semibold leading-[0.92] tracking-[0.055em] ${
+          darkMode ? "text-slate-50" : "text-[#071A3A]"
+        }`}
+      >
+        {vesselTitle}
+      </h1>
+      <p className={`mt-3 whitespace-nowrap text-center text-xs font-bold uppercase tracking-[0.24em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+        {vesselIdentifier}
+      </p>
+      <div className="mx-auto mt-4 h-px w-36 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent dark:via-amber-300/55" />
     </div>
   );
 }
@@ -1491,16 +1528,24 @@ export function AppShellHeader({
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
 
-      <div className="vessel-header-flow min-w-0 pt-20 sm:pt-16 md:pt-5">
-        <VesselIdentityLockup
+      <div className="vessel-header-flow min-w-0 pt-16 md:pt-5">
+        <MobileVesselIdentityLockup
           darkMode={darkMode}
           vesselTitle={vesselTitle}
           vesselIdentifier={vesselIdentifier}
-          vesselTitleClass={vesselTitleClass}
         />
 
+        <div className="hidden md:block">
+          <VesselIdentityLockup
+            darkMode={darkMode}
+            vesselTitle={vesselTitle}
+            vesselIdentifier={vesselIdentifier}
+            vesselTitleClass={vesselTitleClass}
+          />
+        </div>
+
         {commandSearchView ? (
-          <div className="relative z-[5000] mt-7 flex w-full min-w-0 justify-start">
+          <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start md:mt-7">
             <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
               {commandSearchView}
             </div>
@@ -1511,19 +1556,18 @@ export function AppShellHeader({
             <Button
               type="button"
               variant="outline"
-              className={`inline-flex h-11 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold shadow-sm transition-all duration-200 md:h-12 md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-slate-900/80 text-slate-50 hover:border-cyan-300/40 hover:bg-slate-800" : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+              className={`inline-flex h-10 w-10 min-w-0 shrink-0 items-center justify-center gap-2 rounded-2xl px-0 text-sm font-semibold shadow-[0_10px_26px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-12 md:w-auto md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-slate-900/82 text-slate-100 hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200 bg-white/88 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={openFleetPanel}
               aria-label="Open fleet switcher"
             >
               <Compass className="h-4 w-4 shrink-0" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
-              <span className="hidden max-w-[5.5rem] truncate sm:inline lg:hidden">Fleet</span>
             </Button>
 
             <Button
               type="button"
               variant="outline"
-              className={`h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm md:h-12 md:w-12 md:rounded-[20px] ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+              className={`h-10 w-10 shrink-0 rounded-2xl p-0 shadow-[0_10px_26px_rgba(15,23,42,0.08)] md:h-12 md:w-12 md:rounded-[20px] ${darkMode ? "border-white/10 bg-slate-900/82 text-slate-100 hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200 bg-white/88 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
               onClick={onToggleDarkMode}
               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -1535,7 +1579,7 @@ export function AppShellHeader({
                 <Button
                   type="button"
                   variant="outline"
-                  className={`h-11 w-11 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-sm md:h-12 md:w-auto md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100 hover:border-cyan-300/30 hover:bg-cyan-300/10" : "border-slate-200/80 bg-white/82 text-slate-800 hover:border-blue-300 hover:bg-white"}`}
+                  className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-[0_10px_26px_rgba(15,23,42,0.08)] md:h-12 md:w-auto md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-slate-900/82 text-slate-100 hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200 bg-white/88 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
                   aria-label="Open settings"
                 >
                   <Settings className="h-4 w-4 md:mr-2 md:h-5 md:w-5" />
