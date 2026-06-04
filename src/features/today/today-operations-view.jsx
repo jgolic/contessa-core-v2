@@ -8,6 +8,7 @@ import {
   calculateConfidenceScore,
   formatHistoryTime,
   formatMoney,
+  neutralBadgeClass,
   successBadgeClass,
   themeClasses,
   titleCase,
@@ -517,7 +518,7 @@ export function CommandJumpBar({
           />
           <div className={`hidden shrink-0 items-center gap-2 text-xs font-semibold lg:flex ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
             <span>Jump anywhere</span>
-            <span className={`rounded-lg border px-2 py-1 ${darkMode ? "border-white/10 bg-white/5 text-slate-300" : "border-slate-200 bg-white/70 text-slate-600"}`}>Press /</span>
+            <span className={`rounded-lg border px-2 py-1 shadow-sm ${darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>Press /</span>
           </div>
           {query ? (
             <button
@@ -694,15 +695,13 @@ function MetricTile({ darkMode = false, label, value, note, tone = "neutral", ac
   const badgeClass =
     tone === "critical"
       ? darkMode
-        ? "bg-[#3f241f] text-[#ffd7cf]"
-        : "bg-[#fff1ed] text-[#9b2c20]"
+        ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm"
+        : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm"
       : tone === "warning"
         ? warningBadgeClass(darkMode)
         : tone === "success"
           ? successBadgeClass(darkMode)
-          : darkMode
-            ? "border border-white/10 bg-white/5 text-slate-300"
-            : "border border-slate-200/70 bg-white/80 text-slate-600";
+          : neutralBadgeClass(darkMode);
 
   return (
     <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
@@ -862,12 +861,12 @@ function DetailPanelBody({
           {titleCase(item.type || "Item")}
         </Badge>
         {item.priority ? (
-          <Badge className={normalizeTone(item) === "critical" ? (darkMode ? "bg-[#3f241f] text-[#ffd7cf]" : "bg-[#fff1ed] text-[#9b2c20]") : warningBadgeClass(darkMode)}>
+          <Badge className={normalizeTone(item) === "critical" ? (darkMode ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm" : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm") : warningBadgeClass(darkMode)}>
             {item.priority}
           </Badge>
         ) : null}
         {item.status ? (
-          <Badge className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
+          <Badge className={neutralBadgeClass(darkMode)}>
             {item.status}
           </Badge>
         ) : null}
@@ -952,7 +951,7 @@ function DetailPanelBody({
         <Button
           type="button"
           onClick={item.type === "approval" || item.type === "quote" ? () => onApprovalAction?.(item.raw || item, "approved") : undefined}
-          className={`min-h-11 rounded-2xl px-4 py-3 font-semibold ${item.type === "approval" || item.type === "quote" ? "border border-amber-300 bg-amber-100 text-amber-950 shadow-[0_14px_30px_-24px_rgba(180,83,9,0.55)] hover:bg-amber-200 dark:border-amber-300/25 dark:bg-amber-300/14 dark:text-amber-100 dark:hover:bg-amber-300/20" : darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/70 text-slate-500"} disabled:cursor-not-allowed disabled:opacity-60`}
+          className={`min-h-11 rounded-2xl px-4 py-3 font-semibold ${item.type === "approval" || item.type === "quote" ? "border border-amber-300 bg-amber-100 text-amber-950 shadow-[0_14px_30px_-24px_rgba(180,83,9,0.55)] hover:bg-amber-200 dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100 dark:hover:bg-amber-300/25" : "border border-slate-300 bg-white text-slate-800 shadow-sm hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-slate-700"} disabled:cursor-not-allowed disabled:opacity-60`}
           disabled={!canEdit && (item.type === "approval" || item.type === "quote")}
         >
           {item.type === "approval" || item.type === "quote" ? "Approve" : "Mark reviewed"}

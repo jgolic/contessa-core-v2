@@ -80,6 +80,20 @@ const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] tex
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
+const chipBase =
+  "inline-flex min-h-9 items-center justify-center rounded-full border px-4 py-1.5 text-sm font-semibold shadow-sm transition-all duration-200";
+const liveChipClass = (darkMode = false) =>
+  darkMode
+    ? `${chipBase} border-teal-300/40 bg-teal-300/15 text-teal-100`
+    : `${chipBase} border-teal-300 bg-teal-50 text-teal-800`;
+const blueChipClass = (darkMode = false) =>
+  darkMode
+    ? `${chipBase} border-cyan-300/40 bg-cyan-300/15 text-cyan-100`
+    : `${chipBase} border-blue-300 bg-blue-50 text-blue-800`;
+const goldChipClass = (darkMode = false) =>
+  darkMode
+    ? `${chipBase} border-amber-300/40 bg-amber-300/15 text-amber-100`
+    : `${chipBase} border-amber-300 bg-amber-50 text-amber-800`;
 
 const yachtTypeOptions = [
   "Motor Yacht",
@@ -446,7 +460,7 @@ function NotificationsPanel({
     ? "border-rose-300/30 bg-rose-300/10 text-rose-100"
     : "border-rose-200 bg-rose-50 text-rose-700";
   const emptyStateClass = darkMode
-    ? "border-white/10 bg-white/[0.04] text-slate-300"
+    ? "border-white/10 bg-slate-800 text-slate-100"
     : "border-slate-200 bg-slate-50 text-slate-700";
   const rowClass = darkMode
     ? "border-transparent hover:border-cyan-300/30 hover:bg-cyan-300/10"
@@ -619,8 +633,6 @@ function DesktopVesselIdentityLockup({
   currentRoleLabel = "Captain",
   commandStatement = "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.",
 }) {
-  const chipBase = "rounded-full border px-4 py-2 text-sm font-semibold";
-
   return (
     <div className="hidden min-w-0 pl-32 pt-20 lg:block xl:pl-36">
       <div
@@ -652,13 +664,13 @@ function DesktopVesselIdentityLockup({
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <span className={`${chipBase} border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-300/30 dark:bg-teal-300/10 dark:text-teal-100`}>
+        <span className={liveChipClass(darkMode)}>
           Live vessel workspace
         </span>
-        <span className={`${chipBase} border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100`}>
+        <span className={blueChipClass(darkMode)}>
           {safeText(vesselMode, "Command mode")}
         </span>
-        <span className={`${chipBase} border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100`}>
+        <span className={goldChipClass(darkMode)}>
           {safeText(currentRoleLabel, "Captain")} view
         </span>
       </div>
@@ -769,6 +781,10 @@ function HeroCommandLens({
 }
 
 function HeroSignalStrip({ darkMode = false, signals = [] }) {
+  const openBadgeClass = darkMode
+    ? "border-white/10 bg-slate-800 text-slate-100 shadow-sm"
+    : "border-slate-300 bg-white text-slate-800 shadow-sm";
+
   return (
     <div className={`mt-6 grid gap-3 rounded-[32px] border p-3 backdrop-blur-xl lg:grid-cols-5 ${darkMode ? "border-white/10 bg-slate-950/34" : "border-white/80 bg-white/58"}`}>
       {signals.map((signal) => (
@@ -787,7 +803,7 @@ function HeroSignalStrip({ darkMode = false, signals = [] }) {
           </div>
           <div className="mt-2 flex items-end justify-between gap-3">
             <span className="truncate text-2xl font-bold leading-none">{safeText(signal.value)}</span>
-            <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-300" : "border-slate-200 bg-white/80 text-slate-600"}`}>
+            <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${openBadgeClass}`}>
               Open
             </span>
           </div>
@@ -1487,9 +1503,11 @@ export function AppShellHeader({
   ];
   const intelBadgeClass = (accent = "neutral") => {
     if (accent === "warning") {
-      return darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]";
+      return goldChipClass(darkMode);
     }
-    return darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600";
+    return darkMode
+      ? "border border-white/10 bg-slate-800 text-slate-100 shadow-sm"
+      : "border border-slate-300 bg-white text-slate-800 shadow-sm";
   };
   const actionButtonClass = "app-action-button inline-flex items-center justify-center";
   const premiumMetricLabelTone = (label = "", accent = "neutral") => {
@@ -2118,10 +2136,10 @@ export function AppShellHeader({
                   <Badge className={isOffline ? warningBadgeClass(darkMode) : successBadgeClass(darkMode)}>
                     {isOffline ? "Offline" : "Live"}
                   </Badge>
-                  <Badge className={darkMode ? "border border-white/10 bg-white/5 text-slate-300" : "border border-slate-200/70 bg-white/80 text-slate-600"}>
+                  <Badge className={intelBadgeClass()}>
                     {visibleModuleLabels.length} sections
                   </Badge>
-                  <Badge className={darkMode ? "border border-[#4f4323] bg-[rgba(36,30,18,0.52)] text-[#dac58b]" : "border border-[#eddba6] bg-[#fbf4dc]/82 text-[#8b6d2d]"}>
+                  <Badge className={goldChipClass(darkMode)}>
                     Today
                   </Badge>
                 </div>

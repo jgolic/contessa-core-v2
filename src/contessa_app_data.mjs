@@ -1480,55 +1480,65 @@ export function getVesselMetrics(vesselId, vessels = []) {
 }
 
 export const statusStyles = {
-  pending: "border border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200",
-  ongoing: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
-  completed: "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200",
-  approved: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/12 dark:text-amber-100",
-  declined: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
+  pending: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  ongoing: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  completed: "border border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm dark:border-emerald-300/40 dark:bg-emerald-300/15 dark:text-emerald-100",
+  approved: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  declined: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
 };
 
 export const priorityStyles = {
-  low: "border border-slate-200 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200",
-  medium: "border border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/20 dark:bg-cyan-300/10 dark:text-cyan-100",
-  high: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
-  urgent: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
+  low: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  medium: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
+  high: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  urgent: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
 };
 
 export const departmentStyles = {
-  General: "bg-[#e8eee9] text-[#40534a]",
-  Deck: "vessel-pill",
-  Engineering: "bg-[#ffe1bd] text-[#8a4b13]",
-  Interior: "bg-[#f4e5fb] text-[#6c2f74]",
-  Bridge: "vessel-pill",
-  Admin: "bg-[#f3e9de] text-[#7a5630]",
+  General: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  Deck: "border border-teal-300 bg-teal-50 text-teal-800 shadow-sm dark:border-teal-300/40 dark:bg-teal-300/15 dark:text-teal-100",
+  Engineering: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  Interior: "border border-violet-300 bg-violet-50 text-violet-800 shadow-sm dark:border-violet-300/40 dark:bg-violet-300/15 dark:text-violet-100",
+  Bridge: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
+  Admin: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
 };
 
 export const moneyStatusStyles = {
-  requested: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-200",
-  received: "border border-blue-200 bg-blue-50 text-blue-800 dark:border-cyan-300/20 dark:bg-cyan-300/10 dark:text-cyan-100",
-  approved: "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/12 dark:text-amber-100",
-  declined: "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-300/25 dark:bg-rose-400/10 dark:text-rose-200",
-  paid: "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-300/20 dark:bg-emerald-300/10 dark:text-emerald-200",
+  requested: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  received: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
+  approved: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  declined: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
+  paid: "border border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm dark:border-emerald-300/40 dark:bg-emerald-300/15 dark:text-emerald-100",
 };
 
 export function neutralBadgeClass(darkMode = false) {
-  return darkMode ? "bg-[#1a262c] text-[#dbe8e4]" : "bg-[#e8eee9] text-[#40534a]";
+  return darkMode
+    ? "border border-white/10 bg-slate-800 text-slate-100 shadow-sm"
+    : "border border-slate-300 bg-white text-slate-800 shadow-sm";
 }
 
 export function infoBadgeClass(darkMode = false) {
-  return "vessel-pill";
+  return darkMode
+    ? "border border-cyan-300/40 bg-cyan-300/15 text-cyan-100 shadow-sm"
+    : "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm";
 }
 
 export function successBadgeClass(darkMode = false) {
-  return darkMode ? "bg-[#173126] text-[#ccefdc]" : "bg-[#dff5ea] text-[#176342]";
+  return darkMode
+    ? "border border-teal-300/40 bg-teal-300/15 text-teal-100 shadow-sm"
+    : "border border-teal-300 bg-teal-50 text-teal-800 shadow-sm";
 }
 
 export function warningBadgeClass(darkMode = false) {
-  return darkMode ? "bg-[#332613] text-[#e3c590]" : "bg-[#fbf0d6] text-[#8b6729]";
+  return darkMode
+    ? "border border-amber-300/40 bg-amber-300/15 text-amber-100 shadow-sm"
+    : "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm";
 }
 
 export function criticalBadgeClass(darkMode = false) {
-  return darkMode ? "bg-[#351b1d] text-[#e8c2c5]" : "bg-[#f9e6e4] text-[#8f3a35]";
+  return darkMode
+    ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm"
+    : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm";
 }
 
 export function filePreviewCardClass(darkMode = false) {

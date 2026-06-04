@@ -86,11 +86,11 @@ export function SectionNavCard({
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (
-            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-cyan-100" : "vessel-icon-chip"}`}>
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border border-white/10 bg-slate-800 text-cyan-100" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:block ${active ? darkMode ? "border border-cyan-300/30 bg-cyan-300/12 text-cyan-100" : "bg-white/70 text-[var(--vessel-text-accent)]" : darkMode ? "border border-white/10 bg-slate-800/70 text-slate-300" : "bg-white/60 text-slate-500"}`}>
+          <div className={`hidden rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm xl:block ${active ? darkMode ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
@@ -114,7 +114,7 @@ export function BottomNavButton({
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
-            : "app-panel-active border-vessel bg-[rgba(var(--vessel-primary-rgb),0.12)] text-[#0f2f2a]"
+            : "app-panel-active border-teal-300 bg-teal-50 text-teal-900 shadow-[0_14px_34px_rgba(13,148,136,0.14)]"
           : darkMode
             ? "app-panel-soft app-dark-card border text-slate-100"
             : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
@@ -123,7 +123,7 @@ export function BottomNavButton({
       {...props}
     >
       {Icon ? (
-        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? darkMode ? "bg-white/16 text-current" : "bg-white/72 text-[var(--vessel-text-accent)]" : darkMode ? "bg-white/[0.06] text-[var(--vessel-text-accent-dark)]" : "bg-white/70 text-[var(--vessel-text-accent)]"}`}>
+        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? darkMode ? "border border-cyan-300/35 bg-cyan-300/15 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border border-white/10 bg-slate-800 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800"}`}>
           <Icon className="h-3 w-3 min-[390px]:h-3.5 min-[390px]:w-3.5" />
         </span>
       ) : null}

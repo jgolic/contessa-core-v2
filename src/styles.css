@@ -712,8 +712,9 @@ body.dark-mode .module-row-action:hover,
 
 .vessel-outline-button {
   border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.22));
-  background: var(--vessel-primary-soft, rgba(var(--vessel-primary-rgb), 0.08));
-  color: var(--vessel-text-accent, var(--vessel-primary, #0f766e));
+  background: rgba(240, 253, 250, 0.96);
+  color: #115e59;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 .vessel-outline-button:hover {
@@ -722,31 +723,32 @@ body.dark-mode .module-row-action:hover,
 
 body.dark-mode .vessel-outline-button {
   border-color: var(--vessel-border-dark, rgba(var(--vessel-primary-rgb), 0.22));
-  background: var(--vessel-primary-soft-dark, rgba(var(--vessel-primary-rgb), 0.16));
-  color: var(--vessel-text-accent-dark, var(--vessel-accent, #7dd3c7));
+  background: rgba(45, 212, 191, 0.15);
+  color: #ccfbf1;
 }
 
 .vessel-pill {
-  border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.2));
-  background: var(--vessel-primary-soft, rgba(var(--vessel-primary-rgb), 0.08));
-  color: var(--vessel-text-accent, var(--vessel-primary));
+  border: 1px solid rgb(94, 234, 212);
+  background: rgb(240, 253, 250);
+  color: #115e59;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   word-break: normal;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 body.dark-mode .vessel-pill {
-  border-color: var(--vessel-border-dark, rgba(var(--vessel-primary-rgb), 0.2));
-  background: var(--vessel-primary-soft-dark, rgba(var(--vessel-primary-rgb), 0.18));
-  color: var(--vessel-text-accent-dark, var(--vessel-accent, #7dd3c7));
+  border-color: rgba(94, 234, 212, 0.42);
+  background: rgba(45, 212, 191, 0.15);
+  color: #ccfbf1;
 }
 
 .vessel-pill-strong {
-  border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.24));
-  background: linear-gradient(135deg, rgba(var(--vessel-primary-rgb), 0.22), rgba(var(--vessel-secondary-rgb), 0.16));
-  color: var(--vessel-text-accent, var(--vessel-primary));
+  border: 1px solid rgb(45, 212, 191);
+  background: linear-gradient(135deg, rgba(204, 251, 241, 0.96), rgba(224, 242, 254, 0.86));
+  color: #0f766e;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -755,19 +757,19 @@ body.dark-mode .vessel-pill {
 }
 
 body.dark-mode .vessel-pill-strong {
-  border-color: var(--vessel-border-dark, rgba(var(--vessel-primary-rgb), 0.24));
-  background: linear-gradient(135deg, var(--vessel-primary-soft-dark, rgba(var(--vessel-primary-rgb), 0.24)), rgba(var(--vessel-secondary-rgb), 0.18));
-  color: var(--vessel-text-accent-dark, var(--vessel-accent, #7dd3c7));
+  border-color: rgba(94, 234, 212, 0.5);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.18), rgba(14, 165, 233, 0.12));
+  color: #ccfbf1;
 }
 
 .vessel-icon-chip {
-  background: var(--vessel-primary-soft, rgba(var(--vessel-primary-rgb), 0.08));
-  color: var(--vessel-text-accent, var(--vessel-primary));
+  background: rgb(240, 253, 250);
+  color: #115e59;
 }
 
 body.dark-mode .vessel-icon-chip {
-  background: var(--vessel-primary-soft-dark, rgba(var(--vessel-primary-rgb), 0.18));
-  color: var(--vessel-text-accent-dark, var(--vessel-accent, #7dd3c7));
+  background: rgba(45, 212, 191, 0.15);
+  color: #ccfbf1;
 }
 
 .vessel-surface-soft {
