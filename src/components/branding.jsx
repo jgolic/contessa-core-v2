@@ -1,12 +1,64 @@
-import ContessaLogoMark from "./ContessaLogoMark.jsx";
-
 export const APP_BRAND_NAME = "Contessa";
 export const APP_PRODUCT_NAME = "Contessa Operations";
 
-export { ContessaLogoMark };
+function ContessaSymbol({
+  stroke = "#7F8C86",
+  accent = "#C6A35B",
+  strokeWidth = 10,
+  accentWidth = 9,
+  accentEnabled = true,
+  className = "",
+}) {
+  return (
+    <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className}>
+      <path
+        d="M128 44 L63 109 H193 Z"
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M128 44 V194"
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+      <path
+        d="M63 109 H193"
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+      <path
+        d="M72 121 L128 194"
+        fill="none"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+      <path
+        d="M140 123 H186 L128 194"
+        fill="none"
+        stroke={accentEnabled ? accent : stroke}
+        strokeWidth={accentEnabled ? accentWidth : strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="logo-gold-triangle"
+      />
+    </svg>
+  );
+}
 
-export function ContessaUiLogo({ className = "", markClassName = "", size = 64 }) {
-  return <ContessaLogoMark size={size} className={className} markClassName={markClassName} />;
+export function ContessaUiLogo({ className = "" }) {
+  return (
+    <div className={className}>
+      <ContessaSymbol className="brand-mark--large" />
+    </div>
+  );
 }
 
 export function BrandWordmark({ className = "", darkMode = false }) {
@@ -42,13 +94,11 @@ export function ContessaSplashLogo({ className = "" }) {
           <rect x="0" y="0" width="206" height="206" rx="52" fill="#0f1714" fillOpacity="0.44" stroke="#ffffff22" strokeWidth="2" />
           <g transform="translate(15 14)">
             <svg viewBox="0 0 256 256" width="176" height="176" x="0" y="0">
-              <path d="M128 26 L46 123 H121" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M128 26 L210 123 H159" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M128 26 V230" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="18" strokeLinecap="round" />
-              <path d="M46 133 L123 230" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="18" strokeLinecap="round" />
-              <path d="M159 148 V214" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="18" strokeLinecap="round" />
-              <path d="M159 133 H215" fill="none" stroke="url(#contessa-splash-accent)" strokeWidth="18" strokeLinecap="round" />
-              <path d="M210 148 L159 214" fill="none" stroke="url(#contessa-splash-accent)" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M128 44 L63 109 H193 Z" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M128 44 V194" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="11" strokeLinecap="round" />
+              <path d="M63 109 H193" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="11" strokeLinecap="round" />
+              <path d="M72 121 L128 194" fill="none" stroke="url(#contessa-splash-stroke)" strokeWidth="11" strokeLinecap="round" />
+              <path d="M140 123 H186 L128 194" fill="none" stroke="url(#contessa-splash-accent)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </g>
         </g>

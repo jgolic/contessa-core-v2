@@ -623,7 +623,15 @@ function DesktopVesselIdentityLockup({
 
   return (
     <div className="hidden min-w-0 pl-32 pt-20 lg:block xl:pl-36">
-      <ContessaUiLogo className="absolute left-8 top-8 z-10 hidden lg:inline-flex" size={96} />
+      <div
+        className={`absolute left-8 top-8 z-10 hidden h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl lg:flex ${
+          darkMode
+            ? "border-white/10 bg-slate-900/80 shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
+            : "border-slate-200/80 bg-white/84 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_20px_48px_rgba(15,23,42,0.10)]"
+        }`}
+      >
+        <ContessaUiLogo className="h-16 w-16 object-contain" />
+      </div>
 
       <div className="min-w-0">
         <h1
@@ -793,7 +801,15 @@ function HeroSignalStrip({ darkMode = false, signals = [] }) {
 function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier }) {
   return (
     <div className="lg:hidden">
-      <ContessaUiLogo className="mx-auto" size={64} />
+      <div
+        className={`mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] border backdrop-blur-xl ${
+          darkMode
+            ? "border-white/10 bg-slate-900/80 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+            : "border-slate-200/80 bg-white/86 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_34px_rgba(15,23,42,0.08)]"
+        }`}
+      >
+        <ContessaUiLogo className="h-11 w-11 object-contain" />
+      </div>
 
       <h1
         className={`${getMobileVesselTitleSize(vesselTitle)} vessel-display-title mt-5 whitespace-nowrap text-center font-semibold leading-[0.92] tracking-[0.055em] ${

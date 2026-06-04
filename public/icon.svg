@@ -1,29 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Contessa">
-  <defs>
-    <linearGradient id="contessa-icon-bg" x1="28" y1="18" x2="226" y2="238">
-      <stop offset="0%" stop-color="#0d1d31"/>
-      <stop offset="58%" stop-color="#071321"/>
-      <stop offset="100%" stop-color="#030914"/>
-    </linearGradient>
-    <linearGradient id="contessa-icon-silver" x1="42" y1="32" x2="208" y2="224">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="48%" stop-color="#dbe3e8"/>
-      <stop offset="100%" stop-color="#8e9b9a"/>
-    </linearGradient>
-    <linearGradient id="contessa-icon-gold" x1="146" y1="118" x2="220" y2="218">
-      <stop offset="0%" stop-color="#ffd87f"/>
-      <stop offset="48%" stop-color="#d7a94a"/>
-      <stop offset="100%" stop-color="#a97926"/>
-    </linearGradient>
-  </defs>
-  <rect x="10" y="10" width="236" height="236" rx="54" fill="url(#contessa-icon-bg)" stroke="#f8fafc" stroke-opacity=".9" stroke-width="5"/>
-  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="18">
-    <path d="M128 28 L46 124 H121" stroke="url(#contessa-icon-silver)"/>
-    <path d="M128 28 L210 124 H159" stroke="url(#contessa-icon-silver)"/>
-    <path d="M128 28 V228" stroke="url(#contessa-icon-silver)"/>
-    <path d="M46 134 L123 228" stroke="url(#contessa-icon-silver)"/>
-    <path d="M159 148 V212" stroke="url(#contessa-icon-silver)"/>
-    <path d="M159 134 H215" stroke="url(#contessa-icon-gold)"/>
-    <path d="M210 148 L159 212" stroke="url(#contessa-icon-gold)"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="#f8fbfa" stroke="#dfe8e4" stroke-width="3"/>
+  <path d="M128 44 L63 109 H193 Z" fill="none" stroke="#7f8c86" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M128 44 V194" fill="none" stroke="#7f8c86" stroke-width="10" stroke-linecap="round"/>
+  <path d="M63 109 H193" fill="none" stroke="#7f8c86" stroke-width="10" stroke-linecap="round"/>
+  <path d="M72 121 L128 194" fill="none" stroke="#7f8c86" stroke-width="10" stroke-linecap="round"/>
+  <path d="M140 123 H186 L128 194" fill="none" stroke="#c6a35b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

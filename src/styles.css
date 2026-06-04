@@ -837,6 +837,17 @@ select {
   align-items: flex-start;
 }
 
+.brand-mark--large {
+  display: block;
+  height: 100%;
+  width: 100%;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.03));
+}
+
+.logo-gold-triangle {
+  stroke: #C6A35B;
+}
+
 .brand-title {
   color: #7f8c86;
 }
