@@ -270,6 +270,64 @@ body.dark-mode .jump-highlight-target.jump-highlight-active::after {
   }
 }
 
+.ui-reveal-target {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--reveal-radius, 28px);
+}
+
+.ui-reveal-target.ui-reveal-active::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: calc(var(--reveal-radius, 28px) - 4px);
+  border: 2px solid rgba(59, 130, 246, 0.78);
+  box-shadow:
+    inset 0 0 0 1px rgba(59, 130, 246, 0.2),
+    0 0 0 6px rgba(59, 130, 246, 0.12),
+    0 20px 60px rgba(59, 130, 246, 0.24);
+  animation: uiRevealPulse 1.8s ease-out;
+}
+
+.dark .ui-reveal-target.ui-reveal-active::after,
+body.dark-mode .ui-reveal-target.ui-reveal-active::after {
+  border-color: rgba(34, 211, 238, 0.88);
+  box-shadow:
+    inset 0 0 0 1px rgba(34, 211, 238, 0.24),
+    0 0 0 6px rgba(34, 211, 238, 0.14),
+    0 24px 70px rgba(34, 211, 238, 0.28);
+}
+
+@keyframes uiRevealPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  16% {
+    opacity: 1;
+    transform: scale(1.006);
+  }
+
+  68% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-reveal-target.ui-reveal-active::after {
+    animation: none;
+  }
+}
+
 .app-bg {
   background: var(--vessel-bg-light, var(--app-bg-light));
 }

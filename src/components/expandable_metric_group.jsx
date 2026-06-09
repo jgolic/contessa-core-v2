@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRevealHighlight } from "../hooks/useRevealHighlight.js";
 
 function getMetricToneClasses(tone = "neutral", darkMode = false) {
   if (tone === "critical") {
@@ -41,6 +42,17 @@ function getDetailToneClasses(tone = "neutral", darkMode = false) {
 export function ExpandableMetricGroup({ title, metrics = [], darkMode = false }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState(null);
+  const expandedRevealRef = useRevealHighlight(expanded, {
+    radius: "22px",
+    delay: 160,
+    scrollIntoView: true,
+    block: "nearest",
+  });
+  const detailRevealRef = useRevealHighlight(Boolean(selectedMetric), {
+    radius: "22px",
+    delay: 120,
+    triggerKey: selectedMetric?.id || selectedMetric?.label || "metric-detail",
+  });
   const safeMetrics = Array.isArray(metrics) ? metrics.filter(Boolean) : [];
 
   if (!safeMetrics.length) return null;
@@ -96,7 +108,11 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
       </div>
 
       {expanded ? (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div
+          ref={expandedRevealRef}
+          className="ui-reveal-target mt-4 grid gap-3 rounded-2xl md:grid-cols-2"
+          style={{ "--reveal-radius": "22px" }}
+        >
           {safeMetrics.map((metric) => (
             <div
               key={`expanded-${metric.id || metric.label}`}
@@ -119,7 +135,11 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
       ) : null}
 
       {selectedMetric ? (
-        <div className={`mt-4 rounded-2xl border p-4 ${getDetailToneClasses(selectedMetric.tone, darkMode)}`}>
+        <div
+          ref={detailRevealRef}
+          className={`ui-reveal-target mt-4 rounded-2xl border p-4 ${getDetailToneClasses(selectedMetric.tone, darkMode)}`}
+          style={{ "--reveal-radius": "22px" }}
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className={`text-xs font-bold uppercase tracking-[0.14em] ${darkMode ? "text-cyan-100" : "text-blue-800"}`}>

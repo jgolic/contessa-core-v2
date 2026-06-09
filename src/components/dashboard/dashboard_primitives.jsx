@@ -2,6 +2,7 @@ import { Card, CardContent } from "../ui/card.jsx";
 import { ActionButton, Button } from "../ui/button.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { themeClasses } from "../../contessa_app_data.mjs";
+import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 function toneBadgeClass(darkMode, tone = "neutral") {
   if (tone === "critical") {
@@ -119,6 +120,12 @@ export function SectionAccordion({
   children,
 }) {
   const theme = themeClasses(darkMode);
+  const expandedRevealRef = useRevealHighlight(isOpen, {
+    radius: "22px",
+    delay: 160,
+    scrollIntoView: true,
+    block: "nearest",
+  });
   const normalizedModule = module || String(title || "").toLowerCase().replace(/\s+/g, "-");
   const moduleTheme = sectionModuleTheme(darkMode, normalizedModule, isOpen);
   const moduleClass = normalizedModuleClass(normalizedModule);
@@ -171,7 +178,15 @@ export function SectionAccordion({
             </ActionButton>
           </div>
         </div>
-        {isOpen ? <div className="mt-4">{children}</div> : null}
+        {isOpen ? (
+          <div
+            ref={expandedRevealRef}
+            className="ui-reveal-target mt-4 rounded-[22px]"
+            style={{ "--reveal-radius": "22px" }}
+          >
+            {children}
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -294,6 +309,11 @@ export function DetailDrawer({
   children,
 }) {
   const theme = themeClasses(darkMode);
+  const revealRef = useRevealHighlight(open, {
+    radius: "32px",
+    delay: 180,
+    triggerKey: `${title || ""}-${subtitle || ""}`,
+  });
 
   if (!open) return null;
 
@@ -305,7 +325,11 @@ export function DetailDrawer({
         onClick={onClose}
         aria-label="Close detail drawer"
       />
-      <div className={`absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)] text-slate-50" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}>
+      <div
+        ref={revealRef}
+        className={`ui-reveal-target absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] max-w-full overflow-x-hidden overflow-y-auto rounded-[30px] border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.54)] transition-transform duration-300 md:inset-y-4 md:right-4 md:left-auto md:w-full md:max-w-[500px] md:rounded-[32px] md:p-5 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)] text-slate-50" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.94)] text-slate-800"}`}
+        style={{ "--reveal-radius": "32px" }}
+      >
         <div className={`rounded-[24px] border p-4 ${darkMode ? "app-dark-inner border-[var(--vessel-border-dark)]" : "border-[var(--vessel-border)] bg-[linear-gradient(135deg,var(--vessel-primary-soft),rgba(255,255,255,0.74))]"}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

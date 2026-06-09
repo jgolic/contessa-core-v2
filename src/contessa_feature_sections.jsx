@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "./components/ui/select.jsx";
 import { AlertCircle, CheckCircle2, Compass, LayoutDashboard, Moon, Plus, Receipt, Settings, Share2, Sun, TriangleAlert, Users, Wallet, Wifi, WifiOff } from "./components/icons.jsx";
+import { useRevealHighlight } from "./hooks/useRevealHighlight.js";
 import {
   APP_FOOTER_NOTICE,
   APP_LEGAL_COPY,
@@ -383,6 +384,10 @@ function NotificationsPanel({
 }) {
   const [mounted, setMounted] = useState(false);
   const [position, setPosition] = useState(null);
+  const revealRef = useRevealHighlight(open, {
+    radius: "28px",
+    delay: 80,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -481,13 +486,15 @@ function NotificationsPanel({
         onClick={onClose}
       />
       <aside
+        ref={revealRef}
         style={{
           top: position.top,
           left: position.left,
           width: position.width,
           maxHeight: position.maxHeight,
+          "--reveal-radius": "28px",
         }}
-        className={`fixed z-[10000] overflow-hidden rounded-3xl border backdrop-blur-xl ${panelSurfaceClass}`}
+        className={`ui-reveal-target fixed z-[10000] overflow-hidden rounded-3xl border backdrop-blur-xl ${panelSurfaceClass}`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${arrowClass}`} />
@@ -1009,6 +1016,13 @@ export function ObjectivesView({
   const theme = themeClasses(darkMode);
   const filterTabs = buildObjectivesFilterTabs(stats, statusFilter);
   const [mobileTaskPane, setMobileTaskPane] = useState(selectedTask ? "details" : "list");
+  const taskDetailsRevealRef = useRevealHighlight(Boolean(selectedTask), {
+    radius: "22px",
+    delay: 160,
+    scrollIntoView: true,
+    block: "nearest",
+    triggerKey: selectedTask?.id || "none",
+  });
 
   useEffect(() => {
     if (!selectedTask) {
@@ -1253,30 +1267,36 @@ export function ObjectivesView({
           </CardContent>
         </Card>
 
-        <Card className={`app-panel ${selectedTask ? "app-panel-active" : "app-panel-soft"} shadow-md ${theme.card} ${mobileTaskPane === "list" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
-          <CardContent className="p-4 md:p-5">
-            <TaskDetails
-              selectedTask={selectedTask}
-              canEdit={canEdit}
-              darkMode={darkMode}
-              assigneeOptions={scopedAssigneeOptions}
-              currency={currency}
-              exchangeRates={exchangeRates}
-              onDeleteTaskRequest={onDeleteTaskRequest}
-              onUpdateTaskStatus={onUpdateTaskStatus}
-              onUpdateTask={onUpdateTask}
-              onTaskPhotoUpload={onTaskPhotoUpload}
-              onRemoveTaskPhoto={onRemoveTaskPhoto}
-              onTaskAttachmentUpload={onTaskAttachmentUpload}
-              onRemoveTaskAttachment={onRemoveTaskAttachment}
-              onAddTaskComment={onAddTaskComment}
-              onAddQuote={onAddQuote}
-              onUpdateQuote={onUpdateQuote}
-              onQuoteReceiptUpload={onQuoteReceiptUpload}
-              onQuoteRemoveRequest={onQuoteRemoveRequest}
-            />
-          </CardContent>
-        </Card>
+        <div
+          ref={taskDetailsRevealRef}
+          className={`ui-reveal-target rounded-2xl md:rounded-lg ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
+          style={{ "--reveal-radius": "22px" }}
+        >
+          <Card className={`app-panel ${selectedTask ? "app-panel-active" : "app-panel-soft"} shadow-md ${theme.card} rounded-2xl md:rounded-lg`}>
+            <CardContent className="p-4 md:p-5">
+              <TaskDetails
+                selectedTask={selectedTask}
+                canEdit={canEdit}
+                darkMode={darkMode}
+                assigneeOptions={scopedAssigneeOptions}
+                currency={currency}
+                exchangeRates={exchangeRates}
+                onDeleteTaskRequest={onDeleteTaskRequest}
+                onUpdateTaskStatus={onUpdateTaskStatus}
+                onUpdateTask={onUpdateTask}
+                onTaskPhotoUpload={onTaskPhotoUpload}
+                onRemoveTaskPhoto={onRemoveTaskPhoto}
+                onTaskAttachmentUpload={onTaskAttachmentUpload}
+                onRemoveTaskAttachment={onRemoveTaskAttachment}
+                onAddTaskComment={onAddTaskComment}
+                onAddQuote={onAddQuote}
+                onUpdateQuote={onUpdateQuote}
+                onQuoteReceiptUpload={onQuoteReceiptUpload}
+                onQuoteRemoveRequest={onQuoteRemoveRequest}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );
@@ -1357,6 +1377,12 @@ export function AppShellHeader({
   });
   const [fleetDraftError, setFleetDraftError] = useState("");
   const [fleetFormOpen, setFleetFormOpen] = useState(false);
+  const fleetFormRevealRef = useRevealHighlight(fleetFormOpen, {
+    radius: "28px",
+    delay: 120,
+    scrollIntoView: true,
+    block: "nearest",
+  });
   const [headerClock, setHeaderClock] = useState(() => new Date());
   const fleetWorkspaceLabel = `${currentVesselName} Operations`;
   const openFleetPanel = () => {
@@ -1620,7 +1646,11 @@ export function AppShellHeader({
             </div>
 
             {fleetFormOpen ? (
-              <div className={`${premiumInnerClass(darkMode)} p-4`}>
+              <div
+                ref={fleetFormRevealRef}
+                className={`ui-reveal-target ${premiumInnerClass(darkMode)} p-4`}
+                style={{ "--reveal-radius": "28px" }}
+              >
                 <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>New Vessel</div>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>

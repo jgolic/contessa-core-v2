@@ -21,6 +21,7 @@ import {
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
 import { SmartLabel } from "../../components/smart_label.jsx";
+import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -392,6 +393,10 @@ export function CommandJumpBar({
   const containerRef = useRef(null);
   const [dropdownRect, setDropdownRect] = useState(null);
   const normalizedQuery = query.trim().toLowerCase();
+  const suggestionsRevealRef = useRevealHighlight(open && Boolean(normalizedQuery) && Boolean(dropdownRect), {
+    radius: "28px",
+    delay: 80,
+  });
   const filteredResults = useMemo(() => {
     if (!normalizedQuery) return [];
     const safeResults = Array.isArray(results) ? results : [];
@@ -536,11 +541,13 @@ export function CommandJumpBar({
 
         {open && normalizedQuery && dropdownRect && typeof document !== "undefined" ? createPortal(
           <div
-            className={`fixed z-[9999] max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}
+            ref={suggestionsRevealRef}
+            className={`ui-reveal-target fixed z-[9999] max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}
             style={{
               left: dropdownRect.left,
               top: dropdownRect.top,
               width: dropdownRect.width,
+              "--reveal-radius": "28px",
             }}
           >
             {filteredResults.length ? (
@@ -640,7 +647,11 @@ export function CommandJumpBar({
           </div>
 
           {open && normalizedQuery ? (
-            <div className={`absolute left-0 right-0 top-[calc(100%+8px)] z-[6000] max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}>
+            <div
+              ref={suggestionsRevealRef}
+              className={`ui-reveal-target absolute left-0 right-0 top-[calc(100%+8px)] z-[6000] max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}
+              style={{ "--reveal-radius": "22px" }}
+            >
               {filteredResults.length ? (
                 <div className="grid gap-1.5">
                   {filteredResults.map((result, index) => (

@@ -1,5 +1,6 @@
 import { Children, cloneElement, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
+import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 const DialogContext = createContext(null);
 
@@ -20,11 +21,21 @@ export function DialogTrigger({ children }) {
 
 export function DialogContent({ className = "", children }) {
   const ctx = useContext(DialogContext);
+  const revealRef = useRevealHighlight(Boolean(ctx?.open), {
+    radius: "30px",
+    delay: 120,
+  });
+
   if (!ctx?.open) return null;
 
   const content = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 p-4" onMouseDown={() => ctx.onOpenChange(false)}>
-      <div className={`relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()} onMouseDown={(event) => event.stopPropagation()}>
+      <div
+        ref={revealRef}
+        className={`ui-reveal-target relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()}
+        style={{ "--reveal-radius": "30px" }}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <button
           type="button"
           className="absolute right-5 top-5 rounded-lg border border-white/10 bg-[#162119]/92 px-3 py-1 text-sm text-slate-100 shadow"
