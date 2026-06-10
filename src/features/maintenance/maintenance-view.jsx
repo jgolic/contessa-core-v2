@@ -40,6 +40,7 @@ function ConfirmableMaintenanceItemRow({
   onRestoreMaintenanceLog,
 }) {
   const theme = themeClasses(darkMode);
+  const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     title: item.title || "",
     area: item.area || "",
@@ -61,6 +62,7 @@ function ConfirmableMaintenanceItemRow({
     draft.alertEnabled !== Boolean(item.alertEnabled);
 
   useEffect(() => {
+    setIsEditing(false);
     setDraft({
       title: item.title || "",
       area: item.area || "",
@@ -71,6 +73,17 @@ function ConfirmableMaintenanceItemRow({
     });
   }, [item.id, item.title, item.area, item.frequencyMonths, item.nextDueDate, item.notes, item.alertEnabled]);
 
+  const resetDraft = () => {
+    setDraft({
+      title: item.title || "",
+      area: item.area || "",
+      frequencyMonths: item.frequencyMonths || 1,
+      nextDueDate: item.nextDueDate || "",
+      notes: item.notes || "",
+      alertEnabled: Boolean(item.alertEnabled),
+    });
+  };
+
   return (
     <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "16px" }} className={`jump-highlight-target rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
@@ -79,61 +92,116 @@ function ConfirmableMaintenanceItemRow({
           <div className={`text-lg font-semibold ${theme.textPrimary}`}>{item.title}</div>
           <div className={`text-sm ${theme.textSecondary}`}>{item.area}</div>
         </div>
-        <Badge className={statusClass}>{statusText}</Badge>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Badge className={statusClass}>{statusText}</Badge>
+          {canEdit && !isEditing ? (
+            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button rounded-xl px-4 py-2">
+              Edit
+            </Button>
+          ) : null}
+        </div>
       </div>
       <div className={`mb-3 text-sm ${theme.textSecondary}`}>{extensionText}</div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Input disabled={!canEdit} value={draft.title} onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
-        <Input disabled={!canEdit} value={draft.area} onChange={(event) => setDraft((prev) => ({ ...prev, area: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
-        <Select value={String(draft.frequencyMonths)} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, frequencyMonths: Number(value) }))}>
-          <SelectTrigger className={`rounded-lg h-12 ${theme.input}`}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {MAINTENANCE_FREQUENCIES.map((option) => (
-              <SelectItem key={option.months} value={String(option.months)}>{option.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Input
-          disabled={!canEdit}
-          type="date"
-          value={draft.nextDueDate}
-          max={getScheduledNextDue(item)}
-          onChange={(event) => setDraft((prev) => ({ ...prev, nextDueDate: clampMaintenanceDueDate(item, event.target.value) }))}
-          className={`rounded-lg h-12 ${theme.input}`}
-        />
-      </div>
-      <textarea
-        disabled={!canEdit}
-        value={draft.notes}
-        onChange={(event) => setDraft((prev) => ({ ...prev, notes: event.target.value }))}
-        placeholder="Notes"
-        className={`mt-3 min-h-20 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--vessel-ring)] ${theme.input}`}
-      />
-      <div className="mt-3 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
-        {canEdit ? (
-          <Button
-            type="button"
-            onClick={() => onConfirm(item.id, draft)}
-            disabled={!isDirty}
-            className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-70 min-[420px]:w-auto"
-          >
-            Confirm
-          </Button>
-        ) : null}
-        {canEdit ? <Button onClick={() => onCompleteMaintenanceItem(item.id)} className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white min-[420px]:w-auto">
-          Done - Set Next Date
-        </Button> : null}
-        {canEdit ? <Button
-          variant="outline"
-          onClick={() => setDraft((prev) => ({ ...prev, alertEnabled: !prev.alertEnabled }))}
-          className="vessel-outline-button min-h-11 w-full rounded-lg px-4 py-3 min-[420px]:w-auto"
-        >
-          {draft.alertEnabled ? "Alerts On" : "Alerts Off"}
-        </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
-        <div className={`text-sm ${theme.textSecondary}`}>{isDirty ? "Changes pending confirmation." : "No unconfirmed changes."}</div>
-      </div>
+      {isEditing ? (
+        <>
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <div className="app-kicker mb-1">Editing Maintenance</div>
+              <div className={`text-sm ${theme.textSecondary}`}>Update the reminder, then confirm to save.</div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                resetDraft();
+                setIsEditing(false);
+              }}
+              className="app-action-button rounded-xl px-4 py-2"
+            >
+              Cancel
+            </Button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <Input disabled={!canEdit} value={draft.title} onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
+            <Input disabled={!canEdit} value={draft.area} onChange={(event) => setDraft((prev) => ({ ...prev, area: event.target.value }))} className={`rounded-lg h-12 ${theme.input}`} />
+            <Select value={String(draft.frequencyMonths)} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, frequencyMonths: Number(value) }))}>
+              <SelectTrigger className={`rounded-lg h-12 ${theme.input}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {MAINTENANCE_FREQUENCIES.map((option) => (
+                  <SelectItem key={option.months} value={String(option.months)}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              disabled={!canEdit}
+              type="date"
+              value={draft.nextDueDate}
+              max={getScheduledNextDue(item)}
+              onChange={(event) => setDraft((prev) => ({ ...prev, nextDueDate: clampMaintenanceDueDate(item, event.target.value) }))}
+              className={`rounded-lg h-12 ${theme.input}`}
+            />
+          </div>
+          <textarea
+            disabled={!canEdit}
+            value={draft.notes}
+            onChange={(event) => setDraft((prev) => ({ ...prev, notes: event.target.value }))}
+            placeholder="Notes"
+            className={`mt-3 min-h-20 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--vessel-ring)] ${theme.input}`}
+          />
+          <div className="mt-3 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center">
+            {canEdit ? (
+              <Button
+                type="button"
+                onClick={() => {
+                  onConfirm(item.id, draft);
+                  setIsEditing(false);
+                }}
+                disabled={!isDirty}
+                className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-70 min-[420px]:w-auto"
+              >
+                Confirm
+              </Button>
+            ) : null}
+            {canEdit ? <Button onClick={() => onCompleteMaintenanceItem(item.id)} className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white min-[420px]:w-auto">
+              Done - Set Next Date
+            </Button> : null}
+            {canEdit ? <Button
+              variant="outline"
+              onClick={() => setDraft((prev) => ({ ...prev, alertEnabled: !prev.alertEnabled }))}
+              className="vessel-outline-button min-h-11 w-full rounded-lg px-4 py-3 min-[420px]:w-auto"
+            >
+              {draft.alertEnabled ? "Alerts On" : "Alerts Off"}
+            </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
+            <div className={`text-sm ${theme.textSecondary}`}>{isDirty ? "Changes pending confirmation." : "No unconfirmed changes."}</div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+              <div className="app-compact-label">Title</div>
+              <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{item.title || "Maintenance item"}</div>
+            </div>
+            <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+              <div className="app-compact-label">Area</div>
+              <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{item.area || "Not set"}</div>
+            </div>
+            <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+              <div className="app-compact-label">Frequency</div>
+              <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{MAINTENANCE_FREQUENCIES.find((option) => Number(option.months) === Number(item.frequencyMonths))?.label || `${item.frequencyMonths || 1} month`}</div>
+            </div>
+            <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+              <div className="app-compact-label">Next Due</div>
+              <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{item.nextDueDate || "No due date"}</div>
+            </div>
+          </div>
+          <div className={`mt-3 rounded-xl border p-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-950/35 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
+            {item.notes || "No notes recorded."}
+          </div>
+        </>
+      )}
       <div className={`mt-4 rounded-lg p-4 ${theme.subtle}`}>
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className={`font-semibold ${theme.textPrimary}`}>Maintenance Log</div>
@@ -143,7 +211,7 @@ function ConfirmableMaintenanceItemRow({
           <div className="space-y-2">
             {item.logs.map((log) => (
               <div key={log.id} className={`relative rounded-lg border p-3 pr-10 ${darkMode ? "border-[#31443a] bg-[#111a16]" : "border-[#d8e7df] bg-white"}`}>
-                {canEdit ? <button
+                {canEdit && isEditing ? <button
                   type="button"
                   onClick={() => onRemoveMaintenanceLog(item.id, log.id)}
                   className={`absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-lg text-sm font-semibold ${darkMode ? "bg-[#22312a] text-[#f4fbf6] hover:bg-[#2f453b]" : "bg-[#e8eee9] text-[#40534a] hover:bg-[#d7e8df]"}`}

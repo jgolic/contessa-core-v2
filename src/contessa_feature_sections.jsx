@@ -827,6 +827,7 @@ function ConfirmableTaskFields({
 }) {
   const theme = themeClasses(darkMode);
   const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
+  const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     assignee: task.assignee || "",
     department: task.department || "General",
@@ -842,6 +843,7 @@ function ConfirmableTaskFields({
     draft.notes !== (task.notes || "");
 
   useEffect(() => {
+    setIsEditing(false);
     setDraft({
       assignee: task.assignee || "",
       department: task.department || "General",
@@ -851,8 +853,79 @@ function ConfirmableTaskFields({
     });
   }, [task.assignee, task.department, task.dueDate, task.priority, task.notes, task.id]);
 
+  const resetDraft = () => {
+    setDraft({
+      assignee: task.assignee || "",
+      department: task.department || "General",
+      dueDate: task.dueDate || "",
+      priority: task.priority || "medium",
+      notes: task.notes || "",
+    });
+  };
+
+  if (!isEditing) {
+    return (
+      <div className={`relative mb-5 rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200 bg-slate-50/80"}`}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="app-kicker mb-2">Task Information</div>
+            <div className={`text-lg font-semibold ${theme.textPrimary}`}>{task.name || task.title || "Task"}</div>
+            <div className={`mt-1 text-sm ${theme.textSecondary}`}>{task.department || "General"}</div>
+          </div>
+          {canEdit ? (
+            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button rounded-xl px-4 py-2">
+              Edit
+            </Button>
+          ) : (
+            <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>
+          )}
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
+            <div className="app-compact-label">Assignee</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.assignee || "Unassigned"}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
+            <div className="app-compact-label">Department</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.department || "General"}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
+            <div className="app-compact-label">Due</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.dueDate || "No due date"}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
+            <div className="app-compact-label">Priority</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{formatTaskPriorityLabel(task.priority || "medium")} Priority</div>
+          </div>
+        </div>
+
+        <div className={`mt-3 rounded-xl border p-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-950/45 text-slate-300" : "border-slate-200 bg-white text-slate-700"}`}>
+          {task.notes || "No notes recorded."}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`mb-5 rounded-lg p-4 ${theme.subtle}`}>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <div className="app-kicker mb-1">Editing Task</div>
+          <div className={`text-sm ${theme.textSecondary}`}>Update fields, then confirm to save changes.</div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            resetDraft();
+            setIsEditing(false);
+          }}
+          className="app-action-button rounded-xl px-4 py-2"
+        >
+          Cancel
+        </Button>
+      </div>
       <div className="grid gap-3 md:grid-cols-2">
         <SearchableSelect
           label="Assignee"
@@ -904,7 +977,10 @@ function ConfirmableTaskFields({
         {canEdit ? (
           <Button
             type="button"
-            onClick={() => onConfirm(task.id, draft)}
+            onClick={() => {
+              onConfirm(task.id, draft);
+              setIsEditing(false);
+            }}
             disabled={!isDirty}
             className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70"
           >

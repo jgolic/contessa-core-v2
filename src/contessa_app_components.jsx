@@ -30,6 +30,7 @@ import {
   moneyStatusStyles,
   priorityStyles,
   statusStyles,
+  successBadgeClass,
   themeClasses,
   titleCase,
   warningBadgeClass,
@@ -370,6 +371,7 @@ export function QuoteRow({
   darkMode = false,
 }) {
   const theme = themeClasses(darkMode);
+  const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     supplier: quote.supplier || "",
     amount: quote.amount ?? 0,
@@ -386,13 +388,80 @@ export function QuoteRow({
     draft.status !== (quote.status || "requested");
 
   useEffect(() => {
+    setIsEditing(false);
     setDraft({
       supplier: quote.supplier || "",
       amount: quote.amount ?? 0,
       currency: quote.currency || "USD",
       status: quote.status || "requested",
     });
-  }, [quote.supplier, quote.amount, quote.currency, quote.status]);
+  }, [quote.id, quote.supplier, quote.amount, quote.currency, quote.status]);
+
+  const resetDraft = () => {
+    setDraft({
+      supplier: quote.supplier || "",
+      amount: quote.amount ?? 0,
+      currency: quote.currency || "USD",
+      status: quote.status || "requested",
+    });
+  };
+
+  if (!isEditing) {
+    return (
+      <div className={`relative rounded-2xl border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Quote Information</div>
+            <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>{quote.supplier || "Quote"}</div>
+            <div className={`mt-1 text-sm ${theme.textSecondary}`}>
+              {[quote.currency || "USD", quote.status ? titleCase(quote.status) : "Requested"].filter(Boolean).join(" - ")}
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <Badge className={isPaidMoneyStatus(quote.status) ? successBadgeClass(darkMode) : warningBadgeClass(darkMode)}>
+              {isPaidMoneyStatus(quote.status) ? "Paid" : "Unpaid"}
+            </Badge>
+            {canEdit ? (
+              <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button rounded-xl px-4 py-2">
+                Edit
+              </Button>
+            ) : (
+              <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Supplier</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.supplier || "Not set"}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Amount</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.currency || "USD"} {quote.amount ?? 0}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Approval</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{titleCase(quote.status || "requested")}</div>
+          </div>
+          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Summary</div>
+            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.includeInSummary ? "Included" : "Excluded"}</div>
+          </div>
+        </div>
+
+        {quote.attachments && quote.attachments.length > 0 ? (
+          <div className={`mt-3 rounded-xl border p-3 text-sm ${darkMode ? "border-white/10 bg-slate-950/35 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
+            {quote.attachments.length} attachment{quote.attachments.length === 1 ? "" : "s"} available.
+          </div>
+        ) : (
+          <div className={`mt-3 rounded-xl border p-3 text-sm ${darkMode ? "border-white/10 bg-slate-950/35 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
+            No attachments uploaded.
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`relative rounded-lg border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
@@ -407,27 +476,43 @@ export function QuoteRow({
         x
       </button> : null}
       <div className="mb-3 flex flex-col items-start gap-3 pr-10 min-[420px]:flex-row min-[420px]:justify-between">
-        <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Quote</div>
-        <label
-          className={`flex min-h-[2.5rem] cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition ${
-            quote.includeInSummary
-              ? darkMode
-                ? "border-vessel bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"
-                : "border-vessel bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"
-              : darkMode
-                ? "border-[#31443a] bg-[#111a16] text-[#c7d5cd]"
-                : "border-[#d8e7df] bg-[#fbfefd] text-[#40534a]"
-          }`}
-        >
-          <input
-            disabled={!canEdit}
-            type="checkbox"
-            checked={Boolean(quote.includeInSummary)}
-            onChange={(event) => onToggleIncludeInSummary?.(event.target.checked)}
-            className="h-4 w-4 shrink-0 rounded border-[#9bb8ab]"
-          />
-          <span>{quote.includeInSummary ? "Include in summary" : "Excluded from summary"}</span>
-        </label>
+        <div>
+          <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Editing Quote</div>
+          <div className={`mt-1 text-sm ${theme.textSecondary}`}>Change quote details, then confirm to save.</div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              resetDraft();
+              setIsEditing(false);
+            }}
+            className="app-action-button rounded-xl px-4 py-2"
+          >
+            Cancel
+          </Button>
+          <label
+            className={`flex min-h-[2.5rem] cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition ${
+              quote.includeInSummary
+                ? darkMode
+                  ? "border-vessel bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"
+                  : "border-vessel bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"
+                : darkMode
+                  ? "border-[#31443a] bg-[#111a16] text-[#c7d5cd]"
+                  : "border-[#d8e7df] bg-[#fbfefd] text-[#40534a]"
+            }`}
+          >
+            <input
+              disabled={!canEdit}
+              type="checkbox"
+              checked={Boolean(quote.includeInSummary)}
+              onChange={(event) => onToggleIncludeInSummary?.(event.target.checked)}
+              className="h-4 w-4 shrink-0 rounded border-[#9bb8ab]"
+            />
+            <span>{quote.includeInSummary ? "Include in summary" : "Excluded from summary"}</span>
+          </label>
+        </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Input disabled={!canEdit} value={draft.supplier} onChange={(event) => setDraft((prev) => ({ ...prev, supplier: event.target.value }))} placeholder="Supplier" className={`h-12 rounded-lg ${theme.input}`} />
@@ -462,7 +547,10 @@ export function QuoteRow({
         <div className={`text-sm ${theme.textSecondary}`}>{isDirty ? "Changes pending confirmation." : "No unconfirmed changes."}</div>
         {canEdit ? <Button
           type="button"
-          onClick={() => onConfirm(draft)}
+          onClick={() => {
+            onConfirm(draft);
+            setIsEditing(false);
+          }}
           disabled={!isDirty}
           className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70"
         >
