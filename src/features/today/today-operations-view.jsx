@@ -1062,11 +1062,24 @@ export function TodayOperationsView({
     });
   }
 
+  function scrollTargetToReadableTop(element) {
+    if (!element || typeof window === "undefined") return;
+
+    const viewportWidth = window.innerWidth || 0;
+    const topOffset = viewportWidth >= 1024 ? 112 : 92;
+    const targetTop = element.getBoundingClientRect().top + window.scrollY - topOffset;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  }
+
   async function highlightTarget(targetId, fallbackId = "") {
     if (!targetId || typeof window === "undefined" || typeof document === "undefined") return false;
     const element = (await waitForHighlightElement(targetId)) || (fallbackId ? await waitForHighlightElement(fallbackId, 6, 70) : null);
     if (!element) return false;
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    scrollTargetToReadableTop(element);
     element.classList.remove("jump-highlight-active");
     void element.offsetWidth;
     element.classList.add("jump-highlight-target");
