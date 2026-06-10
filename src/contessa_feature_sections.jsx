@@ -2060,12 +2060,6 @@ export function AppShellHeader({
                 <div className="mt-1">{localShareWarning}</div>
               </div>
             ) : null}
-            <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#dce9e1]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#40534a]"}`}>
-              <div className="font-semibold">Public App Link</div>
-              <div className={`mt-1 text-xs ${theme.textSecondary}`}>
-                {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
-              </div>
-            </div>
             <input
               ref={jsonImportInputRef}
               type="file"
@@ -2073,16 +2067,25 @@ export function AppShellHeader({
               onChange={onImportAppStateJson}
               className="hidden"
             />
-            <div className="grid gap-2">
-              <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
-                Share App
-              </ShareAppButton>
-              <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
-                Email App Link
-              </ShareAppButton>
-              <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-4">
-                Copy App Link
-              </ShareAppButton>
+            <div className={`rounded-2xl border p-4 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#1f332b]"}`}>
+              <div className="mb-3 text-base font-semibold">Share</div>
+              <div className={`mb-4 rounded-xl border p-3 ${darkMode ? "border-[#2d5c4e] bg-[#12241f] text-[#e7f8f1]" : "border-[#c9ded3] bg-white text-[#263c33]"}`}>
+                <div className="font-semibold">Public App Link</div>
+                <div className={`mt-1 break-all text-xs ${darkMode ? "text-[#cfe4da]" : "text-[#40534a]"}`}>
+                  {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Share App Link
+                </ShareAppButton>
+                <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Email App Link
+                </ShareAppButton>
+                <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Copy App Link
+                </ShareAppButton>
+              </div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onExportCsv}>Export CSV</Button>
@@ -2415,12 +2418,6 @@ export function AppShellHeader({
                       </div>
                     </div>
                   ) : null}
-                  <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#dce9e1]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#40534a]"}`}>
-                    <div className="font-semibold">Public App Link</div>
-                    <div className={`mt-1 text-xs ${theme.textSecondary}`}>
-                      {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
-                    </div>
-                  </div>
                   <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#2d5c4e] bg-[#15332c] text-[#dffbf1]" : "border-[#b7dbc9] bg-[#eef8f3] text-[#285446]"}`}>
                     <div className="font-semibold">Add to Home Screen on iPhone</div>
                     <div className={`mt-1 text-xs ${darkMode ? "text-[#b8d8cc]" : "text-[#4e6a5d]"}`}>
@@ -2461,16 +2458,22 @@ export function AppShellHeader({
                   >
                     Import Full JSON
                   </Button> : null}
-                  <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#dce9e1]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#40534a]"}`}>
-                    <div className="mb-3 font-semibold">Share App</div>
+                  <div className={`rounded-2xl border p-4 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#1f332b]"}`}>
+                    <div className="mb-3 text-base font-semibold">Share</div>
+                    <div className={`mb-4 rounded-xl border p-3 ${darkMode ? "border-[#2d5c4e] bg-[#12241f] text-[#e7f8f1]" : "border-[#c9ded3] bg-white text-[#263c33]"}`}>
+                      <div className="font-semibold">Public App Link</div>
+                      <div className={`mt-1 break-all text-xs ${darkMode ? "text-[#cfe4da]" : "text-[#40534a]"}`}>
+                        {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
+                      </div>
+                    </div>
                     <div className="grid gap-3">
-                      <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-6">
-                        Share App
+                      <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-6">
+                        Share App Link
                       </ShareAppButton>
-                      <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-6">
+                      <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-6">
                         Email App Link
                       </ShareAppButton>
-                      <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-lg px-4 py-6">
+                      <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-6">
                         Copy App Link
                       </ShareAppButton>
                     </div>

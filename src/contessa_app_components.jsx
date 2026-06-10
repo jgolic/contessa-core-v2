@@ -97,11 +97,7 @@ export function ShareAppButton({
 }) {
   const urlStatus = shareUrlStatus || getPublicAppUrlFromProcessEnv();
   const isMissingConfig = !urlStatus.isValid;
-  const baseClassName = mode === "share"
-    ? "button-vessel-primary text-white"
-    : mode === "email"
-      ? "border-vessel bg-[var(--vessel-accent-soft)] text-[var(--vessel-text-accent)] hover:-translate-y-0.5 hover:brightness-105"
-      : "vessel-outline-button";
+  const baseClassName = "vessel-outline-button";
 
   const notify = (type, title, message) => onToast?.({ type, title, message });
 
