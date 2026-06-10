@@ -1422,6 +1422,20 @@ export function AppShellHeader({
     : "settings-popover-field-light border-slate-300 bg-white text-slate-950";
   const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-cyan-300/40 hover:!bg-cyan-300/12" : ""}`;
   const settingsMetaClass = darkMode ? "text-slate-200" : "settings-popover-meta-light text-slate-700";
+  const fleetPanelClass = darkMode
+    ? "fleet-popover-dark rounded-[32px] border-white/10 bg-slate-950 text-slate-50 backdrop-blur-2xl"
+    : "fleet-popover-light rounded-[32px] border-slate-200/90 bg-white text-slate-950 backdrop-blur-2xl";
+  const fleetCardClass = darkMode
+    ? "fleet-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92"
+    : "fleet-popover-card-light rounded-2xl border border-slate-300 bg-white";
+  const fleetLabelClass = darkMode
+    ? "fleet-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
+    : "fleet-popover-label-light text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700";
+  const fleetBodyTextClass = darkMode ? "fleet-popover-body-dark text-slate-200" : "fleet-popover-body-light text-slate-700";
+  const fleetDetailGridClass = darkMode
+    ? "fleet-popover-detail-dark grid gap-1 text-xs font-semibold text-slate-200"
+    : "fleet-popover-detail-light grid gap-1 text-xs font-semibold text-slate-700";
+  const fleetFormLabelClass = "mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200";
   const commandIntelCards = [
     {
       key: "vessel-status",
@@ -1603,7 +1617,7 @@ export function AppShellHeader({
         maxWidth={980}
         minHeight={320}
         maxHeight={720}
-        panelClassName={`rounded-[32px] backdrop-blur-2xl ${darkMode ? "border-white/10 bg-slate-950 text-[#f4fbf6]" : "border-slate-200/80 bg-white text-[#1d2b24]"}`}
+        panelClassName={fleetPanelClass}
         contentClassName="max-h-[82vh] p-5"
         ariaLabel="Fleet switcher"
       >
@@ -1611,27 +1625,27 @@ export function AppShellHeader({
             <DialogTitle>Fleet</DialogTitle>
           </DialogHeader>
           <div className="flex h-full flex-col gap-3">
-            <div className={`${premiumInnerClass(darkMode)} p-4`}>
-              <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Fleet</div>
-              <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>Switch vessels or create a new independent workspace without leaving the current command layout.</div>
+            <div className={`${fleetCardClass} p-4`}>
+              <div className={fleetLabelClass}>Fleet</div>
+              <div className={`mt-1 text-sm font-medium leading-5 ${fleetBodyTextClass}`}>Switch vessels or create a new independent workspace without leaving the current command layout.</div>
             </div>
 
             {fleetFormOpen ? (
               <div
                 ref={fleetFormRevealRef}
-                className={`ui-reveal-target ${premiumInnerClass(darkMode)} p-4`}
+                className={`ui-reveal-target ${fleetCardClass} p-4`}
                 style={{ "--reveal-radius": "28px" }}
               >
-                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>New Vessel</div>
+                <div className={fleetLabelClass}>New Vessel</div>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                    <label className={fleetFormLabelClass}>
                       Vessel Name <span className="text-rose-500">*</span>
                     </label>
                     <Input placeholder="M/Y Vessel Name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                    <label className={fleetFormLabelClass}>
                       Length <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
@@ -1666,7 +1680,7 @@ export function AppShellHeader({
                     required
                   />
                   <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+                    <label className={fleetFormLabelClass}>
                       Crew Number
                     </label>
                     <Input type="number" min="0" step="1" inputMode="numeric" placeholder="6" value={fleetDraft.crewNumber} onChange={(event) => setFleetDraft((prev) => ({ ...prev, crewNumber: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
@@ -1736,15 +1750,15 @@ export function AppShellHeader({
                 const isActive = vessel?.id === activeVesselId;
 
                 return (
-                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-4 backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "border-blue-300/80 bg-blue-50/35 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${premiumInnerClass(darkMode)} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-white/[0.06]" : "hover:border-blue-300 hover:bg-white/90"}`}`}>
+                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-4 backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "fleet-popover-card-dark border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "fleet-popover-card-light border-blue-300/80 bg-blue-50/50 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${fleetCardClass} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-slate-800/95" : "hover:border-blue-300 hover:bg-white"}`}`}>
                     <div className="flex items-start justify-between gap-2.5">
                       <div>
-                        <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel</div>
+                        <div className={fleetLabelClass}>Vessel</div>
                         <div className={`mt-0.5 text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
                       </div>
                       {isActive ? <Badge className={`px-2 py-0.5 text-[10px] ${darkMode ? "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.18)] text-vessel-accent" : "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.10)] text-vessel-accent"}`}>Current</Badge> : null}
                     </div>
-                    <div className={`grid gap-1 text-xs ${theme.textSecondary}`}>
+                    <div className={fleetDetailGridClass}>
                       <div className="flex items-center justify-between gap-3"><span>Status</span><span className={theme.textPrimary}>{statusLabel}</span></div>
                       <div className="flex items-center justify-between gap-3"><span>Crew</span><span className={theme.textPrimary}>{crewCount}</span></div>
                       <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
