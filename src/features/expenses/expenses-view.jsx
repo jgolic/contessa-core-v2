@@ -122,7 +122,7 @@ function ConfirmableCrewExpenseRow({
             type="button"
             onClick={() => onConfirm(item.id, draft)}
             disabled={!isDirty}
-            className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
             Confirm
           </Button>

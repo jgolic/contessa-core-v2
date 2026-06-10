@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Josip Golic. Proprietary and confidential.
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import AppErrorBoundary from "./components/AppErrorBoundary.jsx";
 import {
   APP_FOOTER_NOTICE,
   buildBoatExpenseSummaryItems,
@@ -8,7 +9,6 @@ import {
   getCanonicalPublicAppUrlStatus,
   buildDashboardSnapshot,
   buildCertificateAlerts,
-  buildOperationalNotifications,
   calculateConfidenceScore,
   CURRENCY_OPTIONS,
   CREW_DEPARTMENT_OPTIONS,
@@ -17,8 +17,8 @@ import {
   FALLBACK_USD_RATES,
   MAINTENANCE_AREA_OPTIONS,
   PRIORITY_OPTIONS,
-  STATUS_OPTIONS,
   STORAGE_KEY,
+  TASK_STATUS_OPTIONS,
   TASK_DEPARTMENT_OPTIONS,
   MONEY_STATUS_OPTIONS,
   archiveDeclinedTasks,
@@ -31,7 +31,6 @@ import {
   buildVesselThemeCssVars,
   createFleetVesselWorkspace,
   createFullStateExport,
-  createNextTaskId,
   createPersistedAppState,
   csvValue,
   dateStringFromNow,
@@ -39,9 +38,8 @@ import {
   downloadFile,
   formatVesselNameFromId,
   formatMoney,
+  formatTaskStatusLabel,
   getConfiguredPublicAppUrlEnvValue,
-  findCrewByName,
-  getCrewDisplayName,
   getCrewOptionsForVessel,
   getInitialAppState,
   getNextFleetTheme,
@@ -66,7 +64,6 @@ import {
   themeClasses,
   titleCase,
   todayDateString,
-  validateAssignedCrewBelongsToVessel,
 } from "./contessa_app_data.mjs";
 import {
   createEmptyCertificateDraft,
@@ -100,6 +97,17 @@ import {
 } from "./lib/browser_storage.mjs";
 import { getCrewId } from "./lib/demo_crew_cv.mjs";
 import { getCanonicalVesselSlug } from "./lib/vessel_lookup.mjs";
+import { createActivityLog } from "./lib/data/activity.js";
+import { assertCrewBelongsToVessel, getCrewForVessel } from "./lib/data/crew.js";
+import { getNotificationsForVessel } from "./lib/data/notifications.js";
+import {
+  createTask as createTaskRecord,
+  deleteTask as deleteTaskRecord,
+  getTasksForVessel,
+  updateTask as updateTaskRecord,
+} from "./lib/data/tasks.js";
+import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
+import { useMediaQuery } from "./hooks/useMediaQuery.js";
 
 const PROTOTYPE_SYNC_KEY = `${STORAGE_KEY}-prototype-sync-state`;
 
@@ -136,7 +144,32 @@ function getJumpTargetElement(targetId) {
   );
 }
 
-function highlightJumpTarget(element) {
+function waitForElementById(id, retries = 12, delay = 80) {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined" || typeof document === "undefined" || !id) {
+      resolve(null);
+      return;
+    }
+
+    let attempts = 0;
+
+    function check() {
+      const element = getJumpTargetElement(id);
+
+      if (element || attempts >= retries) {
+        resolve(element || null);
+        return;
+      }
+
+      attempts += 1;
+      window.setTimeout(check, delay);
+    }
+
+    check();
+  });
+}
+
+function highlightTarget(element) {
   if (!element) return;
   element.classList.remove("jump-highlight-active");
   element.classList.remove("search-jump-highlight");
@@ -147,9 +180,11 @@ function highlightJumpTarget(element) {
   window.setTimeout(() => element.classList.remove("jump-highlight-active"), 2000);
 }
 
-function scrollAndHighlight(targetId, options = {}) {
+async function scrollAndHighlight(targetId, fallbackIdOrOptions = "", maybeOptions = {}) {
   if (typeof window === "undefined" || typeof document === "undefined" || !targetId) return false;
-  const element = getJumpTargetElement(targetId);
+  const fallbackId = typeof fallbackIdOrOptions === "string" ? fallbackIdOrOptions : "";
+  const options = typeof fallbackIdOrOptions === "string" ? maybeOptions : fallbackIdOrOptions;
+  const element = (await waitForElementById(targetId)) || (fallbackId ? await waitForElementById(fallbackId, 6, 70) : null);
   if (!element) return false;
 
   element.scrollIntoView({
@@ -159,7 +194,7 @@ function scrollAndHighlight(targetId, options = {}) {
   });
 
   window.setTimeout(() => {
-    highlightJumpTarget(element);
+    highlightTarget(element);
     if (typeof element.focus === "function") {
       element.setAttribute("tabindex", "-1");
       element.focus({ preventScroll: true });
@@ -214,6 +249,7 @@ function createEmptyTaskDraft(vessel = {}) {
 }
 
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
+  const isDesktopViewport = useMediaQuery("(min-width: 768px)");
   const initialAppState = useMemo(() => {
     const state = getInitialAppState();
     const routeHasWorkspace = Array.isArray(state.vessels) && state.vessels.some((vessel) => vessel?.id === routeVesselId);
@@ -303,6 +339,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   );
   const jsonImportInputRef = useRef(null);
   const sectionNavigationTimeoutRef = useRef(null);
+  const navigationLockUntilRef = useRef(0);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
   const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
     const saved = getStoredJson(PROTOTYPE_SYNC_KEY, null);
@@ -362,6 +399,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       activeVesselId
     );
   }, [vessels, activeVesselId, vesselProfile, documents, tasks, history, declinedTasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning]);
+  const vesselScopedTasks = useMemo(
+    () => getTasksForVessel(activeVesselId, activeVesselWorkspace),
+    [activeVesselId, activeVesselWorkspace]
+  );
+  const vesselScopedCrewProfiles = useMemo(
+    () => getCrewForVessel(activeVesselId, activeVesselWorkspace),
+    [activeVesselId, activeVesselWorkspace]
+  );
   const currentCrewOptions = useMemo(() => getCrewOptionsForVessel(activeVesselWorkspace), [activeVesselWorkspace]);
   const currentCrewNames = useMemo(() => currentCrewOptions.map((crew) => crew.value), [currentCrewOptions]);
   const activeVesselState = useMemo(() => {
@@ -424,12 +469,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     [effectiveRole]
   );
   const visibleCrewProfiles = useMemo(
-    () => crewProfiles.filter((profile) => canAccessCrewProfile(effectiveRole, profile, actorName)),
-    [crewProfiles, effectiveRole, actorName]
+    () => vesselScopedCrewProfiles.filter((profile) => canAccessCrewProfile(effectiveRole, profile, actorName)),
+    [vesselScopedCrewProfiles, effectiveRole, actorName]
   );
   const visibleTasks = useMemo(
-    () => tasks.filter((task) => canAccessTask(effectiveRole, task, actorName)),
-    [tasks, effectiveRole, actorName]
+    () => vesselScopedTasks.filter((task) => canAccessTask(effectiveRole, task, actorName)),
+    [vesselScopedTasks, effectiveRole, actorName]
   );
   const approvalScopedBoatItems = useMemo(
     () =>
@@ -449,6 +494,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     return buildMaintenanceAlerts(maintenanceItems);
   }, [maintenanceItems]);
   const canAccessSection = (sectionKey) => visibleModuleKeys.includes(sectionKey);
+
+  const lockProgrammaticNavigation = (duration = 1200) => {
+    navigationLockUntilRef.current = Date.now() + duration;
+  };
+
+  const isProgrammaticNavigationLocked = () => Date.now() < navigationLockUntilRef.current;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -614,6 +665,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   }, [visibleCrewProfiles, selectedCrewId, newCertificateCrewId]);
 
   useEffect(() => {
+    if (isProgrammaticNavigationLocked()) {
+      return;
+    }
+
     if (
       (expenseView === "command" && !visibleModuleKeys.includes("today")) ||
       (expenseView === "tasks-maintenance" && !visibleModuleKeys.includes("tasks") && !visibleModuleKeys.includes("maintenance")) ||
@@ -732,9 +787,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const selectedTask = useMemo(() => {
     return visibleTasks.find((task) => task.id === selectedId) || null;
   }, [visibleTasks, selectedId]);
+  const debouncedTaskSearch = useDebouncedValue(search, 120);
 
   const filteredTasks = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = debouncedTaskSearch.trim().toLowerCase();
 
     return visibleTasks.filter((task) => {
       const matchesSearch = !q || [
@@ -752,7 +808,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       const matchesStatus = statusFilter === "all" || task.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [visibleTasks, search, statusFilter]);
+  }, [visibleTasks, debouncedTaskSearch, statusFilter]);
 
   const boatExpenses = useMemo(() => {
     return buildBoatExpenseSummaryItems(visibleTasks);
@@ -781,14 +837,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const certificateAlerts = useMemo(() => buildCertificateAlerts(visibleCrewProfiles), [visibleCrewProfiles]);
   const operationalNotifications = useMemo(
     () =>
-      buildOperationalNotifications({
+      getNotificationsForVessel(activeVesselId, {
+        ...activeVesselWorkspace,
         tasks: visibleTasks,
-        boatExpenses,
+        crewProfiles: visibleCrewProfiles,
         crewExpenses,
-        maintenanceAlerts,
-        certificateAlerts,
+        maintenanceItems,
       }),
-    [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, certificateAlerts]
+    [activeVesselId, activeVesselWorkspace, visibleTasks, visibleCrewProfiles, crewExpenses, maintenanceItems]
   );
   const accessibleNotifications = useMemo(
     () =>
@@ -804,6 +860,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         return true;
       }),
     [operationalNotifications, visibleModuleKeys, visibleTaskIds, visibleCrewProfiles]
+  );
+  const headerNotifications = useMemo(
+    () => accessibleNotifications.slice(0, isDesktopViewport ? 20 : 12),
+    [accessibleNotifications, isDesktopViewport]
   );
   const currentRoleLabel = useMemo(() => {
     const roleLabels = {
@@ -903,6 +963,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const stats = useMemo(() => {
     const pending = visibleTasks.filter((task) => task.status === "pending").length;
     const ongoing = visibleTasks.filter((task) => task.status === "ongoing").length;
+    const waitingApproval = visibleTasks.filter((task) => task.status === "waiting-approval").length;
+    const blocked = visibleTasks.filter((task) => task.status === "blocked").length;
     const completed = visibleTasks.filter((task) => task.status === "completed").length;
     const approved = visibleTasks.filter((task) => task.status === "approved").length;
     const totalObjectives = visibleTasks.length;
@@ -922,6 +984,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     return {
       pending,
       ongoing,
+      waitingApproval,
+      blocked,
       completed,
       approved,
       totalObjectives,
@@ -967,7 +1031,24 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         openExposure: formatMoney(stats.totalExpenses || 0, currency),
       },
       items: [
-        ...todayOperations.overdueTasks.map((task) => ({
+        ...visibleTasks
+          .filter((task) => ["blocked", "waiting-approval"].includes(task.status))
+          .map((task) => ({
+            id: task.id,
+            type: "task",
+            title: task.name,
+            subtitle: `${task.area || "General"} / ${task.department || "General"}`,
+            status: formatTaskStatusLabel(task.status || "pending"),
+            priority: task.status === "blocked" ? "Critical" : "Review",
+            assignedTo: task.assignee || "Unassigned",
+            requester: task.requester || "Captain",
+            dueDate: task.dueDate || "Not set",
+            amount: (task.quotes || []).length ? formatMoney((task.quotes || []).reduce((sum, quote) => sum + Number(quote.amount || 0), 0), task.quotes?.[0]?.currency || currency) : "",
+            description: task.notes || "",
+            checklist: [],
+            activity: (task.comments || []).slice(0, 3).map((comment) => comment.text),
+          })),
+        ...todayOperations.overdueTasks.filter((task) => !["blocked", "waiting-approval"].includes(task.status)).map((task) => ({
           id: task.id,
           type: "task",
           title: task.name,
@@ -1053,11 +1134,41 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     stats,
     accessibleNotifications.length,
     currency,
+    visibleTasks,
     todayOperations,
     expiringCertificates,
     routeAlerts,
     currentRoleLabel,
     activeVesselState,
+  ]);
+  const dailyReportData = useMemo(() => {
+    const completedTasks = visibleTasks.filter((task) => ["completed", "approved"].includes(task.status));
+    const openTasks = visibleTasks.filter((task) => !["completed", "approved", "declined"].includes(task.status));
+
+    return {
+      vesselName: activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME,
+      date: new Date().toLocaleDateString(),
+      completedTasks,
+      openTasks,
+      overdueItems: todayOperations.overdueTasks || [],
+      approvalsWaiting: todayOperations.pendingApprovals || [],
+      crewNotes: expiringCertificates || [],
+      maintenanceWarnings: maintenanceAlerts || [],
+      latestActivity: visibleHistory.slice(0, 8),
+      routeStatus: routePlanning?.status || "Planning",
+      pendingSpend: formatMoney(stats.totalExpenses || 0, currency),
+    };
+  }, [
+    activeVesselWorkspace?.name,
+    vesselProfile?.vesselName,
+    visibleTasks,
+    todayOperations,
+    expiringCertificates,
+    maintenanceAlerts,
+    visibleHistory,
+    routePlanning?.status,
+    stats.totalExpenses,
+    currency,
   ]);
 
   const maintenancePopupItem = useMemo(() => {
@@ -1106,6 +1217,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const navigateToSection = (sectionId, moduleName = "", options = {}, targetId = sectionId) => {
     if (!sectionId) return;
+    lockProgrammaticNavigation(1200);
     if (moduleName) {
       activateModuleForSection(moduleName, options);
     }
@@ -1126,6 +1238,25 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     navigateToSection(sectionIdByModule[moduleId] || `${moduleId}-section`, moduleId, options);
   };
 
+  const openDesktopModule = (moduleId, options = {}) => {
+    if (!moduleId) return;
+    setPendingSectionNavigation(null);
+    activateModuleForSection(moduleId, options);
+  };
+
+  const openResponsiveModule = (moduleId, options = {}) => {
+    const isDesktopViewport = typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 768px)").matches
+      : true;
+
+    if (isDesktopViewport) {
+      openDesktopModule(moduleId, options);
+      return;
+    }
+
+    openModule(moduleId, options);
+  };
+
   const jumpToAppTarget = ({
     sectionId,
     targetId,
@@ -1139,16 +1270,34 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const resolvedSection = sectionId || targetId || "dashboard-section";
     const resolvedTarget = targetId || sectionId || resolvedSection;
 
+    lockProgrammaticNavigation(1400);
+
     if (resolvedModule) {
       activateModuleForSection(resolvedModule, options);
     }
 
     setFleetOpen(false);
     setSharingOpen(false);
+    setHistoryOpen(false);
+    setRetrieveOpen(false);
+    setNewTaskOpen(false);
+    setNewExpenseOpen(false);
+    setNewCrewExpenseOpen(false);
+    setNewCrewProfileOpen(false);
+    setNewCertificateOpen(false);
+    setNewMaintenanceOpen(false);
 
     if (openDetails && item) {
       if (item.section) {
         openNotificationItem(item);
+      } else {
+        const itemType = String(item.type || "").toLowerCase();
+        if (["task", "maintenance", "approval", "quote", "expense"].includes(itemType) && item.id) {
+          setSelectedId(item.id);
+        }
+        if ((itemType === "crew" || itemType === "certificate" || item.fullName) && item.id) {
+          setSelectedCrewId(item.id);
+        }
       }
     }
 
@@ -1163,13 +1312,52 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const commandSearchResults = useMemo(() => {
     const vesselName = activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME;
+    const getOperationalItemSearchTarget = (item = {}) => {
+      const type = String(item?.type || "").toLowerCase();
+      const fallbackId = item?.id ? `item-${item.id}` : "dashboard-section";
+
+      if (type === "task") {
+        return { sectionId: "tasks-section", targetId: fallbackId, moduleName: "tasks-maintenance", options: { panel: "tasks" } };
+      }
+
+      if (type === "maintenance") {
+        return { sectionId: "maintenance-section", targetId: fallbackId, moduleName: "tasks-maintenance", options: { panel: "maintenance" } };
+      }
+
+      if (type === "approval" || type === "quote" || type === "expense") {
+        return { sectionId: "approvals-section", targetId: fallbackId, moduleName: "expenses-approvals", options: { bucket: "boat" } };
+      }
+
+      if (type === "certificate" || type === "crew") {
+        return {
+          sectionId: type === "certificate" ? "certificates-section" : "crew-section",
+          targetId: fallbackId,
+          moduleName: "crew-certificates",
+          options: { panel: type === "certificate" ? "certificates" : "crew" },
+        };
+      }
+
+      if (type === "route") {
+        return { sectionId: "route-section", targetId: fallbackId, moduleName: "route", options: {} };
+      }
+
+      if (type === "alert" || type === "notification") {
+        return { sectionId: "alerts-section", targetId: fallbackId, moduleName: "notifications", options: {} };
+      }
+
+      if (type === "document") {
+        return { sectionId: "documents-section", targetId: fallbackId, moduleName: "documents", options: {} };
+      }
+
+      return { sectionId: "dashboard-section", targetId: fallbackId, moduleName: "command", options: {} };
+    };
     const sectionResults = [
-      { id: "section-dashboard", type: "Section", title: "Dashboard", context: "Main command overview", targetId: "dashboard-section", moduleName: "command" },
-      { id: "section-tasks", type: "Section", title: "Tasks", context: "Task board and active work", targetId: "tasks-section", moduleName: "tasks-maintenance", options: { panel: "tasks" } },
-      { id: "section-maintenance", type: "Section", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleName: "tasks-maintenance", options: { panel: "maintenance" } },
+      { id: "section-dashboard", type: "Section", title: "Dashboard", context: "Vessel status and command brief", targetId: "dashboard-section", moduleName: "command" },
+      { id: "section-tasks", type: "Section", title: "Tasks", context: "Work orders, active jobs, and follow-up", targetId: "tasks-section", moduleName: "tasks-maintenance", options: { panel: "tasks" } },
+      { id: "section-maintenance", type: "Section", title: "Maintenance", context: "Service schedule and upkeep", targetId: "maintenance-section", moduleName: "tasks-maintenance", options: { panel: "maintenance" } },
       { id: "section-approvals", type: "Section", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleName: "expenses-approvals", options: { bucket: "boat" } },
       { id: "section-crew", type: "Section", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" } },
-      { id: "section-crew-list", type: "Document", title: "Crew List", context: `Printable crew list for ${vesselName}`, targetId: "crew-list-action", sectionId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
+      { id: "section-crew-list", type: "Document", title: "Crew List", context: `Crew list print view for ${vesselName}`, targetId: "crew-list-action", sectionId: "crew-section", moduleName: "crew-certificates", options: { panel: "crew" }, action: "crew-list", searchText: buildCommandSearchText(["crew list", "print crew list", "crew print", "vessel crew", "official crew list", "documents", vesselName]) },
       { id: "section-certificates", type: "Section", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleName: "crew-certificates", options: { panel: "certificates" } },
       { id: "section-documents", type: "Section", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleName: "documents" },
       { id: "section-route", type: "Section", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleName: "route" },
@@ -1197,12 +1385,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     ];
 
     const operationalItems = Array.isArray(vesselOperations?.items) ? vesselOperations.items : [];
-    const itemResults = operationalItems.map((item) => ({
+    const itemResults = operationalItems.map((item) => {
+      const jumpTarget = getOperationalItemSearchTarget(item);
+
+      return ({
       id: `command-item-${item?.id || item?.title}`,
       type: titleCase(item?.type || "Item"),
       title: item?.title || "Untitled item",
       context: [vesselName, item?.status, item?.assignedTo || item?.requester, item?.dueDate, item?.amount].filter(Boolean).join(" · "),
-      targetId: item?.id ? `item-${item.id}` : "dashboard-section",
+      ...jumpTarget,
       item,
       searchText: buildCommandSearchText([
         item?.id,
@@ -1219,7 +1410,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         item?.checklist,
         item?.activity,
       ]),
-    }));
+      });
+    });
 
     const crewResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => ({
       id: `command-crew-${profile?.id || profile?.fullName}`,
@@ -1297,7 +1489,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       return;
     }
 
-    if (result.moduleName && result.moduleName !== "command") {
+    if (result.moduleName) {
       if (result.type === "Crew" && result.item?.id) {
         setSelectedCrewId(result.item.id);
       }
@@ -1313,12 +1505,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
 
     if (result.item) {
-      setExpenseView("command");
-      if (typeof window !== "undefined") {
-        window.setTimeout(() => {
-          window.dispatchEvent(new CustomEvent("contessa:open-command-item", { detail: { id: result.item.id } }));
-        }, 140);
-      }
+      jumpToAppTarget({
+        sectionId: result.sectionId || "dashboard-section",
+        targetId: result.targetId || (result.item?.id ? `item-${result.item.id}` : "dashboard-section"),
+        moduleName: result.moduleName || "command",
+        options: result.options || {},
+        item: result.item,
+        openDetails: true,
+      });
       return;
     }
 
@@ -1336,16 +1530,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     let attempts = 0;
     const maxAttempts = 18;
 
-    const tryScroll = () => {
-      const sectionElement = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.sectionId) : null;
-      const targetElement = typeof document !== "undefined" ? document.getElementById(pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId) : null;
-      if (sectionElement || targetElement) {
-        const highlighted = scrollAndHighlight(pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId, {
+    const tryScroll = async () => {
+      const highlighted = await scrollAndHighlight(
+        pendingSectionNavigation.targetId || pendingSectionNavigation.sectionId,
+        pendingSectionNavigation.sectionId,
+        {
           block: pendingSectionNavigation.targetId && pendingSectionNavigation.targetId !== pendingSectionNavigation.sectionId ? "center" : "start",
-        });
-        if (!highlighted && pendingSectionNavigation.sectionId) {
-          scrollAndHighlight(pendingSectionNavigation.sectionId, { block: "start" });
         }
+      );
+
+      if (highlighted) {
         setPendingSectionNavigation(null);
         sectionNavigationTimeoutRef.current = null;
         return;
@@ -1530,29 +1724,31 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     return true;
   };
 
-  const logChange = (section, action, detail) => {
-    const entry = {
-      id: `H-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      at: new Date().toISOString(),
-      by: actorName.trim() || "User",
+  const logChange = (section, action, detail, payload = {}) => {
+    const entry = createActivityLog(activeVesselId, {
+      ...payload,
       section,
-      action,
-      detail,
-    };
+      type: payload.type || section,
+      title: action,
+      message: detail,
+      createdBy: actorName.trim() || "User",
+    });
     setHistory((prev) => [entry, ...prev].slice(0, 300));
+    return entry;
   };
 
   const updateTaskStatus = (taskId, status) => {
     if (!requireAdminEdit("Changing task status")) return;
     const task = tasks.find((item) => item.id === taskId);
-    logChange("Objectives", "Status changed", `${task?.name || taskId} moved to ${titleCase(status)}.`);
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? { ...task, status, declinedAt: status === "declined" ? task.declinedAt || Date.now() : null }
-          : task
-      )
+    const result = updateTaskRecord(activeVesselId, taskId, { status }, activeVesselWorkspace);
+    if (!result.task) return;
+    logChange(
+      "Objectives",
+      "Status changed",
+      `${actorName.trim() || "User"} changed ${task?.name || taskId} from ${formatTaskStatusLabel(task?.status || "pending")} to ${formatTaskStatusLabel(status)}.`,
+      { linkedItemId: taskId, linkedItemType: "task", type: "task-status" }
     );
+    setTasks(result.tasks);
   };
 
   const retrieveDeclinedTask = (taskId) => {
@@ -1563,9 +1759,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setTasks((prev) => [restored, ...prev.filter((item) => item.id !== taskId)]);
     setDeclinedTasks((prev) => prev.filter((item) => item.id !== taskId));
     setSelectedId(taskId);
-    setExpenseView("tasks-maintenance");
-    setTasksMaintenancePanel("tasks");
-    setStatusFilter("all");
+    navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" }, `item-${taskId}`);
     logChange("History", "Declined task retrieved", `${task.name} was returned to Objectives as Pending.`);
   };
 
@@ -1576,7 +1770,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     if (Object.prototype.hasOwnProperty.call(nextPatch, "assignee")) {
       const requestedAssignee = String(nextPatch.assignee || "").trim();
-      if (requestedAssignee && !validateAssignedCrewBelongsToVessel(activeVesselWorkspace, requestedAssignee)) {
+      if (requestedAssignee && !assertCrewBelongsToVessel(activeVesselId, requestedAssignee, activeVesselWorkspace)) {
         setAppBanner({
           type: "error",
           title: "Crew assignment blocked",
@@ -1584,15 +1778,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         });
         return;
       }
-
-      const assignedCrew = findCrewByName(activeVesselWorkspace, requestedAssignee);
-      nextPatch.assignee = assignedCrew ? getCrewDisplayName(assignedCrew) : requestedAssignee || "Unassigned";
-      nextPatch.assignedCrewId = assignedCrew?.id || null;
-      nextPatch.vesselSlug = task?.vesselSlug || activeVesselId;
     }
 
-    logChange("Objectives", "Task updated", `${task?.name || taskId}: ${describePatch(nextPatch)}`);
-    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...nextPatch } : task)));
+    const result = updateTaskRecord(activeVesselId, taskId, nextPatch, activeVesselWorkspace);
+    if (!result.task) return;
+    logChange("Objectives", "Task updated", `${task?.name || taskId}: ${describePatch(nextPatch)}`, {
+      linkedItemId: taskId,
+      linkedItemType: "task",
+      type: "task-updated",
+    });
+    setTasks(result.tasks);
   };
 
   const updateQuote = (taskId, quoteId, patch) => {
@@ -1664,9 +1859,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       if (!images.length) return;
       const task = tasks.find((item) => item.id === taskId);
       logChange("Objectives", "Task photo added", `${images.length} photo(s) added to ${task?.name || taskId}.`);
-      setTasks((prev) =>
-        prev.map((task) => (task.id === taskId ? { ...task, photos: [...(task.photos || []), ...images] } : task))
-      );
+      const result = updateTaskRecord(activeVesselId, taskId, { photos: [...(task?.photos || []), ...images] }, activeVesselWorkspace);
+      setTasks(result.tasks);
     });
   };
 
@@ -1676,13 +1870,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       if (!attachments.length) return;
       const task = tasks.find((item) => item.id === taskId);
       logChange("Objectives", "Task attachment added", `${attachments.length} attachment(s) added to ${task?.name || taskId}.`);
-      setTasks((prev) =>
-        prev.map((item) =>
-          item.id === taskId
-            ? { ...item, attachments: [...(item.attachments || []), ...attachments] }
-            : item
-        )
-      );
+      const result = updateTaskRecord(activeVesselId, taskId, { attachments: [...(task?.attachments || []), ...attachments] }, activeVesselWorkspace);
+      setTasks(result.tasks);
     });
   };
 
@@ -1691,13 +1880,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const task = tasks.find((item) => item.id === taskId);
     const attachment = task?.attachments?.find((item) => item.id === attachmentId);
     logChange("Objectives", "Task attachment removed", `${attachment?.name || "Attachment"} removed from ${task?.name || taskId}.`);
-    setTasks((prev) =>
-      prev.map((item) =>
-        item.id === taskId
-          ? { ...item, attachments: (item.attachments || []).filter((attachmentItem) => attachmentItem.id !== attachmentId) }
-          : item
-      )
+    const result = updateTaskRecord(
+      activeVesselId,
+      taskId,
+      { attachments: (task?.attachments || []).filter((attachmentItem) => attachmentItem.id !== attachmentId) },
+      activeVesselWorkspace
     );
+    setTasks(result.tasks);
   };
 
   const addTaskComment = (taskId, text) => {
@@ -1712,13 +1901,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       at: new Date().toISOString(),
     };
     logChange("Objectives", "Task comment added", `${task?.name || taskId}: ${commentText}`);
-    setTasks((prev) =>
-      prev.map((item) =>
-        item.id === taskId
-          ? { ...item, comments: [comment, ...(item.comments || [])] }
-          : item
-      )
-    );
+    const result = updateTaskRecord(activeVesselId, taskId, { comments: [comment, ...(task?.comments || [])] }, activeVesselWorkspace);
+    setTasks(result.tasks);
     setAppBanner({ type: "success", title: "Comment added", message: `A new comment was added to ${task?.name || taskId}.` });
   };
 
@@ -1726,11 +1910,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!requireAdminEdit("Removing task photos")) return;
     const task = tasks.find((item) => item.id === taskId);
     logChange("Objectives", "Task photo removed", `Photo ${photoIndex + 1} removed from ${task?.name || taskId}.`);
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, photos: (task.photos || []).filter((_, index) => index !== photoIndex) } : task
-      )
+    const result = updateTaskRecord(
+      activeVesselId,
+      taskId,
+      { photos: (task?.photos || []).filter((_, index) => index !== photoIndex) },
+      activeVesselWorkspace
     );
+    setTasks(result.tasks);
   };
 
   const applyAppState = (nextState) => {
@@ -1841,10 +2027,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const deleteTask = (taskId) => {
     if (!requireAdminEdit("Deleting tasks")) return;
-    const task = tasks.find((item) => item.id === taskId);
+    const result = deleteTaskRecord(activeVesselId, taskId, activeVesselWorkspace);
+    const task = result.task || tasks.find((item) => item.id === taskId);
     if (!task) return;
-    logChange("Objectives", "Task deleted", `${task.name} was removed from Objectives.`);
-    setTasks((prev) => prev.filter((item) => item.id !== taskId));
+    logChange("Objectives", "Task deleted", `${task.name} was removed from Objectives.`, {
+      linkedItemId: taskId,
+      linkedItemType: "task",
+      type: "task-deleted",
+    });
+    setTasks(result.tasks);
     setTaskDeleteRequest(null);
     setAppBanner({ type: "info", title: "Task deleted", message: `${task.name} was removed.` });
   };
@@ -1866,7 +2057,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!name || !area) return;
     const requestedAssignee = String(newTask.assignee || "").trim();
 
-    if (requestedAssignee && !validateAssignedCrewBelongsToVessel(activeVesselWorkspace, requestedAssignee)) {
+    if (requestedAssignee && !assertCrewBelongsToVessel(activeVesselId, requestedAssignee, activeVesselWorkspace)) {
       setAppBanner({
         type: "error",
         title: "Crew assignment blocked",
@@ -1876,18 +2067,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       return;
     }
 
-    const assignedCrew = findCrewByName(activeVesselWorkspace, requestedAssignee);
-
-    const task = {
-      id: createNextTaskId(tasks),
-      vesselSlug: activeVesselId,
+    const result = createTaskRecord(activeVesselId, {
       name,
       area,
       department: TASK_DEPARTMENT_OPTIONS.includes(newTask.department) ? newTask.department : TASK_DEPARTMENT_OPTIONS[0],
-      status: STATUS_OPTIONS.includes(newTask.status) ? newTask.status : "pending",
+      status: TASK_STATUS_OPTIONS.includes(newTask.status) ? newTask.status : "pending",
       priority: PRIORITY_OPTIONS.includes(newTask.priority) ? newTask.priority : "medium",
-      assignee: assignedCrew ? getCrewDisplayName(assignedCrew) : requestedAssignee || "Unassigned",
-      assignedCrewId: assignedCrew?.id || null,
+      assignee: requestedAssignee || "Unassigned",
       dueDate: newTask.dueDate,
       notes: newTask.notes.trim(),
       photos: [],
@@ -1895,10 +2081,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       comments: [],
       expenses: [],
       quotes: [],
-    };
+    }, activeVesselWorkspace);
+    const task = result.task;
 
-    setTasks((prev) => [task, ...prev]);
-    logChange("Objectives", "Task added", `${task.name} added in ${task.area}.`);
+    setTasks(result.tasks);
+    logChange("Objectives", "Task added", `${task.name} added in ${task.area}.`, {
+      linkedItemId: task.id,
+      linkedItemType: "task",
+      type: "task-created",
+    });
     setSelectedId(task.id);
     setNewTask(createEmptyTaskDraft(activeVesselWorkspace));
     setNewTaskOpen(false);
@@ -1942,8 +2133,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     logChange("Expenses and Quotations", "Expense added", `${quote.supplier} added to ${task?.name || taskId}.`);
     setTasks((prev) => prev.map((task) => (task.id !== taskId ? task : { ...task, quotes: [...task.quotes, quote] })));
     setNewExpense({ taskId, supplier: "", amount: 0, currency, status: "requested" });
-    setExpenseView("expenses-approvals");
-    setExpenseBucket("boat");
+    navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" });
     setNewExpenseOpen(false);
     setAppBanner({ type: "success", title: "Expense added", message: `${quote.supplier} was added to ${task?.name || taskId}.` });
   };
@@ -2410,17 +2600,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   };
 
   const openLinkedTaskFromExpense = (taskId) => {
-    setExpenseView("tasks-maintenance");
-    setTasksMaintenancePanel("tasks");
-    setStatusFilter("all");
     setSelectedId(taskId);
-    setPendingSectionNavigation({
-      sectionId: "tasks-section",
-      targetId: taskId ? `item-${taskId}` : "tasks-section",
-      moduleName: "tasks-maintenance",
-      options: { panel: "tasks" },
-      requestedAt: Date.now(),
-    });
+    navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" }, taskId ? `item-${taskId}` : "tasks-section");
   };
 
   const openTodayTask = (taskId) => {
@@ -2456,6 +2637,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const openNotificationItem = (item) => {
     if (!item) return;
+    lockProgrammaticNavigation(1400);
     if (!canAccessSection(item.section)) {
       setAppBanner({ type: "error", title: "Section not available", message: "This item is not available for the current role." });
       return;
@@ -2536,6 +2718,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!item) return;
 
     try {
+      lockProgrammaticNavigation(1400);
       openNotificationItem(item);
       const navigation = normalizeNotificationNavigation(item);
 
@@ -2584,24 +2767,21 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       label: "Review overdue tasks",
       meta: `${todayOperations.overdueTasks.length} open`,
       onClick: () => {
-        setExpenseView("tasks-maintenance");
-        setTasksMaintenancePanel("tasks");
-        setStatusFilter("all");
+        navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
       },
     };
     const routeAction = {
       id: "qa-route",
       label: "Check planned route",
       meta: `${stats.routeWaypoints || 0} wpts`,
-      onClick: () => setExpenseView("route"),
+      onClick: () => navigateToSection("route-section", "route"),
     };
     const approvalsAction = {
       id: "qa-approvals",
       label: "Open pending approvals",
       meta: `${todayOperations.pendingApprovals.length} waiting`,
       onClick: () => {
-        setExpenseView("expenses-approvals");
-        setExpenseBucket("boat");
+        navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" });
       },
     };
     const maintenanceAction = {
@@ -2609,8 +2789,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       label: "Due today maintenance",
       meta: `${todayOperations.dueTodayMaintenance.length} due`,
       onClick: () => {
-        setExpenseView("tasks-maintenance");
-        setTasksMaintenancePanel("maintenance");
+        navigateToSection("maintenance-section", "tasks-maintenance", { panel: "maintenance" });
       },
     };
     const certificatesAction = {
@@ -2618,8 +2797,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       label: "Check expiring certificates",
       meta: `${todayOperations.expiringCertificates.length} expiring`,
       onClick: () => {
-        setExpenseView("crew-certificates");
-        setCrewCertificatesPanel("certificates");
+        navigateToSection("certificates-section", "crew-certificates", { panel: "certificates" });
       },
     };
     const crewAction = {
@@ -2627,8 +2805,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       label: "Open crew readiness",
       meta: `${stats.crewProfiles || 0} crew`,
       onClick: () => {
-        setExpenseView("crew-certificates");
-        setCrewCertificatesPanel("crew");
+        navigateToSection("crew-section", "crew-certificates", { panel: "crew" });
       },
     };
 
@@ -2713,8 +2890,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         id: "mobile-action-task",
         label: "Add Task",
         onClick: () => {
-          setExpenseView("tasks-maintenance");
-          setTasksMaintenancePanel("tasks");
+          navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
           setNewTaskOpen(true);
         },
       },
@@ -2722,8 +2898,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         id: "mobile-action-expense",
         label: "Add Expense",
         onClick: () => {
-          setExpenseView("expenses-approvals");
-          setExpenseBucket("boat");
+          navigateToSection("approvals-section", "expenses-approvals", { bucket: "boat" });
           setNewExpenseOpen(true);
         },
       },
@@ -2731,7 +2906,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         id: "mobile-action-waypoint",
         label: "Add Waypoint",
         onClick: () => {
-          setExpenseView("route");
+          navigateToSection("route-section", "route");
           addRouteWaypoint();
         },
       },
@@ -2739,8 +2914,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         id: "mobile-action-crew-note",
         label: "Crew Note",
         onClick: () => {
-          setExpenseView("crew-certificates");
-          setCrewCertificatesPanel("crew");
+          navigateToSection("crew-section", "crew-certificates", { panel: "crew" });
           setAppBanner({ type: "info", title: "Crew notes", message: "Open a crew profile to add or review notes." });
         },
       },
@@ -2748,8 +2922,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         id: "mobile-action-certificate",
         label: "Upload Certificate",
         onClick: () => {
-          setExpenseView("crew-certificates");
-          setCrewCertificatesPanel("certificates");
+          navigateToSection("certificates-section", "crew-certificates", { panel: "certificates" });
           setNewCertificateOpen(true);
         },
       },
@@ -2862,6 +3035,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     );
   }
 
+  const activeWorkspaceResetKey = activeVesselId;
+
   return (
     <div
       className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-8 lg:px-8 lg:pt-10 xl:px-10 ${theme.page}`}
@@ -2881,104 +3056,117 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       />
       <div className="app-page-frame">
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
-        <AppShellHeader
-          darkMode={darkMode}
-          isOffline={isOffline}
-          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-          currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-          currentVesselIdentity={{
-            name: activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME,
-            displayName: activeVesselWorkspace?.vesselPrintInfo?.displayName || activeVesselWorkspace?.displayName,
-            imo: activeVesselWorkspace?.vesselPrintInfo?.imo || activeVesselWorkspace?.imo || "",
-            officialNumber: activeVesselWorkspace?.vesselPrintInfo?.officialNumber || activeVesselWorkspace?.officialNumber || "",
-            mmsi: activeVesselWorkspace?.vesselPrintInfo?.mmsi || activeVesselWorkspace?.mmsi || "",
-            identifierStatus: activeVesselWorkspace?.vesselPrintInfo?.identifierStatus || activeVesselWorkspace?.identifierStatus || "pending-verification",
-          }}
-          currentRole={effectiveRole}
-          onCurrentRoleChange={setCurrentRole}
-          appMode={appMode}
-          onAppModeChange={handleAppModeChange}
-          vesselState={activeVesselState}
-          onVesselStateModeChange={handleVesselStateModeChange}
-          visibleModuleKeys={visibleModuleKeys}
-          canEditApp={canEditApp}
-          historyOpen={historyOpen}
-          onHistoryOpenChange={setHistoryOpen}
-          actorName={actorName}
-          onActorNameChange={setActorName}
-          retrieveOpen={retrieveOpen}
-          onToggleRetrieve={() => setRetrieveOpen((prev) => !prev)}
-          declinedTasks={declinedTasks}
-          onRetrieveDeclinedTask={retrieveDeclinedTask}
-          history={history}
-          sharingOpen={sharingOpen}
-          onSharingOpenChange={setSharingOpen}
-          jsonImportInputRef={jsonImportInputRef}
-          onImportAppStateJson={importAppStateJson}
-          onExportCsv={exportCsv}
-          onExportAppStateJson={exportAppStateJson}
-          onOpenJsonImportPicker={openJsonImportPicker}
-          onPrintSummary={printSummary}
-          onResetDemoData={resetDemoData}
-          shareUrlStatus={publicAppUrlStatus}
-          localShareWarning={localShareWarning}
-          onShareToast={handleShareToast}
-          fleetOpen={fleetOpen}
-          onFleetOpenChange={setFleetOpen}
-          fleetVessels={vesselsForPersistence}
-          fleetMetricsByVessel={fleetMetricsByVessel}
-          activeVesselId={activeVesselId}
-          onOpenFleet={() => setFleetOpen(true)}
-          onSwitchFleetVessel={openVesselWorkspace}
-          onAddFleetVessel={handleAddFleetVessel}
-          stats={stats}
-          currency={currency}
-          routeWarningCount={routeAlerts.length}
-          quickActionItems={mobileQuickActionItems || []}
-          onOpenCommand={() => openModule("command")}
-          onOpenTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
-          onOpenApprovals={() => openModule("expenses-approvals", { bucket: "boat" })}
-          onOpenRoute={() => openModule("route")}
-          onOpenCrewCertificates={() => {
-            openModule("crew-certificates", { panel: "certificates" });
-          }}
-          onOpenDocuments={() => openModule("documents")}
-          onOpenSettingsWorkspace={() => openModule("settings")}
-          notificationCount={accessibleNotifications.length}
-          notifications={accessibleNotifications}
-          onOpenNotifications={() => openModule("notifications")}
-          onSelectNotification={handleHeaderNotificationSelect}
-          commandSearchView={
-            <DashboardCommandSearch
-              darkMode={darkMode}
-              currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
-              searchResults={commandSearchResults}
-              onJump={handleCommandSearchJump}
-            />
-          }
-        />
+        <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
+          <AppShellHeader
+            darkMode={darkMode}
+            isOffline={isOffline}
+            onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+            currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
+            currentVesselIdentity={{
+              name: activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME,
+              displayName: activeVesselWorkspace?.vesselPrintInfo?.displayName || activeVesselWorkspace?.displayName,
+              imo: activeVesselWorkspace?.vesselPrintInfo?.imo || activeVesselWorkspace?.imo || "",
+              officialNumber: activeVesselWorkspace?.vesselPrintInfo?.officialNumber || activeVesselWorkspace?.officialNumber || "",
+              mmsi: activeVesselWorkspace?.vesselPrintInfo?.mmsi || activeVesselWorkspace?.mmsi || "",
+              identifierStatus: activeVesselWorkspace?.vesselPrintInfo?.identifierStatus || activeVesselWorkspace?.identifierStatus || "pending-verification",
+            }}
+            currentRole={effectiveRole}
+            onCurrentRoleChange={setCurrentRole}
+            appMode={appMode}
+            onAppModeChange={handleAppModeChange}
+            vesselState={activeVesselState}
+            onVesselStateModeChange={handleVesselStateModeChange}
+            visibleModuleKeys={visibleModuleKeys}
+            canEditApp={canEditApp}
+            historyOpen={historyOpen}
+            onHistoryOpenChange={setHistoryOpen}
+            actorName={actorName}
+            onActorNameChange={setActorName}
+            retrieveOpen={retrieveOpen}
+            onToggleRetrieve={() => setRetrieveOpen((prev) => !prev)}
+            declinedTasks={declinedTasks}
+            onRetrieveDeclinedTask={retrieveDeclinedTask}
+            history={history}
+            sharingOpen={sharingOpen}
+            onSharingOpenChange={setSharingOpen}
+            jsonImportInputRef={jsonImportInputRef}
+            onImportAppStateJson={importAppStateJson}
+            onExportCsv={exportCsv}
+            onExportAppStateJson={exportAppStateJson}
+            onOpenJsonImportPicker={openJsonImportPicker}
+            onPrintSummary={printSummary}
+            onResetDemoData={resetDemoData}
+            shareUrlStatus={publicAppUrlStatus}
+            localShareWarning={localShareWarning}
+            onShareToast={handleShareToast}
+            fleetOpen={fleetOpen}
+            onFleetOpenChange={setFleetOpen}
+            fleetVessels={vesselsForPersistence}
+            fleetMetricsByVessel={fleetMetricsByVessel}
+            activeVesselId={activeVesselId}
+            onOpenFleet={() => setFleetOpen(true)}
+            onSwitchFleetVessel={openVesselWorkspace}
+            onAddFleetVessel={handleAddFleetVessel}
+            stats={stats}
+            currency={currency}
+            routeWarningCount={routeAlerts.length}
+            quickActionItems={mobileQuickActionItems || []}
+            onOpenCommand={() => openResponsiveModule("command")}
+            onOpenTasksMaintenance={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
+            onOpenApprovals={() => openResponsiveModule("expenses-approvals", { bucket: "boat" })}
+            onOpenRoute={() => openResponsiveModule("route")}
+            onOpenCrewCertificates={() => {
+              openResponsiveModule("crew-certificates", { panel: "certificates" });
+            }}
+            onOpenDocuments={() => openResponsiveModule("documents")}
+            onOpenSettingsWorkspace={() => openResponsiveModule("settings")}
+            notificationCount={accessibleNotifications.length}
+            notifications={headerNotifications}
+            onOpenNotifications={() => openResponsiveModule("notifications")}
+            onSelectNotification={handleHeaderNotificationSelect}
+            commandSearchView={
+              <DashboardCommandSearch
+                darkMode={darkMode}
+                currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
+                searchResults={commandSearchResults}
+                onJump={handleCommandSearchJump}
+              />
+            }
+          />
+        </AppErrorBoundary>
 
-        <AppSectionCards
-          darkMode={darkMode}
-          expenseView={expenseView}
-          stats={stats}
-          currency={currency}
-          visibleModuleKeys={visibleModuleKeys}
-          fleetCount={vesselsForPersistence.length}
-          routeWarningCount={routeAlerts.length}
-          quickActionItems={mobileQuickActionItems || []}
-          onShowCommand={() => openModule("command")}
-          onShowRoute={() => openModule("route")}
-          onShowTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
-          onShowCrewCertificates={() => {
-            openModule("crew-certificates", { panel: "crew" });
-          }}
-          onShowExpenses={() => openModule("expenses-approvals", { bucket: "boat" })}
-          onShowDocuments={() => openModule("documents")}
-          onShowFleet={() => setFleetOpen(true)}
-          onShowSettings={() => openModule("settings")}
-        />
+        <AppErrorBoundary resetKey={`section-cards:${activeVesselId}`}>
+          <AppSectionCards
+            darkMode={darkMode}
+            expenseView={expenseView}
+            stats={stats}
+            currency={currency}
+            visibleModuleKeys={visibleModuleKeys}
+            fleetCount={vesselsForPersistence.length}
+            routeWarningCount={routeAlerts.length}
+            quickActionItems={mobileQuickActionItems || []}
+            onShowCommand={() => openModule("command")}
+            onShowRoute={() => openModule("route")}
+            onShowTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
+            onShowCrewCertificates={() => {
+              openModule("crew-certificates", { panel: "crew" });
+            }}
+            onShowExpenses={() => openModule("expenses-approvals", { bucket: "boat" })}
+            onShowDocuments={() => openModule("documents")}
+            onShowFleet={() => setFleetOpen(true)}
+            onShowSettings={() => openModule("settings")}
+            onDesktopShowCommand={() => openDesktopModule("command")}
+            onDesktopShowRoute={() => openDesktopModule("route")}
+            onDesktopShowTasksMaintenance={() => openDesktopModule("tasks-maintenance", { panel: "tasks" })}
+            onDesktopShowCrewCertificates={() => {
+              openDesktopModule("crew-certificates", { panel: "crew" });
+            }}
+            onDesktopShowExpenses={() => openDesktopModule("expenses-approvals", { bucket: "boat" })}
+            onDesktopShowDocuments={() => openDesktopModule("documents")}
+          />
+        </AppErrorBoundary>
 
+        <AppErrorBoundary resetKey={activeWorkspaceResetKey}>
         {expenseView === "command" ? (
           <TodayOperationsView
             darkMode={darkMode}
@@ -2991,6 +3179,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             vesselState={activeVesselState}
             stats={stats}
             vesselOperations={vesselOperations}
+            dailyReportData={dailyReportData}
             isOffline={isOffline}
             lastSyncAt={prototypeSyncState.lastSyncAt}
             unsyncedItemsCount={prototypeSyncState.unsyncedItemsCount}
@@ -3007,14 +3196,14 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onSwitchFleetVessel={openVesselWorkspace}
             onOpenTask={openTodayTask}
             onApprovalAction={handleTodayApprovalAction}
-            onNavigateToTasks={() => openModule("tasks-maintenance", { panel: "tasks" })}
-            onNavigateToMaintenance={() => navigateToSection("maintenance-section", "tasks-maintenance", { panel: "maintenance" })}
-            onNavigateToCrew={() => openModule("crew-certificates", { panel: "crew" })}
-            onNavigateToCertificates={() => openModule("crew-certificates", { panel: "certificates" })}
-            onNavigateToApprovals={() => openModule("expenses-approvals", { bucket: "boat" })}
-            onNavigateToRoute={() => openModule("route")}
-            onNavigateToAlerts={() => openModule("notifications")}
-            onNavigateToDocuments={() => openModule("documents")}
+            onNavigateToTasks={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
+            onNavigateToMaintenance={() => openResponsiveModule("tasks-maintenance", { panel: "maintenance" })}
+            onNavigateToCrew={() => openResponsiveModule("crew-certificates", { panel: "crew" })}
+            onNavigateToCertificates={() => openResponsiveModule("crew-certificates", { panel: "certificates" })}
+            onNavigateToApprovals={() => openResponsiveModule("expenses-approvals", { bucket: "boat" })}
+            onNavigateToRoute={() => openResponsiveModule("route")}
+            onNavigateToAlerts={() => openResponsiveModule("notifications")}
+            onNavigateToDocuments={() => openResponsiveModule("documents")}
           />
         ) : expenseView === "route" ? (
           <div id="route-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">
@@ -3147,8 +3336,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               onAddCertificate={addCertificate}
               onOpenCrewProfile={(crewId) => {
                 setSelectedCrewId(crewId);
-                setExpenseView("crew-certificates");
-                setCrewCertificatesPanel("crew");
+                navigateToSection("crew-section", "crew-certificates", { panel: "crew" }, crewId ? `item-${crewId}` : "crew-section");
               }}
             /></div>}
           />
@@ -3220,6 +3408,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         )}
+        </AppErrorBoundary>
       </div>
       <div className="hidden print:fixed print:bottom-0 print:left-0 print:right-0 print:block print:border-t print:border-[#d8e7df] print:bg-white print:px-6 print:py-2 print:text-center print:text-[11px] print:text-[#64756b]">
         {APP_FOOTER_NOTICE}

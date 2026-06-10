@@ -8,10 +8,12 @@ export function NotificationsView({
   notifications,
   onOpenNotification,
 }) {
+  const safeNotifications = Array.isArray(notifications) ? notifications.filter(Boolean) : [];
+  const visibleNotifications = safeNotifications.slice(0, 20);
   const theme = themeClasses(darkMode);
-  const criticalCount = notifications.filter((item) => item.level === "critical").length;
-  const warningCount = notifications.filter((item) => item.level === "warning").length;
-  const noticeCount = notifications.filter((item) => item.level !== "critical" && item.level !== "warning").length;
+  const criticalCount = safeNotifications.filter((item) => item.level === "critical").length;
+  const warningCount = safeNotifications.filter((item) => item.level === "warning").length;
+  const noticeCount = safeNotifications.filter((item) => item.level !== "critical" && item.level !== "warning").length;
   const statusLabelClass = darkMode ? "text-slate-300" : theme.textSecondary;
   const statusTitleClass = darkMode ? "text-slate-100" : theme.textPrimary;
   const statusNumberClass = darkMode ? "text-slate-50" : theme.textPrimary;
@@ -38,8 +40,8 @@ export function NotificationsView({
                     <div className="app-kicker">Operational Status</div>
                     <div className={`mt-1 text-sm font-semibold tracking-[-0.01em] ${statusTitleClass}`}>Live vessel signal mix</div>
                   </div>
-                  <Badge className={notifications.length ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-                    {notifications.length ? "Monitoring" : "Quiet"}
+                  <Badge className={safeNotifications.length ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
+                    {safeNotifications.length ? "Monitoring" : "Quiet"}
                   </Badge>
                 </div>
                 <div className={`my-4 h-px ${statusDividerClass}`} />
@@ -73,12 +75,12 @@ export function NotificationsView({
               <div className="app-kicker">Inbox</div>
               <div className={`mt-2 text-xl font-semibold ${theme.textPrimary}`}>Operational signals</div>
             </div>
-            <Badge className={notifications.length ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
-              {notifications.length} active
+            <Badge className={safeNotifications.length ? successBadgeClass(darkMode) : neutralBadgeClass(darkMode)}>
+              {safeNotifications.length} active
             </Badge>
           </div>
           <div className="space-y-3">
-            {notifications.length ? notifications.map((item) => (
+            {visibleNotifications.length ? visibleNotifications.map((item) => (
               <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "22px" }} key={item.id} className={`jump-highlight-target app-card-hover app-panel ${item.level === "critical" ? "app-panel-active" : "app-panel-soft"} rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#1f3037] bg-[#0d1519]/90" : "border-white/80 bg-white/88"}`}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">
@@ -100,6 +102,11 @@ export function NotificationsView({
                 No operational notifications right now.
               </div>
             )}
+            {safeNotifications.length > visibleNotifications.length ? (
+              <div className={`rounded-2xl border px-4 py-3 text-center text-sm font-semibold ${darkMode ? "border-white/10 bg-slate-900 text-slate-200" : "border-slate-200 bg-white text-slate-700"}`}>
+                Showing first {visibleNotifications.length} of {safeNotifications.length} signals.
+              </div>
+            ) : null}
           </div>
         </CardContent>
       </Card>

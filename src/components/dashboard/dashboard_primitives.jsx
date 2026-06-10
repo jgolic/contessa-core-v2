@@ -318,7 +318,7 @@ export function DetailDrawer({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-[30000]">
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(6,12,18,0.46)] backdrop-blur-[2px]"

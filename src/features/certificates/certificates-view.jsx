@@ -144,7 +144,7 @@ export function CertificatesView({
                       draft={newCertificate}
                       onChange={onNewCertificateChange}
                     />
-                    <Button onClick={() => onAddCertificate(newCertificateCrewId)} disabled={!newCertificateCrewId} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white disabled:cursor-not-allowed disabled:opacity-50">
+                    <Button onClick={() => onAddCertificate(newCertificateCrewId)} disabled={!newCertificateCrewId} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white disabled:cursor-not-allowed disabled:opacity-70">
                       Save Certificate
                     </Button>
                   </div>

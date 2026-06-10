@@ -117,7 +117,7 @@ function ConfirmableMaintenanceItemRow({
             type="button"
             onClick={() => onConfirm(item.id, draft)}
             disabled={!isDirty}
-            className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50 min-[420px]:w-auto"
+            className="button-vessel-primary min-h-11 w-full rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-70 min-[420px]:w-auto"
           >
             Confirm
           </Button>

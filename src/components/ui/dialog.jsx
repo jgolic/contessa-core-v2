@@ -29,7 +29,7 @@ export function DialogContent({ className = "", children }) {
   if (!ctx?.open) return null;
 
   const content = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 p-4" onMouseDown={() => ctx.onOpenChange(false)}>
+    <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/55 p-4" onMouseDown={() => ctx.onOpenChange(false)}>
       <div
         ref={revealRef}
         className={`ui-reveal-target relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()}

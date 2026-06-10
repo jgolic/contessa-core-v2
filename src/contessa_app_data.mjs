@@ -1,5 +1,5 @@
 ﻿export const STATUS_OPTIONS = ["pending", "ongoing", "completed"];
-export const TASK_STATUS_OPTIONS = [...STATUS_OPTIONS, "approved", "declined"];
+export const TASK_STATUS_OPTIONS = ["pending", "ongoing", "waiting-approval", "blocked", "completed", "approved", "declined"];
 export const PRIORITY_OPTIONS = ["low", "medium", "high", "urgent"];
 export const ASSIGNEE_OPTIONS = ["Captain Graham Ellis", "Oliver Reed", "Marko Vukovic", "Daniel Price", "Elena Kovac", "Marcus Bell", "Nina Hayes", "Adrian Cole", "Leo Grant", "Mia Laurent", "Tomas Reed"];
 export const TASK_DEPARTMENT_OPTIONS = ["General", "Deck", "Engineering", "Interior", "Bridge", "Admin"];
@@ -254,7 +254,7 @@ const VESSEL_THEME_PRESETS = {
     borderDark: "rgba(45, 212, 191, 0.16)",
     textAccentDark: "#5eead4",
     textPrimaryDark: "#ecf7f4",
-    textSecondaryDark: "rgba(226, 240, 236, 0.70)",
+    textSecondaryDark: "rgba(226, 240, 236, 0.88)",
     primaryDark: "#2dd4bf",
     primarySoftDark: "rgba(45, 212, 191, 0.11)",
     glowDark: "rgba(20, 184, 166, 0.20)",
@@ -284,7 +284,7 @@ const VESSEL_THEME_PRESETS = {
     borderDark: "rgba(96, 165, 250, 0.18)",
     textAccentDark: "#93c5fd",
     textPrimaryDark: "#e5edf8",
-    textSecondaryDark: "rgba(226, 232, 240, 0.68)",
+    textSecondaryDark: "rgba(226, 232, 240, 0.88)",
     primaryDark: "#3b82f6",
     primarySoftDark: "rgba(59, 130, 246, 0.08)",
     glowDark: "rgba(37, 99, 235, 0.10)",
@@ -314,7 +314,7 @@ const VESSEL_THEME_PRESETS = {
     borderDark: "rgba(190, 113, 136, 0.17)",
     textAccentDark: "#f0bdc9",
     textPrimaryDark: "#f2e7eb",
-    textSecondaryDark: "rgba(233, 221, 226, 0.68)",
+    textSecondaryDark: "rgba(233, 221, 226, 0.88)",
     primaryDark: "#d38ca0",
     primarySoftDark: "rgba(211, 140, 160, 0.12)",
     glowDark: "rgba(168, 85, 107, 0.20)",
@@ -344,7 +344,7 @@ const VESSEL_THEME_PRESETS = {
     borderDark: "rgba(217, 190, 120, 0.16)",
     textAccentDark: "#f2dfac",
     textPrimaryDark: "#f5efe0",
-    textSecondaryDark: "rgba(236, 226, 207, 0.68)",
+    textSecondaryDark: "rgba(236, 226, 207, 0.88)",
     primaryDark: "#d9be78",
     primarySoftDark: "rgba(217, 190, 120, 0.11)",
     glowDark: "rgba(180, 131, 54, 0.18)",
@@ -374,7 +374,7 @@ const VESSEL_THEME_PRESETS = {
     borderDark: "rgba(167, 161, 212, 0.17)",
     textAccentDark: "#d7d1ff",
     textPrimaryDark: "#ece9fb",
-    textSecondaryDark: "rgba(227, 223, 243, 0.68)",
+    textSecondaryDark: "rgba(227, 223, 243, 0.88)",
     primaryDark: "#b8b0ff",
     primarySoftDark: "rgba(184, 176, 255, 0.11)",
     glowDark: "rgba(124, 118, 168, 0.20)",
@@ -1482,6 +1482,8 @@ export function getVesselMetrics(vesselId, vessels = []) {
 export const statusStyles = {
   pending: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
   ongoing: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
+  "waiting-approval": "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
+  blocked: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
   completed: "border border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm dark:border-emerald-300/40 dark:bg-emerald-300/15 dark:text-emerald-100",
   approved: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
   declined: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
@@ -1567,6 +1569,8 @@ export function titleCase(value) {
 
 export function formatTaskStatusLabel(value) {
   if (value === "ongoing") return "In Progress";
+  if (value === "pending") return "To Do";
+  if (value === "waiting-approval") return "Waiting Approval";
   return titleCase(value);
 }
 
@@ -2040,10 +2044,11 @@ export function createPersistedAppState(state) {
 export function buildObjectivesFilterTabs(stats, activeFilter = "all") {
   return [
     { value: "all", label: "All", count: stats.totalObjectives, active: activeFilter === "all" },
-    { value: "pending", label: "Pending", count: stats.pending, active: activeFilter === "pending" },
+    { value: "pending", label: "To Do", count: stats.pending, active: activeFilter === "pending" },
     { value: "ongoing", label: "In Progress", count: stats.ongoing, active: activeFilter === "ongoing" },
-    { value: "completed", label: "Completed", count: stats.completed, active: activeFilter === "completed" },
-    { value: "approved", label: "Approved", count: stats.approved, active: activeFilter === "approved" },
+    { value: "waiting-approval", label: "Waiting Approval", count: stats.waitingApproval || 0, active: activeFilter === "waiting-approval" },
+    { value: "blocked", label: "Blocked", count: stats.blocked || 0, active: activeFilter === "blocked" },
+    { value: "completed", label: "Done", count: stats.completed, active: activeFilter === "completed" },
   ];
 }
 
@@ -2483,8 +2488,8 @@ export function themeClasses(darkMode) {
     card: darkMode
       ? "app-dark-panel border border-white/10 bg-slate-900/90 text-slate-50 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl"
       : "border border-slate-200/80 bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl",
-    textPrimary: darkMode ? "text-slate-50 drop-shadow-none" : "text-slate-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
-    textSecondary: darkMode ? "text-slate-300" : "text-slate-600",
+    textPrimary: darkMode ? "text-slate-50 drop-shadow-none" : "text-slate-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
+    textSecondary: darkMode ? "text-slate-200" : "text-slate-700",
     input: darkMode
       ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-[#f1ece4] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border-dark)]"
       : "border-slate-200/80 bg-white/90 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",

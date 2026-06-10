@@ -328,6 +328,24 @@ body.dark-mode .ui-reveal-target.ui-reveal-active::after {
   }
 }
 
+@media (max-width: 767px) {
+  .jump-highlight-target.jump-highlight-active::after,
+  .ui-reveal-target.ui-reveal-active::after {
+    box-shadow:
+      inset 0 0 0 1px rgba(59, 130, 246, 0.18),
+      0 0 0 3px rgba(59, 130, 246, 0.10);
+  }
+
+  .dark .jump-highlight-target.jump-highlight-active::after,
+  body.dark-mode .jump-highlight-target.jump-highlight-active::after,
+  .dark .ui-reveal-target.ui-reveal-active::after,
+  body.dark-mode .ui-reveal-target.ui-reveal-active::after {
+    box-shadow:
+      inset 0 0 0 1px rgba(34, 211, 238, 0.2),
+      0 0 0 3px rgba(34, 211, 238, 0.12);
+  }
+}
+
 .app-bg {
   background: var(--vessel-bg-light, var(--app-bg-light));
 }
@@ -445,6 +463,279 @@ body.dark-mode .shadow-vessel-glow {
 
 .search-command-card {
   scroll-margin-top: 96px;
+}
+
+body.dark-mode input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body.dark-mode textarea,
+body.dark-mode select,
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark textarea,
+.dark select {
+  color: #f8fafc;
+  caret-color: #a5f3fc;
+  color-scheme: dark;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+[data-global-search-input] input[type="search"] {
+  color: inherit;
+}
+
+body.dark-mode [data-global-search-input] input[type="search"],
+.dark [data-global-search-input] input[type="search"] {
+  color: #f8fafc !important;
+  caret-color: #a5f3fc;
+}
+
+body.dark-mode [data-global-search-input] input[type="search"]::placeholder,
+.dark [data-global-search-input] input[type="search"]::placeholder {
+  color: #dbeafe !important;
+  opacity: 1;
+}
+
+.app-bg .text-slate-400 {
+  color: #475569 !important;
+}
+
+.app-bg .text-slate-500 {
+  color: #475569 !important;
+}
+
+.app-bg .text-slate-600 {
+  color: #334155 !important;
+}
+
+body.dark-mode .text-slate-300,
+.dark .text-slate-300 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .text-slate-400,
+.dark .text-slate-400,
+body.dark-mode .text-slate-500,
+.dark .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode button:disabled,
+body.dark-mode [aria-disabled="true"],
+.dark button:disabled,
+.dark [aria-disabled="true"] {
+  opacity: 0.72;
+}
+
+.settings-popover-light {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(203, 213, 225, 0.95) !important;
+}
+
+.settings-popover-light > [aria-hidden="true"] {
+  background: #ffffff !important;
+  border-color: rgba(203, 213, 225, 0.95) !important;
+}
+
+.settings-popover-light h1,
+.settings-popover-light h2,
+.settings-popover-light h3,
+.settings-popover-light [data-slot="dialog-title"] {
+  color: #0f172a !important;
+}
+
+.settings-popover-card-light {
+  background: #ffffff !important;
+  border-color: rgb(203, 213, 225) !important;
+  color: #0f172a !important;
+}
+
+.settings-popover-light .settings-popover-card-dark {
+  background: #ffffff !important;
+  border-color: rgb(203, 213, 225) !important;
+  color: #0f172a !important;
+}
+
+.settings-popover-label-light {
+  color: #334155 !important;
+}
+
+.settings-popover-light .settings-popover-label-dark {
+  color: #334155 !important;
+}
+
+.settings-popover-field-light,
+.settings-popover-light select,
+.settings-popover-light input,
+.settings-popover-light textarea {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgb(148, 163, 184) !important;
+}
+
+.settings-popover-light select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.settings-popover-meta-light {
+  color: #334155 !important;
+}
+
+.settings-popover-light .app-action-button {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgb(203, 213, 225) !important;
+  color: #1e293b !important;
+}
+
+.settings-popover-light .app-action-button:hover {
+  background: rgb(239, 246, 255) !important;
+  border-color: rgb(147, 197, 253) !important;
+  color: #1e40af !important;
+}
+
+.settings-popover-dark {
+  background: #020617 !important;
+  color: #f8fafc !important;
+  border-color: rgba(103, 232, 249, 0.18) !important;
+}
+
+.settings-popover-dark > [aria-hidden="true"] {
+  background: #020617 !important;
+  border-color: rgba(103, 232, 249, 0.18) !important;
+}
+
+.settings-popover-dark h1,
+.settings-popover-dark h2,
+.settings-popover-dark h3,
+.settings-popover-dark [data-slot="dialog-title"] {
+  color: #f8fafc !important;
+}
+
+.settings-popover-card-dark {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #f8fafc !important;
+}
+
+.settings-popover-dark .settings-popover-card-light {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #f8fafc !important;
+}
+
+.settings-popover-label-dark {
+  color: #e2e8f0 !important;
+}
+
+.settings-popover-dark .settings-popover-label-light {
+  color: #e2e8f0 !important;
+}
+
+.settings-popover-field-dark,
+.settings-popover-dark select,
+.settings-popover-dark input,
+.settings-popover-dark textarea {
+  background: rgba(15, 23, 42, 0.96) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.settings-popover-dark select option {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+.settings-popover-dark .text-slate-300,
+.settings-popover-dark .text-slate-400,
+.settings-popover-dark .text-slate-500,
+.settings-popover-dark .text-slate-600 {
+  color: #e2e8f0 !important;
+}
+
+.settings-popover-light .text-slate-300,
+.settings-popover-light .text-slate-400,
+.settings-popover-light .text-slate-500,
+.settings-popover-light .text-slate-600 {
+  color: #334155 !important;
+}
+
+.notification-popover-light {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(203, 213, 225, 0.95) !important;
+}
+
+.notification-popover-light > [aria-hidden="true"] {
+  background: #ffffff !important;
+  border-color: rgba(203, 213, 225, 0.95) !important;
+}
+
+.notification-popover-light h1,
+.notification-popover-light h2,
+.notification-popover-light h3,
+.notification-popover-light p,
+.notification-popover-light button {
+  color: #0f172a !important;
+}
+
+.notification-popover-light .text-slate-300,
+.notification-popover-light .text-slate-400,
+.notification-popover-light .text-slate-500,
+.notification-popover-light .text-slate-600,
+.notification-popover-light .text-slate-700 {
+  color: #334155 !important;
+}
+
+.notification-popover-light .text-rose-700 {
+  color: #be123c !important;
+}
+
+.notification-popover-light .text-amber-800 {
+  color: #92400e !important;
+}
+
+.notification-popover-light .text-blue-700,
+.notification-popover-light .text-blue-800 {
+  color: #1d4ed8 !important;
+}
+
+.notification-popover-dark {
+  background: #020617 !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.notification-popover-dark > [aria-hidden="true"] {
+  background: #020617 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.notification-popover-dark h1,
+.notification-popover-dark h2,
+.notification-popover-dark h3,
+.notification-popover-dark p,
+.notification-popover-dark button {
+  color: #f8fafc !important;
+}
+
+.notification-popover-dark .text-slate-300,
+.notification-popover-dark .text-slate-400,
+.notification-popover-dark .text-slate-500,
+.notification-popover-dark .text-slate-600,
+.notification-popover-dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.notification-popover-dark .text-rose-100,
+.notification-popover-dark .text-amber-100,
+.notification-popover-dark .text-cyan-100 {
+  color: #f8fafc !important;
 }
 
 .button-vessel-primary {
@@ -1023,7 +1314,7 @@ select {
 }
 
 .app-kicker {
-  color: #475569;
+  color: #334155;
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.13em;
@@ -1042,7 +1333,7 @@ select {
 }
 
 .text-premium-label {
-  color: #475569;
+  color: #334155;
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.13em;
@@ -1056,7 +1347,7 @@ select {
 }
 
 .text-premium-body {
-  color: #475569;
+  color: #334155;
   line-height: 1.62;
 }
 
@@ -1076,11 +1367,11 @@ body.dark-mode .text-premium-title {
 }
 
 body.dark-mode .text-premium-label {
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 body.dark-mode .text-premium-body {
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 body.dark-mode .text-premium-warning {
@@ -1140,7 +1431,7 @@ body.dark-mode .text-premium-metric {
 
 .vessel-hero-card {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 38px;
   isolation: isolate;
   background:
@@ -1350,11 +1641,11 @@ body.dark-mode .vessel-hero-card::after,
   text-transform: uppercase;
   white-space: nowrap;
   word-break: normal;
-  color: #475569;
+  color: #334155;
 }
 
 .app-compact-label {
-  color: #475569;
+  color: #334155;
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.11em;
@@ -1380,7 +1671,7 @@ body.dark-mode .vessel-hero-card::after,
 .app-helper-text {
   font-size: 13px;
   line-height: 1.65;
-  color: #475569;
+  color: #334155;
 }
 
 .app-empty-state {
@@ -1454,7 +1745,7 @@ body.dark-mode .vessel-hero-card::after,
 body.dark-mode .app-kicker,
 body.dark-mode .app-data-label,
 body.dark-mode .app-compact-label {
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .premium-label-accent,
@@ -1511,7 +1802,7 @@ body.dark-mode .app-metric-value {
 }
 
 body.dark-mode .app-helper-text {
-  color: var(--vessel-text-secondary-dark, rgba(226, 232, 240, 0.68));
+  color: var(--vessel-text-secondary-dark, rgba(226, 232, 240, 0.88));
 }
 
 body.dark-mode .app-panel-soft {
@@ -1552,11 +1843,11 @@ body.dark-mode .app-panel {
 }
 
 .app-dark-muted {
-  color: #cbd5e1 !important;
+  color: #e2e8f0 !important;
 }
 
 .app-dark-label {
-  color: #cbd5e1 !important;
+  color: #e2e8f0 !important;
 }
 
 .app-dark-action {
@@ -1568,6 +1859,68 @@ body.dark-mode .app-panel {
 .app-dark-action:hover {
   border-color: rgba(103, 232, 249, 0.52) !important;
   background: rgba(34, 211, 238, 0.20) !important;
+}
+
+/* Contrast guardrails for repeated utility classes on premium app surfaces. */
+.app-panel .text-slate-500,
+.app-panel-soft .text-slate-500,
+.app-dark-panel .text-slate-500,
+.app-dark-card .text-slate-500,
+.app-dark-inner .text-slate-500,
+.vessel-hero-card .text-slate-500 {
+  color: #475569 !important;
+}
+
+.app-panel .text-slate-600,
+.app-panel-soft .text-slate-600,
+.app-dark-panel .text-slate-600,
+.app-dark-card .text-slate-600,
+.app-dark-inner .text-slate-600,
+.vessel-hero-card .text-slate-600 {
+  color: #334155 !important;
+}
+
+body.dark-mode .app-panel .text-slate-300,
+body.dark-mode .app-panel-soft .text-slate-300,
+body.dark-mode .app-dark-panel .text-slate-300,
+body.dark-mode .app-dark-card .text-slate-300,
+body.dark-mode .app-dark-inner .text-slate-300,
+body.dark-mode .vessel-hero-card .text-slate-300,
+.dark .app-panel .text-slate-300,
+.dark .app-panel-soft .text-slate-300,
+.dark .app-dark-panel .text-slate-300,
+.dark .app-dark-card .text-slate-300,
+.dark .app-dark-inner .text-slate-300,
+.dark .vessel-hero-card .text-slate-300 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .app-panel .text-slate-400,
+body.dark-mode .app-panel-soft .text-slate-400,
+body.dark-mode .app-dark-panel .text-slate-400,
+body.dark-mode .app-dark-card .text-slate-400,
+body.dark-mode .app-dark-inner .text-slate-400,
+body.dark-mode .vessel-hero-card .text-slate-400,
+.dark .app-panel .text-slate-400,
+.dark .app-panel-soft .text-slate-400,
+.dark .app-dark-panel .text-slate-400,
+.dark .app-dark-card .text-slate-400,
+.dark .app-dark-inner .text-slate-400,
+.dark .vessel-hero-card .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .app-panel .text-cyan-100,
+body.dark-mode .app-panel-soft .text-cyan-100,
+body.dark-mode .app-dark-panel .text-cyan-100,
+body.dark-mode .app-dark-card .text-cyan-100,
+body.dark-mode .app-dark-inner .text-cyan-100,
+.dark .app-panel .text-cyan-100,
+.dark .app-panel-soft .text-cyan-100,
+.dark .app-dark-panel .text-cyan-100,
+.dark .app-dark-card .text-cyan-100,
+.dark .app-dark-inner .text-cyan-100 {
+  color: #cffafe !important;
 }
 
 body.dark-mode .app-page-frame {

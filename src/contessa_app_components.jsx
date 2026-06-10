@@ -207,7 +207,7 @@ export function ConfirmActionDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/55 p-4">
+    <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/55 p-4">
       <div className={`w-full max-w-sm rounded-lg border p-5 shadow-2xl ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-white text-[#1d2b25]"}`}>
         <h2 className="mb-2 text-xl font-semibold">{title}</h2>
         <p className={`mb-5 text-sm ${theme.textSecondary}`}>{message}</p>
@@ -468,7 +468,7 @@ export function QuoteRow({
           type="button"
           onClick={() => onConfirm(draft)}
           disabled={!isDirty}
-          className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70"
         >
           Confirm
         </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}

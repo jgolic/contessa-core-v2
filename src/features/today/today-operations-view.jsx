@@ -8,6 +8,7 @@ import {
   calculateConfidenceScore,
   formatHistoryTime,
   formatMoney,
+  formatTaskStatusLabel,
   neutralBadgeClass,
   successBadgeClass,
   themeClasses,
@@ -20,8 +21,8 @@ import {
   DetailDrawer,
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
+import GlobalSearch from "../../components/GlobalSearch.jsx";
 import { SmartLabel } from "../../components/smart_label.jsx";
-import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -320,379 +321,9 @@ function itemTargetForSearch(item = {}, priorityIds = new Set()) {
   return `item-${id}`;
 }
 
-function CommandSearchMark({ className = "" }) {
-  return (
-    <svg
-      viewBox="0 0 32 32"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      className={className}
-    >
-      <defs>
-        <linearGradient id="command-search-mark-stroke" x1="6" y1="5" x2="27" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.98" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0.62" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M13.8 5.7 21 12.9l-7.2 7.2-7.2-7.2 7.2-7.2Z"
-        fill="none"
-        stroke="url(#command-search-mark-stroke)"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M13.8 5.7v14.4M6.6 12.9H21M10 9.1l7.6 7.6"
-        fill="none"
-        stroke="currentColor"
-        strokeOpacity="0.42"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <circle
-        cx="15.2"
-        cy="14.3"
-        r="6.4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        opacity="0.9"
-      />
-      <path
-        d="M20.1 19.2 26.1 25.2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10.9 11.2c1.1-1.35 2.75-2.05 4.5-1.88"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.15"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-    </svg>
-  );
+export function CommandJumpBar({ darkMode = false, results = [], onJump }) {
+  return <GlobalSearch darkMode={darkMode} results={results} onJump={onJump} />;
 }
-
-export function CommandJumpBar({
-  darkMode = false,
-  vesselName = "Vessel",
-  results = [],
-  onJump,
-  compact = false,
-}) {
-  const theme = themeClasses(darkMode);
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const inputRef = useRef(null);
-  const containerRef = useRef(null);
-  const [dropdownRect, setDropdownRect] = useState(null);
-  const normalizedQuery = query.trim().toLowerCase();
-  const suggestionsRevealRef = useRevealHighlight(open && Boolean(normalizedQuery) && Boolean(dropdownRect), {
-    radius: "28px",
-    delay: 80,
-  });
-  const filteredResults = useMemo(() => {
-    if (!normalizedQuery) return [];
-    const safeResults = Array.isArray(results) ? results : [];
-    return safeResults
-      .filter((result) => result?.searchText?.includes(normalizedQuery))
-      .slice(0, 9);
-  }, [normalizedQuery, results]);
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [normalizedQuery]);
-
-  useEffect(() => {
-    if (!compact || !open || !normalizedQuery || typeof window === "undefined") {
-      setDropdownRect(null);
-      return undefined;
-    }
-
-    const updateDropdownRect = () => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setDropdownRect({
-        left: rect.left,
-        top: rect.bottom + 12,
-        width: rect.width,
-      });
-    };
-
-    updateDropdownRect();
-    window.addEventListener("resize", updateDropdownRect);
-    window.addEventListener("scroll", updateDropdownRect, true);
-
-    return () => {
-      window.removeEventListener("resize", updateDropdownRect);
-      window.removeEventListener("scroll", updateDropdownRect, true);
-    };
-  }, [compact, open, normalizedQuery]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const handleSlashFocus = (event) => {
-      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
-      const target = event.target;
-      const tagName = String(target?.tagName || "").toLowerCase();
-      if (tagName === "input" || tagName === "textarea" || target?.isContentEditable) return;
-      if (!inputRef.current || inputRef.current.offsetParent === null) return;
-      event.preventDefault();
-      inputRef.current?.focus();
-      setOpen(Boolean(query.trim()));
-    };
-
-    window.addEventListener("keydown", handleSlashFocus);
-    return () => window.removeEventListener("keydown", handleSlashFocus);
-  }, [query]);
-
-  function chooseResult(result) {
-    if (!result?.targetId && !result?.item) return;
-    onJump?.(result);
-    setQuery("");
-    setOpen(false);
-    setActiveIndex(0);
-  }
-
-  function handleKeyDown(event) {
-    if (event.key === "Escape") {
-      setOpen(false);
-      return;
-    }
-
-    if (!filteredResults.length) return;
-
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((index) => Math.min(index + 1, filteredResults.length - 1));
-      return;
-    }
-
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((index) => Math.max(index - 1, 0));
-      return;
-    }
-
-    if (event.key === "Enter") {
-      event.preventDefault();
-      chooseResult(filteredResults[activeIndex] || filteredResults[0]);
-    }
-  }
-
-  if (compact) {
-    return (
-      <div ref={containerRef} className="search-command-card relative z-[5000] w-full min-w-0 md:max-w-4xl">
-        <div className={`group flex h-14 w-full items-center gap-3 rounded-[24px] border px-3.5 backdrop-blur-xl transition-all duration-200 lg:h-16 lg:gap-4 lg:rounded-[30px] lg:px-5 ${darkMode ? "border-cyan-300/25 bg-slate-950/76 text-slate-50 shadow-[0_16px_45px_rgba(34,211,238,0.12)] hover:border-cyan-300/40 focus-within:border-cyan-300/55 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.14),0_24px_70px_rgba(34,211,238,0.18)]" : "border-blue-200/80 bg-white/88 text-slate-800 shadow-[0_16px_45px_rgba(59,130,246,0.10)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_24px_70px_rgba(59,130,246,0.16)]"}`}>
-          <button
-            type="button"
-            onClick={() => {
-              inputRef.current?.focus();
-              setOpen(Boolean(query.trim()));
-            }}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-inner transition-all duration-200 hover:scale-[1.03] lg:h-12 lg:w-12 ${
-              darkMode
-                ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 focus:outline-none focus:ring-2 focus:ring-cyan-300/35"
-                : "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
-            }`}
-            aria-label="Focus command search"
-          >
-            <CommandSearchMark className="h-5 w-5 drop-shadow-[0_0_10px_rgba(59,130,246,0.18)] md:h-6 md:w-6" />
-          </button>
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setOpen(true);
-            }}
-            onFocus={() => setOpen(Boolean(query.trim()))}
-            onKeyDown={handleKeyDown}
-            placeholder="Search crew, tasks, docs..."
-            className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-800 outline-none placeholder:text-slate-500 lg:text-lg ${darkMode ? "text-slate-50 placeholder:text-slate-400" : ""}`}
-            aria-label="Search tasks, crew, approvals, documents"
-          />
-          <div className={`hidden shrink-0 items-center gap-2 text-xs font-semibold lg:flex ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
-            <span>Jump anywhere</span>
-            <span className={`rounded-lg border px-2 py-1 shadow-sm ${darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>Press /</span>
-          </div>
-          {query ? (
-            <button
-              type="button"
-              onClick={() => {
-                setQuery("");
-                setOpen(false);
-              }}
-              className={`rounded-xl px-2 py-1 text-xs font-semibold ${darkMode ? "text-slate-300 hover:bg-white/10" : "text-slate-500 hover:bg-slate-100"}`}
-            >
-              Esc
-            </button>
-          ) : null}
-        </div>
-
-        {open && normalizedQuery && dropdownRect && typeof document !== "undefined" ? createPortal(
-          <div
-            ref={suggestionsRevealRef}
-            className={`ui-reveal-target fixed z-[9999] max-h-[70vh] overflow-y-auto rounded-3xl border p-2.5 shadow-2xl backdrop-blur-xl ${darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white"}`}
-            style={{
-              left: dropdownRect.left,
-              top: dropdownRect.top,
-              width: dropdownRect.width,
-              "--reveal-radius": "28px",
-            }}
-          >
-            {filteredResults.length ? (
-              <div className="grid gap-2">
-                {filteredResults.map((result, index) => (
-                  <button
-                    key={result.id}
-                    type="button"
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => chooseResult(result)}
-                    className={`flex min-w-0 items-start justify-between gap-3 rounded-2xl border px-3.5 py-3 text-left transition-all duration-200 hover:-translate-y-0.5 ${
-                      index === activeIndex
-                        ? darkMode
-                          ? "border-cyan-300/45 bg-cyan-300/10 shadow-[0_14px_34px_-28px_rgba(34,211,238,0.45)]"
-                          : "border-blue-300 bg-blue-50 shadow-[0_14px_34px_-28px_rgba(59,130,246,0.35)]"
-                        : darkMode
-                          ? "border-transparent bg-transparent hover:border-white/10 hover:bg-white/[0.04]"
-                          : "border-transparent bg-transparent hover:border-slate-200 hover:bg-slate-50"
-                    }`}
-                  >
-                      <div className="min-w-0">
-                        <div className={`truncate text-[15px] font-semibold ${theme.textPrimary}`}>{result.title}</div>
-                        <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
-                          {result.type}
-                        </span>
-                        <span className={`hidden text-xs font-semibold md:inline ${darkMode ? "text-slate-500" : "text-slate-400"}`}>Enter</span>
-                      </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className={`rounded-2xl border border-dashed px-4 py-5 text-center text-sm ${darkMode ? "border-white/10 text-slate-300" : "border-slate-200 text-slate-600"}`}>
-                No matching command found.
-              </div>
-            )}
-          </div>,
-          document.body
-        ) : null}
-      </div>
-    );
-  }
-
-  return (
-    <div id="command-search-section" data-jump-target style={{ "--jump-radius": "24px" }} className={`jump-highlight-target app-panel app-panel-soft search-command-card relative z-[5000] w-full min-w-0 rounded-[24px] border p-3.5 md:p-4 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.10)] bg-white/70"}`}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
-          <div className="app-kicker">Command Search</div>
-          <div className={`mt-1 text-sm leading-5 ${theme.textSecondary}`}>
-            Jump across {vesselName} tasks, crew, approvals, route, certificates, and documents.
-          </div>
-        </div>
-        <div className="relative min-w-0 flex-1 lg:max-w-[620px]">
-          <div className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/45 text-slate-100 focus-within:border-[var(--vessel-primary-dark)]" : "border-slate-200/80 bg-white/82 text-slate-900 focus-within:border-blue-400"} shadow-sm transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]`}>
-            <button
-              type="button"
-              onClick={() => {
-                inputRef.current?.focus();
-                setOpen(Boolean(query.trim()));
-              }}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_6px_20px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-200 hover:scale-[1.03] ${
-                darkMode
-                  ? "border-cyan-300/20 bg-slate-900/70 text-cyan-100 hover:border-cyan-300/50 hover:shadow-[0_10px_30px_rgba(34,211,238,0.16)] focus:outline-none focus:ring-2 focus:ring-cyan-300/35"
-                  : "border-blue-200/70 bg-white/80 text-blue-700 hover:border-blue-400 hover:shadow-[0_10px_30px_rgba(59,130,246,0.14)] focus:outline-none focus:ring-2 focus:ring-blue-400/35"
-              }`}
-              aria-label="Focus command search"
-            >
-              <CommandSearchMark className="h-5 w-5" />
-            </button>
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setOpen(true);
-              }}
-              onFocus={() => setOpen(Boolean(query.trim()))}
-              onKeyDown={handleKeyDown}
-              placeholder="Search tasks, crew, approvals, documents..."
-              className={`h-11 min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-slate-400 ${darkMode ? "placeholder:text-slate-500" : ""}`}
-              aria-label="Search tasks, crew, approvals, documents"
-            />
-            {query ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("");
-                  setOpen(false);
-                }}
-                className={`rounded-xl px-2 py-1 text-xs font-semibold ${darkMode ? "text-slate-300 hover:bg-white/10" : "text-slate-500 hover:bg-slate-100"}`}
-              >
-                Esc
-              </button>
-            ) : null}
-          </div>
-
-          {open && normalizedQuery ? (
-            <div
-              ref={suggestionsRevealRef}
-              className={`ui-reveal-target absolute left-0 right-0 top-[calc(100%+8px)] z-[6000] max-h-[min(420px,70vh)] overflow-y-auto rounded-[22px] border p-2 shadow-[0_22px_70px_-28px_rgba(0,0,0,0.45)] backdrop-blur-xl ${darkMode ? "border-[var(--vessel-border-dark)] bg-slate-950/94" : "border-slate-200/80 bg-white/96"}`}
-              style={{ "--reveal-radius": "22px" }}
-            >
-              {filteredResults.length ? (
-                <div className="grid gap-1.5">
-                  {filteredResults.map((result, index) => (
-                    <button
-                      key={result.id}
-                      type="button"
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => chooseResult(result)}
-                      className={`flex min-w-0 items-start justify-between gap-3 rounded-2xl border px-3 py-2.5 text-left transition-all duration-200 ${
-                        index === activeIndex
-                          ? darkMode
-                            ? "border-[var(--vessel-primary-dark)] bg-[var(--vessel-primary-soft-dark)]"
-                            : "border-blue-300 bg-blue-50"
-                          : darkMode
-                            ? "border-transparent bg-transparent hover:border-white/10 hover:bg-white/[0.04]"
-                            : "border-transparent bg-transparent hover:border-slate-200 hover:bg-slate-50"
-                      }`}
-                    >
-                      <div className="min-w-0">
-                        <div className={`truncate text-sm font-semibold ${theme.textPrimary}`}>{result.title}</div>
-                        <div className={`mt-0.5 truncate text-xs ${theme.textSecondary}`}>{result.context}</div>
-                      </div>
-                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${darkMode ? "border-[var(--vessel-border-dark)] bg-white/[0.04] text-[var(--vessel-text-accent-dark)]" : "border-blue-200 bg-blue-50 text-blue-700"}`}>
-                        {result.type}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className={`rounded-2xl border border-dashed px-4 py-5 text-center text-sm ${darkMode ? "border-white/10 text-slate-300" : "border-slate-200 text-slate-600"}`}>
-                  No matching command found.
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function MetricTile({ darkMode = false, label, value, note, tone = "neutral", active = false }) {
   const theme = themeClasses(darkMode);
   const labelToneClass =
@@ -972,10 +603,83 @@ function DetailPanelBody({
   );
 }
 
+function DailyReportModal({ open = false, darkMode = false, report = {}, onClose }) {
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleEscape = (event) => {
+      if (event.key === "Escape") onClose?.();
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  const panelClass = darkMode
+    ? "border-white/10 bg-slate-950 text-slate-50"
+    : "border-slate-200 bg-white text-slate-950";
+  const mutedClass = darkMode ? "text-slate-300" : "text-slate-600";
+  const itemClass = darkMode
+    ? "border-white/10 bg-white/[0.04]"
+    : "border-slate-200 bg-slate-50";
+  const sections = [
+    ["Completed tasks", report.completedTasks || [], (item) => item.name || item.title || "Completed task"],
+    ["Open tasks", report.openTasks || [], (item) => `${item.name || item.title || "Open task"} - ${formatTaskStatusLabel(item.status || "pending")}`],
+    ["Overdue items", report.overdueItems || [], (item) => item.name || item.title || "Overdue item"],
+    ["Approvals waiting", report.approvalsWaiting || [], (item) => item.title || item.supplier || "Approval waiting"],
+    ["Crew notes", report.crewNotes || [], (item) => `${item.crewName || item.holderName || item.name || "Crew"} - ${item.statusLabel || item.statusText || "Review"}`],
+    ["Maintenance warnings", report.maintenanceWarnings || [], (item) => item.title || item.name || "Maintenance warning"],
+    ["Latest activity", report.latestActivity || [], (item) => item.message || item.detail || item.title || item.action || "Activity update"],
+  ];
+
+  return createPortal(
+    <div className="fixed inset-0 z-[30000] flex items-center justify-center p-4">
+      <button type="button" aria-label="Close daily report" className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <section className={`relative max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border p-5 shadow-[0_30px_100px_rgba(15,23,42,0.32)] ${panelClass}`}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="app-kicker">Daily Report</div>
+            <h2 className="mt-2 text-2xl font-semibold">{report.vesselName || "Vessel"}</h2>
+            <p className={`mt-1 text-sm ${mutedClass}`}>{report.date || new Date().toLocaleDateString()} - Route: {report.routeStatus || "Planning"} - Pending spend: {report.pendingSpend || "0"}</p>
+          </div>
+          <Button type="button" variant="outline" className="app-action-button" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {sections.map(([title, items, getLabel]) => (
+            <div key={title} className={`rounded-2xl border p-4 ${itemClass}`}>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-bold uppercase tracking-[0.12em]">{title}</h3>
+                <Badge className={neutralBadgeClass(darkMode)}>{items.length}</Badge>
+              </div>
+              <div className="mt-3 grid gap-2">
+                {items.length ? items.slice(0, 6).map((item, index) => (
+                  <div key={item.id || `${title}-${index}`} className={`rounded-xl border px-3 py-2 text-sm ${darkMode ? "border-white/10 bg-slate-900/80" : "border-slate-200 bg-white"}`}>
+                    {getLabel(item)}
+                  </div>
+                )) : (
+                  <div className={`rounded-xl border border-dashed px-3 py-3 text-sm ${mutedClass} ${darkMode ? "border-white/10" : "border-slate-200"}`}>
+                    None for this report.
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>,
+    document.body
+  );
+}
+
 export function TodayOperationsView({
   darkMode = false,
   canEdit = true,
   todayOperations,
+  dailyReportData = {},
   currency,
   currentRole = "captain",
   currentRoleLabel = "Captain",
@@ -1011,6 +715,7 @@ export function TodayOperationsView({
   const currentVessel = vesselOperations || null;
   const [selectedItem, setSelectedItem] = useState(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [dailyReportOpen, setDailyReportOpen] = useState(false);
   const [commandClock, setCommandClock] = useState(() => new Date());
   const [expandedSections, setExpandedSections] = useState({
     tasksMaintenance: false,
@@ -1179,13 +884,13 @@ export function TodayOperationsView({
     });
 
     const sectionResults = [
-      makeSection({ id: "search-dashboard", title: "Dashboard", context: "Main command overview", targetId: "dashboard-section" }),
+      makeSection({ id: "search-dashboard", title: "Dashboard", context: "Vessel status and command brief", targetId: "dashboard-section" }),
       makeSection({ id: "search-mission-cards", title: "Mission Cards", context: "Urgent work, approvals, and risk items", targetId: "mission-cards-section" }),
       makeSection({ id: "search-tasks", title: "Tasks", context: "Task board and maintenance queue", targetId: "tasks-section", moduleAction: onNavigateToTasks }),
-      makeSection({ id: "search-maintenance", title: "Maintenance", context: "Due service and upkeep plan", targetId: "maintenance-section", moduleAction: onNavigateToMaintenance }),
+      makeSection({ id: "search-maintenance", title: "Maintenance", context: "Service schedule and upkeep", targetId: "maintenance-section", moduleAction: onNavigateToMaintenance }),
       makeSection({ id: "search-approvals", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleAction: onNavigateToApprovals }),
       makeSection({ id: "search-crew", title: "Crew", context: "Crew roster and readiness", targetId: "crew-section", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
-      makeSection({ id: "search-crew-list", type: "Document", title: "Crew List", context: "Printable crew list for current vessel", targetId: "crew-list-action", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
+      makeSection({ id: "search-crew-list", type: "Document", title: "Crew List", context: "Crew list print view for current vessel", targetId: "crew-list-action", moduleAction: onNavigateToCrew || onNavigateToCertificates }),
       makeSection({ id: "search-certificates", title: "Certificates", context: "Crew certificates and expiry reviews", targetId: "certificates-section", moduleAction: onNavigateToCertificates }),
       makeSection({ id: "search-documents", title: "Documents", context: "Vessel document vault", targetId: "documents-section", moduleAction: onNavigateToDocuments }),
       makeSection({ id: "search-route", title: "Route Planning", context: "Waypoints, chart review, ETA, and fuel", targetId: "route-section", moduleAction: onNavigateToRoute }),
@@ -1326,13 +1031,41 @@ export function TodayOperationsView({
     });
   }
 
-  function highlightTarget(targetId) {
-    if (!targetId || typeof window === "undefined" || typeof document === "undefined") return;
+  function getHighlightElement(targetId) {
+    if (!targetId || typeof document === "undefined") return null;
     const baseElement = document.getElementById(targetId);
-    const element = baseElement?.matches("[data-jump-target]")
+    return baseElement?.matches("[data-jump-target]")
       ? baseElement
-      : baseElement?.querySelector("[data-jump-target]") || baseElement?.closest("[data-jump-target]") || baseElement;
-    if (!element) return;
+      : baseElement?.querySelector("[data-jump-target]") || baseElement?.closest("[data-jump-target]") || baseElement || null;
+  }
+
+  function waitForHighlightElement(targetId, retries = 12, delay = 80) {
+    return new Promise((resolve) => {
+      if (!targetId || typeof window === "undefined" || typeof document === "undefined") {
+        resolve(null);
+        return;
+      }
+
+      let attempts = 0;
+
+      function check() {
+        const element = getHighlightElement(targetId);
+        if (element || attempts >= retries) {
+          resolve(element || null);
+          return;
+        }
+        attempts += 1;
+        window.setTimeout(check, delay);
+      }
+
+      check();
+    });
+  }
+
+  async function highlightTarget(targetId, fallbackId = "") {
+    if (!targetId || typeof window === "undefined" || typeof document === "undefined") return false;
+    const element = (await waitForHighlightElement(targetId)) || (fallbackId ? await waitForHighlightElement(fallbackId, 6, 70) : null);
+    if (!element) return false;
     element.scrollIntoView({ behavior: "smooth", block: "center" });
     element.classList.remove("jump-highlight-active");
     void element.offsetWidth;
@@ -1341,6 +1074,7 @@ export function TodayOperationsView({
     window.setTimeout(() => {
       element.classList.remove("jump-highlight-active");
     }, 1900);
+    return true;
   }
 
   function jumpToResult(result) {
@@ -1361,7 +1095,7 @@ export function TodayOperationsView({
     if (typeof result.moduleAction === "function") {
       result.moduleAction();
       if (typeof window !== "undefined") {
-        window.setTimeout(() => highlightTarget(result.targetId), 260);
+        window.setTimeout(() => highlightTarget(result.targetId, result.sectionId), 260);
       }
       if (result.item) {
         openInspector(result.item);
@@ -1370,7 +1104,7 @@ export function TodayOperationsView({
     }
 
     if (typeof window !== "undefined") {
-      window.setTimeout(() => highlightTarget(result.targetId), result.sectionKey ? 150 : 0);
+      window.setTimeout(() => highlightTarget(result.targetId, result.sectionId), result.sectionKey ? 150 : 0);
     }
 
     if (result.item) {
@@ -1445,13 +1179,23 @@ export function TodayOperationsView({
                       {isOwnerView ? "Only material owner-level signals are surfaced first." : `${vesselStateConfig.label} priorities are surfaced first.`}
                     </div>
                   </div>
-                  <Button
-                    type="button"
-                    onClick={onNavigateToTasks}
-                    className="app-primary-action-button w-full sm:w-auto"
-                  >
-                    View details
-                  </Button>
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                    <Button
+                      type="button"
+                      onClick={() => setDailyReportOpen(true)}
+                      className="app-primary-action-button w-full sm:w-auto"
+                    >
+                      Generate Daily Report
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onNavigateToTasks}
+                      className="app-action-button w-full sm:w-auto"
+                    >
+                      View details
+                    </Button>
+                  </div>
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {priorityItems.length ? (
@@ -1777,6 +1521,13 @@ export function TodayOperationsView({
           </div>
         </div>
       </div>
+
+      <DailyReportModal
+        open={dailyReportOpen}
+        darkMode={darkMode}
+        report={dailyReportData}
+        onClose={() => setDailyReportOpen(false)}
+      />
 
       <DetailDrawer
         darkMode={darkMode}

@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { useLayoutEffect, useRef } from "react";
+import { useRef } from "react";
 import { useMemo } from "react";
+import AnchoredPopover from "./components/AnchoredPopover.jsx";
 import { Card, CardContent } from "./components/ui/card.jsx";
 import { Button } from "./components/ui/button.jsx";
 import { Input } from "./components/ui/input.jsx";
@@ -77,7 +77,7 @@ const premiumInnerClass = (darkMode = false) =>
       : "border-slate-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]",
   ].join(" ");
 
-const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300";
+const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700 dark:text-slate-200";
 const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50";
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
@@ -185,7 +185,7 @@ function SearchableSelect({
   const [query, setQuery] = useState(value || "");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const wrapperRef = useRef(null);
+  const anchorRef = useRef(null);
 
   const filteredOptions = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
@@ -198,17 +198,6 @@ function SearchableSelect({
   useEffect(() => {
     setQuery(value || "");
   }, [value]);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   function selectOption(option) {
     onChange?.(option);
@@ -242,12 +231,13 @@ function SearchableSelect({
   }
 
   return (
-    <div ref={wrapperRef} className="relative min-w-0">
-      <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300">
+    <div className="relative min-w-0">
+      <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200">
         {label}
         {required ? <span className="ml-1 text-rose-500">*</span> : null}
       </label>
       <input
+        ref={anchorRef}
         type="text"
         value={query}
         disabled={disabled}
@@ -259,10 +249,22 @@ function SearchableSelect({
           setActiveIndex(0);
         }}
         onKeyDown={handleKeyDown}
-        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20 dark:disabled:bg-slate-900 dark:disabled:text-slate-600"
+        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-600 dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-300 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20 dark:disabled:bg-slate-900 dark:disabled:text-slate-400"
       />
-      {open && !disabled ? (
-        <div className="absolute left-0 right-0 top-full z-[10000] mt-2 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-white/10 dark:bg-slate-950">
+      <AnchoredPopover
+        open={open && !disabled}
+        anchorRef={anchorRef}
+        onClose={() => setOpen(false)}
+        align="start"
+        matchAnchorWidth
+        minWidth={240}
+        maxWidth={520}
+        maxHeight={300}
+        panelClassName="rounded-2xl border-slate-200 bg-white dark:border-white/10 dark:bg-slate-950"
+        contentClassName="max-h-64 p-2"
+        showArrow={false}
+        ariaLabel={`${label} options`}
+      >
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option, index) => (
               <button
@@ -280,12 +282,11 @@ function SearchableSelect({
               </button>
             ))
           ) : (
-            <div className="px-3 py-3 text-sm text-slate-500 dark:text-slate-400">
+            <div className="px-3 py-3 text-sm text-slate-600 dark:text-slate-300">
               No matching options
             </div>
           )}
-        </div>
-      ) : null}
+      </AnchoredPopover>
     </div>
   );
 }
@@ -312,38 +313,6 @@ function NotificationTypeIcon({ type = "" }) {
   if (normalized.includes("maintenance")) return <TriangleAlert className="h-4 w-4" />;
   if (normalized.includes("task")) return <CheckCircle2 className="h-4 w-4" />;
   return <NotificationSignalIcon className="h-4 w-4" />;
-}
-
-function clampPopoverValue(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function getNotificationPopoverPosition(anchorRect) {
-  if (typeof window === "undefined") {
-    return { top: 12, left: 12, width: 360, maxHeight: 420 };
-  }
-
-  const margin = 12;
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const isMobile = viewportWidth < 640;
-  const width = isMobile
-    ? Math.max(280, viewportWidth - margin * 2)
-    : Math.min(420, viewportWidth - margin * 2);
-  const left = isMobile
-    ? margin
-    : clampPopoverValue(anchorRect.right - width, margin, viewportWidth - width - margin);
-  const top = clampPopoverValue(anchorRect.bottom + 10, margin, Math.max(margin, viewportHeight - 160));
-  const maxHeight = isMobile
-    ? viewportHeight - top - 96
-    : Math.min(520, viewportHeight - top - 24);
-
-  return {
-    top,
-    left,
-    width,
-    maxHeight: Math.max(280, maxHeight),
-  };
 }
 
 function NotificationButton({ count = 0, darkMode = false, onClick, open = false }) {
@@ -382,34 +351,10 @@ function NotificationsPanel({
   onClose,
   onSelect,
 }) {
-  const [mounted, setMounted] = useState(false);
-  const [position, setPosition] = useState(null);
   const revealRef = useRevealHighlight(open, {
     radius: "28px",
     delay: 80,
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!open || !anchorRef?.current) return undefined;
-
-    const updatePosition = () => {
-      const rect = anchorRef.current.getBoundingClientRect();
-      setPosition(getNotificationPopoverPosition(rect));
-    };
-
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
-    };
-  }, [open, anchorRef]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -427,9 +372,9 @@ function NotificationsPanel({
     };
   }, [open, onClose]);
 
-  if (!mounted || !open || !position) return null;
+  if (!open) return null;
 
-  const notificationItems = Array.isArray(notifications) ? notifications.filter(Boolean) : [];
+  const notificationItems = Array.isArray(notifications) ? notifications.filter(Boolean).slice(0, 20) : [];
   const typeLabel = (item = {}) => {
     if (item.type) return item.type;
     if (item.section === "expenses") return "Approval";
@@ -456,8 +401,8 @@ function NotificationsPanel({
       : "border border-blue-200 bg-blue-50 text-blue-800";
   };
   const panelSurfaceClass = darkMode
-    ? "border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
-    : "border-slate-200/90 bg-white text-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)]";
+    ? "notification-popover-dark border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
+    : "notification-popover-light border-slate-200/90 bg-white text-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)]";
   const headerBorderClass = darkMode ? "border-white/10" : "border-slate-200";
   const headerTitleClass = darkMode ? "text-slate-50" : "text-slate-950";
   const headerSubtitleClass = darkMode ? "text-slate-300" : "text-slate-600";
@@ -475,29 +420,23 @@ function NotificationsPanel({
     : "border-blue-200 bg-blue-50 text-blue-700";
   const titleTextClass = darkMode ? "text-slate-50" : "text-slate-950";
   const contextTextClass = darkMode ? "text-slate-300" : "text-slate-600";
-  const arrowClass = darkMode ? "border-white/10 bg-slate-950" : "border-slate-200 bg-white";
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999]">
-      <button
-        type="button"
-        aria-label="Close notifications"
-        className={`absolute inset-0 cursor-default ${darkMode ? "bg-black/30" : "bg-black/5"}`}
-        onClick={onClose}
-      />
-      <aside
-        ref={revealRef}
-        style={{
-          top: position.top,
-          left: position.left,
-          width: position.width,
-          maxHeight: position.maxHeight,
-          "--reveal-radius": "28px",
-        }}
-        className={`ui-reveal-target fixed z-[10000] overflow-hidden rounded-3xl border backdrop-blur-xl ${panelSurfaceClass}`}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className={`absolute -top-2 right-7 h-4 w-4 rotate-45 border-l border-t ${arrowClass}`} />
+  return (
+    <AnchoredPopover
+      open={open}
+      anchorRef={anchorRef}
+      onClose={onClose}
+      align="end"
+      minWidth={320}
+      maxWidth={420}
+      minHeight={280}
+      maxHeight={520}
+      panelClassName={panelSurfaceClass}
+      overlayClassName={darkMode ? "bg-black/30" : "bg-black/5"}
+      contentClassName="overflow-hidden"
+      ariaLabel="Notifications"
+    >
+      <div ref={revealRef} className="ui-reveal-target" style={{ "--reveal-radius": "28px" }}>
         <div className={`border-b px-4 py-3 ${headerBorderClass}`}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
@@ -510,7 +449,7 @@ function NotificationsPanel({
           </div>
         </div>
 
-        <div style={{ maxHeight: Math.max(180, position.maxHeight - 68) }} className={`notification-popover-list overflow-y-auto p-2 ${darkMode ? "notification-popover-list-dark" : ""}`}>
+        <div className={`notification-popover-list max-h-[min(452px,58vh)] overflow-y-auto p-2 ${darkMode ? "notification-popover-list-dark" : "notification-popover-list-light"}`}>
           {notificationItems.length === 0 ? (
             <div className={`rounded-2xl border p-4 text-sm font-medium ${emptyStateClass}`}>
               No notifications for this vessel.
@@ -548,9 +487,8 @@ function NotificationsPanel({
             ))
           )}
         </div>
-      </aside>
-    </div>,
-    document.body
+      </div>
+    </AnchoredPopover>
   );
 }
 
@@ -660,7 +598,7 @@ function DesktopVesselIdentityLockup({
         >
           {safeText(vesselTitle, "M/Y VESSEL")}
         </h1>
-        <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+        <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
           {safeText(vesselIdentifier, "IMO pending verification")}
         </p>
         <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
@@ -814,7 +752,7 @@ function HeroSignalStrip({ darkMode = false, signals = [] }) {
               Open
             </span>
           </div>
-          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>{safeText(signal.note)}</p>
+          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>{safeText(signal.note)}</p>
         </button>
       ))}
     </div>
@@ -841,7 +779,7 @@ function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdent
       >
         {vesselTitle}
       </h1>
-      <p className={`mt-3 whitespace-nowrap text-center text-xs font-bold uppercase tracking-[0.24em] ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
+      <p className={`mt-3 whitespace-nowrap text-center text-xs font-bold uppercase tracking-[0.24em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
         {vesselIdentifier}
       </p>
       <div className="mx-auto mt-4 h-px w-36 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent dark:via-amber-300/55" />
@@ -968,7 +906,7 @@ function ConfirmableTaskFields({
             type="button"
             onClick={() => onConfirm(task.id, draft)}
             disabled={!isDirty}
-            className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
             Confirm
           </Button>
@@ -1035,8 +973,9 @@ export function ObjectivesView({
     setMobileTaskPane("details");
   };
   const getTaskBoardStatus = (task = {}) => {
+    if (task.status === "blocked") return "blocked";
     if (task.status === "completed") return "done";
-    if (task.status === "approved" || task.quotes?.some((quote) => ["requested", "received"].includes(quote.status))) return "waiting-approval";
+    if (task.status === "waiting-approval" || task.status === "approved" || task.quotes?.some((quote) => ["requested", "received"].includes(quote.status))) return "waiting-approval";
     if (task.status === "ongoing") return "in-progress";
     return "todo";
   };
@@ -1060,6 +999,11 @@ export function ObjectivesView({
       key: "done",
       label: "Done",
       empty: "No completed tasks in this view.",
+    },
+    {
+      key: "blocked",
+      label: "Blocked",
+      empty: "No blocked tasks.",
     },
   ];
   const visibleTasks = Array.isArray(filteredTasks) ? filteredTasks : [];
@@ -1365,6 +1309,8 @@ export function AppShellHeader({
   const [legalOpen, setLegalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const fleetAnchorRef = useRef(null);
+  const settingsAnchorRef = useRef(null);
   const notificationAnchorRef = useRef(null);
   const [fleetDraft, setFleetDraft] = useState({
     vesselName: "",
@@ -1462,6 +1408,20 @@ export function AppShellHeader({
     { label: "Weather", value: "Calm watch", tone: "neutral" },
     { label: "Spend", value: formatMoney(stats.totalExpenses || 0, currency), tone: stats.totalExpenses ? "warning" : "neutral" },
   ];
+  const settingsCardClass = darkMode
+    ? "settings-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+    : "settings-popover-card-light rounded-2xl border border-slate-300 bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]";
+  const settingsLabelClass = darkMode
+    ? "settings-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
+    : "settings-popover-label-light text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700";
+  const settingsSelectClass = darkMode
+    ? "settings-popover-field-dark !border-white/15 !bg-slate-800/95 !text-slate-50 dark:!border-white/15 dark:!bg-slate-800/95 dark:!text-slate-50"
+    : "settings-popover-field-light !border-slate-300 !bg-white !text-slate-950";
+  const settingsValueBoxClass = darkMode
+    ? "settings-popover-field-dark border-white/15 bg-slate-800/95 text-slate-50"
+    : "settings-popover-field-light border-slate-300 bg-white text-slate-950";
+  const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-cyan-300/40 hover:!bg-cyan-300/12" : ""}`;
+  const settingsMetaClass = darkMode ? "text-slate-200" : "settings-popover-meta-light text-slate-700";
   const commandIntelCards = [
     {
       key: "vessel-status",
@@ -1615,7 +1575,7 @@ export function AppShellHeader({
   return (
     <div
       id="app-command-header"
-      className={`vessel-hero-card relative mb-6 mt-2 min-w-0 max-w-full overflow-hidden rounded-[38px] border p-5 md:p-8 lg:px-10 lg:py-10 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
+      className={`vessel-hero-card relative z-20 mb-6 mt-2 min-w-0 max-w-full overflow-visible rounded-[38px] border p-5 md:p-8 lg:px-10 lg:py-10 ${darkMode ? "border-cyan-300/10 text-slate-50" : "border-slate-200/80 text-slate-950"}`}
     >
       <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
         <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
@@ -1634,8 +1594,19 @@ export function AppShellHeader({
           />
         </DialogContent>
       </Dialog>
-      <Dialog open={fleetOpen} onOpenChange={onFleetOpenChange}>
-        <DialogContent className={`max-h-[82vh] w-full max-w-[1100px] overflow-y-auto rounded-[32px] border p-5 backdrop-blur-2xl transition-all duration-200 ${premiumShellClass(darkMode)} ${darkMode ? "text-[#f4fbf6]" : "text-[#1d2b24]"}`}>
+      <AnchoredPopover
+        open={fleetOpen}
+        anchorRef={fleetAnchorRef}
+        onClose={() => onFleetOpenChange?.(false)}
+        align="end"
+        minWidth={320}
+        maxWidth={980}
+        minHeight={320}
+        maxHeight={720}
+        panelClassName={`rounded-[32px] backdrop-blur-2xl ${darkMode ? "border-white/10 bg-slate-950 text-[#f4fbf6]" : "border-slate-200/80 bg-white text-[#1d2b24]"}`}
+        contentClassName="max-h-[82vh] p-5"
+        ariaLabel="Fleet switcher"
+      >
           <DialogHeader>
             <DialogTitle>Fleet</DialogTitle>
           </DialogHeader>
@@ -1802,7 +1773,7 @@ export function AppShellHeader({
                           type="button"
                           variant="outline"
                           disabled
-                          className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-400" : ""}`}
+                          className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-200" : ""}`}
                         >
                           Current Workspace
                         </Button>
@@ -1835,8 +1806,7 @@ export function AppShellHeader({
               </div>
             ) : null}
           </div>
-        </DialogContent>
-      </Dialog>
+      </AnchoredPopover>
 
       <div className={`pointer-events-none absolute right-[-24px] top-[-16px] h-24 w-24 rounded-full blur-3xl ${darkMode ? "bg-[#c6a35b]/6" : "bg-[#efe2b7]/36"}`} />
       <div className="pointer-events-none absolute inset-0 hidden opacity-80 lg:block">
@@ -1854,8 +1824,8 @@ export function AppShellHeader({
           />
 
           {commandSearchView ? (
-            <div className="relative z-[5000] mt-6 flex w-full min-w-0 justify-start">
-              <div className="relative z-[5000] w-full min-w-0">
+            <div className="relative z-[60] mt-6 flex w-full min-w-0 justify-start overflow-visible">
+              <div className="relative z-[60] w-full min-w-0 overflow-visible">
                 {commandSearchView}
               </div>
             </div>
@@ -1875,32 +1845,35 @@ export function AppShellHeader({
               />
 
               {commandSearchView ? (
-                <div className="relative z-[5000] mt-8 flex w-full min-w-0 justify-start pl-32 xl:pl-36">
-                  <div className="relative z-[5000] w-full min-w-0 max-w-4xl">
+                <div className="relative z-[60] mt-8 flex w-full min-w-0 justify-start overflow-visible pl-32 xl:pl-36">
+                  <div className="relative z-[60] w-full min-w-0 max-w-4xl overflow-visible">
                     {commandSearchView}
                   </div>
                 </div>
               ) : null}
             </div>
 
-            <HeroCommandLens
-              darkMode={darkMode}
-              confidence={heroConfidence}
-              nextAction={heroNextAction}
-              routeStatus={routeStatusLabel}
-              pendingSpend={formatMoney(stats.totalExpenses || 0, currency)}
-              pendingApprovals={stats.pendingApprovals || 0}
-              crewReadiness={heroCrewReadiness}
-              latestActivity={heroLatestActivity}
-              onReviewPriorities={onOpenCommand}
-              onOpenApprovals={onOpenApprovals}
-            />
+            <div className="relative z-10 min-w-0">
+              <HeroCommandLens
+                darkMode={darkMode}
+                confidence={heroConfidence}
+                nextAction={heroNextAction}
+                routeStatus={routeStatusLabel}
+                pendingSpend={formatMoney(stats.totalExpenses || 0, currency)}
+                pendingApprovals={stats.pendingApprovals || 0}
+                crewReadiness={heroCrewReadiness}
+                latestActivity={heroLatestActivity}
+                onReviewPriorities={onOpenCommand}
+                onOpenApprovals={onOpenApprovals}
+              />
+            </div>
           </div>
 
           <HeroSignalStrip darkMode={darkMode} signals={heroSignals} />
         </div>
 
           <div className={`absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2 lg:right-8 lg:top-8 lg:gap-3 lg:rounded-[30px] lg:border lg:p-2 lg:backdrop-blur-2xl ${darkMode ? "lg:border-white/10 lg:bg-slate-950/28" : "lg:border-white/70 lg:bg-white/42"}`}>
+            <div ref={fleetAnchorRef} className="shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -1911,6 +1884,7 @@ export function AppShellHeader({
               <Compass className="h-4 w-4 shrink-0" />
               <span className="hidden max-w-[9rem] truncate lg:inline">Fleet · {compactVesselName}</span>
             </Button>
+            </div>
 
             <Button
               type="button"
@@ -1922,29 +1896,42 @@ export function AppShellHeader({
               {darkMode ? <Sun className="h-4 w-4 md:h-5 md:w-5" /> : <Moon className="h-4 w-4 md:h-5 md:w-5" />}
             </Button>
 
-            <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-              <DialogTrigger asChild>
+            <div ref={settingsAnchorRef} className="shrink-0">
                 <Button
                   type="button"
                   variant="outline"
                   className={`h-10 w-10 shrink-0 rounded-2xl p-0 text-sm font-semibold shadow-[0_10px_26px_rgba(15,23,42,0.08)] md:h-12 md:w-auto md:rounded-[20px] md:px-4 md:font-bold ${darkMode ? "border-white/10 bg-slate-900/82 text-slate-100 hover:border-cyan-300/40 hover:bg-cyan-300/10" : "border-slate-200 bg-white/88 text-slate-900 hover:border-blue-300 hover:bg-blue-50"}`}
+                  onClick={() => setSettingsOpen((current) => !current)}
+                  aria-expanded={settingsOpen}
                   aria-label="Open settings"
                 >
                   <Settings className="h-4 w-4 md:mr-2 md:h-5 md:w-5" />
                   <span className="hidden md:inline">Settings</span>
                 </Button>
-              </DialogTrigger>
-            <DialogContent className={`max-h-[88vh] w-[calc(100vw-1.5rem)] max-w-[520px] overflow-y-auto rounded-[28px] border p-4 shadow-2xl md:p-5 ${darkMode ? "border-white/10 bg-[#111a16] text-[#f4fbf6]" : "border-slate-200/80 bg-white text-slate-900"}`}>
+            </div>
+            <AnchoredPopover
+              open={settingsOpen}
+              anchorRef={settingsAnchorRef}
+              onClose={() => setSettingsOpen(false)}
+              align="end"
+              minWidth={320}
+              maxWidth={520}
+              minHeight={280}
+              maxHeight={620}
+              panelClassName={`rounded-[28px] ${darkMode ? "settings-popover-dark border-cyan-300/15 bg-slate-950 text-slate-50" : "settings-popover-light border-slate-200/90 bg-white text-slate-950"}`}
+              contentClassName="max-h-[88vh] p-4 md:p-5"
+              ariaLabel="Settings"
+            >
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div className={`${premiumInnerClass(darkMode)} p-3`}>
-                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Operating As</div>
+              <div className={settingsCardClass}>
+                <div className={settingsLabelClass}>Operating As</div>
                 <div className="mt-2">
                   {onCurrentRoleChange ? (
                     <Select value={currentRole} onValueChange={onCurrentRoleChange}>
-                      <SelectTrigger className={`h-11 rounded-2xl border ${theme.input}`}>
+                      <SelectTrigger className={`h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -1954,7 +1941,7 @@ export function AppShellHeader({
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-medium ${darkMode ? "border-white/10 bg-white/[0.04] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-800"}`}>
+                    <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-semibold ${settingsValueBoxClass}`}>
                       Shared vessel access
                     </div>
                   )}
@@ -1962,10 +1949,10 @@ export function AppShellHeader({
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className={`${premiumInnerClass(darkMode)} p-3`}>
-                  <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Mode</div>
+                <div className={settingsCardClass}>
+                  <div className={settingsLabelClass}>Mode</div>
                   <Select value={appMode} onValueChange={onAppModeChange}>
-                    <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input}`}>
+                    <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1974,18 +1961,18 @@ export function AppShellHeader({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className={`${premiumInnerClass(darkMode)} p-3`}>
-                  <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Status</div>
-                  <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-semibold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/25 dark:bg-amber-300/15 dark:text-amber-100" : "border border-slate-200/80 bg-slate-50/80 text-slate-600 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300"}`}>
+                <div className={settingsCardClass}>
+                  <div className={settingsLabelClass}>Status</div>
+                  <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-bold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/20 dark:text-amber-50" : "border border-slate-200/80 bg-slate-50/80 text-slate-700 dark:border-white/15 dark:bg-slate-800/95 dark:text-slate-50"}`}>
                     {canEditApp ? "Editor Mode" : "View Mode"}
                   </Badge>
                 </div>
               </div>
 
-              <div className={`${premiumInnerClass(darkMode)} p-3`}>
-                <div className={`${premiumLabelClass} ${darkMode ? "!text-slate-300" : ""}`}>Vessel State</div>
+              <div className={settingsCardClass}>
+                <div className={settingsLabelClass}>Vessel State</div>
                 <Select value={vesselState?.mode || "standby"} onValueChange={onVesselStateModeChange}>
-                  <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input}`}>
+                  <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1994,31 +1981,30 @@ export function AppShellHeader({
                     ))}
                   </SelectContent>
                 </Select>
-                <div className={`mt-2 text-xs leading-5 ${theme.textSecondary}`}>
+                <div className={`mt-2 text-xs font-medium leading-5 ${settingsMetaClass}`}>
                   {vesselState?.primaryFocus || "Routine vessel readiness"} · {Number(vesselState?.confidenceScore || 0)}% confidence
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); openFleetPanel(); }}>
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { setSettingsOpen(false); openFleetPanel(); }}>
                   Fleet management
                 </Button>
-                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onHistoryOpenChange(true); }}>
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { setSettingsOpen(false); onHistoryOpenChange(true); }}>
                   History
                 </Button>
-                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onSharingOpenChange(true); }}>
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { setSettingsOpen(false); onSharingOpenChange(true); }}>
                   Share
                 </Button>
-                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); setLegalOpen(true); }}>
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { setSettingsOpen(false); setLegalOpen(true); }}>
                   Legal
                 </Button>
-                <Button type="button" variant="outline" className={`${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setSettingsOpen(false); onOpenSettingsWorkspace?.(); }}>
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { setSettingsOpen(false); onOpenSettingsWorkspace?.(); }}>
                   App settings
                 </Button>
               </div>
             </div>
-              </DialogContent>
-            </Dialog>
+            </AnchoredPopover>
 
             <div ref={notificationAnchorRef} className="relative z-[9200] shrink-0">
               <NotificationButton
@@ -2594,23 +2580,29 @@ export function AppSectionCards({
   onShowDocuments,
   onShowSettings,
   onShowFleet,
+  onDesktopShowCommand,
+  onDesktopShowRoute,
+  onDesktopShowTasksMaintenance,
+  onDesktopShowCrewCertificates,
+  onDesktopShowExpenses,
+  onDesktopShowDocuments,
 }) {
   const crewAndCertificatesVisible = visibleModuleKeys.includes("crew") || visibleModuleKeys.includes("certificates");
   const tasksVisible = visibleModuleKeys.includes("tasks") || visibleModuleKeys.includes("maintenance");
   const approvalsVisible = visibleModuleKeys.includes("expenses");
   const desktopItems = [
-    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onShowCommand } : null,
-    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onShowTasksMaintenance } : null,
-    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onShowExpenses } : null,
+    visibleModuleKeys.includes("today") ? { key: "command", label: "Dashboard", value: stats.todayAttentionCount || 0, icon: TriangleAlert, active: expenseView === "command", onClick: onDesktopShowCommand || onShowCommand } : null,
+    tasksVisible ? { key: "tasks-maintenance", label: "Tasks", value: `${stats.totalObjectives || 0} open · ${stats.maintenanceDue || 0} due`, icon: CheckCircle2, active: expenseView === "tasks-maintenance", onClick: onDesktopShowTasksMaintenance || onShowTasksMaintenance } : null,
+    approvalsVisible ? { key: "expenses-approvals", label: "Approval", value: `${stats.pendingApprovals || 0} waiting`, icon: Wallet, active: expenseView === "expenses-approvals", onClick: onDesktopShowExpenses || onShowExpenses } : null,
     crewAndCertificatesVisible ? {
       key: "crew-certificates",
       label: "Crew",
       value: `${stats.crewProfiles || 0} crew · ${stats.certificateDue || 0} due`,
       icon: Users,
       active: expenseView === "crew-certificates",
-      onClick: onShowCrewCertificates,
+      onClick: onDesktopShowCrewCertificates || onShowCrewCertificates,
     } : null,
-    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onShowDocuments } : null,
+    visibleModuleKeys.includes("documents") ? { key: "documents", label: "Docs", value: stats.documentCount || 0, icon: Receipt, active: expenseView === "documents", onClick: onDesktopShowDocuments || onShowDocuments } : null,
   ].filter(Boolean);
   const mobileItems = [
     visibleModuleKeys.includes("today") ? { key: "command", label: "Home", value: String(stats.todayAttentionCount || 0), icon: LayoutDashboard, onClick: onShowCommand } : null,
@@ -2628,14 +2620,23 @@ export function AppSectionCards({
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(172px, 1fr))" }}
       >
         {desktopItems.map((item) => (
-          <button key={item.key} type="button" onClick={item.onClick} className="h-full min-w-0 text-left">
+          <button
+            key={item.key}
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              item.onClick?.();
+            }}
+            className="h-full min-w-0 text-left"
+          >
             <SectionNavCard label={item.label} value={item.value} icon={item.icon} active={item.active} darkMode={darkMode} />
           </button>
         ))}
       </div>
 
       <div
-        className={`fixed inset-x-3 bottom-3 z-40 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[28px] border p-2 pb-[calc(0.55rem+env(safe-area-inset-bottom))] shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
+        className={`fixed inset-x-3 bottom-3 z-[3000] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[28px] border p-2 pb-[calc(0.55rem+env(safe-area-inset-bottom))] shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
           darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(4,12,18,0.86)] text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.88)] text-[#13231d]"
         }`}
       >
@@ -2645,7 +2646,11 @@ export function AppSectionCards({
             return (
               <BottomNavButton
                 key={`nav-${item.key}`}
-                onClick={item.onClick}
+                onClick={(event) => {
+                  event?.preventDefault?.();
+                  event?.stopPropagation?.();
+                  item.onClick?.();
+                }}
                 darkMode={darkMode}
                 label={item.label}
                 value={item.value}
@@ -2727,7 +2732,7 @@ export function MaintenanceReminderModal({
   const theme = themeClasses(darkMode);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+    <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/45 p-4">
       <div className={`w-full max-w-xl rounded-lg border p-5 shadow-2xl ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-[#fbfefd] text-[#1d2b24]"}`}>
         <div className="text-premium-label mb-2 text-xs font-semibold uppercase">Maintenance Reminder</div>
         <h2 className="text-2xl font-semibold">{maintenancePopupItem.title}</h2>
@@ -2964,10 +2969,38 @@ export function TaskDetails({
             </SelectTrigger>
             <SelectContent>
               {TASK_STATUS_OPTIONS.map((option) => (
-                <SelectItem key={option} value={option}>{titleCase(option)}</SelectItem>
+                <SelectItem key={option} value={option}>{formatTaskStatusLabel(option)}</SelectItem>
               ))}
             </SelectContent>
-          </Select> : <Badge className={neutralBadgeClass(darkMode)}>{titleCase(selectedTask.status)}</Badge>}
+          </Select> : <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(selectedTask.status)}</Badge>}
+          {canEdit ? (
+            <div className="grid w-full gap-2 md:w-44">
+              <Button
+                type="button"
+                variant="outline"
+                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                onClick={() => onUpdateTaskStatus(selectedTask.id, "waiting-approval")}
+              >
+                Request Approval
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                onClick={() => onUpdateTaskStatus(selectedTask.id, "completed")}
+              >
+                Mark Done
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                onClick={() => onUpdateTaskStatus(selectedTask.id, "blocked")}
+              >
+                Blocked
+              </Button>
+            </div>
+          ) : null}
           {canEdit ? <Button
             variant="outline"
             className={`w-full rounded-xl px-4 py-3 md:w-auto md:rounded-lg ${darkMode ? "border-[#5b2a2a] bg-[#231515] text-[#ffd9d9] hover:bg-[#382020]" : "border-[#e8bcbc] bg-[#fff3f3] text-[#8a1f2b] hover:bg-[#ffe4e4]"}`}
@@ -3076,7 +3109,7 @@ export function TaskDetails({
               setCommentDraft("");
             }}
             disabled={!commentDraft.trim()}
-            className="button-vessel-primary rounded-lg px-4 py-5 text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-vessel-primary rounded-lg px-4 py-5 text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
             Add Comment
           </Button> : null}

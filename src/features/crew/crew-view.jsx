@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent } from "../../components/ui/card.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
@@ -33,7 +34,11 @@ import {
 } from "../../contessa_certificate_extraction.mjs";
 import { ROLE_OPTIONS } from "../../contessa_access.mjs";
 import { CertificateExtractionPanel, CertificateReviewFields } from "../../components/certificate_extraction_panel.jsx";
-import { CrewCvQr } from "./crew-cv-qr.jsx";
+
+const CrewCvQr = dynamic(
+  () => import("./crew-cv-qr.jsx").then((module) => module.CrewCvQr),
+  { ssr: false, loading: () => null }
+);
 
 /**
  * @typedef {import("../../lib/contessa-types").CrewProfileRecord} CrewProfileRecord
@@ -109,7 +114,7 @@ function ConfirmableCrewProfileFields({
       />
       <div className="mt-3 flex items-center justify-between gap-3">
         <div className={`text-sm ${theme.textSecondary}`}>{isDirty ? "Changes pending confirmation." : "No unconfirmed changes."}</div>
-        {canEdit ? <Button type="button" onClick={() => onConfirm(profile.id, draft)} disabled={!isDirty} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50">
+        {canEdit ? <Button type="button" onClick={() => onConfirm(profile.id, draft)} disabled={!isDirty} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70">
           Confirm
         </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
       </div>
@@ -270,7 +275,7 @@ function ConfirmableCertificateRow({
               ? "Changes pending confirmation."
               : "No unconfirmed changes."}
         </div>
-        {canEdit ? <Button type="button" onClick={confirmDraft} disabled={!isDirty && !(draft.extractedAt && !draft.extractionReviewed)} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50">Confirm</Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
+        {canEdit ? <Button type="button" onClick={confirmDraft} disabled={!isDirty && !(draft.extractedAt && !draft.extractionReviewed)} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70">Confirm</Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
       </div>
     </div>
   );
