@@ -388,6 +388,22 @@ export default function GlobalSearch({
   const inputTextClass = darkMode
     ? "text-slate-50 placeholder:text-slate-200 caret-cyan-200 selection:bg-cyan-300/25"
     : "text-slate-950 placeholder:text-slate-600 caret-blue-700 selection:bg-blue-200/60 dark:text-slate-50 dark:placeholder:text-slate-200 dark:caret-cyan-200 dark:selection:bg-cyan-300/25";
+  const resultsPanelClass = darkMode
+    ? "search-popover-dark border-white/10 bg-slate-950 text-slate-50 shadow-[0_36px_120px_rgba(0,0,0,0.72)]"
+    : "search-popover-light border-slate-200/90 bg-white text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.26)]";
+  const resultRowClass = (active) =>
+    active
+      ? darkMode
+        ? "bg-cyan-300/10 text-slate-50"
+        : "bg-blue-50 text-slate-950"
+      : darkMode
+        ? "text-slate-100 hover:bg-white/10"
+        : "text-slate-800 hover:bg-slate-50";
+  const resultTitleClass = darkMode ? "text-slate-50" : "text-slate-950";
+  const resultContextClass = darkMode ? "text-slate-200" : "text-slate-700";
+  const resultTypeBadgeClass = darkMode
+    ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
+    : "border-blue-200 bg-blue-50 text-blue-800";
 
   return (
     <div ref={rootRef} data-global-search-root className="search-command-card relative z-[10000] w-full max-w-full overflow-visible md:max-w-4xl">
@@ -449,7 +465,7 @@ export default function GlobalSearch({
         <div
           data-global-search-results
           data-search-suggestions="true"
-          className="absolute left-0 right-0 top-[calc(100%+10px)] z-[10002] max-h-[min(420px,70vh)] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-2 text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.26)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:shadow-[0_36px_120px_rgba(0,0,0,0.72)]"
+          className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[10002] max-h-[min(420px,70vh)] overflow-y-auto rounded-3xl border p-2 backdrop-blur-xl ${resultsPanelClass}`}
         >
           {filteredResults.map((result, index) => (
             <button
@@ -462,16 +478,14 @@ export default function GlobalSearch({
               }}
               className={[
                 "flex w-full items-center justify-between gap-4 rounded-2xl p-4 text-left transition",
-                index === activeIndex
-                  ? "bg-blue-50 text-slate-950 dark:bg-cyan-300/10 dark:text-slate-50"
-                  : "text-slate-800 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-white/10",
+                resultRowClass(index === activeIndex),
               ].join(" ")}
             >
               <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">{result.title}</p>
-                {result.context ? <p className="mt-1 truncate text-sm text-slate-700 dark:text-slate-200">{result.context}</p> : null}
+                <p className={`truncate text-base font-semibold ${resultTitleClass}`}>{result.title}</p>
+                {result.context ? <p className={`mt-1 truncate text-sm ${resultContextClass}`}>{result.context}</p> : null}
               </div>
-              <span className="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-blue-800 dark:border-cyan-300/30 dark:bg-cyan-300/10 dark:text-cyan-100">
+              <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${resultTypeBadgeClass}`}>
                 {result.type || "Item"}
               </span>
             </button>
