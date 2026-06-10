@@ -1030,6 +1030,7 @@ export function ObjectivesView({
   const theme = themeClasses(darkMode);
   const filterTabs = buildObjectivesFilterTabs(stats, statusFilter);
   const [mobileTaskPane, setMobileTaskPane] = useState(selectedTask ? "details" : "list");
+  const [taskBoardView, setTaskBoardView] = useState("all");
   const taskDetailsRevealRef = useRevealHighlight(Boolean(selectedTask), {
     radius: "22px",
     delay: 160,
@@ -1083,6 +1084,17 @@ export function ObjectivesView({
     },
   ];
   const visibleTasks = Array.isArray(filteredTasks) ? filteredTasks : [];
+  const taskBoardOptions = [
+    { key: "all", label: "All Tasks", count: visibleTasks.length, empty: "No tasks in this view." },
+    ...taskBoardColumns.map((column) => ({
+      ...column,
+      count: visibleTasks.filter((task) => getTaskBoardStatus(task) === column.key).length,
+    })),
+  ];
+  const selectedTaskBoardOption = taskBoardOptions.find((option) => option.key === taskBoardView) || taskBoardOptions[0];
+  const taskBoardList = taskBoardView === "all"
+    ? visibleTasks
+    : visibleTasks.filter((task) => getTaskBoardStatus(task) === taskBoardView);
   const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
 
   return (
@@ -1221,67 +1233,79 @@ export function ObjectivesView({
                 No tasks match this view.
               </div>
             ) : (
-              <div className="task-board-scroll flex gap-3 overflow-x-auto pb-3">
-                {taskBoardColumns.map((column) => {
-                  const columnTasks = visibleTasks.filter((task) => getTaskBoardStatus(task) === column.key);
-                  return (
-                    <div key={column.key} className={`min-h-[520px] w-[min(86vw,360px)] shrink-0 rounded-[22px] border p-3 md:w-[380px] xl:w-[390px] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="app-kicker">{column.label}</div>
-                        <Badge className={neutralBadgeClass(darkMode)}>{columnTasks.length}</Badge>
-                      </div>
-                      <div className="mt-3 grid gap-2">
-                        {columnTasks.length ? columnTasks.map((task) => (
-                          <button
-                            id={`item-${task.id}`}
-                            data-jump-target
-                            style={{ "--jump-radius": "18px" }}
-                            key={task.id}
-                            type="button"
-                            onClick={(event) => {
-                              event.currentTarget.classList.remove("jump-highlight-active");
-                              void event.currentTarget.offsetWidth;
-                              event.currentTarget.classList.add("jump-highlight-target");
-                              event.currentTarget.classList.add("jump-highlight-active");
-                              window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
-                              handleSelectTask(task.id);
-                            }}
-                            className={`jump-highlight-target group relative overflow-hidden rounded-2xl border p-3 pl-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)] hover:bg-slate-800/80" : "border-[rgba(15,80,70,0.08)] bg-white/70 hover:bg-white/90"}`}
-                          >
-                            <div className={`absolute inset-y-0 left-0 w-1 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
-                            <div className="flex min-w-0 items-start justify-between gap-2">
-                              <div className={`min-w-0 truncate text-sm font-semibold ${theme.textPrimary}`}>{task.name}</div>
-                              <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-700"}`}>
-                                {(task.assignee || "Ops").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "OP"}
-                              </span>
-                            </div>
-                            <div className="mt-2 flex flex-wrap gap-1.5">
-                              <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
-                              <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(task.status)}</Badge>
-                            </div>
-                            <div className={`mt-3 grid gap-1 text-xs ${theme.textSecondary}`}>
-                              <div className="flex justify-between gap-2">
-                                <span>Assigned</span>
-                                <span className={`truncate text-right font-medium ${theme.textPrimary}`}>{task.assignee || "Unassigned"}</span>
-                              </div>
-                              <div className="flex justify-between gap-2">
-                                <span>Due</span>
-                                <span className={`text-right font-medium ${theme.textPrimary}`}>{task.dueDate || "Not set"}</span>
-                              </div>
-                            </div>
-                            <div className={`mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 group-hover:-translate-y-0.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)]"}`}>
-                              Open details
-                            </div>
-                          </button>
-                        )) : (
-                          <div className={`rounded-2xl border border-dashed p-3 text-sm ${theme.textSecondary} ${darkMode ? "app-dark-inner border-white/10" : "border-slate-200/70 bg-white/50"}`}>
-                            {column.empty}
+              <div className={`rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+                <div className="task-board-scroll flex gap-2 overflow-x-auto pb-3">
+                  {taskBoardOptions.map((option) => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => setTaskBoardView(option.key)}
+                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${taskBoardView === option.key ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_12px_30px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_12px_28px_rgba(15,118,110,0.12)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/65 text-slate-700 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
+                    >
+                      <span className="whitespace-nowrap">{option.label}</span>
+                      <span className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-xs ${taskBoardView === option.key ? "bg-white/70 text-slate-900" : darkMode ? "bg-white/[0.06] text-slate-200" : "bg-slate-100 text-slate-700"}`}>
+                        {option.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-1 flex items-center justify-between gap-3">
+                  <div className="app-kicker">{selectedTaskBoardOption.label}</div>
+                  <Badge className={neutralBadgeClass(darkMode)}>{taskBoardList.length}</Badge>
+                </div>
+
+                <div className="mt-3 grid gap-2">
+                  {taskBoardList.length ? taskBoardList.map((task) => (
+                    <button
+                      id={`item-${task.id}`}
+                      data-jump-target
+                      style={{ "--jump-radius": "18px" }}
+                      key={task.id}
+                      type="button"
+                      onClick={(event) => {
+                        event.currentTarget.classList.remove("jump-highlight-active");
+                        void event.currentTarget.offsetWidth;
+                        event.currentTarget.classList.add("jump-highlight-target");
+                        event.currentTarget.classList.add("jump-highlight-active");
+                        window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
+                        handleSelectTask(task.id);
+                      }}
+                      className={`jump-highlight-target group relative overflow-hidden rounded-2xl border p-4 pl-5 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)] hover:bg-slate-800/80" : "border-[rgba(15,80,70,0.08)] bg-white/78 hover:bg-white/95"}`}
+                    >
+                      <div className={`absolute inset-y-0 left-0 w-1.5 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
+                      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-start justify-between gap-2">
+                            <div className={`min-w-0 truncate text-base font-semibold ${theme.textPrimary}`}>{task.name}</div>
+                            <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold lg:hidden ${darkMode ? "border-white/10 bg-white/[0.06] text-slate-100" : "border-slate-200/80 bg-white/80 text-slate-700"}`}>
+                              {(task.assignee || "Ops").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "OP"}
+                            </span>
                           </div>
-                        )}
+                          <div className={`mt-1 text-sm ${theme.textSecondary}`}>{task.area || task.department || "General"}</div>
+                          <div className="mt-3 flex flex-wrap gap-1.5">
+                            <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
+                            <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(task.status)}</Badge>
+                          </div>
+                        </div>
+                        <div className={`grid gap-1 text-xs ${theme.textSecondary} lg:min-w-[220px]`}>
+                          <div className="flex justify-between gap-2">
+                            <span>Assigned</span>
+                            <span className={`truncate text-right font-medium ${theme.textPrimary}`}>{task.assignee || "Unassigned"}</span>
+                          </div>
+                          <div className="flex justify-between gap-2">
+                            <span>Due</span>
+                            <span className={`text-right font-medium ${theme.textPrimary}`}>{task.dueDate || "Not set"}</span>
+                          </div>
+                        </div>
                       </div>
+                    </button>
+                  )) : (
+                    <div className={`rounded-2xl border border-dashed p-5 text-center text-sm ${theme.textSecondary} ${darkMode ? "app-dark-inner border-white/10" : "border-slate-200/70 bg-white/50"}`}>
+                      {selectedTaskBoardOption.empty}
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
             )}
           </CardContent>
