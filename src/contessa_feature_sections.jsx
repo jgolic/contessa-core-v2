@@ -1201,7 +1201,7 @@ export function ObjectivesView({
         </div>
       ) : null}
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(520px,680px)] xl:items-start">
         <Card className={`app-panel app-panel-soft shadow-md ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
           <CardContent className="p-4">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -1221,11 +1221,11 @@ export function ObjectivesView({
                 No tasks match this view.
               </div>
             ) : (
-              <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+              <div className="task-board-scroll flex gap-3 overflow-x-auto pb-3">
                 {taskBoardColumns.map((column) => {
                   const columnTasks = visibleTasks.filter((task) => getTaskBoardStatus(task) === column.key);
                   return (
-                    <div key={column.key} className={`rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+                    <div key={column.key} className={`min-h-[520px] w-[min(86vw,360px)] shrink-0 rounded-[22px] border p-3 md:w-[380px] xl:w-[390px] ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="app-kicker">{column.label}</div>
                         <Badge className={neutralBadgeClass(darkMode)}>{columnTasks.length}</Badge>
@@ -1289,11 +1289,11 @@ export function ObjectivesView({
 
         <div
           ref={taskDetailsRevealRef}
-          className={`ui-reveal-target rounded-2xl md:rounded-lg ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
+          className={`ui-reveal-target rounded-2xl md:rounded-lg xl:sticky xl:top-6 ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
           style={{ "--reveal-radius": "22px" }}
         >
-          <Card className={`app-panel ${selectedTask ? "app-panel-active" : "app-panel-soft"} shadow-md ${theme.card} rounded-2xl md:rounded-lg`}>
-            <CardContent className="p-4 md:p-5">
+          <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"} shadow-md ${theme.card} rounded-2xl md:rounded-lg`}>
+            <CardContent className="p-4 md:p-6">
               <TaskDetails
                 selectedTask={selectedTask}
                 canEdit={canEdit}

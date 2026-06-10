@@ -171,6 +171,44 @@ canvas {
   background-clip: content-box;
 }
 
+.task-board-scroll {
+  scrollbar-color: rgba(22, 120, 110, 0.38) transparent;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.task-board-scroll > * {
+  scroll-snap-align: start;
+}
+
+.task-board-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.task-board-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-board-scroll::-webkit-scrollbar-thumb {
+  background: rgba(22, 120, 110, 0.34);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+body.dark-mode .task-board-scroll,
+.dark .task-board-scroll {
+  scrollbar-color: rgba(94, 234, 212, 0.38) transparent;
+}
+
+body.dark-mode .task-board-scroll::-webkit-scrollbar-thumb,
+.dark .task-board-scroll::-webkit-scrollbar-thumb {
+  background: rgba(94, 234, 212, 0.34);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
 button,
 input,
 select,
