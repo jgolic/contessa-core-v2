@@ -1721,9 +1721,25 @@ export function AppShellHeader({
         contentClassName="max-h-[82vh] p-5"
         ariaLabel="Fleet switcher"
       >
-          <DialogHeader>
-            <DialogTitle>Fleet</DialogTitle>
-          </DialogHeader>
+          <div className="flex items-start justify-between gap-3">
+            <DialogHeader>
+              <DialogTitle>Fleet</DialogTitle>
+            </DialogHeader>
+            {!fleetFormOpen ? (
+              <button
+                type="button"
+                onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
+                className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 ${
+                  darkMode
+                    ? "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/[0.12]"
+                    : "border-blue-200 bg-blue-50/80 text-blue-900 hover:border-blue-300 hover:bg-blue-100/70"
+                }`}
+              >
+                <span>Add Vessel</span>
+                <Plus className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
           <div className="flex h-full flex-col gap-3">
             {fleetFormOpen ? (
               <div
@@ -1838,27 +1854,6 @@ export function AppShellHeader({
 
             <div className={`min-h-0 ${fleetVessels.length > 4 ? "md:max-h-[52vh] md:overflow-y-auto md:pr-1" : ""}`}>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {!fleetFormOpen ? (
-                <button
-                  type="button"
-                  onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
-                  className={`flex min-h-[240px] h-full flex-col items-center justify-center gap-3 rounded-[22px] border border-dashed p-5 text-center transition-all duration-200 hover:-translate-y-0.5 ${
-                    darkMode
-                      ? "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/[0.12]"
-                      : "border-blue-300/70 bg-blue-50/50 text-blue-900 hover:border-blue-400 hover:bg-blue-50"
-                  }`}
-                >
-                  <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl border ${
-                    darkMode
-                      ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
-                      : "border-blue-200 bg-white text-blue-700"
-                  }`}>
-                    <Plus className="h-5 w-5" />
-                  </span>
-                  <span className="text-base font-semibold">Add New Boat</span>
-                  <span className={`max-w-xs text-sm leading-5 ${fleetBodyTextClass}`}>Create a new vessel workspace from this Fleet panel.</span>
-                </button>
-              ) : null}
               {fleetVessels.map((vessel) => {
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
                 const crewCount = Number(vessel?.details?.crewNumber ?? vessel?.crewProfiles?.length ?? 0) || 0;
