@@ -1725,11 +1725,6 @@ export function AppShellHeader({
             <DialogTitle>Fleet</DialogTitle>
           </DialogHeader>
           <div className="flex h-full flex-col gap-3">
-            <div className={`${fleetCardClass} p-4`}>
-              <div className={fleetLabelClass}>Fleet</div>
-              <div className={`mt-1 text-sm font-medium leading-5 ${fleetBodyTextClass}`}>Switch vessels or create a new independent workspace without leaving the current command layout.</div>
-            </div>
-
             {fleetFormOpen ? (
               <div
                 ref={fleetFormRevealRef}
@@ -1843,6 +1838,27 @@ export function AppShellHeader({
 
             <div className={`min-h-0 ${fleetVessels.length > 4 ? "md:max-h-[52vh] md:overflow-y-auto md:pr-1" : ""}`}>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              {!fleetFormOpen ? (
+                <button
+                  type="button"
+                  onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
+                  className={`flex min-h-[240px] h-full flex-col items-center justify-center gap-3 rounded-[22px] border border-dashed p-5 text-center transition-all duration-200 hover:-translate-y-0.5 ${
+                    darkMode
+                      ? "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/[0.12]"
+                      : "border-blue-300/70 bg-blue-50/50 text-blue-900 hover:border-blue-400 hover:bg-blue-50"
+                  }`}
+                >
+                  <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl border ${
+                    darkMode
+                      ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
+                      : "border-blue-200 bg-white text-blue-700"
+                  }`}>
+                    <Plus className="h-5 w-5" />
+                  </span>
+                  <span className="text-base font-semibold">Add New Boat</span>
+                  <span className={`max-w-xs text-sm leading-5 ${fleetBodyTextClass}`}>Create a new vessel workspace from this Fleet panel.</span>
+                </button>
+              ) : null}
               {fleetVessels.map((vessel) => {
                 const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
                 const crewCount = Number(vessel?.details?.crewNumber ?? vessel?.crewProfiles?.length ?? 0) || 0;
@@ -1906,19 +1922,6 @@ export function AppShellHeader({
               })}
             </div>
             </div>
-
-            {!fleetFormOpen ? (
-              <div className="flex justify-end pt-1">
-                <Button
-                  type="button"
-                  onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
-                  className="button-vessel-primary rounded-2xl px-4 py-3"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Boat
-                </Button>
-              </div>
-            ) : null}
           </div>
       </AnchoredPopover>
 
