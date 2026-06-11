@@ -1859,9 +1859,40 @@ export function AppShellHeader({
                 const crewCount = Number(vessel?.details?.crewNumber ?? vessel?.crewProfiles?.length ?? 0) || 0;
                 const statusLabel = vessel?.details?.status || "Operational";
                 const isActive = vessel?.id === activeVesselId;
+                const isWarmFleetTone = vessel?.id === "octopussy";
+                const vesselToneClass = isWarmFleetTone
+                  ? (darkMode
+                    ? "border-amber-300/25 bg-gradient-to-br from-amber-300/[0.10] via-slate-900/95 to-sky-300/[0.08] shadow-[0_18px_44px_rgba(251,191,36,0.08)]"
+                    : "border-amber-200/90 bg-gradient-to-br from-amber-50/85 via-white to-sky-50/75 shadow-[0_18px_42px_rgba(217,119,6,0.08)]")
+                  : (darkMode
+                    ? "border-cyan-300/25 bg-gradient-to-br from-cyan-300/[0.10] via-slate-900/95 to-blue-300/[0.08] shadow-[0_18px_44px_rgba(34,211,238,0.09)]"
+                    : "border-blue-200/90 bg-gradient-to-br from-blue-50/85 via-white to-cyan-50/75 shadow-[0_18px_42px_rgba(59,130,246,0.08)]");
+                const fleetMetricCards = [
+                  {
+                    label: "Tasks",
+                    value: vesselMetrics.taskCount || 0,
+                    tone: darkMode ? "border-blue-300/20 bg-blue-300/[0.08]" : "border-blue-200/80 bg-blue-50/65",
+                  },
+                  {
+                    label: "Alerts",
+                    value: vesselMetrics.alertCount || 0,
+                    tone: darkMode ? "border-rose-300/20 bg-rose-300/[0.08]" : "border-rose-200/70 bg-rose-50/55",
+                  },
+                  {
+                    label: "Approval",
+                    value: vesselMetrics.approvalCount || 0,
+                    tone: darkMode ? "border-amber-300/20 bg-amber-300/[0.08]" : "border-amber-200/80 bg-amber-50/65",
+                  },
+                  {
+                    label: "Route",
+                    value: vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft",
+                    tone: darkMode ? "border-cyan-300/20 bg-cyan-300/[0.08]" : "border-cyan-200/80 bg-cyan-50/65",
+                  },
+                ];
 
                 return (
-                  <div key={vessel.id} className={`flex h-full flex-col gap-2.5 rounded-[22px] border p-4 backdrop-blur-xl transition-all duration-200 ${isActive ? (darkMode ? "fleet-popover-card-dark border-cyan-300/30 bg-cyan-300/10 shadow-[0_16px_38px_rgba(34,211,238,0.10)]" : "fleet-popover-card-light border-blue-300/80 bg-blue-50/50 shadow-[0_16px_38px_rgba(59,130,246,0.10)]") : `${fleetCardClass} hover:-translate-y-0.5 ${darkMode ? "hover:border-cyan-300/30 hover:bg-slate-800/95" : "hover:border-blue-300 hover:bg-white"}`}`}>
+                  <div key={vessel.id} className={`relative flex h-full flex-col gap-2.5 overflow-hidden rounded-[22px] border p-4 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 ${vesselToneClass} ${isActive ? (darkMode ? "ring-1 ring-cyan-300/25" : "ring-1 ring-blue-300/45") : ""}`}>
+                    <div className={`pointer-events-none absolute right-[-34px] top-[-42px] h-28 w-28 rounded-full blur-3xl ${isWarmFleetTone ? (darkMode ? "bg-amber-300/12" : "bg-amber-200/45") : (darkMode ? "bg-cyan-300/12" : "bg-cyan-200/45")}`} />
                     <div className="flex items-start justify-between gap-2.5">
                       <div>
                         <div className={fleetLabelClass}>Vessel</div>
@@ -1875,22 +1906,12 @@ export function AppShellHeader({
                       <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                      <div className="app-compact-label"><SmartLabel label="Tasks" /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.taskCount || 0}</div>
-                      </div>
-                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                        <div className="app-compact-label"><SmartLabel label="Alerts" /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.alertCount || 0}</div>
-                      </div>
-                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                        <div className="app-compact-label"><SmartLabel label="Approval" active={isActive} /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.approvalCount || 0}</div>
-                      </div>
-                      <div className={`group rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-white/70"}`}>
-                        <div className="app-compact-label"><SmartLabel label="Route" active={isActive} /></div>
-                        <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft"}</div>
-                      </div>
+                      {fleetMetricCards.map((metric) => (
+                        <div key={metric.label} className={`group rounded-2xl border p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-colors duration-200 ${metric.tone}`}>
+                          <div className="app-compact-label"><SmartLabel label={metric.label} active={isActive} /></div>
+                          <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                        </div>
+                      ))}
                     </div>
                     <div className="mt-auto pt-1">
                       {isActive ? (
