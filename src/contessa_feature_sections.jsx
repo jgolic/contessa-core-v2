@@ -2622,7 +2622,7 @@ export function AppShellHeader({
           </details>
         </div>
         ) : null}
-        <section id="dashboard-summary-grid" className="grid min-w-0 auto-rows-fr gap-2.5 md:grid-cols-2">
+        <section id="dashboard-summary-grid" className="grid min-w-0 auto-rows-fr gap-4 md:grid-cols-2">
           {commandIntelCards.map((card) => {
             const dataCells = card.metrics || card.rows || [];
             const accentLineClass =
@@ -2644,14 +2644,14 @@ export function AppShellHeader({
               >
                 <div className={`h-1 w-full rounded-full bg-gradient-to-r ${accentLineClass}`} />
                 <div className="min-w-0">
-                  <div className="mt-2 flex min-h-[48px] items-start justify-between gap-2.5">
+                  <div className="mt-3 flex min-h-[48px] items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="app-kicker">{card.title}</div>
                       <div className={`mt-1 max-w-full text-sm font-semibold leading-5 ${theme.textPrimary}`}>{card.key === "crew-readiness" ? `${currentVesselName} readiness` : card.key === "priority-queue" ? "What needs action now" : card.key === "spend-activity" ? "Spend and movement" : `${currentVesselName} snapshot`}</div>
                     </div>
                     <Badge className={`${intelBadgeClass(card.accent)} max-w-[44%] shrink-0 truncate px-2.5 py-1 text-[11px]`}>{card.badge}</Badge>
                   </div>
-                  <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+                  <div className="mt-3 grid grid-cols-3 gap-2">
                     {dataCells.map((cell) => (
                       <div key={`${card.key}-${cell.label}`} className={`group min-w-0 rounded-[18px] border px-2.5 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                         <div className={`app-compact-label ${premiumMetricLabelTone(cell.label, card.accent)}`.trim()}><SmartLabel label={cell.label} /></div>
@@ -2659,12 +2659,12 @@ export function AppShellHeader({
                       </div>
                     ))}
                   </div>
-                  <div className={`mt-2.5 flex min-h-9 items-center gap-2 rounded-[18px] border px-2.5 py-1.5 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
+                  <div className={`mt-3 flex min-h-9 items-center gap-2.5 rounded-[18px] border px-3 py-2 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.52)]"}`}>
                     <span className="app-compact-label shrink-0">Signal</span>
                     <span className={`min-w-0 truncate text-xs font-medium ${theme.textSecondary}`}>{card.signal}</span>
                   </div>
                 </div>
-                <div className="mt-2.5 flex min-h-9 flex-col gap-1.5 min-[420px]:flex-row min-[420px]:flex-wrap">
+                <div className="mt-3 flex min-h-9 flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
                   {card.onAction ? (
                     <Button
                       type="button"
@@ -2747,7 +2747,7 @@ export function AppSectionCards({
   return (
     <>
       <div
-        className="app-card-grid mb-4 hidden md:grid"
+        className="app-card-grid mb-6 hidden md:grid"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(172px, 1fr))" }}
       >
         {desktopItems.map((item) => (
