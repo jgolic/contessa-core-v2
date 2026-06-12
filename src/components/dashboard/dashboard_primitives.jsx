@@ -236,7 +236,7 @@ export function CompactItemCard({
       <div className="min-w-0 p-3.5 pl-5 md:p-4 md:pl-5">
         <div className="flex min-w-0 flex-col gap-2 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-3">
           <div className="min-w-0 max-w-full">
-            <div className={`truncate text-[0.98rem] font-semibold tracking-[-0.01em] ${theme.textPrimary}`}>{item?.title}</div>
+            <div className={`app-clamp-2 text-[0.98rem] font-semibold leading-snug tracking-[-0.01em] ${theme.textPrimary}`}>{item?.title}</div>
             {item?.subtitle ? <div className={`mt-1 line-clamp-2 text-sm leading-5 ${theme.textSecondary}`}>{item.subtitle}</div> : null}
           </div>
           {item?.badge ? <Badge className={`${badgeClass} max-w-full shrink-0 truncate whitespace-nowrap text-center leading-tight min-[420px]:max-w-[44%]`}>{item.badge}</Badge> : null}

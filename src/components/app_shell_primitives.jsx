@@ -82,7 +82,7 @@ export function SectionNavCard({
           <div className={`app-compact-label ${navLabelTone}`.trim()}>
             <SmartLabel label={label} active={active} />
           </div>
-          <div className={`mt-1 truncate text-sm font-semibold ${active ? darkMode ? "text-slate-50" : "text-slate-900" : darkMode ? "text-slate-100" : theme.textPrimary}`}>{value}</div>
+          <div className={`app-clamp-2 mt-1 text-sm font-semibold leading-snug ${active ? darkMode ? "text-slate-50" : "text-slate-900" : darkMode ? "text-slate-100" : theme.textPrimary}`}>{value}</div>
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (

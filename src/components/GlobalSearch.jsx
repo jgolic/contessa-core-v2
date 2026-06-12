@@ -481,9 +481,9 @@ export default function GlobalSearch({
                 resultRowClass(index === activeIndex),
               ].join(" ")}
             >
-              <div className="min-w-0">
-                <p className={`truncate text-base font-semibold ${resultTitleClass}`}>{result.title}</p>
-                {result.context ? <p className={`mt-1 truncate text-sm ${resultContextClass}`}>{result.context}</p> : null}
+              <div className="min-w-0 flex-1">
+                <p className={`app-clamp-2 text-base font-semibold leading-snug ${resultTitleClass}`}>{result.title}</p>
+                {result.context ? <p className={`app-clamp-2 mt-1 text-sm leading-5 ${resultContextClass}`}>{result.context}</p> : null}
               </div>
               <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${resultTypeBadgeClass}`}>
                 {result.type || "Item"}
