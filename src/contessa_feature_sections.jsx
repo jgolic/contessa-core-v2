@@ -579,7 +579,7 @@ function DesktopVesselIdentityLockup({
   commandStatement = "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.",
 }) {
   return (
-    <div className="hidden min-w-0 pl-32 pt-20 lg:block xl:pl-36">
+    <div className="hidden min-w-0 pl-[5.625rem] pt-20 lg:block xl:pl-[6.625rem]">
       <div
         className={`absolute left-8 top-8 z-10 hidden h-24 w-24 shrink-0 items-center justify-center rounded-[32px] border backdrop-blur-xl lg:flex ${
           darkMode
@@ -1973,7 +1973,7 @@ export function AppShellHeader({
               />
 
               {commandSearchView ? (
-                <div className="relative z-[60] mt-8 flex w-full min-w-0 justify-start overflow-visible pl-32 xl:pl-36">
+                <div className="relative z-[60] mt-8 flex w-full min-w-0 justify-start overflow-visible pl-[5.625rem] xl:pl-[6.625rem]">
                   <div className="relative z-[60] w-full min-w-0 max-w-4xl overflow-visible">
                     {commandSearchView}
                   </div>
