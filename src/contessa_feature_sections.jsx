@@ -1349,6 +1349,7 @@ export function ObjectivesView({
 export function AppShellHeader({
   darkMode = false,
   isOffline = false,
+  syncState = null,
   onToggleDarkMode,
   currentVesselName = "Contessa",
   currentVesselIdentity = null,
@@ -1522,6 +1523,14 @@ export function AppShellHeader({
     : "settings-popover-field-light border-slate-300 bg-white text-slate-950";
   const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-cyan-300/40 hover:!bg-cyan-300/12" : ""}`;
   const settingsMetaClass = darkMode ? "text-slate-200" : "settings-popover-meta-light text-slate-700";
+  const syncPendingCount = Number(syncState?.unsyncedItemsCount || 0);
+  const syncLastSavedAt = syncState?.lastSyncAt ? formatHistoryTime(syncState.lastSyncAt) : "Not saved yet";
+  const syncStatusLabel = isOffline || syncPendingCount > 0
+    ? `${Math.max(syncPendingCount, 1)} pending local change${Math.max(syncPendingCount, 1) === 1 ? "" : "s"}`
+    : "Saved locally";
+  const syncStatusClass = isOffline || syncPendingCount > 0
+    ? "border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/18 dark:text-amber-50"
+    : "border-teal-300/70 bg-teal-50/90 text-teal-800 dark:border-cyan-300/35 dark:bg-cyan-300/14 dark:text-cyan-50";
   const fleetPanelClass = darkMode
     ? "fleet-popover-dark rounded-[32px] border-white/10 bg-slate-950 text-slate-50 backdrop-blur-2xl"
     : "fleet-popover-light rounded-[32px] border-slate-200/90 bg-white text-slate-950 backdrop-blur-2xl";
@@ -2111,6 +2120,23 @@ export function AppShellHeader({
                 </Select>
                 <div className={`mt-2 text-xs font-medium leading-5 ${settingsMetaClass}`}>
                   {vesselState?.primaryFocus || "Routine vessel readiness"} · {Number(vesselState?.confidenceScore || 0)}% confidence
+                </div>
+              </div>
+
+              <div className={settingsCardClass}>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className={settingsLabelClass}>Persistence</div>
+                    <div className={`mt-2 text-sm font-semibold ${settingsMetaClass}`}>
+                      Last local save: {syncLastSavedAt}
+                    </div>
+                  </div>
+                  <Badge className={`rounded-2xl border px-3 py-2 text-xs font-bold ${syncStatusClass}`}>
+                    {syncStatusLabel}
+                  </Badge>
+                </div>
+                <div className={`mt-2 text-xs font-medium leading-5 ${settingsMetaClass}`}>
+                  Changes are retained on this device now; this status is ready for the next backend sync step.
                 </div>
               </div>
 

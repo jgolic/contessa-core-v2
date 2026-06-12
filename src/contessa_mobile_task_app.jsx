@@ -3060,6 +3060,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           <AppShellHeader
             darkMode={darkMode}
             isOffline={isOffline}
+            syncState={prototypeSyncState}
             onToggleDarkMode={() => setDarkMode((prev) => !prev)}
             currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
             currentVesselIdentity={{

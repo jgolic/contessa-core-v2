@@ -52,6 +52,7 @@ function ConfirmableCrewProfileFields({
   onConfirm,
 }) {
   const theme = themeClasses(darkMode);
+  const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     fullName: profile.fullName || "",
     rank: profile.rank || CREW_RANK_OPTIONS[0],
@@ -83,10 +84,94 @@ function ConfirmableCrewProfileFields({
       roleKey: profile.roleKey || "",
       notes: profile.notes || "",
     });
+    setIsEditing(false);
   }, [profile.id, profile.fullName, profile.rank, profile.department, profile.nationality, profile.passportNumber, profile.seamansBookNumber, profile.roleKey, profile.notes]);
 
+  const roleLabel = ROLE_OPTIONS.find((option) => option.value === profile.roleKey)?.label || profile.roleKey || "Crew";
+  const previewItems = [
+    { label: "Rank", value: profile.rank || "Crew" },
+    { label: "Department", value: profile.department || "General" },
+    { label: "Nationality", value: profile.nationality || "Not set" },
+    { label: "Role", value: roleLabel },
+    { label: "Passport No.", value: profile.passportNumber || "Not set" },
+    { label: "Seaman's Book No.", value: profile.seamansBookNumber || "Not set" },
+  ];
+  const previewCardClass = darkMode
+    ? "border-white/10 bg-slate-950/35"
+    : "border-slate-200/80 bg-slate-50/80";
+  const previewFieldClass = darkMode
+    ? "border-white/10 bg-slate-900/70"
+    : "border-slate-200/80 bg-white/85";
+  const resetDraft = () => {
+    setDraft({
+      fullName: profile.fullName || "",
+      rank: profile.rank || CREW_RANK_OPTIONS[0],
+      department: profile.department || CREW_DEPARTMENT_OPTIONS[0],
+      nationality: profile.nationality || "",
+      passportNumber: profile.passportNumber || "",
+      seamansBookNumber: profile.seamansBookNumber || "",
+      roleKey: profile.roleKey || "",
+      notes: profile.notes || "",
+    });
+  };
+  const confirmDraft = () => {
+    onConfirm(profile.id, draft);
+    setIsEditing(false);
+  };
+
+  if (!isEditing) {
+    return (
+      <div className={`rounded-[22px] border p-4 ${previewCardClass}`}>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="app-kicker">Crew Information</div>
+            <h3 className={`mt-2 truncate text-xl font-semibold ${theme.textPrimary}`}>{profile.fullName || "Crew member"}</h3>
+            <p className={`mt-1 text-sm ${theme.textSecondary}`}>
+              {[profile.rank, profile.department, profile.nationality].filter(Boolean).join(" - ") || "Crew profile"}
+            </p>
+          </div>
+          {canEdit ? (
+            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button shrink-0 rounded-xl px-4 py-2">
+              Edit
+            </Button>
+          ) : null}
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {previewItems.map((item) => (
+            <div key={item.label} className={`rounded-2xl border px-3 py-3 ${previewFieldClass}`}>
+              <div className="app-kicker">{item.label}</div>
+              <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+        {profile.notes ? (
+          <p className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200/80 bg-white/85 text-slate-700"}`}>
+            {profile.notes}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <div className={`rounded-lg p-4 ${theme.subtle}`}>
+    <div className={`rounded-[22px] border p-4 ${previewCardClass}`}>
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <div className="app-kicker">Editing Crew</div>
+          <p className={`mt-1 text-sm ${theme.textSecondary}`}>Update profile fields, then confirm to save the changes.</p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            resetDraft();
+            setIsEditing(false);
+          }}
+          className="vessel-outline-button shrink-0 rounded-xl px-4 py-2"
+        >
+          Cancel
+        </Button>
+      </div>
       <div className="grid gap-3 md:grid-cols-2">
         <Input disabled={!canEdit} value={draft.fullName} onChange={(event) => setDraft((prev) => ({ ...prev, fullName: event.target.value }))} placeholder="Full name" className={`h-12 rounded-lg ${theme.input}`} />
         <Select value={draft.rank} onValueChange={(value) => canEdit && setDraft((prev) => ({ ...prev, rank: value }))}>
@@ -114,7 +199,7 @@ function ConfirmableCrewProfileFields({
       />
       <div className="mt-3 flex items-center justify-between gap-3">
         <div className={`text-sm ${theme.textSecondary}`}>{isDirty ? "Changes pending confirmation." : "No unconfirmed changes."}</div>
-        {canEdit ? <Button type="button" onClick={() => onConfirm(profile.id, draft)} disabled={!isDirty} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70">
+        {canEdit ? <Button type="button" onClick={confirmDraft} disabled={!isDirty} className="button-vessel-primary rounded-lg px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70">
           Confirm
         </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
       </div>

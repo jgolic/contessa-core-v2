@@ -66,7 +66,7 @@ export function SectionNavCard({
   const theme = themeClasses(darkMode);
   const navLabelTone = active ? "premium-label-accent" : "";
   const moduleCardBase =
-    "group app-card-hover app-panel h-full min-h-[82px] overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
+    "group app-card-hover app-panel h-full min-h-[82px] cursor-pointer overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
     ? "app-panel-soft app-dark-card border-white/10 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.35)] hover:border-[var(--vessel-primary-dark)] hover:bg-slate-800/80"
     : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:border-[var(--vessel-border)] hover:bg-white";
@@ -90,7 +90,7 @@ export function SectionNavCard({
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm xl:block ${active ? darkMode ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
+          <div className={`hidden rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm lg:block ${active ? darkMode ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
