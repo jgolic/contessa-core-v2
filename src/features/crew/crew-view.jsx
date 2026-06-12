@@ -218,6 +218,7 @@ function ConfirmableCertificateRow({
 }) {
   const theme = themeClasses(darkMode);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     name: certificate.name || "",
     holderName: certificate.holderName || "",
@@ -267,7 +268,43 @@ function ConfirmableCertificateRow({
       extractedAt: certificate.extractedAt || "",
       extractionReviewed: certificate.extractionReviewed !== false,
     });
+    setIsEditing(false);
   }, [certificate.id, certificate.name, certificate.holderName, certificate.certificateNumber, certificate.issueDate, certificate.issuingAuthority, certificate.expiryDate, certificate.notes, certificate.confidenceScore, certificate.needsManualReview, certificate.reviewReasons, certificate.extractionProvider, certificate.rawExtractedText, certificate.extractedAt, certificate.extractionReviewed]);
+
+  const cardClass = darkMode ? "border-[#31443a] bg-[#111a16]" : "border-[#d8e7df] bg-white";
+  const previewCardClass = darkMode
+    ? "border-white/10 bg-slate-950/35"
+    : "border-slate-200/80 bg-slate-50/80";
+  const previewFieldClass = darkMode
+    ? "border-white/10 bg-slate-900/70"
+    : "border-slate-200/80 bg-white/85";
+  const resetDraft = () => {
+    setDraft({
+      name: certificate.name || "",
+      holderName: certificate.holderName || "",
+      certificateNumber: certificate.certificateNumber || "",
+      issueDate: certificate.issueDate || "",
+      issuingAuthority: certificate.issuingAuthority || "",
+      expiryDate: certificate.expiryDate || "",
+      notes: certificate.notes || "",
+      confidenceScore: certificate.confidenceScore || 0,
+      needsManualReview: Boolean(certificate.needsManualReview),
+      reviewReasons: Array.isArray(certificate.reviewReasons) ? certificate.reviewReasons : [],
+      extractionProvider: certificate.extractionProvider || "",
+      rawExtractedText: certificate.rawExtractedText || "",
+      extractedAt: certificate.extractedAt || "",
+      extractionReviewed: certificate.extractionReviewed !== false,
+    });
+  };
+  const attachmentCount = certificate.attachments?.length || 0;
+  const certificatePreviewItems = [
+    { label: "Holder", value: certificate.holderName || "Not set" },
+    { label: "Number", value: certificate.certificateNumber || "Not set" },
+    { label: "Issued", value: certificate.issueDate || "Not set" },
+    { label: "Expires", value: certificate.expiryDate || "Not set" },
+    { label: "Authority", value: certificate.issuingAuthority || "Not set" },
+    { label: "Files", value: attachmentCount ? `${attachmentCount} uploaded` : "No files" },
+  ];
 
   const handleExtraction = async () => {
     if (!canEdit) return;
@@ -290,10 +327,56 @@ function ConfirmableCertificateRow({
       ...draft,
       extractionReviewed: draft.extractedAt ? true : draft.extractionReviewed,
     });
+    setIsEditing(false);
   };
 
+  if (!isEditing) {
+    return (
+      <div className={`rounded-[22px] border p-4 ${previewCardClass}`}>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap gap-2">
+              <Badge className={getCertificateStatusBadgeClass(certificate.status)}>{certificate.statusLabel || "Certificate"}</Badge>
+              <Badge className="vessel-pill">{formatDaysRemaining(certificate.daysUntilExpiration)}</Badge>
+              {certificate.needsManualReview ? <Badge className="bg-[#fff3c4] text-[#7a5416]">Manual review</Badge> : null}
+            </div>
+            <h3 className={`mt-3 text-lg font-semibold ${theme.textPrimary}`}>{certificate.name || "Certificate"}</h3>
+            <p className={`mt-1 text-sm ${theme.textSecondary}`}>
+              {certificate.holderName || "No holder set"}
+            </p>
+          </div>
+          {canEdit ? (
+            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button shrink-0 rounded-xl px-4 py-2">
+              Edit
+            </Button>
+          ) : null}
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {certificatePreviewItems.map((item) => (
+            <div key={item.label} className={`rounded-2xl border px-3 py-3 ${previewFieldClass}`}>
+              <div className="app-kicker">{item.label}</div>
+              <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+        {certificate.notes ? (
+          <p className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200/80 bg-white/85 text-slate-700"}`}>
+            {certificate.notes}
+          </p>
+        ) : null}
+        {(certificate.confidenceScore || certificate.extractionProvider || certificate.extractedAt) ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Badge className="vessel-pill">Confidence {Math.round((certificate.confidenceScore || 0) * 100)}%</Badge>
+            {certificate.extractionProvider ? <Badge className={neutralBadgeClass(darkMode)}>{certificate.extractionProvider}</Badge> : null}
+            {certificate.extractedAt ? <Badge className={certificate.extractionReviewed !== false ? "bg-[#dff5ea] text-[#176342]" : "bg-[#fff3c4] text-[#7a5416]"}>{certificate.extractionReviewed !== false ? "Reviewed" : "Review required"}</Badge> : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <div className={`rounded-lg border p-4 ${darkMode ? "border-[#31443a] bg-[#111a16]" : "border-[#d8e7df] bg-white"}`}>
+    <div className={`rounded-lg border p-4 ${cardClass}`}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
           <Badge className={getCertificateStatusBadgeClass(certificate.status)}>{certificate.statusLabel || "Certificate"}</Badge>
@@ -302,7 +385,20 @@ function ConfirmableCertificateRow({
           </Badge>
           {certificate.needsManualReview ? <Badge className="bg-[#fff3c4] text-[#7a5416]">Manual review</Badge> : null}
         </div>
-        {canEdit ? <button type="button" onClick={() => onDelete(certificate.id)} className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff0ed] text-sm font-semibold text-[#9b2c20] hover:bg-[#ffe0da]" aria-label="Remove certificate">x</button> : null}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              resetDraft();
+              setIsEditing(false);
+            }}
+            className="vessel-outline-button rounded-lg px-3 py-2 text-sm"
+          >
+            Cancel
+          </Button>
+          {canEdit ? <button type="button" onClick={() => onDelete(certificate.id)} className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff0ed] text-sm font-semibold text-[#9b2c20] hover:bg-[#ffe0da]" aria-label="Remove certificate">x</button> : null}
+        </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <Input disabled={!canEdit} value={draft.name} onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))} placeholder="Certificate" className={`h-12 rounded-lg ${theme.input}`} />

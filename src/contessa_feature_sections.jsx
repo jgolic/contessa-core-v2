@@ -2138,6 +2138,25 @@ export function AppShellHeader({
                 <div className={`mt-2 text-xs font-medium leading-5 ${settingsMetaClass}`}>
                   Changes are retained on this device now; this status is ready for the next backend sync step.
                 </div>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={onExportAppStateJson}>
+                    Export backup
+                  </Button>
+                  {canEditApp ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={settingsMutedActionClass}
+                      onClick={() => {
+                        setSettingsOpen(false);
+                        onSharingOpenChange(true);
+                        window.setTimeout(() => onOpenJsonImportPicker?.(), 160);
+                      }}
+                    >
+                      Restore backup
+                    </Button>
+                  ) : null}
+                </div>
               </div>
 
               <div className="grid gap-2">
