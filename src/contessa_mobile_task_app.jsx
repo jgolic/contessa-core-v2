@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Josip Golic. Proprietary and confidential.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import AppErrorBoundary from "./components/AppErrorBoundary.jsx";
 import {
@@ -84,6 +84,7 @@ import {
 } from "./contessa_feature_sections.jsx";
 import { canAccessCrewProfile, canAccessModule, canAccessTask, getVisibleModulesForRole } from "./contessa_access.mjs";
 import { APP_BRAND_NAME } from "./components/branding.jsx";
+import AppToastStack from "./components/AppToastStack.jsx";
 import {
   calculateRoutePassageSummary,
   createRouteWaypoint,
@@ -310,6 +311,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [newMaintenanceOpen, setNewMaintenanceOpen] = useState(false);
   const [maintenanceError, setMaintenanceError] = useState("");
   const [appBanner, setAppBanner] = useState(null);
+  const [appToasts, setAppToasts] = useState([]);
   const [newTask, setNewTask] = useState(() => createEmptyTaskDraft(initialActiveWorkspace));
   const [newExpense, setNewExpense] = useState({ taskId: initialActiveWorkspace.tasks?.[0]?.id ?? "", supplier: "", amount: 0, currency: initialAppState.currency, status: "requested" });
   const [newCrewExpense, setNewCrewExpense] = useState({ title: "", amount: 0, currency: initialAppState.currency, status: "requested" });
@@ -340,6 +342,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const jsonImportInputRef = useRef(null);
   const sectionNavigationTimeoutRef = useRef(null);
   const navigationLockUntilRef = useRef(0);
+  const toastIdRef = useRef(0);
+  const persistenceReadyRef = useRef(false);
+  const saveToastTimerRef = useRef(null);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
   const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
     const saved = getStoredJson(PROTOTYPE_SYNC_KEY, null);
@@ -357,6 +362,30 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const theme = themeClasses(darkMode);
   const canEditApp = appMode === "editor";
   const effectiveRole = currentRole;
+
+  const dismissToast = useCallback((toastId) => {
+    setAppToasts((prev) => prev.filter((toast) => toast.id !== toastId));
+  }, []);
+
+  const pushToast = useCallback((toast = {}) => {
+    if (!toast) return;
+
+    const nextToast = {
+      id: toast.id || `toast-${Date.now()}-${toastIdRef.current += 1}`,
+      type: toast.type || "info",
+      title: toast.title || "Update",
+      message: toast.message || "",
+      label: toast.label,
+    };
+
+    setAppToasts((prev) => [nextToast, ...prev.filter((item) => item.id !== nextToast.id)].slice(0, 4));
+
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        setAppToasts((prev) => prev.filter((item) => item.id !== nextToast.id));
+      }, toast.duration || 3600);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -532,7 +561,36 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   useEffect(() => {
     setStoredJson(STORAGE_KEY, persistedAppState);
-  }, [persistedAppState]);
+
+    if (!persistenceReadyRef.current) {
+      persistenceReadyRef.current = true;
+      return undefined;
+    }
+
+    if (typeof window === "undefined") return undefined;
+
+    if (saveToastTimerRef.current) {
+      window.clearTimeout(saveToastTimerRef.current);
+    }
+
+    saveToastTimerRef.current = window.setTimeout(() => {
+      pushToast({
+        type: "success",
+        title: isOffline ? "Saved offline" : "Saved locally",
+        message: isOffline
+          ? "Changes are queued safely on this device."
+          : "Workspace changes are retained on this device.",
+        duration: 2200,
+      });
+    }, 650);
+
+    return () => {
+      if (saveToastTimerRef.current) {
+        window.clearTimeout(saveToastTimerRef.current);
+        saveToastTimerRef.current = null;
+      }
+    };
+  }, [persistedAppState, isOffline, pushToast]);
 
   useEffect(() => {
     setStoredJson(`${STORAGE_KEY}-maintenance-reminders`, maintenanceReminderState);
@@ -1983,11 +2041,18 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     if (!requireAdminEdit("Resetting demo data")) return;
     const resetState = createEmptyAppState({ darkMode, currency, actorName, currentRole, appMode });
     applyAppState(resetState);
-    setAppBanner({ type: "success", title: "Demo data reset", message: "The app was reset to a clean local state." });
+    const feedback = { type: "success", title: "Demo data reset", message: "The app was reset to a clean local state." };
+    setAppBanner(feedback);
+    pushToast(feedback);
   };
 
   const exportAppStateJson = () => {
     downloadFile("contessa-app-state.json", createFullStateExport(persistedAppState), "application/json;charset=utf-8");
+    pushToast({
+      type: "success",
+      title: "Export ready",
+      message: "The current workspace JSON export was downloaded.",
+    });
   };
 
   const openJsonImportPicker = () => {
@@ -2014,9 +2079,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         detail: `Imported ${importedState.tasks.length} task(s), ${importedState.crewExpenses.length} crew expense(s), and ${importedState.maintenanceItems.length} maintenance item(s).`,
       };
       applyAppState({ ...importedState, history: [importEntry, ...importedState.history].slice(0, 300) });
-      setAppBanner({ type: "success", title: "Import complete", message: `Loaded ${importedState.tasks.length} task(s), ${importedState.crewExpenses.length} crew expense(s), and ${importedState.maintenanceItems.length} maintenance item(s).` });
+      const feedback = { type: "success", title: "Import complete", message: `Loaded ${importedState.tasks.length} task(s), ${importedState.crewExpenses.length} crew expense(s), and ${importedState.maintenanceItems.length} maintenance item(s).` };
+      setAppBanner(feedback);
+      pushToast(feedback);
     } catch {
-      setAppBanner({ type: "error", title: "Import failed", message: `Please choose a valid ${APP_BRAND_NAME} JSON export.` });
+      const feedback = { type: "error", title: "Import failed", message: `Please choose a valid ${APP_BRAND_NAME} JSON export.` };
+      setAppBanner(feedback);
+      pushToast(feedback);
       if (typeof window !== "undefined") {
         window.alert(`Import failed. Please choose a valid ${APP_BRAND_NAME} JSON export.`);
       }
@@ -2597,6 +2666,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const handleShareToast = (toast) => {
     if (!toast) return;
     setAppBanner(toast);
+    pushToast(toast);
   };
 
   const openLinkedTaskFromExpense = (taskId) => {
@@ -3055,6 +3125,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         onCancelDeleteCrewExpense={() => setCrewExpenseDeleteRequest(null)}
       />
       <div className="app-page-frame">
+        <AppToastStack toasts={appToasts} darkMode={darkMode} onDismiss={dismissToast} />
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
         <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
           <AppShellHeader
