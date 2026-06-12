@@ -172,9 +172,10 @@ export function SectionAccordion({
               type="button"
               variant="outline"
               onClick={revealSection}
-              className={`module-row-action module-row-action--${moduleClass} app-action-button w-full sm:w-auto ${moduleTheme.action}`}
+              aria-label={isOpen ? `Close ${title}` : `Expand ${title}`}
+              className={`module-row-action module-row-action--${moduleClass} app-action-button ${isOpen ? "w-full px-4 text-lg leading-none sm:w-12" : "w-full sm:w-auto"} ${moduleTheme.action}`}
             >
-              {isOpen ? "Collapse" : "Expand"}
+              {isOpen ? <span aria-hidden="true">&times;</span> : "Expand"}
             </ActionButton>
           </div>
         </div>

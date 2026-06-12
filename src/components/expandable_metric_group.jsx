@@ -69,9 +69,10 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
         <button
           type="button"
           onClick={() => setExpanded((value) => !value)}
-          className={`inline-flex min-h-9 items-center justify-center rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-800 text-slate-100 hover:border-cyan-300/40 hover:bg-slate-700" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"}`}
+          aria-label={expanded ? "Close section" : "Expand section"}
+          className={`inline-flex min-h-9 items-center justify-center rounded-xl border ${expanded ? "w-10 px-0 text-lg leading-none" : "px-3 py-1.5 text-xs"} font-semibold transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-800 text-slate-100 hover:border-cyan-300/40 hover:bg-slate-700" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"}`}
         >
-          {expanded ? "Collapse" : "Expand"}
+          {expanded ? <span aria-hidden="true">&times;</span> : "Expand"}
         </button>
       </div>
 
