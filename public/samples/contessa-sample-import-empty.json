@@ -1,0 +1,15 @@
+{
+  "app": "M/Y Contessa",
+  "version": 1,
+  "exportedAt": "2026-04-20T12:00:00.000Z",
+  "state": {
+    "darkMode": false,
+    "currency": "USD",
+    "actorName": "User",
+    "history": [],
+    "declinedTasks": [],
+    "tasks": [],
+    "crewExpenses": [],
+    "maintenanceItems": []
+  }
+}

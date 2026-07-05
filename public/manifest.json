@@ -1,0 +1,19 @@
+{
+  "name": "Contessa Operations",
+  "short_name": "Contessa",
+  "description": "Mobile-friendly task, quote, receipt, and crew expense tracking for Contessa.",
+  "start_url": "./preview-inline.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#0f766e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
