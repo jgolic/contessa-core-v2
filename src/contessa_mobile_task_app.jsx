@@ -36,6 +36,7 @@ import {
   dateStringFromNow,
   describePatch,
   downloadFile,
+  formatHistoryTime,
   formatVesselNameFromId,
   formatMoney,
   formatTaskStatusLabel,
@@ -69,13 +70,11 @@ import {
   createEmptyCertificateDraft,
   extractCertificateDraft,
 } from "./contessa_certificate_extraction.mjs";
+import MidnightShell from "./midnight/MidnightShell.jsx";
 import {
   AppBanner,
   AppDialogs,
-  AppSectionCards,
-  AppShellHeader,
   CrewCertificatesWorkspace,
-  DashboardCommandSearch,
   DocumentsView,
   SettingsWorkspaceView,
   ObjectivesView,
@@ -1144,6 +1143,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         ...todayOperations.pendingApprovals.map((item) => ({
           id: item.id,
           type: item.sourceType === "task" ? "approval" : "quote",
+          raw: item,
           title: item.title,
           subtitle: `Requested by ${item.requestedBy || "Operations"}`,
           status: titleCase(item.approvalStatus || "requested"),
@@ -3123,7 +3123,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   return (
     <div
-      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 transition-colors sm:px-5 md:px-6 md:pt-8 lg:px-8 lg:pt-10 xl:px-10 ${theme.page}`}
+      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-2 transition-colors sm:px-5 md:px-6 md:pt-3 lg:py-4 lg:pl-[7.5rem] lg:pr-10 xl:pl-[8.25rem] xl:pr-14 ${theme.page}`}
       style={vesselThemeVars}
     >
       <AppDialogs
@@ -3142,113 +3142,52 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         <AppToastStack toasts={appToasts} darkMode={darkMode} onDismiss={dismissToast} />
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
         <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
-          <AppShellHeader
+          <MidnightShell
             darkMode={darkMode}
+            vesselTitle={
+              activeVesselWorkspace?.vesselPrintInfo?.displayName ||
+              activeVesselWorkspace?.name ||
+              vesselProfile?.vesselName ||
+              APP_BRAND_NAME
+            }
+            vesselIdentifier={
+              activeVesselWorkspace?.vesselPrintInfo?.imo
+                ? `IMO ${activeVesselWorkspace.vesselPrintInfo.imo}`
+                : "IMO pending verification"
+            }
+            modeLabel={
+              activeVesselState?.mode
+                ? titleCase(String(activeVesselState.mode).replace(/-/g, " / "))
+                : activeVesselWorkspace?.details?.status || ""
+            }
+            roleLabel={currentRoleLabel}
             isOffline={isOffline}
-            syncState={prototypeSyncState}
-            onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-            currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME}
-            currentVesselIdentity={{
-              name: activeVesselWorkspace?.name || vesselProfile?.vesselName || routePlanning?.vesselProfile?.vesselName || APP_BRAND_NAME,
-              displayName: activeVesselWorkspace?.vesselPrintInfo?.displayName || activeVesselWorkspace?.displayName,
-              imo: activeVesselWorkspace?.vesselPrintInfo?.imo || activeVesselWorkspace?.imo || "",
-              officialNumber: activeVesselWorkspace?.vesselPrintInfo?.officialNumber || activeVesselWorkspace?.officialNumber || "",
-              mmsi: activeVesselWorkspace?.vesselPrintInfo?.mmsi || activeVesselWorkspace?.mmsi || "",
-              identifierStatus: activeVesselWorkspace?.vesselPrintInfo?.identifierStatus || activeVesselWorkspace?.identifierStatus || "pending-verification",
+            activeModule={expenseView}
+            counts={{
+              tasks: stats.totalObjectives || 0,
+              approvals: stats.pendingApprovals || 0,
+              crew: stats.certificateDue || 0,
+              docs: stats.documentCount || 0,
+              route: routeAlerts.length,
             }}
-            currentRole={effectiveRole}
-            onCurrentRoleChange={demoRolePreviewEnabled ? setCurrentRole : null}
-            appMode={appMode}
-            onAppModeChange={demoEditingEnabled ? handleAppModeChange : null}
-            vesselState={activeVesselState}
-            onVesselStateModeChange={handleVesselStateModeChange}
-            visibleModuleKeys={visibleModuleKeys}
-            canEditApp={canEditApp}
+            onNavCommand={() => openResponsiveModule("command")}
+            onNavTasks={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
+            onNavApprovals={() => openResponsiveModule("expenses-approvals", { bucket: "boat" })}
+            onNavCrew={() => openResponsiveModule("crew-certificates", { panel: "crew" })}
+            onNavDocs={() => openResponsiveModule("documents")}
+            onNavRoute={() => openResponsiveModule("route")}
+            onNavAlerts={() => openResponsiveModule("notifications")}
+            onNavSettings={() => openResponsiveModule("settings")}
+            notifications={headerNotifications}
+            notificationCount={accessibleNotifications.length}
+            onSelectNotification={handleHeaderNotificationSelect}
+            fleetVessels={vesselsForPersistence}
+            activeVesselId={activeVesselId}
+            onSwitchFleetVessel={openVesselWorkspace}
+            history={history}
             historyOpen={historyOpen}
             onHistoryOpenChange={setHistoryOpen}
-            actorName={effectiveActorName}
-            onActorNameChange={actorIdentityEditable ? setActorName : null}
-            retrieveOpen={retrieveOpen}
-            onToggleRetrieve={() => setRetrieveOpen((prev) => !prev)}
-            declinedTasks={declinedTasks}
-            onRetrieveDeclinedTask={retrieveDeclinedTask}
-            history={history}
-            sharingOpen={sharingOpen}
-            onSharingOpenChange={setSharingOpen}
-            jsonImportInputRef={jsonImportInputRef}
-            onImportAppStateJson={importAppStateJson}
-            onExportCsv={exportCsv}
-            onExportAppStateJson={exportAppStateJson}
-            onOpenJsonImportPicker={openJsonImportPicker}
-            onPrintSummary={printSummary}
-            onResetDemoData={resetDemoData}
-            shareUrlStatus={publicAppUrlStatus}
-            localShareWarning={localShareWarning}
-            onShareToast={handleShareToast}
-            fleetOpen={fleetOpen}
-            onFleetOpenChange={setFleetOpen}
-            fleetVessels={vesselsForPersistence}
-            fleetMetricsByVessel={fleetMetricsByVessel}
-            activeVesselId={activeVesselId}
-            onOpenFleet={() => setFleetOpen(true)}
-            onSwitchFleetVessel={openVesselWorkspace}
-            onAddFleetVessel={handleAddFleetVessel}
-            stats={stats}
-            currency={currency}
-            routeWarningCount={routeAlerts.length}
-            quickActionItems={mobileQuickActionItems || []}
-            onOpenCommand={() => openResponsiveModule("command")}
-            onOpenTasksMaintenance={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
-            onOpenApprovals={() => openResponsiveModule("expenses-approvals", { bucket: "boat" })}
-            onOpenRoute={() => openResponsiveModule("route")}
-            onOpenCrewCertificates={() => {
-              openResponsiveModule("crew-certificates", { panel: "certificates" });
-            }}
-            onOpenDocuments={() => openResponsiveModule("documents")}
-            onOpenSettingsWorkspace={() => openResponsiveModule("settings")}
-            notificationCount={accessibleNotifications.length}
-            notifications={headerNotifications}
-            onOpenNotifications={() => openResponsiveModule("notifications")}
-            onSelectNotification={handleHeaderNotificationSelect}
-            commandSearchView={
-              <DashboardCommandSearch
-                darkMode={darkMode}
-                currentVesselName={activeVesselWorkspace?.name || vesselProfile?.vesselName || APP_BRAND_NAME}
-                searchResults={commandSearchResults}
-                onJump={handleCommandSearchJump}
-              />
-            }
-          />
-        </AppErrorBoundary>
-
-        <AppErrorBoundary resetKey={`section-cards:${activeVesselId}`}>
-          <AppSectionCards
-            darkMode={darkMode}
-            expenseView={expenseView}
-            stats={stats}
-            currency={currency}
-            visibleModuleKeys={visibleModuleKeys}
-            fleetCount={vesselsForPersistence.length}
-            routeWarningCount={routeAlerts.length}
-            quickActionItems={mobileQuickActionItems || []}
-            onShowCommand={() => openModule("command")}
-            onShowRoute={() => openModule("route")}
-            onShowTasksMaintenance={() => openModule("tasks-maintenance", { panel: "tasks" })}
-            onShowCrewCertificates={() => {
-              openModule("crew-certificates", { panel: "crew" });
-            }}
-            onShowExpenses={() => openModule("expenses-approvals", { bucket: "boat" })}
-            onShowDocuments={() => openModule("documents")}
-            onShowFleet={() => setFleetOpen(true)}
-            onShowSettings={() => openModule("settings")}
-            onDesktopShowCommand={() => openDesktopModule("command")}
-            onDesktopShowRoute={() => openDesktopModule("route")}
-            onDesktopShowTasksMaintenance={() => openDesktopModule("tasks-maintenance", { panel: "tasks" })}
-            onDesktopShowCrewCertificates={() => {
-              openDesktopModule("crew-certificates", { panel: "crew" });
-            }}
-            onDesktopShowExpenses={() => openDesktopModule("expenses-approvals", { bucket: "boat" })}
-            onDesktopShowDocuments={() => openDesktopModule("documents")}
+            formatHistoryTime={formatHistoryTime}
           />
         </AppErrorBoundary>
 

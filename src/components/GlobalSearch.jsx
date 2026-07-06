@@ -428,6 +428,7 @@ export default function GlobalSearch({
           ref={inputRef}
           value={query}
           type="search"
+          name="command-search"
           onFocus={() => setOpen(true)}
           onChange={(event) => {
             setQuery(event.target.value);

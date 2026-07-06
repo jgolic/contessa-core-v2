@@ -80,7 +80,7 @@ test("default vessels and added vessels receive distinct premium themes", () => 
   const octopussy = state.vessels.find((vessel) => vessel.id === "octopussy");
   const aurora = createFleetVesselWorkspace({ id: "aurora", name: "Aurora" });
 
-  assert.equal(contessa.theme.primary, "#16786e");
+  assert.equal(contessa.theme.primary, "#8f6e36");
   assert.equal(octopussy.theme.primary, "#2563eb");
   assert.equal(aurora.theme.primary, "#7e4657");
 });
@@ -193,7 +193,9 @@ test("completes a maintenance cycle and rolls the due date forward", () => {
 
 test("builds alerts only for due-soon enabled maintenance items", () => {
   const today = new Date();
-  const formatDate = (date) => date.toISOString().slice(0, 10);
+  // Format in local time; toISOString() is UTC and rolls the date over in evening timezones,
+  // which pushed "tomorrow" outside the <=1 day alert window.
+  const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const later = new Date(today);

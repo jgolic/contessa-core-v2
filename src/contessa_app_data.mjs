@@ -246,33 +246,33 @@ const DEFAULT_VESSEL_STATES = {
 const VESSEL_THEME_PRESETS = {
   contessa: {
     name: "Contessa",
-    primary: "#16786e",
-    secondary: "#2d8f82",
-    accent: "#59b697",
-    primarySoft: "rgba(22, 120, 110, 0.12)",
-    primaryMuted: "#2d8f82",
-    accentSoft: "rgba(89, 182, 151, 0.14)",
-    border: "rgba(22, 120, 110, 0.22)",
-    ring: "rgba(89, 182, 151, 0.28)",
-    bgStart: "#eef7f3",
-    bgEnd: "#f8fbf9",
-    card: "rgba(255,255,255,0.68)",
-    cardStrong: "rgba(255,255,255,0.78)",
-    textAccent: "#166155",
-    backgroundLight: "radial-gradient(circle at top left, rgba(69, 161, 141, 0.14), transparent 28%), radial-gradient(circle at 84% 4%, rgba(213, 188, 124, 0.12), transparent 20%), linear-gradient(180deg, #f7fbf9 0%, #eef5f1 48%, #e8f0eb 100%)",
-    backgroundDark: "radial-gradient(circle at top left, rgba(24, 114, 102, 0.24), transparent 24%), radial-gradient(circle at 86% 4%, rgba(198, 163, 91, 0.09), transparent 14%), linear-gradient(180deg, #071015 0%, #0b141a 42%, #091118 100%)",
-    cardLight: "rgba(255,255,255,0.68)",
-    cardDark: "rgba(8,18,24,0.72)",
-    bgDarkStart: "#03130f",
-    bgDarkEnd: "#061c1a",
-    cardDarkStrong: "rgba(8,31,28,0.88)",
-    borderDark: "rgba(45, 212, 191, 0.16)",
-    textAccentDark: "#5eead4",
-    textPrimaryDark: "#ecf7f4",
-    textSecondaryDark: "rgba(226, 240, 236, 0.88)",
-    primaryDark: "#2dd4bf",
-    primarySoftDark: "rgba(45, 212, 191, 0.11)",
-    glowDark: "rgba(20, 184, 166, 0.20)",
+    primary: "#8f6e36",
+    secondary: "#a98b4f",
+    accent: "#c9a96a",
+    primarySoft: "rgba(143, 110, 54, 0.12)",
+    primaryMuted: "#a98b4f",
+    accentSoft: "rgba(201, 169, 106, 0.14)",
+    border: "rgba(143, 110, 54, 0.24)",
+    ring: "rgba(201, 169, 106, 0.30)",
+    bgStart: "#f7f4ec",
+    bgEnd: "#fcfaf4",
+    card: "rgba(255,255,255,0.72)",
+    cardStrong: "rgba(255,255,255,0.82)",
+    textAccent: "#7d6031",
+    backgroundLight: "radial-gradient(circle at top left, rgba(201, 169, 106, 0.16), transparent 30%), radial-gradient(circle at 84% 4%, rgba(20, 33, 61, 0.08), transparent 22%), linear-gradient(180deg, #fcfaf4 0%, #f5f1e7 48%, #efe9db 100%)",
+    backgroundDark: "radial-gradient(ellipse at 18% -4%, rgba(201, 169, 106, 0.12), transparent 34%), radial-gradient(ellipse at 86% 2%, rgba(38, 66, 122, 0.20), transparent 30%), radial-gradient(ellipse at 50% 120%, rgba(16, 28, 54, 0.55), transparent 60%), linear-gradient(180deg, #04060d 0%, #060b18 46%, #050912 100%)",
+    cardLight: "rgba(255,255,255,0.72)",
+    cardDark: "rgba(10, 15, 29, 0.62)",
+    bgDarkStart: "#04060d",
+    bgDarkEnd: "#0a1120",
+    cardDarkStrong: "rgba(14, 20, 38, 0.90)",
+    borderDark: "rgba(201, 169, 106, 0.20)",
+    textAccentDark: "#e6cf9f",
+    textPrimaryDark: "#f4f0e6",
+    textSecondaryDark: "rgba(229, 223, 209, 0.78)",
+    primaryDark: "#c9a96a",
+    primarySoftDark: "rgba(201, 169, 106, 0.12)",
+    glowDark: "rgba(201, 169, 106, 0.15)",
   },
   octopussy: {
     name: "Octopussy",
@@ -467,10 +467,13 @@ function getImplicitThemeNameForVessel(vesselId = DEFAULT_FLEET_VESSEL_ID, custo
 
 export function normalizeVesselTheme(theme = {}, fallbackThemeName = "contessa") {
   const fallback = cloneVesselThemePreset(fallbackThemeName);
-  return {
-    ...fallback,
-    ...(theme && typeof theme === "object" ? theme : {}),
-  };
+  const stored = theme && typeof theme === "object" ? theme : {};
+  // Persisted workspaces may carry the legacy sea-teal Contessa palette;
+  // migrate them wholesale to the Midnight Bridge preset so SSR and client agree.
+  if (stored.primary === "#16786e" || stored.primaryDark === "#2dd4bf") {
+    return { ...fallback };
+  }
+  return { ...fallback, ...stored };
 }
 
 export function getNextFleetTheme(vessels = []) {
@@ -2032,7 +2035,7 @@ export function createEmptyAppState(overrides = {}) {
   const activeVessel = fleet.find((vessel) => vessel.id === requestedActiveVesselId) || fleet[0];
 
   return {
-    darkMode: false,
+    darkMode: true,
     currency: "USD",
     actorName: "Captain Graham Ellis",
     currentRole: "captain",
@@ -2063,7 +2066,8 @@ export function createPersistedAppState(state) {
   const activeVessel = fleet.find((vessel) => vessel.id === activeVesselId) || fleet[0];
 
   return {
-    darkMode: Boolean(state.darkMode),
+    // Midnight Bridge is a single committed dark theme.
+    darkMode: true,
     currency: CURRENCY_OPTIONS.some((option) => option.code === state.currency) ? state.currency : "USD",
     actorName: state.actorName || "User",
     currentRole: state.currentRole || "captain",
@@ -2441,6 +2445,7 @@ export function getInitialAppState() {
     const stored = getStoredJson(STORAGE_KEY, null);
     if (!stored) return fallback;
     const normalized = normalizeImportedAppState(stored, fallback);
+    normalized.darkMode = true;
     const isEssentiallyEmpty =
       !normalized.tasks.length &&
       !normalized.declinedTasks.length &&

@@ -1,16 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Card, CardContent } from "../../components/ui/card.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
-import { AlertCircle, Compass, Receipt, TriangleAlert, Users, Wifi, WifiOff } from "../../components/icons.jsx";
 import {
   calculateConfidenceScore,
   formatHistoryTime,
   formatMoney,
   formatTaskStatusLabel,
   neutralBadgeClass,
-  successBadgeClass,
   themeClasses,
   titleCase,
   warningBadgeClass,
@@ -22,7 +20,8 @@ import {
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
 import GlobalSearch from "../../components/GlobalSearch.jsx";
-import { SmartLabel } from "../../components/smart_label.jsx";
+import OceanCanvas from "../../midnight/OceanCanvas.jsx";
+import { useMidnightMotion } from "../../midnight/useMidnightMotion.js";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -324,40 +323,6 @@ function itemTargetForSearch(item = {}, priorityIds = new Set()) {
 export function CommandJumpBar({ darkMode = false, results = [], onJump }) {
   return <GlobalSearch darkMode={darkMode} results={results} onJump={onJump} />;
 }
-function MetricTile({ darkMode = false, label, value, note, tone = "neutral", active = false }) {
-  const theme = themeClasses(darkMode);
-  const labelToneClass =
-    tone === "critical" || String(label || "").toLowerCase().includes("urgent")
-      ? "premium-label-urgent"
-      : tone === "warning" || /approval|spend|quote|pending/i.test(String(label || ""))
-        ? "premium-label-gold"
-        : active
-          ? "premium-label-accent"
-          : "";
-  const badgeClass =
-    tone === "critical"
-      ? darkMode
-        ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm"
-        : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm"
-      : tone === "warning"
-        ? warningBadgeClass(darkMode)
-        : tone === "success"
-          ? successBadgeClass(darkMode)
-          : neutralBadgeClass(darkMode);
-
-  return (
-    <div className={`group min-w-0 max-w-full overflow-hidden rounded-[22px] border p-3 sm:p-3.5 ${darkMode ? "app-dark-card border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.76)]"}`}>
-      <div className={`app-compact-label ${labelToneClass}`.trim()}>
-        <SmartLabel label={label} active={active} />
-      </div>
-      <div className={`mt-3 truncate text-[1.15rem] font-semibold tracking-tight sm:text-[1.25rem] ${darkMode ? "text-slate-100" : "text-slate-900"}`}>{value}</div>
-      <div className="mt-2">
-        <Badge className={`${badgeClass} max-w-full truncate whitespace-nowrap leading-tight`}>{note}</Badge>
-      </div>
-    </div>
-  );
-}
-
 function IntelligencePanel({
   darkMode = false,
   title,
@@ -366,30 +331,57 @@ function IntelligencePanel({
   onAction,
   children,
 }) {
-  const theme = themeClasses(darkMode);
+  return (
+    <section data-mb-reveal className="min-w-0">
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">{title}</h3>
+        {onAction ? (
+          <button
+            type="button"
+            onClick={onAction}
+            className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[rgba(233,226,208,0.5)] transition-colors hover:text-[#e6cf9f]"
+          >
+            {actionLabel}
+            <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        ) : null}
+      </div>
+      <div className="midnight-gold-rule mt-3" />
+      {subtitle ? <p className="mt-3 text-[13px] leading-6 text-[rgba(229,223,209,0.55)]">{subtitle}</p> : null}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function ConfidenceRing({ score = 0, mood = "calm" }) {
+  const radius = 30;
+  const circumference = 2 * Math.PI * radius;
+  const stroke = mood === "critical" ? "#d9776b" : mood === "pressure" ? "#c9a96a" : "#58ae8f";
 
   return (
-    <Card className={`app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}>
-      <CardContent className="p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="app-kicker">{title}</div>
-            {subtitle ? <div className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{subtitle}</div> : null}
-          </div>
-          {onAction ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onAction}
-              className="app-action-button w-full sm:w-auto"
-            >
-              {actionLabel}
-            </Button>
-          ) : null}
-        </div>
-        <div className="mt-4">{children}</div>
-      </CardContent>
-    </Card>
+    <div className="relative h-[88px] w-[88px] shrink-0" title="Vessel confidence, calculated live from open work, approvals, and compliance">
+      <svg viewBox="0 0 72 72" className="h-full w-full -rotate-90">
+        <circle cx="36" cy="36" r={radius} fill="none" stroke="rgba(201,169,106,0.14)" strokeWidth="2" />
+        <circle
+          cx="36"
+          cy="36"
+          r={radius}
+          fill="none"
+          stroke={stroke}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - Math.max(0, Math.min(100, score)) / 100)}
+          style={{ transition: "stroke-dashoffset 1.6s cubic-bezier(0.22,1,0.36,1)" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-lg font-bold leading-none tracking-tight text-[#f4f0e6]" data-mb-count={score} data-mb-suffix="%">
+          {score}%
+        </span>
+        <span className="mt-1 text-[7.5px] font-bold uppercase tracking-[0.2em] text-[rgba(229,223,209,0.5)]">Confidence</span>
+      </div>
+    </div>
   );
 }
 
@@ -402,62 +394,31 @@ function VesselStateBanner({
   role = "captain",
   currency = "USD",
 }) {
-  const theme = themeClasses(darkMode);
   const mode = vesselState?.mode || "standby";
   const mood = vesselState?.mood || "calm";
   const config = getVesselStateConfig(mode);
   const isOwnerView = String(role || "").toLowerCase() === "owner";
   const pendingSpend = currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency);
-  const routeStatus = currentVessel?.routeStatus || currentVessel?.routePlanning?.status || "Watched";
-  const ownerTiles = [
-    { label: "Vessel Confidence", value: `${confidenceScore}%`, note: "vessel state" },
-    { label: "Pending spend", value: pendingSpend, note: `${stats.pendingApprovals || 0} decisions` },
-    { label: "Guest ready", value: mode === "guest-arrival" ? "Active" : "Watched", note: vesselState?.primaryFocus || "Captain summary" },
-    { label: "Top risk", value: stats.overdueTasks || stats.routeReviewCount || stats.certificateDue || 0, note: "visible only if material" },
-  ];
-  const captainTiles = [
-    { label: "Vessel Confidence", value: `${confidenceScore}%`, note: "calculated live" },
-    { label: "Blocked", value: stats.overdueTasks || 0, note: "overdue items", tone: (stats.overdueTasks || 0) > 0 ? "critical" : "neutral" },
-    { label: "Approvals", value: stats.pendingApprovals || 0, note: "need decision", tone: (stats.pendingApprovals || 0) > 0 ? "warning" : "neutral" },
-    { label: "Crew", value: stats.certificateDue || 0, note: "cert reviews", tone: (stats.certificateDue || 0) > 0 ? "warning" : "neutral" },
-    { label: "Route", value: stats.routeReviewCount || 0, note: routeStatus, tone: (stats.routeReviewCount || 0) > 0 ? "warning" : "neutral" },
-  ];
-  const tiles = isOwnerView ? ownerTiles : captainTiles;
+  const focusLine = isOwnerView
+    ? `${pendingSpend} pending spend across ${stats.pendingApprovals || 0} decision${(stats.pendingApprovals || 0) === 1 ? "" : "s"}. Detail stays out of the way unless it is material.`
+    : config.description;
+  const moodText = mood === "critical" ? "text-[#e9a49a]" : mood === "pressure" ? "text-[#e6cf9f]" : "text-[#8fd0b5]";
 
   return (
-    <Card
+    <section
       id="vessel-state-section"
       data-jump-target
-      style={{ "--jump-radius": "24px" }}
-      className={`jump-highlight-target app-panel min-w-0 overflow-hidden rounded-[24px] border ${getMoodClasses(darkMode, mood)}`}
+      data-mb-reveal
+      style={{ "--jump-radius": "18px" }}
+      className="jump-highlight-target flex min-w-0 items-center justify-between gap-5 rounded-[18px] border border-[rgba(201,169,106,0.16)] bg-[rgba(10,15,29,0.45)] px-5 py-4 backdrop-blur-xl md:px-6"
     >
-      <CardContent className="p-4 md:p-5">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-          <div className="min-w-0">
-            <div className={`app-kicker ${getMoodTextClass(darkMode, mood)}`}>Vessel State</div>
-            <div className={`mt-2 text-xl font-semibold tracking-tight ${theme.textPrimary}`}>{config.label}</div>
-            <p className={`mt-2 max-w-2xl text-sm leading-6 ${theme.textSecondary}`}>
-              {config.description}
-            </p>
-            <div className={`mt-3 text-sm font-semibold ${getMoodTextClass(darkMode, mood)}`}>
-              {isOwnerView ? "Owner view: calm executive summary." : "Captain view: operational risks surfaced first."}
-            </div>
-          </div>
-          <div className="grid min-w-0 grid-cols-2 gap-2">
-            {tiles.map((tile) => (
-              <MetricTile
-                key={tile.label}
-                darkMode={darkMode}
-                label={tile.label}
-                value={tile.value}
-                note={tile.note}
-                tone={tile.tone || (mood === "pressure" ? "warning" : mood === "critical" ? "critical" : "neutral")}
-              />
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="min-w-0">
+        <div className={`text-[10px] font-bold uppercase tracking-[0.26em] ${moodText}`}>Vessel state</div>
+        <h2 className="midnight-heading mt-1.5 text-2xl text-[#f4f0e6] md:text-[1.7rem]">{config.label}</h2>
+        <p className="mt-1.5 max-w-2xl text-[13px] leading-6 text-[rgba(229,223,209,0.55)]">{focusLine}</p>
+      </div>
+      <ConfidenceRing score={confidenceScore} mood={mood} />
+    </section>
   );
 }
 
@@ -716,7 +677,6 @@ export function TodayOperationsView({
   const [selectedItem, setSelectedItem] = useState(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [dailyReportOpen, setDailyReportOpen] = useState(false);
-  const [commandClock, setCommandClock] = useState(() => new Date());
   const [expandedSections, setExpandedSections] = useState({
     tasksMaintenance: false,
     expensesApprovals: false,
@@ -726,16 +686,7 @@ export function TodayOperationsView({
     activity: false,
   });
 
-  const commandPanelConfig = mobileHomeConfig || {
-    title: "Captain command panel",
-    summary: "Compact operational overview with the next decisions surfaced first.",
-    status: "Bridge command",
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => setCommandClock(new Date()), 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  useMidnightMotion([]);
 
   useEffect(() => {
     if (!isInspectorOpen) return;
@@ -822,54 +773,21 @@ export function TodayOperationsView({
     return [];
   }, [certificateItems]);
 
-  const statusTiles = [
-    {
-      label: "Urgent today",
-      value: currentVessel?.metrics?.activeTasks ?? stats.totalObjectives ?? 0,
-      note: `${stats.overdueTasks || 0} overdue`,
-      tone: (stats.overdueTasks || 0) > 0 ? "critical" : "neutral",
-    },
-    {
-      label: "Waiting approval",
-      value: currentVessel?.metrics?.pendingApprovals ?? todayOperations?.pendingApprovals?.length ?? 0,
-      note: `${approvalItems.length} live queue`,
-      tone: approvalItems.length ? "warning" : "neutral",
-    },
-    {
-      label: "Overdue",
-      value: stats.overdueTasks || 0,
-      note: (stats.overdueTasks || 0) > 0 ? "Needs attention" : "None today",
-      tone: (stats.overdueTasks || 0) > 0 ? "critical" : "success",
-    },
-    {
-      label: "Changed recently",
-      value: activityItems.length,
-      note: "Latest updates",
-      tone: activityItems.length ? "neutral" : "success",
-    },
-    {
-      label: "Vessel status",
-      value: currentVessel?.status || "Operational",
-      note: currentVessel?.syncStatus || "Live",
-      tone: isOffline ? "warning" : "success",
-    },
-    {
-      label: "Pending spend",
-      value: currentVessel?.metrics?.openExposure ?? formatMoney(stats.totalExpenses || 0, currency),
-      note: `${stats.pendingApprovals || 0} approvals waiting`,
-      tone: (stats.pendingApprovals || 0) > 0 ? "warning" : "neutral",
-    },
-  ];
-
-  const greeting = commandClock.getHours() < 12 ? "Good morning" : commandClock.getHours() < 18 ? "Good afternoon" : "Good evening";
-  const urgentBriefCount = priorityItems.filter((item) => item.tone === "critical").length || stats.overdueTasks || 0;
-  const crewBriefCount = crewReadinessNote.length || stats.certificateDue || 0;
-  const nextMilestone = routeReviewItems[0]?.title || maintenanceItems[0]?.title || "Service plan standing by";
   const vesselStateConfig = getVesselStateConfig(resolvedVesselState?.mode);
   const isOwnerView = String(currentRole || "").toLowerCase() === "owner";
-
-  const notificationsReady = notificationPermission === "granted";
-  const notificationsUnsupported = notificationPermission === "unsupported";
+  const pendingSpendLabel = currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency);
+  const nextWorkItem = sortByPriority([...taskItems, ...maintenanceItems])[0] || null;
+  const tasksTeaser = nextWorkItem ? `Next: ${nextWorkItem.title}` : "Work queue is clear today.";
+  const approvalsTeaser = approvalItems[0]
+    ? `Next: ${approvalItems[0].title}${approvalItems[0].amount ? ` · ${approvalItems[0].amount}` : ""}`
+    : "No decisions waiting.";
+  const crewTeaser = certificateItems[0]
+    ? `Next: ${certificateItems[0].title} · ${certificateItems[0].subtitle || certificateItems[0].dueDate}`
+    : "No certificate reviews pending.";
+  const docsTeaser = (stats.documentCount || 0) > 0
+    ? `${stats.documentCount} document${stats.documentCount === 1 ? "" : "s"} tracked in the vault.`
+    : "No documents indexed yet.";
+  const routeTeaser = routeReviewItems[0]?.title || "Route planning standing by.";
 
   const searchResults = useMemo(() => {
     const makeSection = ({ id, title, type = "Section", context, targetId, moduleAction, sectionKey }) => ({
@@ -885,7 +803,7 @@ export function TodayOperationsView({
 
     const sectionResults = [
       makeSection({ id: "search-dashboard", title: "Dashboard", context: "Vessel status and command brief", targetId: "dashboard-section" }),
-      makeSection({ id: "search-mission-cards", title: "Mission Cards", context: "Urgent work, approvals, and risk items", targetId: "mission-cards-section" }),
+      makeSection({ id: "search-mission-cards", title: "Priority Queue", context: "Mission cards: urgent work, approvals, and risk items surfaced first", targetId: "mission-cards-section" }),
       makeSection({ id: "search-tasks", title: "Tasks", context: "Task board and maintenance queue", targetId: "tasks-section", moduleAction: onNavigateToTasks }),
       makeSection({ id: "search-maintenance", title: "Maintenance", context: "Service schedule and upkeep", targetId: "maintenance-section", moduleAction: onNavigateToMaintenance }),
       makeSection({ id: "search-approvals", title: "Approvals", context: "Quotes, expenses, and decisions", targetId: "approvals-section", moduleAction: onNavigateToApprovals }),
@@ -1017,18 +935,7 @@ export function TodayOperationsView({
   }
 
   function toggleSection(key) {
-    setExpandedSections((prev) => {
-      const nextOpen = !prev[key];
-      return {
-        tasksMaintenance: false,
-        expensesApprovals: false,
-        certificatesCrew: false,
-        documents: false,
-        routePlanning: false,
-        activity: false,
-        [key]: nextOpen,
-      };
-    });
+    setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
   function getHighlightElement(targetId) {
@@ -1163,11 +1070,77 @@ export function TodayOperationsView({
     );
   }
 
+  const heroName = String(currentVessel?.name || currentVesselName || "Vessel").replace(/^M\/Y\s+/i, "").toUpperCase();
+  const heroStatement = resolvedVesselState?.primaryFocus || vesselStateConfig.description;
+  const heroOnDeck = [
+    stats.pendingApprovals ? `${stats.pendingApprovals} decision${stats.pendingApprovals === 1 ? "" : "s"} waiting` : "",
+    stats.certificateDue ? `${stats.certificateDue} certificate${stats.certificateDue === 1 ? "" : "s"} due` : "",
+    stats.routeReviewCount ? `${stats.routeReviewCount} route review${stats.routeReviewCount === 1 ? "" : "s"}` : "",
+  ].filter(Boolean).join("  ·  ");
+  const nextActionLabel = priorityItems[0]?.title || "Review today's priorities";
+
   return (
     <>
-      <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target grid gap-4 rounded-[28px] scroll-mt-24 md:gap-5 md:scroll-mt-28">
-        <div className="grid gap-4 xl:grid-cols-12 xl:items-start">
-          <div className="grid gap-4 xl:col-span-8">
+      <OceanCanvas enabled={darkMode} />
+      <div className="midnight-grain" aria-hidden="true" />
+      <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
+
+        {/* ---- Hero: the bridge at night ---- */}
+        <section className="flex min-h-[calc(92svh-7rem)] flex-col justify-center py-12 md:py-16">
+          <p data-mb-hero className="text-[10px] font-bold uppercase tracking-[0.34em] text-[#c9a96a] md:text-[11px]">
+            Motor yacht · Command bridge
+          </p>
+          <h1
+            data-mb-hero
+            className="vessel-display-title vessel-title--dark mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]"
+            style={{ fontSize: "clamp(3.2rem, 12vw, 9rem)" }}
+          >
+            {heroName}
+          </h1>
+          <div data-mb-hero className="midnight-gold-rule mt-7 w-48" />
+          <p data-mb-hero className="mt-7 max-w-2xl text-[15px] leading-7 text-[rgba(229,223,209,0.68)] md:text-[17px] md:leading-8">
+            {heroStatement}
+          </p>
+          {heroOnDeck ? (
+            <p data-mb-hero className="mt-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[rgba(229,223,209,0.45)]">
+              On deck — {heroOnDeck}
+            </p>
+          ) : null}
+
+          <div data-mb-hero className="mt-8 flex flex-wrap items-center gap-x-9 gap-y-5">
+            <div className="min-w-0">
+              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[rgba(229,223,209,0.45)]">Pending spend</div>
+              <div className="midnight-heading mt-1.5 text-[1.7rem] leading-none text-[#e6cf9f]">{pendingSpendLabel}</div>
+            </div>
+            <div className="hidden h-11 w-px bg-[rgba(201,169,106,0.22)] sm:block" />
+            <div className="min-w-0 max-w-full">
+              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[rgba(229,223,209,0.45)]">Next best action</div>
+              <div className="midnight-heading mt-1.5 truncate text-[1.7rem] italic leading-tight text-[#f4f0e6]">{nextActionLabel}</div>
+            </div>
+          </div>
+
+          <div data-mb-hero className="mt-10 max-w-2xl">
+            <GlobalSearch darkMode={darkMode} results={searchResults} onJump={jumpToResult} />
+          </div>
+
+          <button
+            data-mb-hero
+            type="button"
+            onClick={() => {
+              if (typeof document === "undefined") return;
+              document.getElementById("vessel-state-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="group mt-12 inline-flex w-fit items-center gap-3 text-[10px] font-bold uppercase tracking-[0.28em] text-[rgba(233,226,208,0.45)] transition-colors hover:text-[#e6cf9f]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(201,169,106,0.3)] transition-colors group-hover:border-[rgba(230,207,159,0.6)]">
+              <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 animate-bounce [animation-duration:2.2s]"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+            Descend to operations
+          </button>
+        </section>
+
+        <div className="grid gap-12 pb-16 xl:grid-cols-12 xl:items-start xl:gap-14">
+          <div className="min-w-0 xl:col-span-8">
             <VesselStateBanner
               darkMode={darkMode}
               vesselState={resolvedVesselState}
@@ -1178,70 +1151,97 @@ export function TodayOperationsView({
               currency={currency}
             />
 
-            <Card
+            <section
               id="mission-cards-section"
               data-jump-target
-              style={{ "--jump-radius": "24px" }}
-              className={`jump-highlight-target app-panel app-panel-soft min-w-0 overflow-hidden rounded-[24px] ${theme.card}`}
+              data-mb-reveal
+              style={{ "--jump-radius": "18px" }}
+              className="jump-highlight-target mt-12 min-w-0 scroll-mt-28 rounded-[18px]"
             >
-              <CardContent className="p-4 md:p-5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <div className="app-kicker">Mission Cards</div>
-                    <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>
-                      {isOwnerView ? "Only material owner-level signals are surfaced first." : `${vesselStateConfig.label} priorities are surfaced first.`}
-                    </div>
-                  </div>
-                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                    <Button
-                      type="button"
-                      onClick={() => setDailyReportOpen(true)}
-                      className="app-primary-action-button w-full sm:w-auto"
-                    >
-                      Generate Daily Report
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={onNavigateToTasks}
-                      className="app-action-button w-full sm:w-auto"
-                    >
-                      View details
-                    </Button>
-                  </div>
+              <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+                <div className="min-w-0">
+                  <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">Priority queue</div>
+                  <h2 className="midnight-heading mt-2 text-[1.75rem] leading-tight text-[#f4f0e6] md:text-[2rem]">
+                    {isOwnerView ? "Material signals, surfaced first." : `${vesselStateConfig.label} priorities, surfaced first.`}
+                  </h2>
                 </div>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {priorityItems.length ? (
-                    priorityItems.map((item) => (
-                      <CompactItemCard
-                        htmlId={`item-${item.id}`}
-                        key={item.id}
-                        darkMode={darkMode}
-                        item={item}
-                        selected={selectedItem?.id === item.id}
-                        onClick={() => openInspector(item)}
-                      />
-                    ))
-                  ) : (
-                    <div className="md:col-span-2">
-                      <DashboardEmptyState
-                        darkMode={darkMode}
-                        title="No urgent tasks today."
-                        message="The vessel is stable right now. Approvals, crew documents, and route warnings will appear here only when they need attention."
-                        actionLabel="View tasks"
-                        onAction={onNavigateToTasks}
-                      />
-                    </div>
-                  )}
+                <div className="flex shrink-0 items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setDailyReportOpen(true)}
+                    className="app-primary-action-button rounded-[14px]"
+                  >
+                    Daily report
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onNavigateToTasks}
+                    className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[rgba(233,226,208,0.55)] transition-colors hover:text-[#e6cf9f]"
+                  >
+                    All work
+                    <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              {priorityItems.length ? (
+                <ol className="mt-7 border-b border-[rgba(201,169,106,0.14)]">
+                  {priorityItems.map((item, index) => {
+                    const dueMeta = item?.meta?.find((entry) => ["Due", "Expiry"].includes(entry?.label));
+                    const metaLine = [compactTypeLabel(item.type), item.badge, item.assignedTo || item.requester, dueMeta?.value, item.amount]
+                      .filter(Boolean)
+                      .join("  ·  ");
+                    const tickClass = item.tone === "critical" ? "bg-[#d9776b]" : item.tone === "warning" ? "bg-[#c9a96a]" : "bg-[rgba(233,226,208,0.28)]";
+                    return (
+                      <li key={item.id}>
+                        <button
+                          id={`item-${item.id}`}
+                          data-jump-target
+                          style={{ "--jump-radius": "14px" }}
+                          type="button"
+                          onClick={() => openInspector(item)}
+                          className="jump-highlight-target mb-ledger-row group relative flex w-full items-center gap-5 rounded-[14px] py-5 pl-3 pr-1 text-left md:gap-8 md:py-6"
+                        >
+                          <span className={`absolute left-0 top-1/2 h-[46%] w-[2px] -translate-y-1/2 rounded-r-full ${tickClass}`} />
+                          <span className="mb-index-numeral shrink-0 text-[2.4rem] md:text-[3.2rem]">{String(index + 1).padStart(2, "0")}</span>
+                          <span className="min-w-0 flex-1">
+                            <span className="midnight-heading block text-xl leading-snug text-[#f4f0e6] transition-colors duration-300 group-hover:text-[#e6cf9f] md:text-[1.5rem]">
+                              {item.title}
+                            </span>
+                            <span className="mt-1.5 block truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.45)]">
+                              {metaLine}
+                            </span>
+                          </span>
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(201,169,106,0.22)] text-[rgba(233,226,208,0.45)] transition-all duration-300 group-hover:border-[rgba(230,207,159,0.6)] group-hover:text-[#e6cf9f]" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              ) : (
+                <div className="mt-7">
+                  <DashboardEmptyState
+                    darkMode={darkMode}
+                    title="No urgent items tonight."
+                    message="The vessel is stable right now. Approvals, crew documents, and route warnings will appear here only when they need attention."
+                    actionLabel="View tasks"
+                    onAction={onNavigateToTasks}
+                  />
+                </div>
+              )}
+            </section>
+
+            <div className="mt-14">
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">Operations ledger</div>
+            </div>
 
             <SectionAccordion
               id="tasks-section"
               darkMode={darkMode}
               title="Tasks"
-              subtitle="Compact queue of work orders, overdue actions, and due-today upkeep."
+              subtitle={tasksTeaser}
               count={taskItems.length + maintenanceItems.length}
               tone={taskItems.length || maintenanceItems.length ? "warning" : "neutral"}
               module="tasks"
@@ -1279,7 +1279,7 @@ export function TodayOperationsView({
               id="approvals-section"
               darkMode={darkMode}
               title="Approval"
-              subtitle="Quotes, expenses, and service decisions stay folded until selected."
+              subtitle={approvalsTeaser}
               count={approvalItems.length}
               tone={approvalItems.length ? "warning" : "neutral"}
               module="approval"
@@ -1317,7 +1317,7 @@ export function TodayOperationsView({
               id="crew-section"
               darkMode={darkMode}
               title="Crew"
-              subtitle="Crew readiness stays collapsed until documentation or review is needed."
+              subtitle={crewTeaser}
               count={certificateItems.length}
               tone={certificateItems.length ? "warning" : "neutral"}
               module="crew"
@@ -1354,7 +1354,7 @@ export function TodayOperationsView({
               id="documents-section"
               darkMode={darkMode}
               title="Docs"
-              subtitle="Document controls stay collapsed until someone needs the vault."
+              subtitle={docsTeaser}
               count={stats.documentCount || 0}
               tone="neutral"
               module="docs"
@@ -1364,11 +1364,13 @@ export function TodayOperationsView({
               onAction={onNavigateToDocuments}
             >
               {(stats.documentCount || 0) > 0 ? (
-                <div className="grid gap-3 md:grid-cols-3">
-                  <MetricTile darkMode={darkMode} label="Files" value={stats.documentCount || 0} note="Tracked in vault" />
-                  <MetricTile darkMode={darkMode} label="Share" value="Ready" note="Controlled export" />
-                  <MetricTile darkMode={darkMode} label="Status" value="Indexed" note="Workspace scoped" />
-                </div>
+                <DashboardEmptyState
+                  darkMode={darkMode}
+                  title={`${stats.documentCount} document${stats.documentCount === 1 ? "" : "s"} indexed for this vessel`}
+                  message="Certificates, manuals, and operational files are tracked in the vault with controlled sharing and export."
+                  actionLabel="Open documents"
+                  onAction={onNavigateToDocuments}
+                />
               ) : (
                 <DashboardEmptyState
                   darkMode={darkMode}
@@ -1384,7 +1386,7 @@ export function TodayOperationsView({
               id="route-section"
               darkMode={darkMode}
               title="Route"
-              subtitle="Navigation review stays concise until the bridge team needs detail."
+              subtitle={routeTeaser}
               count={stats.routeReviewCount || routeReviewItems.length}
               tone={stats.routeReviewCount || routeAlerts.length ? "warning" : "neutral"}
               module="route"
@@ -1407,41 +1409,9 @@ export function TodayOperationsView({
               </div>
             </SectionAccordion>
 
-            <SectionAccordion
-              id="activity-section"
-              darkMode={darkMode}
-              title="Activity"
-              subtitle="A compact running log instead of a full-width empty history panel."
-              count={activityItems.length}
-              tone="neutral"
-              module="activity"
-              isOpen={expandedSections.activity}
-              onToggle={() => toggleSection("activity")}
-            >
-              {activityItems.length ? (
-                <div className="grid gap-3">
-                  {activityItems.slice(0, 5).map((item) => (
-                    <CompactItemCard
-                      htmlId={`activity-item-${item.id}`}
-                      key={item.id}
-                      darkMode={darkMode}
-                      item={item}
-                      selected={selectedItem?.id === item.id}
-                      onClick={() => openInspector(item)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <DashboardEmptyState
-                  darkMode={darkMode}
-                  title="No recent activity"
-                  message="Operational activity will appear here as the vessel team updates tasks, route work, approvals, and certificates."
-                />
-              )}
-            </SectionAccordion>
           </div>
 
-          <div className="grid gap-4 xl:col-span-4">
+          <aside className="grid min-w-0 content-start gap-11 xl:col-span-4 xl:border-l xl:border-[rgba(201,169,106,0.12)] xl:pl-10">
             <IntelligencePanel
               darkMode={darkMode}
               title="Alerts Summary"
@@ -1475,16 +1445,61 @@ export function TodayOperationsView({
 
             <IntelligencePanel
               darkMode={darkMode}
+              title="Decisions Waiting"
+              subtitle={`${stats.pendingApprovals || 0} approval${(stats.pendingApprovals || 0) === 1 ? "" : "s"} waiting · ${pendingSpendLabel} pending spend.`}
+              actionLabel="View approvals"
+              onAction={onNavigateToApprovals}
+            >
+              <div className="grid gap-3">
+                {approvalItems.length ? (
+                  <>
+                    <CompactItemCard
+                      htmlId={`approval-summary-item-${approvalItems[0].id}`}
+                      darkMode={darkMode}
+                      item={approvalItems[0]}
+                      selected={selectedItem?.id === approvalItems[0].id}
+                      onClick={() => openInspector(approvalItems[0])}
+                      actionLabel="Review"
+                    />
+                    {canEdit ? (
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => onApprovalAction?.(approvalItems[0].raw || approvalItems[0], "approved")}
+                          className="app-primary-action-button justify-center rounded-[14px] text-center"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onApprovalAction?.(approvalItems[0].raw || approvalItems[0], "declined")}
+                          className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-[rgba(201,169,106,0.25)] px-4 py-2.5 text-sm font-semibold text-[rgba(233,226,208,0.75)] transition-colors hover:border-[rgba(217,119,107,0.6)] hover:text-[#e9a49a]"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <DashboardEmptyState
+                    darkMode={darkMode}
+                    title="No approvals waiting"
+                    message="Quotes and spend requests surface here the moment they need a decision."
+                    actionLabel="View approvals"
+                    onAction={onNavigateToApprovals}
+                  />
+                )}
+              </div>
+            </IntelligencePanel>
+
+            <IntelligencePanel
+              darkMode={darkMode}
               title="Crew"
               subtitle={`${currentVessel?.metrics?.crewReady || "100%"} crew readiness with ${stats.certificateDue || 0} certificate reviews pending.`}
               actionLabel="Open crew"
               onAction={onNavigateToCertificates}
             >
               <div className="grid gap-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <MetricTile darkMode={darkMode} label="Crew" value={stats.crewProfiles || 0} note="Profiles active" />
-                  <MetricTile darkMode={darkMode} label="Certs" value={stats.certificateDue || 0} note="Due for review" tone={(stats.certificateDue || 0) > 0 ? "warning" : "neutral"} />
-                </div>
                 {crewReadinessNote.length ? (
                   crewReadinessNote.map((item) => (
                     <CompactItemCard
@@ -1508,30 +1523,38 @@ export function TodayOperationsView({
 
             <IntelligencePanel
               darkMode={darkMode}
-              title="Approvals"
-              subtitle="Pending spend, approvals, and decisions stay visible without opening the whole approvals module."
-              actionLabel="View approvals"
-              onAction={onNavigateToApprovals}
+              title="Recent Activity"
+              subtitle={activityItems.length ? "The latest changes across tasks, approvals, and crew." : "Updates appear here as the crew logs work."}
             >
-              <div className="grid gap-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <MetricTile darkMode={darkMode} label="Pending" value={stats.pendingApprovals || 0} note="Approval" tone={(stats.pendingApprovals || 0) > 0 ? "warning" : "neutral"} />
-                  <MetricTile darkMode={darkMode} label="Pending spend" value={currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)} note="Open spend" />
-                  <MetricTile darkMode={darkMode} label="Quotes" value={approvalItems.filter((item) => item.type === "quote").length} note="Live quote items" />
-                  <MetricTile darkMode={darkMode} label="Crew spend" value={formatMoney(stats.crewTotal || 0, currency)} note="Crew expenses" />
-                </div>
-                {approvalItems.length ? (
-                  <CompactItemCard
-                    htmlId={`approval-summary-item-${approvalItems[0].id}`}
-                    darkMode={darkMode}
-                    item={approvalItems[0]}
-                    selected={selectedItem?.id === approvalItems[0].id}
-                    onClick={() => openInspector(approvalItems[0])}
-                  />
-                ) : null}
-              </div>
+              {activityItems.length ? (
+                <ol id="activity-section" className="relative ml-1 grid gap-0 border-l border-[rgba(201,169,106,0.18)]">
+                  {activityItems.slice(0, 5).map((item) => (
+                    <li key={item.id} className="relative">
+                      <span className="absolute -left-[4.5px] top-[1.35rem] h-2 w-2 rounded-full border border-[#c9a96a] bg-[#060b18]" aria-hidden="true" />
+                      <button
+                        id={`activity-item-${item.id}`}
+                        data-jump-target
+                        style={{ "--jump-radius": "12px" }}
+                        type="button"
+                        onClick={() => openInspector(item)}
+                        className="jump-highlight-target group w-full min-w-0 rounded-[12px] py-3.5 pl-5 pr-2 text-left transition-colors duration-200 hover:bg-[rgba(201,169,106,0.05)]"
+                      >
+                        <div className="truncate text-sm font-semibold text-[#f4f0e6] transition-colors group-hover:text-[#e6cf9f]">{item.title}</div>
+                        <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[rgba(229,223,209,0.55)]">{item.subtitle}</div>
+                        <div suppressHydrationWarning className="mt-1.5 text-[9.5px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.4)]">{`${item.assignedTo} · ${item.dueDate}`}</div>
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <DashboardEmptyState
+                  darkMode={darkMode}
+                  title="No recent activity"
+                  message="Operational activity will appear here as the vessel team updates tasks, route work, approvals, and certificates."
+                />
+              )}
             </IntelligencePanel>
-          </div>
+          </aside>
         </div>
       </div>
 

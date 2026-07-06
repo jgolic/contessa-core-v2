@@ -753,40 +753,6 @@ function HeroCommandLens({
   );
 }
 
-function HeroSignalStrip({ darkMode = false, signals = [] }) {
-  const openBadgeClass = darkMode
-    ? "border-white/10 bg-slate-800 text-slate-100 shadow-sm"
-    : "border-slate-300 bg-white text-slate-800 shadow-sm";
-
-  return (
-    <div className={`mt-6 grid gap-3 rounded-[32px] border p-3 backdrop-blur-xl lg:grid-cols-5 ${darkMode ? "border-white/10 bg-slate-950/34" : "border-white/80 bg-white/58"}`}>
-      {signals.map((signal) => (
-        <button
-          key={signal.key}
-          type="button"
-          onClick={signal.onClick}
-          className={`group min-w-0 rounded-[24px] border px-4 py-4 text-left transition-all duration-200 hover:-translate-y-0.5 ${
-            darkMode
-              ? "border-white/10 bg-white/[0.04] text-slate-50 hover:border-cyan-300/30 hover:bg-cyan-300/10"
-              : "border-slate-200/80 bg-white/82 text-slate-950 hover:border-blue-300/70 hover:bg-blue-50/80"
-          }`}
-        >
-          <div className={`text-[10px] font-bold uppercase tracking-[0.18em] ${signal.tone === "amber" ? (darkMode ? "text-amber-100" : "text-amber-700") : signal.tone === "teal" ? (darkMode ? "text-teal-100" : "text-teal-700") : signal.tone === "sky" ? (darkMode ? "text-sky-100" : "text-sky-700") : signal.tone === "slate" ? (darkMode ? "text-slate-300" : "text-slate-600") : (darkMode ? "text-cyan-100" : "text-blue-700")}`}>
-            {signal.label}
-          </div>
-          <div className="mt-2 flex items-end justify-between gap-3">
-            <span className="truncate text-2xl font-bold leading-none">{safeText(signal.value)}</span>
-            <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${openBadgeClass}`}>
-              Open
-            </span>
-          </div>
-          <p className={`mt-2 truncate text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>{safeText(signal.note)}</p>
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdentifier }) {
   return (
     <div className="lg:hidden">
@@ -1665,9 +1631,18 @@ export function AppShellHeader({
     )
   );
   const heroPrimaryFocus = safeText(vesselState?.primaryFocus, "");
-  const heroCommandStatement = heroPrimaryFocus
-    ? `${heroPrimaryFocus}. Crew, approvals, routing, and documents stay synchronized from this command surface.`
-    : "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.";
+  const heroAttentionParts = [
+    (stats.overdueTasks || 0) > 0 ? `${stats.overdueTasks} overdue item${stats.overdueTasks === 1 ? "" : "s"}` : "",
+    (stats.pendingApprovals || 0) > 0 ? `${stats.pendingApprovals} approval${stats.pendingApprovals === 1 ? "" : "s"} waiting` : "",
+    routeWarningCount > 0 ? `${routeWarningCount} route review${routeWarningCount === 1 ? "" : "s"}` : "",
+    (stats.certificateDue || 0) > 0 ? `${stats.certificateDue} certificate${stats.certificateDue === 1 ? "" : "s"} due` : "",
+  ].filter(Boolean);
+  const heroCommandStatement = [
+    heroPrimaryFocus ? `${heroPrimaryFocus}.` : "",
+    heroAttentionParts.length
+      ? `On deck now: ${heroAttentionParts.join(", ")}.`
+      : "Operations are calm — crew, approvals, routing, and documents are stable.",
+  ].filter(Boolean).join(" ");
   const heroNextAction = heroPrimaryFocus
     || ((stats.overdueTasks || 0) > 0
       ? "Clear overdue operational items before the next handoff."
@@ -1680,48 +1655,6 @@ export function AppShellHeader({
     ? `${stats.certificateDue} cert${stats.certificateDue === 1 ? "" : "s"} due`
     : `${stats.crewProfiles || currentVesselMetrics.crewCount || 0} crew ready`;
   const heroLatestActivity = formatActivity(recentHeaderHistory[0]);
-  const heroSignals = [
-    {
-      key: "tasks",
-      label: "Tasks",
-      value: stats.totalObjectives || currentVesselMetrics.taskCount || 0,
-      note: (stats.overdueTasks || 0) > 0 ? `${stats.overdueTasks} overdue` : "active queue",
-      tone: "blue",
-      onClick: onOpenTasksMaintenance,
-    },
-    {
-      key: "approvals",
-      label: "Approvals",
-      value: stats.pendingApprovals || currentVesselMetrics.approvalCount || 0,
-      note: (stats.pendingApprovals || 0) > 0 ? "waiting decision" : "queue calm",
-      tone: "amber",
-      onClick: onOpenApprovals,
-    },
-    {
-      key: "crew",
-      label: "Crew",
-      value: stats.crewProfiles || currentVesselMetrics.crewCount || 0,
-      note: (stats.certificateDue || 0) > 0 ? `${stats.certificateDue} certs due` : "readiness stable",
-      tone: "teal",
-      onClick: onOpenCrewCertificates,
-    },
-    {
-      key: "route",
-      label: "Route",
-      value: routeWarningCount || routeStatusLabel,
-      note: routeWarningCount ? "bridge review" : "navigation status",
-      tone: "sky",
-      onClick: onOpenRoute,
-    },
-    {
-      key: "documents",
-      label: "Docs",
-      value: stats.documentCount || currentVesselMetrics.documentCount || 0,
-      note: "vessel records",
-      tone: "slate",
-      onClick: onOpenDocuments,
-    },
-  ];
 
   return (
     <div
@@ -2033,8 +1966,6 @@ export function AppShellHeader({
               />
             </div>
           </div>
-
-          <HeroSignalStrip darkMode={darkMode} signals={heroSignals} />
         </div>
 
           <div className={`absolute right-3 top-3 z-[9200] flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:gap-2 lg:right-8 lg:top-8 lg:gap-3 lg:rounded-[30px] lg:border lg:p-2 lg:backdrop-blur-2xl ${darkMode ? "lg:border-white/10 lg:bg-slate-950/28" : "lg:border-white/70 lg:bg-white/42"}`}>
