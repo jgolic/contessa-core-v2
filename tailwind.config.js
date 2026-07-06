@@ -21,6 +21,21 @@ module.exports = {
           900: "#513e22",
           950: "#2e2213",
         },
+        // blue carries the oxford-navy ink language: dark premium details
+        // (chips, links, active states) on the eggshell canvas.
+        blue: {
+          50: "#f0f2f7",
+          100: "#e1e6ef",
+          200: "#c6cfdf",
+          300: "#a2b0c9",
+          400: "#7488ab",
+          500: "#51688f",
+          600: "#3b5177",
+          700: "#2c3f61",
+          800: "#22324e",
+          900: "#1b2840",
+          950: "#111a2c",
+        },
         // teal carries the sea-jade "healthy / ready" language.
         teal: {
           50: "#eefaf4",

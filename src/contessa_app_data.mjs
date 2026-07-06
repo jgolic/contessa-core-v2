@@ -451,12 +451,14 @@ function cloneVesselThemePreset(name = "contessa") {
 
 function hexToRgbChannels(hex = "") {
   const normalized = String(hex || "").trim().replace("#", "");
-  if (!/^[\da-f]{6}$/i.test(normalized)) return "22 120 110";
+  if (!/^[\da-f]{6}$/i.test(normalized)) return "22, 120, 110";
   const value = Number.parseInt(normalized, 16);
   const red = (value >> 16) & 255;
   const green = (value >> 8) & 255;
   const blue = value & 255;
-  return `${red} ${green} ${blue}`;
+  // Comma-separated: every consumer wraps these in legacy rgba(var(--x), a)
+  // syntax, which is invalid with space-separated channels.
+  return `${red}, ${green}, ${blue}`;
 }
 
 function getImplicitThemeNameForVessel(vesselId = DEFAULT_FLEET_VESSEL_ID, customIndex = 0) {
@@ -2535,20 +2537,18 @@ export function downloadFile(filename, content, type) {
 export function themeClasses(darkMode) {
   return {
     page: "bg-vessel-page",
-    card: darkMode
-      ? "app-dark-panel border border-white/10 bg-slate-900/90 text-slate-50 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl"
-      : "border border-slate-200/80 bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl",
-    textPrimary: darkMode ? "text-slate-50 drop-shadow-none" : "text-slate-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
-    textSecondary: darkMode ? "text-slate-200" : "text-slate-700",
-    input: darkMode
-      ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-card-dark)] text-[#f1ece4] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border-dark)]"
-      : "border-slate-200/80 bg-white/90 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
-    selectedTask: darkMode
-      ? "border-[var(--vessel-border-dark)] bg-[linear-gradient(135deg,var(--vessel-card-dark-strong),rgba(8,18,24,0.98))] text-white shadow-[0_22px_48px_-28px_rgba(0,0,0,0.72),0_0_20px_var(--vessel-glow-dark)]"
-      : "border-[#2f7771] bg-[linear-gradient(135deg,rgba(23,86,84,0.92),rgba(14,58,61,0.96))] text-white shadow-[0_18px_40px_-24px_rgba(20,71,89,0.22)]",
-    unselectedTask: darkMode ? "app-dark-card border-white/10 bg-slate-900/80 text-slate-50 shadow-[0_18px_50px_rgba(0,0,0,0.35)]" : "border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)]",
+    // Riviera: eggshell surfaces with oxford-navy ink details.
+    card: "border border-[rgba(28,35,52,0.14)] bg-white/92 shadow-[0_18px_50px_rgba(28,35,52,0.08)] backdrop-blur-xl",
+    textPrimary: "text-slate-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
+    textSecondary: "text-slate-700",
+    input:
+      "border-[rgba(28,35,52,0.18)] bg-white/95 text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
+    selectedTask:
+      "border-[#22324e] bg-[linear-gradient(140deg,#26385a_0%,#1b2840_55%,#141d31_100%)] text-white shadow-[0_22px_48px_-24px_rgba(17,26,44,0.55),inset_0_1px_0_rgba(201,169,106,0.28)]",
+    unselectedTask:
+      "border-[rgba(28,35,52,0.12)] bg-white/92 text-slate-900 shadow-[0_18px_50px_rgba(28,35,52,0.07)]",
     ring: "ring-vessel",
-    subtle: darkMode ? "app-dark-inner bg-slate-800/70" : "bg-slate-50/80",
+    subtle: "bg-[rgba(244,240,231,0.85)]",
   };
 }
 

@@ -16,9 +16,9 @@
   --app-card-soft-light: rgba(252, 250, 244, 0.80);
   --app-card-dark: rgba(10, 15, 29, 0.62);
   --app-card-soft-dark: rgba(255, 255, 255, 0.04);
-  --app-border-light: rgba(210, 202, 182, 0.80);
+  --app-border-light: rgba(28, 35, 52, 0.16);
   --app-border-dark: rgba(201, 169, 106, 0.14);
-  --app-shadow-light: 0 18px 50px rgba(28, 35, 52, 0.06);
+  --app-shadow-light: 0 18px 50px rgba(28, 35, 52, 0.08);
   --app-shadow-dark: 0 24px 60px rgba(0, 0, 0, 0.42);
   --app-shadow-dark-glow: 0 0 24px rgba(201, 169, 106, 0.06);
   --app-accent: #8f6e36;
@@ -32,9 +32,9 @@
   --vessel-accent-soft: rgba(201, 169, 106, 0.14);
   --vessel-border: rgba(143, 110, 54, 0.24);
   --vessel-ring: rgba(201, 169, 106, 0.30);
-  --vessel-primary-rgb: 143 110 54;
-  --vessel-secondary-rgb: 169 139 79;
-  --vessel-accent-rgb: 201 169 106;
+  --vessel-primary-rgb: 143, 110, 54;
+  --vessel-secondary-rgb: 169, 139, 79;
+  --vessel-accent-rgb: 201, 169, 106;
   --vessel-bg-start: #f7f4ec;
   --vessel-bg-end: #fcfaf4;
   --vessel-bg-light:
@@ -1135,9 +1135,9 @@ textarea,
 }
 
 .vessel-outline-button {
-  border: 1px solid var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.22));
-  background: rgba(240, 253, 250, 0.96);
-  color: #115e59;
+  border: 1px solid rgba(28, 35, 52, 0.32);
+  background: rgba(255, 255, 255, 0.96);
+  color: #22324e;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   transition:
     background-color 220ms ease,
@@ -1149,27 +1149,27 @@ textarea,
 }
 
 .vessel-outline-button:hover {
-  border-color: rgba(var(--vessel-primary-rgb), 0.36);
-  background: rgba(var(--vessel-primary-rgb), 0.14);
+  border-color: rgba(28, 35, 52, 0.52);
+  background: rgba(34, 50, 78, 0.06);
   box-shadow:
-    0 14px 34px -20px rgba(var(--vessel-primary-rgb), 0.42),
-    0 0 0 4px rgba(var(--vessel-primary-rgb), 0.10);
+    0 14px 34px -20px rgba(17, 26, 44, 0.35),
+    0 0 0 4px rgba(34, 50, 78, 0.08);
   transform: translateY(-1px);
 }
 
 .vessel-outline-button:active {
-  border-color: rgba(var(--vessel-primary-rgb), 0.48);
-  background: rgba(var(--vessel-primary-rgb), 0.20);
+  border-color: rgba(28, 35, 52, 0.6);
+  background: rgba(34, 50, 78, 0.12);
   box-shadow:
-    0 16px 38px -18px rgba(var(--vessel-primary-rgb), 0.54),
-    0 0 0 6px rgba(var(--vessel-primary-rgb), 0.16);
+    0 16px 38px -18px rgba(17, 26, 44, 0.45),
+    0 0 0 6px rgba(34, 50, 78, 0.12);
   transform: translateY(0) scale(0.99);
 }
 
 .vessel-pill {
-  border: 1px solid rgb(94, 234, 212);
-  background: rgb(240, 253, 250);
-  color: #115e59;
+  border: 1px solid rgba(28, 35, 52, 0.24);
+  background: #f0f2f7;
+  color: #22324e;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1184,9 +1184,9 @@ textarea,
 }
 
 .vessel-pill-strong {
-  border: 1px solid rgb(45, 212, 191);
-  background: linear-gradient(135deg, rgba(204, 251, 241, 0.96), rgba(224, 242, 254, 0.86));
-  color: #0f766e;
+  border: 1px solid rgba(28, 35, 52, 0.34);
+  background: linear-gradient(135deg, #e8ebf2 0%, #f6f3ea 100%);
+  color: #1b2840;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1200,8 +1200,8 @@ textarea,
 }
 
 .vessel-icon-chip {
-  background: rgb(240, 253, 250);
-  color: #115e59;
+  background: #eef0f5;
+  color: #22324e;
 }
 
 .vessel-surface-soft {
@@ -1211,10 +1211,12 @@ textarea,
 }
 
 .vessel-active {
-  border-color: var(--vessel-border, rgba(var(--vessel-primary-rgb), 0.22));
-  background: linear-gradient(135deg, rgba(var(--vessel-primary-rgb), 0.94), rgba(var(--vessel-secondary-rgb), 0.9));
-  color: #ffffff;
-  box-shadow: 0 16px 34px -24px rgba(var(--vessel-primary-rgb), 0.46);
+  border-color: rgba(28, 35, 52, 0.4);
+  background: linear-gradient(140deg, #26385a 0%, #1b2840 60%, #141d31 100%);
+  color: #f6f1e5;
+  box-shadow:
+    0 16px 34px -24px rgba(17, 26, 44, 0.6),
+    inset 0 1px 0 rgba(201, 169, 106, 0.25);
 }
 
 .vessel-card-dark {
@@ -2444,4 +2446,56 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
 /* The body owns the themed backdrop (for the crossfade); the page root stays clear. */
 .bg-vessel-page{
   background: transparent;
+}
+
+/* ============================================================
+   RIVIERA MODULE DRESSING — the legacy module views (Tasks,
+   Approvals, Crew, Vault, Route) keep their markup + behavior
+   but read as the same editorial theme: serif display headings,
+   oxford-ink hairlines on eggshell surfaces.
+   ============================================================ */
+
+/* Serif voice for every display heading inside the workspace. */
+.app-page-frame :is(h1, h2, h3) {
+  font-family: var(--font-vessel-display);
+  font-weight: 600;
+  letter-spacing: 0.012em;
+}
+
+/* Legacy gray hairlines become ink hairlines (styles.css loads after
+   Tailwind, so these win the cascade without touching the JSX). */
+.app-page-frame .border-slate-200,
+.app-page-frame .border-slate-200\/80,
+.app-page-frame .border-slate-200\/90 {
+  border-color: rgba(28, 35, 52, 0.14);
+}
+
+.app-page-frame .border-slate-300 {
+  border-color: rgba(28, 35, 52, 0.22);
+}
+
+/* Soft gray fills warm up to the eggshell family. */
+.app-page-frame .bg-slate-50,
+.app-page-frame .bg-slate-50\/80,
+.app-page-frame .bg-slate-50\/90 {
+  background-color: rgba(244, 240, 231, 0.85);
+}
+
+.app-page-frame .bg-slate-100 {
+  background-color: rgba(237, 232, 221, 0.9);
+}
+
+/* Selected rows/pills go oxford navy; flip their ink to ivory so nested
+   text utilities stay readable. */
+.vessel-active :where(.text-slate-950, .text-slate-900, .text-slate-800) {
+  color: #f8f4ea !important;
+}
+
+.vessel-active :where(.text-slate-700, .text-slate-600, .text-slate-500) {
+  color: rgba(240, 236, 224, 0.78) !important;
+}
+
+.vessel-active :where(.bg-white, .bg-white\/78, .bg-white\/80, .bg-white\/90, .bg-white\/95, .bg-slate-50, .bg-slate-100) {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
 }

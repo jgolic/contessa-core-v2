@@ -227,10 +227,10 @@ export function ConfirmActionDialog({
 export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkMode = false, canEdit = true }) {
   const theme = themeClasses(darkMode);
   const containerClass = isSelected ? theme.selectedTask : theme.unselectedTask;
-  const areaClass = isSelected ? "text-[#c3d3ca]" : theme.textSecondary;
-  const badgeClass = isSelected ? "bg-[#e7f5ef] text-[#10261f]" : statusStyles[task.status] || statusStyles.pending;
-  const priorityClass = isSelected ? "bg-[#d9f5ea] text-[#0c3c35]" : priorityStyles[task.priority] || priorityStyles.medium;
-  const departmentClass = isSelected ? "bg-[#e7f5ef] text-[#10261f]" : departmentStyles[task.department] || departmentStyles.General;
+  const areaClass = isSelected ? "text-[rgba(240,236,224,0.78)]" : theme.textSecondary;
+  const badgeClass = isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : statusStyles[task.status] || statusStyles.pending;
+  const priorityClass = isSelected ? "bg-[#efe5cc] text-[#4a3a17]" : priorityStyles[task.priority] || priorityStyles.medium;
+  const departmentClass = isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : departmentStyles[task.department] || departmentStyles.General;
   const [touchStartX, setTouchStartX] = useState(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const swipeOpen = swipeOffset <= -72;
@@ -321,8 +321,8 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
         <div className="mt-3 flex flex-wrap gap-2">
           <Badge className={departmentClass}>{TASK_DEPARTMENT_OPTIONS.includes(task.department) ? task.department : "General"}</Badge>
           <Badge className={`capitalize ${priorityClass}`}>{formatTaskPriorityLabel(task.priority)}</Badge>
-          {task.assignee ? <Badge className={isSelected ? "bg-[#edf7f3] text-[#173028]" : neutralBadgeClass(darkMode)}>{task.assignee}</Badge> : null}
-          {task.dueDate ? <Badge className={isSelected ? "bg-[#edf7f3] text-[#173028]" : neutralBadgeClass(darkMode)}>Due {task.dueDate}</Badge> : null}
+          {task.assignee ? <Badge className={isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : neutralBadgeClass(darkMode)}>{task.assignee}</Badge> : null}
+          {task.dueDate ? <Badge className={isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : neutralBadgeClass(darkMode)}>Due {task.dueDate}</Badge> : null}
         </div>
         {canEdit ? (
           <>
