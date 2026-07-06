@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ContessaUiLogo } from "../components/branding.jsx";
 
 /* ------------------------------------------------------------------ */
 /* Thin-line icon set (all-new, 1.5px stroke)                          */
@@ -89,6 +90,19 @@ const LogIcon = (props) => (
   </Icon>
 );
 
+const MoonIcon = (props) => (
+  <Icon {...props}>
+    <path d="M19.5 14.2A7.8 7.8 0 0 1 9.8 4.5a7.8 7.8 0 1 0 9.7 9.7Z" />
+  </Icon>
+);
+
+const SunIcon = (props) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
+  </Icon>
+);
+
 const MoreIcon = (props) => (
   <Icon {...props}>
     <circle cx="5.5" cy="12" r="1" fill="currentColor" />
@@ -120,18 +134,18 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       aria-label={label}
       aria-current={active ? "page" : undefined}
       className={`group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
-        active ? "text-[#e6cf9f]" : "text-[rgba(233,226,208,0.48)] hover:text-[rgba(240,234,218,0.85)]"
+        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)] hover:text-[var(--mb-ink)]"
       }`}
     >
       <span
-        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[2px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-transparent via-[#c9a96a] to-transparent transition-opacity duration-300 ${
+        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[2px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-transparent via-[var(--mb-gold)] to-transparent transition-opacity duration-300 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       />
       <span className="relative">
         <ItemIcon className="h-[21px] w-[21px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c9a96a] px-1 text-[9px] font-bold leading-none text-[#1d1506]">
+          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
             {count}
           </span>
         ) : null}
@@ -148,20 +162,20 @@ function DockItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       onClick={onClick}
       aria-label={label}
       className={`relative flex min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-2 transition-colors duration-200 ${
-        active ? "text-[#e6cf9f]" : "text-[rgba(233,226,208,0.52)]"
+        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
       }`}
     >
       <span className="relative">
         <ItemIcon className="h-[22px] w-[22px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c9a96a] px-1 text-[9px] font-bold leading-none text-[#1d1506]">
+          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
             {count}
           </span>
         ) : null}
       </span>
       <span className="max-w-full truncate text-[9px] font-bold uppercase tracking-[0.14em]">{label}</span>
       <span
-        className={`h-[3px] w-[3px] rounded-full bg-[#c9a96a] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
+        className={`h-[3px] w-[3px] rounded-full bg-[var(--mb-gold-badge)] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
       />
     </button>
   );
@@ -171,18 +185,18 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[24000]">
-      <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[rgba(3,5,10,0.55)] backdrop-blur-[3px]" />
+      <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[var(--mb-scrim)] backdrop-blur-[3px]" />
       <div
         className={`mb-glass absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
           align === "right" ? "right-3 top-3 bottom-3 rounded-[22px]" : "left-3 bottom-24 rounded-[22px] lg:left-24 lg:bottom-6"
         }`}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-[rgba(201,169,106,0.14)] px-5 py-4">
-          <span className="midnight-heading text-lg text-[#f4f0e6]">{title}</span>
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--mb-line)] px-5 py-4">
+          <span className="midnight-heading text-lg text-[var(--mb-ink)]">{title}</span>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(201,169,106,0.25)] text-[rgba(233,226,208,0.7)] transition-colors hover:border-[rgba(230,207,159,0.6)] hover:text-[#e6cf9f]"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)]"
             aria-label={`Close ${title}`}
           >
             <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -198,6 +212,7 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
 
 export default function MidnightShell({
   darkMode = true,
+  onToggleDarkMode,
   vesselTitle = "M/Y VESSEL",
   vesselIdentifier = "",
   modeLabel = "",
@@ -212,21 +227,18 @@ export default function MidnightShell({
   onNavDocs,
   onNavRoute,
   onNavAlerts,
-  onNavSettings,
   notifications = [],
   notificationCount = 0,
   onSelectNotification,
   fleetVessels = [],
   activeVesselId = "contessa",
   onSwitchFleetVessel,
-  history = [],
-  historyOpen = false,
-  onHistoryOpenChange,
-  formatHistoryTime = (value) => String(value || ""),
+  onOpenFleet,
+  onOpenHistory,
+  onOpenPreferences,
 }) {
   const clock = useClock();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [fleetOpen, setFleetOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
   // Counts come from persisted client state; render them only after mount so
@@ -250,9 +262,7 @@ export default function MidnightShell({
 
   const closeAll = () => {
     setNotificationsOpen(false);
-    setFleetOpen(false);
     setMoreOpen(false);
-    if (historyOpen) onHistoryOpenChange?.(false);
   };
 
   const navigate = (fn) => () => {
@@ -268,9 +278,9 @@ export default function MidnightShell({
           type="button"
           onClick={navigate(onNavCommand)}
           aria-label="Open command bridge"
-          className="mt-5 flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(201,169,106,0.4)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
+          className="mt-5 flex h-12 w-12 items-center justify-center rounded-[16px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
         >
-          <span className="midnight-heading text-[1.45rem] italic leading-none text-[#e6cf9f]">C</span>
+          <ContessaUiLogo className="h-9 w-9" />
         </button>
 
         <div className="mt-6 flex w-full flex-1 flex-col items-stretch justify-center gap-1">
@@ -291,37 +301,45 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
             aria-label="Open notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[rgba(233,226,208,0.55)] transition-colors hover:text-[#e6cf9f]"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
           >
             <BellIcon className="h-5 w-5" />
             {shownCount(notificationCount) ? (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c9a96a] px-1 text-[9px] font-bold leading-none text-[#1d1506]">
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
                 {shownCount(notificationCount)}
               </span>
             ) : null}
           </button>
           <button
             type="button"
-            onClick={() => { closeAll(); setFleetOpen(true); }}
-            aria-label="Switch vessel"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[rgba(233,226,208,0.55)] transition-colors hover:text-[#e6cf9f]"
+            onClick={() => { closeAll(); onOpenFleet?.(); }}
+            aria-label="Open fleet manager"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
           >
             <AnchorIcon className="h-5 w-5" />
           </button>
           <button
             type="button"
-            onClick={() => { closeAll(); onHistoryOpenChange?.(true); }}
-            aria-label="Open activity log"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[rgba(233,226,208,0.55)] transition-colors hover:text-[#e6cf9f]"
+            onClick={() => { closeAll(); onOpenHistory?.(); }}
+            aria-label="Open history"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
           >
             <LogIcon className="h-5 w-5" />
           </button>
           <button
             type="button"
-            onClick={navigate(onNavSettings)}
+            onClick={onToggleDarkMode}
+            aria-label={darkMode ? "Switch to day watch" : "Switch to night watch"}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+          >
+            {darkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => { closeAll(); onOpenPreferences?.(); }}
             aria-label="Open settings"
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:text-[#e6cf9f] ${
-              activeModule === "settings" ? "text-[#e6cf9f]" : "text-[rgba(233,226,208,0.55)]"
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:text-[var(--mb-gold-bright)] ${
+              activeModule === "settings" ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
             }`}
           >
             <GearIcon className="h-5 w-5" />
@@ -341,22 +359,22 @@ export default function MidnightShell({
             type="button"
             onClick={navigate(onNavCommand)}
             aria-label="Open command bridge"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(201,169,106,0.4)] lg:hidden"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] lg:hidden"
           >
-            <span className="midnight-heading text-lg italic leading-none text-[#e6cf9f]">C</span>
+            <ContessaUiLogo className="h-7 w-7" />
           </button>
           <div className="min-w-0">
             <div className="flex min-w-0 items-baseline gap-2.5">
-              <span className="midnight-heading truncate text-[1.05rem] tracking-[0.09em] text-[#f4f0e6]">{vesselTitle}</span>
+              <span className="midnight-heading truncate text-[1.05rem] tracking-[0.09em] text-[var(--mb-ink)]">{vesselTitle}</span>
               {vesselIdentifier ? (
-                <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.24em] text-[rgba(233,226,208,0.42)] sm:inline">
+                <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-soft)] sm:inline">
                   {vesselIdentifier}
                 </span>
               ) : null}
             </div>
             {modeLabel ? (
-              <div className="mt-0.5 flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.22em] text-[#c9a96a]">
-                <span className="inline-block h-1 w-1 rounded-full bg-[#c9a96a]" />
+              <div className="mt-0.5 flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.22em] text-[var(--mb-gold)]">
+                <span className="inline-block h-1 w-1 rounded-full bg-[var(--mb-gold-badge)]" />
                 {modeLabel}
               </div>
             ) : null}
@@ -364,25 +382,33 @@ export default function MidnightShell({
         </div>
 
         <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
-          <span className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[rgba(233,226,208,0.5)] md:inline">
+          <span className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] md:inline">
             {roleLabel} view
           </span>
-          <span suppressHydrationWarning className="text-[13px] font-semibold tabular-nums tracking-[0.08em] text-[rgba(240,234,218,0.75)]">
+          <span suppressHydrationWarning className="text-[13px] font-semibold tabular-nums tracking-[0.08em] text-[var(--mb-ink)]">
             {clockLabel}
           </span>
           <span
             title={isOffline ? "Offline" : "Live"}
-            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[#b1473f]" : "bg-[#58ae8f] shadow-[0_0_8px_rgba(88,174,143,0.8)]"}`}
+            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[#b1473f]" : "bg-[var(--mb-safe)] shadow-[0_0_8px_rgba(88,174,143,0.8)]"}`}
           />
+          <button
+            type="button"
+            onClick={onToggleDarkMode}
+            aria-label={darkMode ? "Switch to day watch" : "Switch to night watch"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] lg:hidden"
+          >
+            {darkMode ? <SunIcon className="h-[18px] w-[18px]" /> : <MoonIcon className="h-[18px] w-[18px]" />}
+          </button>
           <button
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
             aria-label="Open notifications"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(201,169,106,0.2)] text-[rgba(233,226,208,0.65)] transition-colors hover:border-[rgba(230,207,159,0.5)] hover:text-[#e6cf9f] lg:hidden"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] lg:hidden"
           >
             <BellIcon className="h-[18px] w-[18px]" />
             {shownCount(notificationCount) ? (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c9a96a] px-1 text-[9px] font-bold leading-none text-[#1d1506]">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
                 {shownCount(notificationCount)}
               </span>
             ) : null}
@@ -411,11 +437,11 @@ export default function MidnightShell({
                     closeAll();
                     onSelectNotification?.(notification);
                   }}
-                  className="w-full rounded-[14px] border border-transparent px-3.5 py-3 text-left transition-colors hover:border-[rgba(201,169,106,0.3)] hover:bg-[rgba(201,169,106,0.06)]"
+                  className="w-full rounded-[14px] border border-transparent px-3.5 py-3 text-left transition-colors hover:border-[var(--mb-line-strong)] hover:bg-[var(--mb-gold-tint)]"
                 >
-                  <div className="truncate text-sm font-semibold text-[#f4f0e6]">{notification.title || notification.message}</div>
+                  <div className="truncate text-sm font-semibold text-[var(--mb-ink)]">{notification.title || notification.message}</div>
                   {notification.detail || notification.description ? (
-                    <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[rgba(229,223,209,0.6)]">
+                    <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[var(--mb-muted)]">
                       {notification.detail || notification.description}
                     </div>
                   ) : null}
@@ -424,7 +450,7 @@ export default function MidnightShell({
             ))}
           </ul>
         ) : (
-          <p className="px-3 py-6 text-center text-sm italic text-[rgba(229,223,209,0.55)]">The watch is quiet. No signals right now.</p>
+          <p className="px-3 py-6 text-center text-sm italic text-[var(--mb-muted)]">The watch is quiet. No signals right now.</p>
         )}
         <button
           type="button"
@@ -435,39 +461,6 @@ export default function MidnightShell({
         </button>
       </ShellPanel>
 
-      {/* ---- Fleet switcher ---- */}
-      <ShellPanel open={fleetOpen} onClose={closeAll} title="Fleet" align="left">
-        <ul className="grid gap-1.5">
-          {fleetVessels.map((vessel) => {
-            const isActive = vessel?.id === activeVesselId;
-            return (
-              <li key={vessel?.id}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeAll();
-                    if (!isActive) onSwitchFleetVessel?.(vessel?.id);
-                  }}
-                  className={`flex w-full items-center justify-between gap-3 rounded-[14px] border px-3.5 py-3 text-left transition-colors ${
-                    isActive
-                      ? "border-[rgba(201,169,106,0.45)] bg-[rgba(201,169,106,0.08)]"
-                      : "border-transparent hover:border-[rgba(201,169,106,0.3)] hover:bg-[rgba(201,169,106,0.05)]"
-                  }`}
-                >
-                  <span className="min-w-0">
-                    <span className="midnight-heading block truncate text-base text-[#f4f0e6]">{vessel?.name || "Vessel"}</span>
-                    <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.5)]">
-                      {vessel?.details?.status || "Operational"}
-                    </span>
-                  </span>
-                  {isActive ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c9a96a] shadow-[0_0_8px_rgba(201,169,106,0.8)]" /> : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </ShellPanel>
-
       {/* ---- Mobile "More" sheet ---- */}
       <ShellPanel open={moreOpen} onClose={closeAll} title="More" align="left">
         <div className="grid grid-cols-2 gap-1.5">
@@ -475,18 +468,18 @@ export default function MidnightShell({
             { label: "Vault", icon: VaultIcon, onClick: onNavDocs, count: shownCount(counts.docs || 0) },
             { label: "Route", icon: RouteIcon, onClick: onNavRoute, count: shownCount(counts.route || 0) },
             { label: "Alerts", icon: BellIcon, onClick: onNavAlerts, count: shownCount(notificationCount) },
-            { label: "Settings", icon: GearIcon, onClick: onNavSettings, count: 0 },
+            { label: "Settings", icon: GearIcon, onClick: onOpenPreferences, count: 0 },
           ].map((entry) => (
             <button
               key={entry.label}
               type="button"
               onClick={navigate(entry.onClick)}
-              className="flex flex-col items-center gap-2 rounded-[16px] border border-[rgba(201,169,106,0.16)] px-3 py-4 text-[rgba(233,226,208,0.75)] transition-colors hover:border-[rgba(230,207,159,0.45)] hover:text-[#e6cf9f]"
+              className="flex flex-col items-center gap-2 rounded-[16px] border border-[var(--mb-line)] px-3 py-4 text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)]"
             >
               <span className="relative">
                 <entry.icon className="h-6 w-6" />
                 {entry.count ? (
-                  <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c9a96a] px-1 text-[9px] font-bold leading-none text-[#1d1506]">
+                  <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
                     {entry.count}
                   </span>
                 ) : null}
@@ -495,8 +488,8 @@ export default function MidnightShell({
             </button>
           ))}
         </div>
-        <div className="mt-3 border-t border-[rgba(201,169,106,0.14)] pt-3">
-          <div className="px-1 pb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[rgba(229,223,209,0.45)]">Fleet</div>
+        <div className="mt-3 border-t border-[var(--mb-line)] pt-3">
+          <div className="px-1 pb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-muted)]">Fleet</div>
           <div className="grid gap-1.5">
             {fleetVessels.map((vessel) => {
               const isActive = vessel?.id === activeVesselId;
@@ -508,45 +501,43 @@ export default function MidnightShell({
                     closeAll();
                     if (!isActive) onSwitchFleetVessel?.(vessel?.id);
                   }}
-                  className={`flex items-center justify-between rounded-[14px] border px-3.5 py-2.5 text-left text-sm font-semibold text-[#f4f0e6] ${
-                    isActive ? "border-[rgba(201,169,106,0.45)] bg-[rgba(201,169,106,0.08)]" : "border-transparent hover:bg-[rgba(201,169,106,0.05)]"
+                  className={`flex items-center justify-between rounded-[14px] border px-3.5 py-2.5 text-left text-sm font-semibold text-[var(--mb-ink)] ${
+                    isActive ? "border-[var(--mb-line-strong)] bg-[var(--mb-gold-tint)]" : "border-transparent hover:bg-[var(--mb-gold-tint)]"
                   }`}
                 >
                   {vessel?.name || "Vessel"}
-                  {isActive ? <span className="h-1.5 w-1.5 rounded-full bg-[#c9a96a]" /> : null}
+                  {isActive ? <span className="h-1.5 w-1.5 rounded-full bg-[var(--mb-gold-badge)]" /> : null}
                 </button>
               );
             })}
           </div>
+          <div className="mt-3 grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              onClick={() => { closeAll(); onOpenFleet?.(); }}
+              className="flex items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
+            >
+              <AnchorIcon className="h-4 w-4" />
+              Fleet manager
+            </button>
+            <button
+              type="button"
+              onClick={() => { closeAll(); onOpenHistory?.(); }}
+              className="flex items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
+            >
+              <LogIcon className="h-4 w-4" />
+              History
+            </button>
+          </div>
           <button
             type="button"
-            onClick={() => { closeAll(); onHistoryOpenChange?.(true); }}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[14px] border border-[rgba(201,169,106,0.2)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[rgba(233,226,208,0.7)]"
+            onClick={onToggleDarkMode}
+            className="mt-1.5 flex w-full items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
           >
-            <LogIcon className="h-4 w-4" />
-            Activity log
+            {darkMode ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+            {darkMode ? "Day watch" : "Night watch"}
           </button>
         </div>
-      </ShellPanel>
-
-      {/* ---- Ship's log (history) ---- */}
-      <ShellPanel open={historyOpen} onClose={closeAll} title="Ship's log">
-        {history.length ? (
-          <ol className="relative ml-2 border-l border-[rgba(201,169,106,0.18)]">
-            {history.slice(0, 40).map((entry, index) => (
-              <li key={entry.id || `${entry.at}-${index}`} className="relative py-3 pl-5 pr-2">
-                <span className="absolute -left-[4.5px] top-[1.15rem] h-2 w-2 rounded-full border border-[#c9a96a] bg-[#060b18]" aria-hidden="true" />
-                <div className="text-sm font-semibold text-[#f4f0e6]">{entry.action || "Update"}</div>
-                {entry.detail ? <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[rgba(229,223,209,0.6)]">{entry.detail}</div> : null}
-                <div suppressHydrationWarning className="mt-1 text-[9.5px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.4)]">
-                  {[entry.by, formatHistoryTime(entry.at)].filter(Boolean).join(" · ")}
-                </div>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <p className="px-3 py-6 text-center text-sm italic text-[rgba(229,223,209,0.55)]">Nothing logged yet.</p>
-        )}
       </ShellPanel>
     </>
   );

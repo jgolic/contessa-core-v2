@@ -334,12 +334,12 @@ function IntelligencePanel({
   return (
     <section data-mb-reveal className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">{title}</h3>
+        <h3 className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">{title}</h3>
         {onAction ? (
           <button
             type="button"
             onClick={onAction}
-            className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[rgba(233,226,208,0.5)] transition-colors hover:text-[#e6cf9f]"
+            className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
           >
             {actionLabel}
             <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -347,7 +347,7 @@ function IntelligencePanel({
         ) : null}
       </div>
       <div className="midnight-gold-rule mt-3" />
-      {subtitle ? <p className="mt-3 text-[13px] leading-6 text-[rgba(229,223,209,0.55)]">{subtitle}</p> : null}
+      {subtitle ? <p className="mt-3 text-[13px] leading-6 text-[var(--mb-muted)]">{subtitle}</p> : null}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -356,12 +356,12 @@ function IntelligencePanel({
 function ConfidenceRing({ score = 0, mood = "calm" }) {
   const radius = 30;
   const circumference = 2 * Math.PI * radius;
-  const stroke = mood === "critical" ? "#d9776b" : mood === "pressure" ? "#c9a96a" : "#58ae8f";
+  const stroke = mood === "critical" ? "var(--mb-critical)" : mood === "pressure" ? "var(--mb-gold)" : "var(--mb-safe)";
 
   return (
     <div className="relative h-[88px] w-[88px] shrink-0" title="Vessel confidence, calculated live from open work, approvals, and compliance">
       <svg viewBox="0 0 72 72" className="h-full w-full -rotate-90">
-        <circle cx="36" cy="36" r={radius} fill="none" stroke="rgba(201,169,106,0.14)" strokeWidth="2" />
+        <circle cx="36" cy="36" r={radius} fill="none" stroke="var(--mb-line)" strokeWidth="2" />
         <circle
           cx="36"
           cy="36"
@@ -376,10 +376,10 @@ function ConfidenceRing({ score = 0, mood = "calm" }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-lg font-bold leading-none tracking-tight text-[#f4f0e6]" data-mb-count={score} data-mb-suffix="%">
+        <span className="text-lg font-bold leading-none tracking-tight text-[var(--mb-ink)]" data-mb-count={score} data-mb-suffix="%">
           {score}%
         </span>
-        <span className="mt-1 text-[7.5px] font-bold uppercase tracking-[0.2em] text-[rgba(229,223,209,0.5)]">Confidence</span>
+        <span className="mt-1 text-[7.5px] font-bold uppercase tracking-[0.2em] text-[var(--mb-muted)]">Confidence</span>
       </div>
     </div>
   );
@@ -402,7 +402,7 @@ function VesselStateBanner({
   const focusLine = isOwnerView
     ? `${pendingSpend} pending spend across ${stats.pendingApprovals || 0} decision${(stats.pendingApprovals || 0) === 1 ? "" : "s"}. Detail stays out of the way unless it is material.`
     : config.description;
-  const moodText = mood === "critical" ? "text-[#e9a49a]" : mood === "pressure" ? "text-[#e6cf9f]" : "text-[#8fd0b5]";
+  const moodText = mood === "critical" ? "text-[var(--mb-critical-text)]" : mood === "pressure" ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-safe-text)]";
 
   return (
     <section
@@ -410,12 +410,12 @@ function VesselStateBanner({
       data-jump-target
       data-mb-reveal
       style={{ "--jump-radius": "18px" }}
-      className="jump-highlight-target flex min-w-0 items-center justify-between gap-5 rounded-[18px] border border-[rgba(201,169,106,0.16)] bg-[rgba(10,15,29,0.45)] px-5 py-4 backdrop-blur-xl md:px-6"
+      className="jump-highlight-target flex min-w-0 items-center justify-between gap-5 rounded-[18px] border border-[var(--mb-line)] bg-[var(--mb-panel)] px-5 py-4 backdrop-blur-xl md:px-6"
     >
       <div className="min-w-0">
         <div className={`text-[10px] font-bold uppercase tracking-[0.26em] ${moodText}`}>Vessel state</div>
-        <h2 className="midnight-heading mt-1.5 text-2xl text-[#f4f0e6] md:text-[1.7rem]">{config.label}</h2>
-        <p className="mt-1.5 max-w-2xl text-[13px] leading-6 text-[rgba(229,223,209,0.55)]">{focusLine}</p>
+        <h2 className="midnight-heading mt-1.5 text-2xl text-[var(--mb-ink)] md:text-[1.7rem]">{config.label}</h2>
+        <p className="mt-1.5 max-w-2xl text-[13px] leading-6 text-[var(--mb-muted)]">{focusLine}</p>
       </div>
       <ConfidenceRing score={confidenceScore} mood={mood} />
     </section>
@@ -1081,41 +1081,41 @@ export function TodayOperationsView({
 
   return (
     <>
-      <OceanCanvas enabled={darkMode} />
+      <OceanCanvas enabled darkMode={darkMode} />
       <div className="midnight-grain" aria-hidden="true" />
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
         {/* ---- Hero: the bridge at night ---- */}
         <section className="flex min-h-[calc(92svh-7rem)] flex-col justify-center py-12 md:py-16">
-          <p data-mb-hero className="text-[10px] font-bold uppercase tracking-[0.34em] text-[#c9a96a] md:text-[11px]">
+          <p data-mb-hero className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--mb-gold)] md:text-[11px]">
             Motor yacht · Command bridge
           </p>
           <h1
             data-mb-hero
-            className="vessel-display-title vessel-title--dark mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]"
+            className={`vessel-display-title ${darkMode ? "vessel-title--dark" : "vessel-title--light"} mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]`}
             style={{ fontSize: "clamp(3.2rem, 12vw, 9rem)" }}
           >
             {heroName}
           </h1>
           <div data-mb-hero className="midnight-gold-rule mt-7 w-48" />
-          <p data-mb-hero className="mt-7 max-w-2xl text-[15px] leading-7 text-[rgba(229,223,209,0.68)] md:text-[17px] md:leading-8">
+          <p data-mb-hero className="mt-7 max-w-2xl text-[15px] leading-7 text-[var(--mb-muted)] md:text-[17px] md:leading-8">
             {heroStatement}
           </p>
           {heroOnDeck ? (
-            <p data-mb-hero className="mt-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[rgba(229,223,209,0.45)]">
+            <p data-mb-hero className="mt-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--mb-muted)]">
               On deck — {heroOnDeck}
             </p>
           ) : null}
 
           <div data-mb-hero className="mt-8 flex flex-wrap items-center gap-x-9 gap-y-5">
             <div className="min-w-0">
-              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[rgba(229,223,209,0.45)]">Pending spend</div>
-              <div className="midnight-heading mt-1.5 text-[1.7rem] leading-none text-[#e6cf9f]">{pendingSpendLabel}</div>
+              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Pending spend</div>
+              <div className="midnight-heading mt-1.5 text-[1.7rem] leading-none text-[var(--mb-gold-bright)]">{pendingSpendLabel}</div>
             </div>
-            <div className="hidden h-11 w-px bg-[rgba(201,169,106,0.22)] sm:block" />
+            <div className="hidden h-11 w-px bg-[var(--mb-line-strong)] sm:block" />
             <div className="min-w-0 max-w-full">
-              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[rgba(229,223,209,0.45)]">Next best action</div>
-              <div className="midnight-heading mt-1.5 truncate text-[1.7rem] italic leading-tight text-[#f4f0e6]">{nextActionLabel}</div>
+              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Next best action</div>
+              <div className="midnight-heading mt-1.5 truncate text-[1.7rem] italic leading-tight text-[var(--mb-ink)]">{nextActionLabel}</div>
             </div>
           </div>
 
@@ -1130,9 +1130,9 @@ export function TodayOperationsView({
               if (typeof document === "undefined") return;
               document.getElementById("vessel-state-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className="group mt-12 inline-flex w-fit items-center gap-3 text-[10px] font-bold uppercase tracking-[0.28em] text-[rgba(233,226,208,0.45)] transition-colors hover:text-[#e6cf9f]"
+            className="group mt-12 inline-flex w-fit items-center gap-3 text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(201,169,106,0.3)] transition-colors group-hover:border-[rgba(230,207,159,0.6)]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] transition-colors group-hover:border-[var(--mb-gold-hover)]">
               <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 animate-bounce [animation-duration:2.2s]"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
             Descend to operations
@@ -1160,8 +1160,8 @@ export function TodayOperationsView({
             >
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
                 <div className="min-w-0">
-                  <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">Priority queue</div>
-                  <h2 className="midnight-heading mt-2 text-[1.75rem] leading-tight text-[#f4f0e6] md:text-[2rem]">
+                  <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Priority queue</div>
+                  <h2 className="midnight-heading mt-2 text-[1.75rem] leading-tight text-[var(--mb-ink)] md:text-[2rem]">
                     {isOwnerView ? "Material signals, surfaced first." : `${vesselStateConfig.label} priorities, surfaced first.`}
                   </h2>
                 </div>
@@ -1176,7 +1176,7 @@ export function TodayOperationsView({
                   <button
                     type="button"
                     onClick={onNavigateToTasks}
-                    className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[rgba(233,226,208,0.55)] transition-colors hover:text-[#e6cf9f]"
+                    className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
                   >
                     All work
                     <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1185,13 +1185,13 @@ export function TodayOperationsView({
               </div>
 
               {priorityItems.length ? (
-                <ol className="mt-7 border-b border-[rgba(201,169,106,0.14)]">
+                <ol className="mt-7 border-b border-[var(--mb-line)]">
                   {priorityItems.map((item, index) => {
                     const dueMeta = item?.meta?.find((entry) => ["Due", "Expiry"].includes(entry?.label));
                     const metaLine = [compactTypeLabel(item.type), item.badge, item.assignedTo || item.requester, dueMeta?.value, item.amount]
                       .filter(Boolean)
                       .join("  ·  ");
-                    const tickClass = item.tone === "critical" ? "bg-[#d9776b]" : item.tone === "warning" ? "bg-[#c9a96a]" : "bg-[rgba(233,226,208,0.28)]";
+                    const tickClass = item.tone === "critical" ? "bg-[var(--mb-critical)]" : item.tone === "warning" ? "bg-[var(--mb-gold-badge)]" : "bg-[var(--mb-tick-neutral)]";
                     return (
                       <li key={item.id}>
                         <button
@@ -1205,14 +1205,14 @@ export function TodayOperationsView({
                           <span className={`absolute left-0 top-1/2 h-[46%] w-[2px] -translate-y-1/2 rounded-r-full ${tickClass}`} />
                           <span className="mb-index-numeral shrink-0 text-[2.4rem] md:text-[3.2rem]">{String(index + 1).padStart(2, "0")}</span>
                           <span className="min-w-0 flex-1">
-                            <span className="midnight-heading block text-xl leading-snug text-[#f4f0e6] transition-colors duration-300 group-hover:text-[#e6cf9f] md:text-[1.5rem]">
+                            <span className="midnight-heading block text-xl leading-snug text-[var(--mb-ink)] transition-colors duration-300 group-hover:text-[var(--mb-gold-bright)] md:text-[1.5rem]">
                               {item.title}
                             </span>
-                            <span className="mt-1.5 block truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.45)]">
+                            <span className="mt-1.5 block truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--mb-muted)]">
                               {metaLine}
                             </span>
                           </span>
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(201,169,106,0.22)] text-[rgba(233,226,208,0.45)] transition-all duration-300 group-hover:border-[rgba(230,207,159,0.6)] group-hover:text-[#e6cf9f]" aria-hidden="true">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-all duration-300 group-hover:border-[var(--mb-gold-hover)] group-hover:text-[var(--mb-gold-bright)]" aria-hidden="true">
                             <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                           </span>
                         </button>
@@ -1234,7 +1234,7 @@ export function TodayOperationsView({
             </section>
 
             <div className="mt-14">
-              <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[#c9a96a]">Operations ledger</div>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Operations ledger</div>
             </div>
 
             <SectionAccordion
@@ -1411,7 +1411,7 @@ export function TodayOperationsView({
 
           </div>
 
-          <aside className="grid min-w-0 content-start gap-11 xl:col-span-4 xl:border-l xl:border-[rgba(201,169,106,0.12)] xl:pl-10">
+          <aside className="grid min-w-0 content-start gap-11 xl:col-span-4 xl:border-l xl:border-[var(--mb-line)] xl:pl-10">
             <IntelligencePanel
               darkMode={darkMode}
               title="Alerts Summary"
@@ -1473,7 +1473,7 @@ export function TodayOperationsView({
                         <button
                           type="button"
                           onClick={() => onApprovalAction?.(approvalItems[0].raw || approvalItems[0], "declined")}
-                          className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-[rgba(201,169,106,0.25)] px-4 py-2.5 text-sm font-semibold text-[rgba(233,226,208,0.75)] transition-colors hover:border-[rgba(217,119,107,0.6)] hover:text-[#e9a49a]"
+                          className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-[var(--mb-line-strong)] px-4 py-2.5 text-sm font-semibold text-[var(--mb-soft)] transition-colors hover:border-[rgba(217,119,107,0.6)] hover:text-[var(--mb-critical-text)]"
                         >
                           Decline
                         </button>
@@ -1527,21 +1527,21 @@ export function TodayOperationsView({
               subtitle={activityItems.length ? "The latest changes across tasks, approvals, and crew." : "Updates appear here as the crew logs work."}
             >
               {activityItems.length ? (
-                <ol id="activity-section" className="relative ml-1 grid gap-0 border-l border-[rgba(201,169,106,0.18)]">
+                <ol id="activity-section" className="relative ml-1 grid gap-0 border-l border-[var(--mb-line)]">
                   {activityItems.slice(0, 5).map((item) => (
                     <li key={item.id} className="relative">
-                      <span className="absolute -left-[4.5px] top-[1.35rem] h-2 w-2 rounded-full border border-[#c9a96a] bg-[#060b18]" aria-hidden="true" />
+                      <span className="absolute -left-[4.5px] top-[1.35rem] h-2 w-2 rounded-full border border-[var(--mb-gold)] bg-[var(--mb-bg)]" aria-hidden="true" />
                       <button
                         id={`activity-item-${item.id}`}
                         data-jump-target
                         style={{ "--jump-radius": "12px" }}
                         type="button"
                         onClick={() => openInspector(item)}
-                        className="jump-highlight-target group w-full min-w-0 rounded-[12px] py-3.5 pl-5 pr-2 text-left transition-colors duration-200 hover:bg-[rgba(201,169,106,0.05)]"
+                        className="jump-highlight-target group w-full min-w-0 rounded-[12px] py-3.5 pl-5 pr-2 text-left transition-colors duration-200 hover:bg-[var(--mb-gold-tint)]"
                       >
-                        <div className="truncate text-sm font-semibold text-[#f4f0e6] transition-colors group-hover:text-[#e6cf9f]">{item.title}</div>
-                        <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[rgba(229,223,209,0.55)]">{item.subtitle}</div>
-                        <div suppressHydrationWarning className="mt-1.5 text-[9.5px] font-bold uppercase tracking-[0.18em] text-[rgba(229,223,209,0.4)]">{`${item.assignedTo} · ${item.dueDate}`}</div>
+                        <div className="truncate text-sm font-semibold text-[var(--mb-ink)] transition-colors group-hover:text-[var(--mb-gold-bright)]">{item.title}</div>
+                        <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[var(--mb-muted)]">{item.subtitle}</div>
+                        <div suppressHydrationWarning className="mt-1.5 text-[9.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-muted)]">{`${item.assignedTo} · ${item.dueDate}`}</div>
                       </button>
                     </li>
                   ))}

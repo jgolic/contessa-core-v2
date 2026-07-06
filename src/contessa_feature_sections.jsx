@@ -2712,6 +2712,524 @@ export function AppShellHeader({
   );
 }
 
+export function MidnightControlDeck({
+  darkMode = false,
+  isOffline = false,
+  syncState = null,
+  currentRole,
+  onCurrentRoleChange,
+  appMode = "view",
+  onAppModeChange,
+  canEditApp = true,
+  vesselState = {},
+  onVesselStateModeChange,
+  preferencesOpen = false,
+  onPreferencesOpenChange,
+  historyOpen = false,
+  onHistoryOpenChange,
+  actorName,
+  onActorNameChange,
+  retrieveOpen,
+  onToggleRetrieve,
+  declinedTasks = [],
+  onRetrieveDeclinedTask,
+  history = [],
+  sharingOpen = false,
+  onSharingOpenChange,
+  jsonImportInputRef,
+  onImportAppStateJson,
+  onExportCsv,
+  onExportAppStateJson,
+  onOpenJsonImportPicker,
+  onPrintSummary,
+  onResetDemoData,
+  shareUrlStatus,
+  localShareWarning,
+  onShareToast,
+  fleetOpen = false,
+  onFleetOpenChange,
+  fleetVessels = [],
+  fleetMetricsByVessel = {},
+  activeVesselId = "contessa",
+  onSwitchFleetVessel,
+  onAddFleetVessel,
+  onOpenSettingsWorkspace,
+}) {
+  const theme = themeClasses(darkMode);
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [fleetDraft, setFleetDraft] = useState({
+    vesselName: "",
+    lengthFeet: "",
+    vesselType: "",
+    flag: "",
+    homePort: "",
+    crewNumber: "",
+    notes: "",
+  });
+  const [fleetDraftError, setFleetDraftError] = useState("");
+  const [fleetFormOpen, setFleetFormOpen] = useState(false);
+
+  useEffect(() => {
+    if (!fleetOpen) {
+      setFleetFormOpen(false);
+      setFleetDraftError("");
+      setFleetDraft({ vesselName: "", lengthFeet: "", vesselType: "", flag: "", homePort: "", crewNumber: "", notes: "" });
+    }
+  }, [fleetOpen]);
+
+  const selectedFleetFlag = normalizeFlag(fleetDraft.flag);
+  const fleetHomePortOptions = homePortsByFlag[selectedFleetFlag] || [];
+  const settingsCardClass = darkMode
+    ? "settings-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+    : "settings-popover-card-light rounded-2xl border border-slate-300 bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]";
+  const settingsLabelClass = darkMode
+    ? "settings-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
+    : "settings-popover-label-light text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700";
+  const settingsSelectClass = darkMode
+    ? "settings-popover-field-dark !border-white/15 !bg-slate-800/95 !text-slate-50 dark:!border-white/15 dark:!bg-slate-800/95 dark:!text-slate-50"
+    : "settings-popover-field-light !border-slate-300 !bg-white !text-slate-950";
+  const settingsValueBoxClass = darkMode
+    ? "settings-popover-field-dark border-white/15 bg-slate-800/95 text-slate-50"
+    : "settings-popover-field-light border-slate-300 bg-white text-slate-950";
+  const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-cyan-300/40 hover:!bg-cyan-300/12" : ""}`;
+  const settingsMetaClass = darkMode ? "text-slate-200" : "settings-popover-meta-light text-slate-700";
+  const fleetLabelClass = darkMode
+    ? "fleet-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
+    : "fleet-popover-label-light text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700";
+  const fleetDetailGridClass = darkMode
+    ? "fleet-popover-detail-dark grid gap-1 text-xs font-semibold text-slate-200"
+    : "fleet-popover-detail-light grid gap-1 text-xs font-semibold text-slate-700";
+  const fleetFormLabelClass = "mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200";
+  const syncPendingCount = Number(syncState?.unsyncedItemsCount || 0);
+  const syncLastSavedAt = syncState?.lastSyncAt ? formatHistoryTime(syncState.lastSyncAt) : "Not saved yet";
+  const syncStatusLabel = isOffline || syncPendingCount > 0
+    ? `${Math.max(syncPendingCount, 1)} pending local change${Math.max(syncPendingCount, 1) === 1 ? "" : "s"}`
+    : "Saved locally";
+  const syncStatusClass = isOffline || syncPendingCount > 0
+    ? "border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/18 dark:text-amber-50"
+    : "border-teal-300/70 bg-teal-50/90 text-teal-800 dark:border-cyan-300/35 dark:bg-cyan-300/14 dark:text-cyan-50";
+
+  return (
+    <>
+      {/* ---- History (ship's log, actor identity, retrieve declined) ---- */}
+      <Dialog open={historyOpen} onOpenChange={onHistoryOpenChange}>
+        <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
+          <DialogHeader>
+            <DialogTitle>History</DialogTitle>
+          </DialogHeader>
+          <HistoryPanel
+            actorName={actorName}
+            onActorNameChange={onActorNameChange}
+            darkMode={darkMode}
+            retrieveOpen={retrieveOpen}
+            onToggleRetrieve={onToggleRetrieve}
+            declinedTasks={declinedTasks}
+            onRetrieveDeclinedTask={onRetrieveDeclinedTask}
+            history={history}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Legal ---- */}
+      <Dialog open={legalOpen} onOpenChange={setLegalOpen}>
+        <DialogContent className={`rounded-lg ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>
+          <DialogHeader>
+            <DialogTitle>Legal</DialogTitle>
+          </DialogHeader>
+          <SettingsPanel darkMode={darkMode} />
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Share / backup ---- */}
+      <Dialog open={sharingOpen} onOpenChange={onSharingOpenChange}>
+        <DialogContent className={`rounded-[28px] ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "bg-white text-[#1d2b24]"}`}>
+          <DialogHeader>
+            <DialogTitle>Share</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {localShareWarning ? (
+              <div className={`rounded-lg border p-3 text-sm ${darkMode ? "border-[#6c5a27] bg-[#2c2515] text-[#ffe7ad]" : "border-[#ecd28c] bg-[#fff8df] text-[#7a5416]"}`}>
+                <div className="font-semibold">Local Development Warning</div>
+                <div className="mt-1">{localShareWarning}</div>
+              </div>
+            ) : null}
+            <input
+              ref={jsonImportInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={onImportAppStateJson}
+              className="hidden"
+            />
+            <div className={`rounded-2xl border p-4 text-sm ${darkMode ? "border-[#31443a] bg-[#18211d] text-[#f4fbf6]" : "border-[#d8e7df] bg-[#f7fbf9] text-[#1f332b]"}`}>
+              <div className="mb-3 text-base font-semibold">Share</div>
+              <div className={`mb-4 rounded-xl border p-3 ${darkMode ? "border-[#2d5c4e] bg-[#12241f] text-[#e7f8f1]" : "border-[#c9ded3] bg-white text-[#263c33]"}`}>
+                <div className="font-semibold">Public App Link</div>
+                <div className={`mt-1 break-all text-xs ${darkMode ? "text-[#cfe4da]" : "text-[#40534a]"}`}>
+                  {shareUrlStatus?.isValid ? `${shareUrlStatus.url}${shareUrlStatus.source ? ` (${shareUrlStatus.source})` : ""}` : shareUrlStatus?.message}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <ShareAppButton darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Share App Link
+                </ShareAppButton>
+                <ShareAppButton mode="email" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Email App Link
+                </ShareAppButton>
+                <ShareAppButton mode="copy" darkMode={darkMode} shareUrlStatus={shareUrlStatus} onToast={onShareToast} className="rounded-xl px-4 py-4">
+                  Copy App Link
+                </ShareAppButton>
+              </div>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onExportCsv}>Export CSV</Button>
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onExportAppStateJson}>Export JSON</Button>
+              {canEditApp ? <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onOpenJsonImportPicker}>Import JSON</Button> : null}
+              <Button variant="outline" className={`${mutedButtonClass} w-full`} onClick={onPrintSummary}>Print / PDF</Button>
+            </div>
+            {canEditApp ? (
+              <Button
+                variant="outline"
+                className={`w-full rounded-2xl px-4 py-3 ${darkMode ? "border-[#5b2a2a] bg-[#231515] text-[#ffd9d9] hover:bg-[#382020]" : "border-[#e8bcbc] bg-[#fff3f3] text-[#8a1f2b] hover:bg-[#ffe4e4]"}`}
+                onClick={onResetDemoData}
+              >
+                Reset Demo Data
+              </Button>
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Preferences (role, mode, vessel state, persistence) ---- */}
+      <Dialog open={preferencesOpen} onOpenChange={onPreferencesOpenChange}>
+        <DialogContent className={`max-h-[88vh] overflow-y-auto rounded-[28px] ${darkMode ? "settings-popover-dark border-cyan-300/15 bg-slate-950 text-slate-50" : "settings-popover-light border-slate-200/90 bg-white text-slate-950"}`}>
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className={settingsCardClass}>
+              <div className={settingsLabelClass}>Operating As</div>
+              <div className="mt-2">
+                {onCurrentRoleChange ? (
+                  <Select value={currentRole} onValueChange={onCurrentRoleChange}>
+                    <SelectTrigger className={`h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DEMO_ROLE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className={`flex h-11 items-center rounded-2xl border px-3 text-sm font-semibold ${settingsValueBoxClass}`}>
+                    Shared vessel access
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className={settingsCardClass}>
+                <div className={settingsLabelClass}>Mode</div>
+                {onAppModeChange ? (
+                  <Select value={appMode} onValueChange={onAppModeChange}>
+                    <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="view">View Mode</SelectItem>
+                      <SelectItem value="editor">Editor Mode</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className={`mt-2 flex h-11 items-center rounded-2xl border px-3 text-sm font-semibold ${settingsValueBoxClass}`}>
+                    View Mode only
+                  </div>
+                )}
+              </div>
+              <div className={settingsCardClass}>
+                <div className={settingsLabelClass}>Status</div>
+                <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-bold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/20 dark:text-amber-50" : "border border-slate-200/80 bg-slate-50/80 text-slate-700 dark:border-white/15 dark:bg-slate-800/95 dark:text-slate-50"}`}>
+                  {canEditApp ? "Editor Mode" : "View Mode"}
+                </Badge>
+              </div>
+            </div>
+
+            <div className={settingsCardClass}>
+              <div className={settingsLabelClass}>Vessel State</div>
+              <Select value={vesselState?.mode || "standby"} onValueChange={onVesselStateModeChange}>
+                <SelectTrigger className={`mt-2 h-11 rounded-2xl border ${theme.input} ${settingsSelectClass}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {VESSEL_STATE_MODE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className={`mt-2 text-xs font-medium leading-5 ${settingsMetaClass}`}>
+                {vesselState?.primaryFocus || "Routine vessel readiness"} · {Number(vesselState?.confidenceScore || 0)}% confidence
+              </div>
+            </div>
+
+            <div className={settingsCardClass}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className={settingsLabelClass}>Persistence</div>
+                  <div className={`mt-2 text-sm font-semibold ${settingsMetaClass}`}>
+                    Last local save: {syncLastSavedAt}
+                  </div>
+                </div>
+                <Badge className={`rounded-2xl border px-3 py-2 text-xs font-bold ${syncStatusClass}`}>
+                  {syncStatusLabel}
+                </Badge>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={onExportAppStateJson}>
+                  Export backup
+                </Button>
+                {canEditApp ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={settingsMutedActionClass}
+                    onClick={() => {
+                      onPreferencesOpenChange?.(false);
+                      onSharingOpenChange?.(true);
+                      window.setTimeout(() => onOpenJsonImportPicker?.(), 160);
+                    }}
+                  >
+                    Restore backup
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { onPreferencesOpenChange?.(false); onFleetOpenChange?.(true); }}>
+                Fleet management
+              </Button>
+              <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { onPreferencesOpenChange?.(false); onHistoryOpenChange?.(true); }}>
+                History
+              </Button>
+              <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { onPreferencesOpenChange?.(false); onSharingOpenChange?.(true); }}>
+                Share
+              </Button>
+              <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { onPreferencesOpenChange?.(false); setLegalOpen(true); }}>
+                Legal
+              </Button>
+              <Button type="button" variant="outline" className={settingsMutedActionClass} onClick={() => { onPreferencesOpenChange?.(false); onOpenSettingsWorkspace?.(); }}>
+                App settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Fleet manager (switch + add vessel) ---- */}
+      <Dialog open={fleetOpen} onOpenChange={onFleetOpenChange}>
+        <DialogContent className={`max-h-[88vh] overflow-y-auto rounded-[32px] sm:max-w-3xl ${darkMode ? "fleet-popover-dark border-white/10 bg-slate-950 text-slate-50" : "fleet-popover-light border-slate-200/90 bg-white text-slate-950"}`}>
+          <div className="flex items-start justify-between gap-3 pr-14">
+            <DialogHeader>
+              <DialogTitle>Fleet</DialogTitle>
+            </DialogHeader>
+            {!fleetFormOpen ? (
+              <button
+                type="button"
+                onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
+                className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 ${
+                  darkMode
+                    ? "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/[0.12]"
+                    : "border-amber-300/70 bg-amber-50/80 text-amber-900 hover:border-amber-400 hover:bg-amber-100/70"
+                }`}
+              >
+                <span>Add Vessel</span>
+                <Plus className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
+          <div className="flex h-full min-h-0 flex-col gap-3">
+            {fleetFormOpen ? (
+              <div className={`${darkMode ? "fleet-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92" : "fleet-popover-card-light rounded-2xl border border-slate-300 bg-white"} p-4`}>
+                <div className={fleetLabelClass}>New Vessel</div>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className={fleetFormLabelClass}>
+                      Vessel Name <span className="text-rose-500">*</span>
+                    </label>
+                    <Input placeholder="M/Y Vessel Name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
+                  </div>
+                  <div>
+                    <label className={fleetFormLabelClass}>
+                      Length <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input type="number" min="1" step="0.1" inputMode="decimal" placeholder="125" value={fleetDraft.lengthFeet} onChange={(event) => setFleetDraft((prev) => ({ ...prev, lengthFeet: event.target.value }))} className={`h-14 rounded-2xl pr-12 text-base font-semibold ${theme.input}`} />
+                      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500 dark:text-slate-400">ft</span>
+                    </div>
+                  </div>
+                  <SearchableSelect
+                    label="Type of Yacht"
+                    value={fleetDraft.vesselType}
+                    options={yachtTypeOptions}
+                    placeholder="Select yacht type"
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, vesselType: value }))}
+                    required
+                  />
+                  <SearchableSelect
+                    label="Flag"
+                    value={fleetDraft.flag}
+                    options={flagOptions}
+                    optionAliases={flagOptionAliases}
+                    placeholder="Select flag"
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, flag: normalizeFlag(value), homePort: "" }))}
+                    required
+                  />
+                  <SearchableSelect
+                    label="Home Port"
+                    value={fleetDraft.homePort}
+                    options={fleetHomePortOptions}
+                    placeholder={selectedFleetFlag ? "Select home port" : "Select flag first"}
+                    disabled={!selectedFleetFlag}
+                    onChange={(value) => setFleetDraft((prev) => ({ ...prev, homePort: value }))}
+                    required
+                  />
+                  <div>
+                    <label className={fleetFormLabelClass}>
+                      Crew Number
+                    </label>
+                    <Input type="number" min="0" step="1" inputMode="numeric" placeholder="6" value={fleetDraft.crewNumber} onChange={(event) => setFleetDraft((prev) => ({ ...prev, crewNumber: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
+                  </div>
+                </div>
+                <textarea
+                  placeholder="Optional notes"
+                  value={fleetDraft.notes}
+                  onChange={(event) => setFleetDraft((prev) => ({ ...prev, notes: event.target.value }))}
+                  className={`mt-3 min-h-24 w-full rounded-2xl border px-3 py-3 outline-none ${theme.input}`}
+                />
+                {fleetDraftError ? (
+                  <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+                    {fleetDraftError}
+                  </div>
+                ) : null}
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                  <Button type="button" variant="outline" className={`${mutedButtonClass} rounded-2xl px-4 py-3 ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-300" : ""}`} onClick={() => { setFleetDraftError(""); setFleetFormOpen(false); }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    className="button-vessel-primary rounded-2xl px-4 py-3"
+                    onClick={() => {
+                      const cleanName = String(fleetDraft.vesselName || "").trim();
+                      const cleanLength = Number(fleetDraft.lengthFeet);
+                      const cleanFlag = normalizeFlag(fleetDraft.flag);
+                      if (!cleanName) {
+                        setFleetDraftError("Enter a vessel name before creating a new vessel.");
+                        return;
+                      }
+                      if (!Number.isFinite(cleanLength) || cleanLength <= 0) {
+                        setFleetDraftError("Length must be entered in feet.");
+                        return;
+                      }
+                      if (!fleetDraft.vesselType) {
+                        setFleetDraftError("Choose yacht type.");
+                        return;
+                      }
+                      if (!cleanFlag) {
+                        setFleetDraftError("Select a flag before choosing home port.");
+                        return;
+                      }
+                      if (!fleetDraft.homePort) {
+                        setFleetDraftError("Choose a home port for the selected flag.");
+                        return;
+                      }
+                      setFleetDraftError("");
+                      const didCreate = onAddFleetVessel?.(fleetDraft);
+                      if (didCreate !== false) {
+                        setFleetFormOpen(false);
+                      }
+                    }}
+                  >
+                    Create Vessel
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="min-h-0">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {fleetVessels.map((vessel) => {
+                  const vesselMetrics = fleetMetricsByVessel?.[vessel.id] || {};
+                  const crewCount = Number(vessel?.details?.crewNumber ?? vessel?.crewProfiles?.length ?? 0) || 0;
+                  const statusLabel = vessel?.details?.status || "Operational";
+                  const isActive = vessel?.id === activeVesselId;
+                  const vesselToneClass = darkMode
+                    ? "border-white/12 bg-slate-900/94"
+                    : "border-slate-200/90 bg-slate-50/95";
+                  const metricToneClass = darkMode
+                    ? "border-white/10 bg-slate-950/45"
+                    : "border-slate-200/90 bg-white/78";
+                  const fleetMetricCards = [
+                    { label: "Tasks", value: vesselMetrics.taskCount || 0 },
+                    { label: "Alerts", value: vesselMetrics.alertCount || 0 },
+                    { label: "Approval", value: vesselMetrics.approvalCount || 0 },
+                    { label: "Route", value: vesselMetrics.routeDistanceNm ? `${vesselMetrics.routeDistanceNm.toFixed(1)} nm` : "Draft" },
+                  ];
+
+                  return (
+                    <div key={vessel.id} className={`relative flex h-full flex-col gap-2.5 overflow-hidden rounded-[22px] border p-4 transition-all duration-200 ${vesselToneClass} ${isActive ? (darkMode ? "ring-1 ring-cyan-300/25" : "ring-1 ring-amber-300/60") : ""}`}>
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div>
+                          <div className={fleetLabelClass}>Vessel</div>
+                          <div className={`mt-0.5 text-base font-semibold ${theme.textPrimary}`}>{vessel.name}</div>
+                        </div>
+                        {isActive ? <Badge className={`px-2 py-0.5 text-[10px] ${darkMode ? "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.18)] text-vessel-accent" : "border border-vessel bg-[rgba(var(--vessel-primary-rgb),0.10)] text-vessel-accent"}`}>Current</Badge> : null}
+                      </div>
+                      <div className={fleetDetailGridClass}>
+                        <div className="flex items-center justify-between gap-3"><span>Status</span><span className={theme.textPrimary}>{statusLabel}</span></div>
+                        <div className="flex items-center justify-between gap-3"><span>Crew</span><span className={theme.textPrimary}>{crewCount}</span></div>
+                        <div className="flex items-center justify-between gap-3"><span>Home port</span><span className={`${theme.textPrimary} text-right`}>{vessel?.details?.homePort || "Not set"}</span></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {fleetMetricCards.map((metric) => (
+                          <div key={metric.label} className={`rounded-2xl border p-3 ${metricToneClass}`}>
+                            <div className="app-compact-label"><SmartLabel label={metric.label} active={isActive} /></div>
+                            <div className={`mt-1 text-sm font-semibold ${theme.textPrimary}`}>{metric.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-auto pt-1">
+                        {isActive ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled
+                            className={`${mutedButtonClass} h-11 w-full cursor-not-allowed ${darkMode ? "!border-white/10 !bg-white/[0.04] !text-slate-200" : ""}`}
+                          >
+                            Current Workspace
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() => { onFleetOpenChange?.(false); onSwitchFleetVessel?.(vessel.id); }}
+                            className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
+                          >
+                            Open Vessel
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 export function AppSectionCards({
   darkMode = false,
   expenseView,

@@ -76,6 +76,7 @@ import {
   AppDialogs,
   CrewCertificatesWorkspace,
   DocumentsView,
+  MidnightControlDeck,
   SettingsWorkspaceView,
   ObjectivesView,
   TaskMaintenanceWorkspace,
@@ -304,6 +305,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [historyOpen, setHistoryOpen] = useState(false);
   const [retrieveOpen, setRetrieveOpen] = useState(false);
   const [sharingOpen, setSharingOpen] = useState(false);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [pendingSectionNavigation, setPendingSectionNavigation] = useState(null);
   const [newCrewExpenseOpen, setNewCrewExpenseOpen] = useState(false);
   const [newCrewProfileOpen, setNewCrewProfileOpen] = useState(false);
@@ -391,11 +393,22 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
   }, []);
 
+  const themeMountedRef = useRef(false);
   useEffect(() => {
     if (typeof document === "undefined") return;
+    // After the first paint, ease every color for a liquid theme switch.
+    let switchTimer = null;
+    if (themeMountedRef.current) {
+      document.documentElement.classList.add("theme-switching");
+      switchTimer = window.setTimeout(() => {
+        document.documentElement.classList.remove("theme-switching");
+      }, 650);
+    }
+    themeMountedRef.current = true;
     document.body.classList.toggle("dark-mode", Boolean(darkMode));
     document.documentElement.classList.toggle("dark", Boolean(darkMode));
     return () => {
+      if (switchTimer) window.clearTimeout(switchTimer);
       document.body.classList.remove("dark-mode");
       document.documentElement.classList.remove("dark");
     };
@@ -3177,17 +3190,65 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onNavDocs={() => openResponsiveModule("documents")}
             onNavRoute={() => openResponsiveModule("route")}
             onNavAlerts={() => openResponsiveModule("notifications")}
-            onNavSettings={() => openResponsiveModule("settings")}
+            onToggleDarkMode={() => setDarkMode((prev) => !prev)}
             notifications={headerNotifications}
             notificationCount={accessibleNotifications.length}
             onSelectNotification={handleHeaderNotificationSelect}
             fleetVessels={vesselsForPersistence}
             activeVesselId={activeVesselId}
             onSwitchFleetVessel={openVesselWorkspace}
-            history={history}
+            onOpenFleet={() => setFleetOpen(true)}
+            onOpenHistory={() => setHistoryOpen(true)}
+            onOpenPreferences={() => setPreferencesOpen(true)}
+          />
+        </AppErrorBoundary>
+
+        <AppErrorBoundary resetKey={`control-deck:${activeVesselId}`}>
+          <MidnightControlDeck
+            darkMode={darkMode}
+            isOffline={isOffline}
+            syncState={prototypeSyncState}
+            currentRole={effectiveRole}
+            onCurrentRoleChange={demoRolePreviewEnabled ? setCurrentRole : null}
+            appMode={appMode}
+            onAppModeChange={demoEditingEnabled ? handleAppModeChange : null}
+            canEditApp={canEditApp}
+            vesselState={activeVesselState}
+            onVesselStateModeChange={handleVesselStateModeChange}
+            preferencesOpen={preferencesOpen}
+            onPreferencesOpenChange={setPreferencesOpen}
             historyOpen={historyOpen}
             onHistoryOpenChange={setHistoryOpen}
-            formatHistoryTime={formatHistoryTime}
+            actorName={effectiveActorName}
+            onActorNameChange={actorIdentityEditable ? setActorName : null}
+            retrieveOpen={retrieveOpen}
+            onToggleRetrieve={() => setRetrieveOpen((prev) => !prev)}
+            declinedTasks={declinedTasks}
+            onRetrieveDeclinedTask={retrieveDeclinedTask}
+            history={history}
+            sharingOpen={sharingOpen}
+            onSharingOpenChange={setSharingOpen}
+            jsonImportInputRef={jsonImportInputRef}
+            onImportAppStateJson={importAppStateJson}
+            onExportCsv={exportCsv}
+            onExportAppStateJson={exportAppStateJson}
+            onOpenJsonImportPicker={openJsonImportPicker}
+            onPrintSummary={printSummary}
+            onResetDemoData={resetDemoData}
+            shareUrlStatus={publicAppUrlStatus}
+            localShareWarning={localShareWarning}
+            onShareToast={handleShareToast}
+            fleetOpen={fleetOpen}
+            onFleetOpenChange={setFleetOpen}
+            fleetVessels={vesselsForPersistence}
+            fleetMetricsByVessel={fleetMetricsByVessel}
+            activeVesselId={activeVesselId}
+            onSwitchFleetVessel={openVesselWorkspace}
+            onAddFleetVessel={handleAddFleetVessel}
+            onOpenSettingsWorkspace={() => {
+              setPreferencesOpen(false);
+              openResponsiveModule("settings");
+            }}
           />
         </AppErrorBoundary>
 

@@ -2,30 +2,30 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import { ContessaUiLogo } from "../components/branding.jsx";
 
 // The workspace is driven entirely by persisted client state (localStorage),
 // so it renders client-only: server markup could never match a returning
 // visitor's data and would guarantee hydration mismatches.
 const ContessaApp = dynamic(() => import("../contessa_mobile_task_app.jsx"), {
   ssr: false,
-  loading: () => (
-    <div className="flex min-h-screen items-center justify-center bg-[#04060d]">
+  loading: () => <WorkspaceLoading />,
+});
+
+function WorkspaceLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[var(--mb-bg)]">
       <div className="text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(201,169,106,0.4)]">
-          <span
-            className="text-2xl italic leading-none text-[#e6cf9f]"
-            style={{ fontFamily: "var(--font-display, Georgia, serif)", fontWeight: 600 }}
-          >
-            C
-          </span>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)]">
+          <ContessaUiLogo className="h-11 w-11" />
         </div>
-        <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[rgba(233,226,208,0.5)]">
+        <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--mb-muted)]">
           Preparing the bridge
         </p>
       </div>
     </div>
-  ),
-});
+  );
+}
 
 export function VesselWorkspace({ vesselId }) {
   const router = useRouter();

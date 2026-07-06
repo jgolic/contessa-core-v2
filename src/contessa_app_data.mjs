@@ -2035,7 +2035,7 @@ export function createEmptyAppState(overrides = {}) {
   const activeVessel = fleet.find((vessel) => vessel.id === requestedActiveVesselId) || fleet[0];
 
   return {
-    darkMode: true,
+    darkMode: false,
     currency: "USD",
     actorName: "Captain Graham Ellis",
     currentRole: "captain",
@@ -2066,8 +2066,7 @@ export function createPersistedAppState(state) {
   const activeVessel = fleet.find((vessel) => vessel.id === activeVesselId) || fleet[0];
 
   return {
-    // Midnight Bridge is a single committed dark theme.
-    darkMode: true,
+    darkMode: Boolean(state.darkMode),
     currency: CURRENCY_OPTIONS.some((option) => option.code === state.currency) ? state.currency : "USD",
     actorName: state.actorName || "User",
     currentRole: state.currentRole || "captain",
@@ -2445,7 +2444,6 @@ export function getInitialAppState() {
     const stored = getStoredJson(STORAGE_KEY, null);
     if (!stored) return fallback;
     const normalized = normalizeImportedAppState(stored, fallback);
-    normalized.darkMode = true;
     const isEssentiallyEmpty =
       !normalized.tasks.length &&
       !normalized.declinedTasks.length &&

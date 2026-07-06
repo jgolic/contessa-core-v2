@@ -30,10 +30,15 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
+const themeInitScript = `(function(){try{var s=localStorage.getItem("contessa-mobile-task-app-v4");if(s&&s.indexOf('"darkMode":true')>-1){document.documentElement.classList.add("dark");}}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${displayFont.variable} ${sansFont.variable}`}>
-      <body className="dark-mode">{children}</body>
+    <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

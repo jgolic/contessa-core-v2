@@ -3090,3 +3090,222 @@ body.dark-mode .mb-glass {
   color: rgba(201, 169, 106, 0.55);
   line-height: 0.8;
 }
+
+/* ============================================================
+   DUAL THEME TOKENS — Champagne Ivory (day) / Midnight Bridge (night)
+   All midnight components read these vars; .dark flips them.
+   ============================================================ */
+:root {
+  --mb-bg: #f6f2e9;
+  --mb-ink: #20263a;
+  --mb-muted: rgba(52, 58, 80, 0.66);
+  --mb-soft: rgba(52, 58, 80, 0.58);
+  --mb-gold: #96733a;
+  --mb-gold-bright: #7d5f2e;
+  --mb-on-gold: #fdf8ec;
+  --mb-gold-badge: #a8834a;
+  --mb-gold-tint: rgba(168, 131, 74, 0.08);
+  --mb-line: rgba(143, 110, 54, 0.22);
+  --mb-line-strong: rgba(143, 110, 54, 0.38);
+  --mb-gold-hover: rgba(125, 95, 46, 0.6);
+  --mb-panel: rgba(255, 255, 255, 0.62);
+  --mb-panel-strong: rgba(255, 255, 255, 0.94);
+  --mb-scrim: rgba(31, 27, 16, 0.3);
+  --mb-critical: #b1473f;
+  --mb-critical-text: #9a3d36;
+  --mb-safe: #2e7861;
+  --mb-safe-text: #275f4f;
+  --mb-tick-neutral: rgba(32, 38, 58, 0.28);
+  --mb-hero-scrim-soft: rgba(246, 242, 233, 0.5);
+  --mb-hero-scrim-strong: rgba(246, 242, 233, 0.88);
+  --mb-rail-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(250, 246, 236, 0.92));
+  --mb-dock-bg: rgba(253, 250, 243, 0.9);
+}
+
+.dark,
+body.dark-mode {
+  --mb-bg: #04060d;
+  --mb-ink: #f4f0e6;
+  --mb-muted: rgba(229, 223, 209, 0.58);
+  --mb-soft: rgba(233, 226, 208, 0.52);
+  --mb-gold: #c9a96a;
+  --mb-gold-bright: #e6cf9f;
+  --mb-on-gold: #1d1506;
+  --mb-gold-badge: #c9a96a;
+  --mb-gold-tint: rgba(201, 169, 106, 0.06);
+  --mb-line: rgba(201, 169, 106, 0.15);
+  --mb-line-strong: rgba(201, 169, 106, 0.26);
+  --mb-gold-hover: rgba(230, 207, 159, 0.55);
+  --mb-panel: rgba(10, 15, 29, 0.45);
+  --mb-panel-strong: rgba(14, 20, 38, 0.88);
+  --mb-scrim: rgba(3, 5, 10, 0.58);
+  --mb-critical: #d9776b;
+  --mb-critical-text: #e9a49a;
+  --mb-safe: #58ae8f;
+  --mb-safe-text: #8fd0b5;
+  --mb-tick-neutral: rgba(233, 226, 208, 0.28);
+  --mb-hero-scrim-soft: rgba(4, 6, 13, 0.42);
+  --mb-hero-scrim-strong: rgba(4, 6, 13, 0.78);
+  --mb-rail-bg: linear-gradient(180deg, rgba(7, 11, 22, 0.78), rgba(5, 8, 16, 0.9));
+  --mb-dock-bg: rgba(6, 10, 20, 0.88);
+}
+
+/* Smooth theme crossfade: gradients can't transition, so the dark
+   backdrop lives on a fixed pseudo-layer whose opacity fades. */
+body {
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--vessel-bg-dark, var(--app-bg-dark));
+  opacity: 0;
+  transition: opacity 550ms ease;
+}
+
+body.dark-mode::before,
+.dark body::before {
+  opacity: 1;
+}
+
+.dark body,
+body.dark-mode {
+  background: var(--vessel-bg-light, var(--app-bg-light));
+}
+
+/* While the toggle runs, ease every color so the switch feels liquid. */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition:
+    color 500ms ease,
+    background-color 500ms ease,
+    border-color 500ms ease,
+    fill 500ms ease,
+    stroke 500ms ease,
+    box-shadow 500ms ease !important;
+}
+
+/* Shell chrome reads theme vars */
+.mb-rail {
+  background: var(--mb-rail-bg);
+  border-color: var(--mb-line);
+}
+
+.mb-dock {
+  background: var(--mb-dock-bg);
+  border-color: var(--mb-line-strong);
+}
+
+.mb-glass {
+  background: var(--mb-panel-strong);
+  border-color: var(--mb-line);
+}
+
+.dark .mb-glass,
+body.dark-mode .mb-glass {
+  background: rgba(7, 11, 22, 0.86);
+  border-color: rgba(201, 169, 106, 0.18);
+}
+
+.mb-ledger-row {
+  border-top: 1px solid var(--mb-line);
+}
+
+.mb-ledger-row:hover {
+  background: var(--mb-gold-tint);
+}
+
+.mb-index-numeral {
+  color: var(--mb-line-strong);
+}
+
+.midnight-gold-rule {
+  background: linear-gradient(90deg, transparent, var(--mb-line-strong), transparent);
+}
+
+.midnight-ocean-canvas::after {
+  background: linear-gradient(
+    180deg,
+    transparent 34%,
+    var(--mb-hero-scrim-soft) 66%,
+    var(--mb-hero-scrim-strong) 100%
+  );
+}
+
+/* Day-theme grain is subtler */
+.midnight-grain {
+  opacity: 0.03;
+}
+
+.dark .midnight-grain,
+body.dark-mode .midnight-grain {
+  opacity: 0.05;
+}
+
+/* Posh light hero title: ink into gold */
+.vessel-title--light {
+  color: transparent;
+  background-image: linear-gradient(175deg, #232b45 0%, #3d4258 46%, #8f6e36 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 4px 16px rgba(143, 110, 54, 0.16));
+}
+
+/* Light-mode premium buttons: gold-ink instead of legacy blue */
+.app-primary-action-button {
+  border-color: rgba(143, 110, 54, 0.45);
+  background: linear-gradient(160deg, #e9d49c 0%, #cfa963 55%, #b08a45 100%);
+  color: #241a08;
+  box-shadow:
+    0 14px 30px -18px rgba(143, 110, 54, 0.5),
+    inset 0 1px 0 rgba(255, 248, 228, 0.7);
+}
+
+.app-primary-action-button:hover {
+  border-color: rgba(125, 95, 46, 0.6);
+  background: linear-gradient(160deg, #f0dfae 0%, #d8b26b 55%, #b8914a 100%);
+  color: #1d1506;
+  box-shadow:
+    0 18px 40px -18px rgba(143, 110, 54, 0.55),
+    0 0 0 4px rgba(168, 131, 74, 0.14),
+    inset 0 1px 0 rgba(255, 248, 228, 0.8);
+  transform: translateY(-1px);
+}
+
+.app-primary-action-button:active {
+  border-color: rgba(125, 95, 46, 0.7);
+  background: linear-gradient(160deg, #d8b26b 0%, #b8914a 60%, #a37e3d 100%);
+  color: #1d1506;
+  box-shadow:
+    0 10px 26px -14px rgba(143, 110, 54, 0.5),
+    0 0 0 6px rgba(168, 131, 74, 0.16);
+  transform: translateY(0) scale(0.99);
+}
+
+.app-action-button {
+  border-color: rgba(143, 110, 54, 0.28);
+  background: rgba(255, 255, 255, 0.85);
+  color: #33394e;
+}
+
+.app-action-button:hover {
+  border-color: rgba(125, 95, 46, 0.5);
+  background: rgba(255, 252, 244, 0.98);
+  color: #20263a;
+  box-shadow:
+    0 12px 28px -18px rgba(143, 110, 54, 0.4),
+    0 0 0 4px rgba(168, 131, 74, 0.1);
+  transform: translateY(-1px);
+}
+
+/* The body owns the themed backdrop (for the crossfade); the page root stays clear. */
+.bg-vessel-page,
+body.dark-mode .bg-vessel-page {
+  background: transparent;
+}

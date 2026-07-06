@@ -80,7 +80,7 @@ const WATER_FRAGMENT = /* glsl */ `
   }
 `;
 
-export default function OceanCanvas({ enabled = true }) {
+export default function OceanCanvas({ enabled = true, darkMode = true }) {
   const hostRef = useRef(null);
 
   useEffect(() => {
@@ -107,12 +107,18 @@ export default function OceanCanvas({ enabled = true }) {
       camera.position.set(0, 3.4, 10);
       camera.lookAt(0, 0.6, -30);
 
+      // Night: midnight sea under a champagne moon. Day: morning steel-blue
+      // water with a warm sun lane.
+      const palette = darkMode
+        ? { deep: "#04070f", shallow: "#0c1830", gold: "#c9a96a", dust: 0xd9bc82, dustOpacity: 0.5 }
+        : { deep: "#8aa6ba", shallow: "#dde9ef", gold: "#e3bd72", dust: 0xd8b271, dustOpacity: 0.3 };
+
       const uniforms = {
         uTime: { value: 0 },
         uCameraPos: { value: camera.position },
-        uDeep: { value: new THREE.Color("#04070f") },
-        uShallow: { value: new THREE.Color("#0c1830") },
-        uGold: { value: new THREE.Color("#c9a96a") },
+        uDeep: { value: new THREE.Color(palette.deep) },
+        uShallow: { value: new THREE.Color(palette.shallow) },
+        uGold: { value: new THREE.Color(palette.gold) },
       };
 
       const waterGeo = new THREE.PlaneGeometry(160, 90, isMobile ? 72 : 140, isMobile ? 52 : 96);
@@ -141,10 +147,10 @@ export default function OceanCanvas({ enabled = true }) {
       }
       dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
       const dustMat = new THREE.PointsMaterial({
-        color: 0xd9bc82,
+        color: palette.dust,
         size: isMobile ? 0.14 : 0.11,
         transparent: true,
-        opacity: 0.5,
+        opacity: palette.dustOpacity,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         sizeAttenuation: true,
@@ -227,7 +233,7 @@ export default function OceanCanvas({ enabled = true }) {
       disposed = true;
       teardown?.();
     };
-  }, [enabled]);
+  }, [enabled, darkMode]);
 
   if (!enabled) return null;
   return <div ref={hostRef} className="midnight-ocean-canvas" aria-hidden="true" />;
