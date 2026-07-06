@@ -1081,18 +1081,18 @@ export function TodayOperationsView({
 
   return (
     <>
-      <OceanCanvas enabled darkMode={darkMode} />
+      <OceanCanvas enabled />
       <div className="midnight-grain" aria-hidden="true" />
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
-        {/* ---- Hero: the bridge at night ---- */}
-        <section className="flex min-h-[calc(92svh-7rem)] flex-col justify-center py-12 md:py-16">
+        {/* ---- Hero: the bridge on a bright morning ---- */}
+        <section className="flex min-h-[calc(72svh-7rem)] flex-col justify-center py-10 md:py-12">
           <p data-mb-hero className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--mb-gold)] md:text-[11px]">
             Motor yacht · Command bridge
           </p>
           <h1
             data-mb-hero
-            className={`vessel-display-title ${darkMode ? "vessel-title--dark" : "vessel-title--light"} mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]`}
+            className="vessel-display-title vessel-title--light mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]"
             style={{ fontSize: "clamp(3.2rem, 12vw, 9rem)" }}
           >
             {heroName}

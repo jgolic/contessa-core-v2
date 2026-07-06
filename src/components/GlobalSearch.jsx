@@ -281,7 +281,6 @@ function filterSearchResults(index, query) {
 }
 
 export default function GlobalSearch({
-  darkMode = false,
   vessel,
   results = [],
   onResultSelect,
@@ -379,31 +378,22 @@ export default function GlobalSearch({
     }
   }
 
-  const inputShellClass = darkMode
-    ? "border-cyan-300/25 bg-slate-950/92 text-slate-50 shadow-[0_16px_45px_rgba(34,211,238,0.12)] hover:border-cyan-300/40 focus-within:border-cyan-300/55 focus-within:shadow-[0_0_0_4px_rgba(34,211,238,0.14),0_24px_70px_rgba(34,211,238,0.18)]"
-    : "border-blue-200/80 bg-white/95 text-slate-950 shadow-[0_16px_45px_rgba(59,130,246,0.12)] hover:border-blue-300 focus-within:border-blue-400 focus-within:shadow-[0_0_0_4px_rgba(59,130,246,0.12),0_22px_60px_rgba(59,130,246,0.16)]";
-  const iconClass = darkMode
-    ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100 hover:border-cyan-300/50 focus:ring-cyan-300/35"
-    : "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-400 focus:ring-blue-400/35";
-  const inputTextClass = darkMode
-    ? "text-slate-50 placeholder:text-slate-200 caret-cyan-200 selection:bg-cyan-300/25"
-    : "text-slate-950 placeholder:text-slate-600 caret-blue-700 selection:bg-blue-200/60 dark:text-slate-50 dark:placeholder:text-slate-200 dark:caret-cyan-200 dark:selection:bg-cyan-300/25";
-  const resultsPanelClass = darkMode
-    ? "search-popover-dark border-white/10 bg-slate-950 text-slate-50 shadow-[0_36px_120px_rgba(0,0,0,0.72)]"
-    : "search-popover-light border-slate-200/90 bg-white text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.26)]";
+  // Riviera palette: champagne borders, gold accents on porcelain white.
+  const inputShellClass =
+    "border-[rgba(143,110,54,0.30)] bg-white/95 text-slate-950 shadow-[0_16px_45px_rgba(143,110,54,0.14)] hover:border-[rgba(143,110,54,0.48)] focus-within:border-[rgba(125,95,46,0.6)] focus-within:shadow-[0_0_0_4px_rgba(168,131,74,0.14),0_22px_60px_rgba(143,110,54,0.18)]";
+  const iconClass =
+    "border-[rgba(143,110,54,0.32)] bg-[rgba(233,212,156,0.35)] text-[#7d5f2e] hover:border-[rgba(125,95,46,0.55)] focus:ring-[rgba(168,131,74,0.35)]";
+  const inputTextClass =
+    "text-slate-950 placeholder:text-slate-500 caret-[#8f6e36] selection:bg-[rgba(201,169,106,0.30)]";
+  const resultsPanelClass =
+    "search-popover-light border-[rgba(143,110,54,0.25)] bg-white text-slate-950 shadow-[0_30px_100px_rgba(31,27,16,0.22)]";
   const resultRowClass = (active) =>
     active
-      ? darkMode
-        ? "bg-cyan-300/10 text-slate-50"
-        : "bg-blue-50 text-slate-950"
-      : darkMode
-        ? "text-slate-100 hover:bg-white/10"
-        : "text-slate-800 hover:bg-slate-50";
-  const resultTitleClass = darkMode ? "text-slate-50" : "text-slate-950";
-  const resultContextClass = darkMode ? "text-slate-200" : "text-slate-700";
-  const resultTypeBadgeClass = darkMode
-    ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
-    : "border-blue-200 bg-blue-50 text-blue-800";
+      ? "bg-[rgba(201,169,106,0.16)] text-slate-950"
+      : "text-slate-800 hover:bg-[rgba(201,169,106,0.08)]";
+  const resultTitleClass = "text-slate-950";
+  const resultContextClass = "text-slate-700";
+  const resultTypeBadgeClass = "border-[rgba(143,110,54,0.30)] bg-[rgba(233,212,156,0.30)] text-[#7d5f2e]";
 
   return (
     <div ref={rootRef} data-global-search-root className="search-command-card relative z-[10000] w-full max-w-full overflow-visible md:max-w-4xl">
@@ -421,7 +411,7 @@ export default function GlobalSearch({
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-inner transition-all duration-200 hover:scale-[1.03] focus:outline-none focus:ring-2 lg:h-12 lg:w-12 ${iconClass}`}
           aria-label="Focus global search"
         >
-          <CommandSearchMark className="h-5 w-5 drop-shadow-[0_0_10px_rgba(59,130,246,0.18)] md:h-6 md:w-6" />
+          <CommandSearchMark className="h-5 w-5 drop-shadow-[0_0_10px_rgba(168,131,74,0.25)] md:h-6 md:w-6" />
         </button>
 
         <input
@@ -437,13 +427,13 @@ export default function GlobalSearch({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold outline-none lg:text-lg ${inputTextClass}`}
-          style={{ colorScheme: darkMode ? "dark" : "light" }}
+          style={{ colorScheme: "light" }}
           aria-label="Search crew, tasks, documents"
         />
 
-        <div className={`hidden shrink-0 items-center gap-2 text-xs font-semibold lg:flex ${darkMode ? "text-slate-200" : "text-slate-600"}`}>
+        <div className="hidden shrink-0 items-center gap-2 text-xs font-semibold text-slate-600 lg:flex">
           <span>Jump anywhere</span>
-          <span className={`rounded-lg border px-2 py-1 shadow-sm ${darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
+          <span className="rounded-lg border border-[rgba(143,110,54,0.35)] bg-white px-2 py-1 text-slate-800 shadow-sm">
             Press /
           </span>
         </div>
@@ -455,7 +445,7 @@ export default function GlobalSearch({
               setQuery("");
               setOpen(false);
             }}
-            className={`rounded-xl px-2 py-1 text-xs font-semibold ${darkMode ? "text-slate-200 hover:bg-white/10" : "text-slate-600 hover:bg-slate-100"}`}
+            className="rounded-xl px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-[rgba(201,169,106,0.12)]"
           >
             Esc
           </button>

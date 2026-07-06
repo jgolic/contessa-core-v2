@@ -90,19 +90,6 @@ const LogIcon = (props) => (
   </Icon>
 );
 
-const MoonIcon = (props) => (
-  <Icon {...props}>
-    <path d="M19.5 14.2A7.8 7.8 0 0 1 9.8 4.5a7.8 7.8 0 1 0 9.7 9.7Z" />
-  </Icon>
-);
-
-const SunIcon = (props) => (
-  <Icon {...props}>
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
-  </Icon>
-);
-
 const MoreIcon = (props) => (
   <Icon {...props}>
     <circle cx="5.5" cy="12" r="1" fill="currentColor" />
@@ -211,8 +198,6 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
 /* ------------------------------------------------------------------ */
 
 export default function MidnightShell({
-  darkMode = true,
-  onToggleDarkMode,
   vesselTitle = "M/Y VESSEL",
   vesselIdentifier = "",
   modeLabel = "",
@@ -328,14 +313,6 @@ export default function MidnightShell({
           </button>
           <button
             type="button"
-            onClick={onToggleDarkMode}
-            aria-label={darkMode ? "Switch to day watch" : "Switch to night watch"}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
-          >
-            {darkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
-          </button>
-          <button
-            type="button"
             onClick={() => { closeAll(); onOpenPreferences?.(); }}
             aria-label="Open settings"
             className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:text-[var(--mb-gold-bright)] ${
@@ -392,14 +369,6 @@ export default function MidnightShell({
             title={isOffline ? "Offline" : "Live"}
             className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[#b1473f]" : "bg-[var(--mb-safe)] shadow-[0_0_8px_rgba(88,174,143,0.8)]"}`}
           />
-          <button
-            type="button"
-            onClick={onToggleDarkMode}
-            aria-label={darkMode ? "Switch to day watch" : "Switch to night watch"}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] lg:hidden"
-          >
-            {darkMode ? <SunIcon className="h-[18px] w-[18px]" /> : <MoonIcon className="h-[18px] w-[18px]" />}
-          </button>
           <button
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
@@ -529,14 +498,6 @@ export default function MidnightShell({
               History
             </button>
           </div>
-          <button
-            type="button"
-            onClick={onToggleDarkMode}
-            className="mt-1.5 flex w-full items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
-          >
-            {darkMode ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
-            {darkMode ? "Day watch" : "Night watch"}
-          </button>
         </div>
       </ShellPanel>
     </>

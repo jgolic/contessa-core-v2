@@ -80,7 +80,7 @@ const WATER_FRAGMENT = /* glsl */ `
   }
 `;
 
-export default function OceanCanvas({ enabled = true, darkMode = true }) {
+export default function OceanCanvas({ enabled = true }) {
   const hostRef = useRef(null);
 
   useEffect(() => {
@@ -107,11 +107,8 @@ export default function OceanCanvas({ enabled = true, darkMode = true }) {
       camera.position.set(0, 3.4, 10);
       camera.lookAt(0, 0.6, -30);
 
-      // Night: midnight sea under a champagne moon. Day: morning steel-blue
-      // water with a warm sun lane.
-      const palette = darkMode
-        ? { deep: "#04070f", shallow: "#0c1830", gold: "#c9a96a", dust: 0xd9bc82, dustOpacity: 0.5 }
-        : { deep: "#8aa6ba", shallow: "#dde9ef", gold: "#e3bd72", dust: 0xd8b271, dustOpacity: 0.3 };
+      // Riviera morning: azure water warming into a champagne sun lane.
+      const palette = { deep: "#5f8fb6", shallow: "#e2eff4", gold: "#eac37e", dust: 0xd8b271, dustOpacity: 0.28 };
 
       const uniforms = {
         uTime: { value: 0 },
@@ -233,7 +230,7 @@ export default function OceanCanvas({ enabled = true, darkMode = true }) {
       disposed = true;
       teardown?.();
     };
-  }, [enabled, darkMode]);
+  }, [enabled]);
 
   if (!enabled) return null;
   return <div ref={hostRef} className="midnight-ocean-canvas" aria-hidden="true" />;

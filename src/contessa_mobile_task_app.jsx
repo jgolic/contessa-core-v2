@@ -277,7 +277,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [activeVesselId, setActiveVesselId] = useState(initialActiveVesselId);
   const [routeNotFound, setRouteNotFound] = useState(initialRouteVesselMissing);
   const [fleetOpen, setFleetOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(initialAppState.darkMode);
+  // Single bright theme — night mode retired. Kept as a constant so the many
+  // legacy `darkMode` props stay wired without touching every call site, and
+  // so persistence writes `false` (migrating any stale night preference).
+  const darkMode = false;
   const [currency, setCurrency] = useState(initialAppState.currency);
   const [exchangeRates, setExchangeRates] = useState({ rates: FALLBACK_USD_RATES, date: "fallback", source: "fallback", live: false });
   const [isOffline, setIsOffline] = useState(false);
@@ -392,27 +395,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       }, toast.duration || 3600);
     }
   }, []);
-
-  const themeMountedRef = useRef(false);
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    // After the first paint, ease every color for a liquid theme switch.
-    let switchTimer = null;
-    if (themeMountedRef.current) {
-      document.documentElement.classList.add("theme-switching");
-      switchTimer = window.setTimeout(() => {
-        document.documentElement.classList.remove("theme-switching");
-      }, 650);
-    }
-    themeMountedRef.current = true;
-    document.body.classList.toggle("dark-mode", Boolean(darkMode));
-    document.documentElement.classList.toggle("dark", Boolean(darkMode));
-    return () => {
-      if (switchTimer) window.clearTimeout(switchTimer);
-      document.body.classList.remove("dark-mode");
-      document.documentElement.classList.remove("dark");
-    };
-  }, [darkMode]);
 
   const publicAppUrlStatus = useMemo(() => {
     return getCanonicalPublicAppUrlStatus(
@@ -2005,7 +1987,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   };
 
   const applyAppState = (nextState) => {
-    setDarkMode(nextState.darkMode);
     setCurrency(nextState.currency);
     setActorName(actorIdentityEditable ? nextState.actorName : "Captain Graham Ellis");
     setCurrentRole(demoRolePreviewEnabled ? (nextState.currentRole || "captain") : "captain");
@@ -3156,7 +3137,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
         <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
           <MidnightShell
-            darkMode={darkMode}
             vesselTitle={
               activeVesselWorkspace?.vesselPrintInfo?.displayName ||
               activeVesselWorkspace?.name ||
@@ -3190,7 +3170,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onNavDocs={() => openResponsiveModule("documents")}
             onNavRoute={() => openResponsiveModule("route")}
             onNavAlerts={() => openResponsiveModule("notifications")}
-            onToggleDarkMode={() => setDarkMode((prev) => !prev)}
             notifications={headerNotifications}
             notificationCount={accessibleNotifications.length}
             onSelectNotification={handleHeaderNotificationSelect}
