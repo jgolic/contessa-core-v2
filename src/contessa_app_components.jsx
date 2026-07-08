@@ -408,57 +408,50 @@ export function QuoteRow({
 
   if (!isEditing) {
     return (
-      <div className={`relative rounded-2xl border p-4 ${darkMode ? "border-[#2a3a32] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Quote Information</div>
-            <div className={`mt-2 text-lg font-semibold ${theme.textPrimary}`}>{quote.supplier || "Quote"}</div>
-            <div className={`mt-1 text-sm ${theme.textSecondary}`}>
-              {[quote.currency || "USD", quote.status ? titleCase(quote.status) : "Requested"].filter(Boolean).join(" - ")}
-            </div>
+      <div className="relative rounded-[14px] border border-[var(--mb-line)] bg-[var(--mb-panel)] p-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--mb-line-strong)] pb-2">
+          <div className="min-w-0">
+            <div className="rv-masthead-kicker">Quote</div>
+            <div className={`mt-1 text-lg font-semibold ${theme.textPrimary}`}>{quote.supplier || "Quote"}</div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-3">
             <Badge className={isPaidMoneyStatus(quote.status) ? successBadgeClass(darkMode) : warningBadgeClass(darkMode)}>
               {isPaidMoneyStatus(quote.status) ? "Paid" : "Unpaid"}
             </Badge>
             {canEdit ? (
-              <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button rounded-xl px-4 py-2">
+              <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
                 Edit
-              </Button>
+              </button>
             ) : (
               <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>
             )}
           </div>
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Supplier</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.supplier || "Not set"}</div>
+        <dl className="grid gap-x-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Supplier</dt>
+            <dd className="rv-kv-value">{quote.supplier || "Not set"}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Amount</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.currency || "USD"} {quote.amount ?? 0}</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Amount</dt>
+            <dd className="rv-kv-value">{quote.currency || "USD"} {quote.amount ?? 0}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Approval</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{titleCase(quote.status || "requested")}</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Approval</dt>
+            <dd className="rv-kv-value">{titleCase(quote.status || "requested")}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/35" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`text-xs font-semibold uppercase tracking-wide ${theme.textSecondary}`}>Summary</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{quote.includeInSummary ? "Included" : "Excluded"}</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Summary</dt>
+            <dd className="rv-kv-value">{quote.includeInSummary ? "Included" : "Excluded"}</dd>
           </div>
-        </div>
+        </dl>
 
-        {quote.attachments && quote.attachments.length > 0 ? (
-          <div className={`mt-3 rounded-xl border p-3 text-sm ${darkMode ? "border-white/10 bg-slate-950/35 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
-            {quote.attachments.length} attachment{quote.attachments.length === 1 ? "" : "s"} available.
-          </div>
-        ) : (
-          <div className={`mt-3 rounded-xl border p-3 text-sm ${darkMode ? "border-white/10 bg-slate-950/35 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
-            No attachments uploaded.
-          </div>
-        )}
+        <div className={`mt-3 text-sm ${theme.textSecondary}`}>
+          {quote.attachments && quote.attachments.length > 0
+            ? `${quote.attachments.length} attachment${quote.attachments.length === 1 ? "" : "s"} available.`
+            : "No attachments uploaded."}
+        </div>
       </div>
     );
   }

@@ -124,31 +124,31 @@ function ConfirmableCrewProfileFields({
 
   if (!isEditing) {
     return (
-      <div className={`rounded-[22px] border p-4 ${previewCardClass}`}>
-        <div className="flex items-start justify-between gap-4">
+      <div className="rounded-[14px] border border-[var(--mb-line)] bg-[var(--mb-panel)] p-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--mb-line-strong)] pb-2">
           <div className="min-w-0">
-            <div className="app-kicker">Crew Information</div>
-            <h3 className={`mt-2 truncate text-xl font-semibold ${theme.textPrimary}`}>{profile.fullName || "Crew member"}</h3>
-            <p className={`mt-1 text-sm ${theme.textSecondary}`}>
+            <div className="rv-masthead-kicker">Crew Information</div>
+            <h3 className={`mt-1.5 truncate text-xl font-semibold ${theme.textPrimary}`}>{profile.fullName || "Crew member"}</h3>
+            <p className={`mt-0.5 text-sm ${theme.textSecondary}`}>
               {[profile.rank, profile.department, profile.nationality].filter(Boolean).join(" - ") || "Crew profile"}
             </p>
           </div>
           {canEdit ? (
-            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button shrink-0 rounded-xl px-4 py-2">
+            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
               Edit
-            </Button>
+            </button>
           ) : null}
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        <dl className="grid gap-x-6 sm:grid-cols-2 xl:grid-cols-3">
           {previewItems.map((item) => (
-            <div key={item.label} className={`rounded-2xl border px-3 py-3 ${previewFieldClass}`}>
-              <div className="app-kicker">{item.label}</div>
-              <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{item.value}</div>
+            <div key={item.label} className="rv-kv">
+              <dt className="rv-kv-label">{item.label}</dt>
+              <dd className="rv-kv-value">{item.value}</dd>
             </div>
           ))}
-        </div>
+        </dl>
         {profile.notes ? (
-          <p className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200/80 bg-white/85 text-slate-700"}`}>
+          <p className={`mt-3 text-sm leading-6 ${theme.textSecondary}`}>
             {profile.notes}
           </p>
         ) : null}
@@ -354,16 +354,16 @@ function ConfirmableCertificateRow({
             </Button>
           ) : null}
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        <dl className="mt-2 grid gap-x-6 sm:grid-cols-2 xl:grid-cols-3">
           {certificatePreviewItems.map((item) => (
-            <div key={item.label} className={`rounded-2xl border px-3 py-3 ${previewFieldClass}`}>
-              <div className="app-kicker">{item.label}</div>
-              <div className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{item.value}</div>
+            <div key={item.label} className="rv-kv">
+              <dt className="rv-kv-label">{item.label}</dt>
+              <dd className="rv-kv-value">{item.value}</dd>
             </div>
           ))}
-        </div>
+        </dl>
         {certificate.notes ? (
-          <p className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200/80 bg-white/85 text-slate-700"}`}>
+          <p className={`mt-3 text-sm leading-6 ${theme.textSecondary}`}>
             {certificate.notes}
           </p>
         ) : null}
@@ -721,19 +721,19 @@ export function CrewView({
             <div>
               <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <div className="app-kicker">Crew Profile</div>
+                  <div className="rv-masthead-kicker">Crew Profile</div>
                   <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>{selectedCrewProfile.fullName}</h2>
                   <p className={`mt-2 text-sm leading-6 ${theme.textSecondary}`}>{selectedCrewProfile.rank} - {selectedCrewProfile.department} - {selectedCrewProfile.nationality || "Nationality not set"}</p>
-                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                    <div className={`rounded-2xl border px-4 py-3 ${darkMode ? "border-white/10 bg-slate-800/70" : "border-slate-200/80 bg-slate-50/80"}`}>
-                      <p className="app-kicker">Passport No.</p>
-                      <p className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{getCrewIdentifierDisplay(selectedCrewProfile.passportNumber, "—", { exposeSensitiveData: exposeSensitiveCrewData })}</p>
+                  <dl className="mt-2 grid gap-x-6 sm:grid-cols-2">
+                    <div className="rv-kv">
+                      <dt className="rv-kv-label">Passport No.</dt>
+                      <dd className="rv-kv-value">{getCrewIdentifierDisplay(selectedCrewProfile.passportNumber, "—", { exposeSensitiveData: exposeSensitiveCrewData })}</dd>
                     </div>
-                    <div className={`rounded-2xl border px-4 py-3 ${darkMode ? "border-white/10 bg-slate-800/70" : "border-slate-200/80 bg-slate-50/80"}`}>
-                      <p className="app-kicker">Seaman's Book No.</p>
-                      <p className={`mt-2 text-sm font-semibold ${theme.textPrimary}`}>{getCrewIdentifierDisplay(selectedCrewProfile.seamansBookNumber, "—", { exposeSensitiveData: exposeSensitiveCrewData })}</p>
+                    <div className="rv-kv">
+                      <dt className="rv-kv-label">Seaman's Book No.</dt>
+                      <dd className="rv-kv-value">{getCrewIdentifierDisplay(selectedCrewProfile.seamansBookNumber, "—", { exposeSensitiveData: exposeSensitiveCrewData })}</dd>
                     </div>
-                  </div>
+                  </dl>
                   {privacyNote ? (
                     <p className={`mt-3 text-xs font-medium ${theme.textSecondary}`}>{privacyNote}</p>
                   ) : null}

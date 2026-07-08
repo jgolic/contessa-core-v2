@@ -207,7 +207,7 @@ canvas {
 }
 
 .task-board-scroll {
-  scrollbar-color: rgba(22, 120, 110, 0.38) transparent;
+  scrollbar-color: rgba(143, 110, 54, 0.38) transparent;
   scrollbar-width: thin;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
@@ -226,7 +226,7 @@ canvas {
 }
 
 .task-board-scroll::-webkit-scrollbar-thumb {
-  background: rgba(22, 120, 110, 0.34);
+  background: rgba(143, 110, 54, 0.34);
   border: 3px solid transparent;
   border-radius: 999px;
   background-clip: content-box;
@@ -2498,4 +2498,220 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
 .vessel-active :where(.bg-white, .bg-white\/78, .bg-white\/80, .bg-white\/90, .bg-white\/95, .bg-slate-50, .bg-slate-100) {
   background-color: rgba(255, 255, 255, 0.12) !important;
   border-color: rgba(255, 255, 255, 0.26) !important;
+}
+
+/* ============================================================
+   RIVIERA OPERATIONS — the merged design language.
+   The previous app's working structure (two-pane modules, dense
+   boards, field grids) dressed in the dashboard's editorial
+   voice: serif mastheads, hairline ledger rows, tracked
+   micro-labels, tone ticks, gold accents. Scoped to the module
+   surface (.app-page-frame) so the hero/dashboard stay as-is.
+   ============================================================ */
+
+/* --- 1. Module masthead: flat editorial header, no card box --- */
+.rv-masthead {
+  padding: 0.25rem 0.25rem 1.1rem;
+}
+
+.rv-masthead-kicker {
+  color: var(--mb-gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.rv-masthead-title {
+  font-family: var(--font-vessel-display);
+  font-weight: 600;
+  letter-spacing: 0.012em;
+  color: var(--mb-ink);
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  line-height: 1.12;
+}
+
+.rv-masthead-sub {
+  color: var(--mb-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+/* Editorial segment tabs: tracked caps + gold underline, no pills */
+.rv-tabs {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1.4rem;
+}
+
+.rv-tab {
+  position: relative;
+  padding: 0.45rem 0.1rem 0.55rem;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mb-soft);
+  transition: color 200ms ease;
+  min-height: 44px;
+}
+
+.rv-tab:hover {
+  color: var(--mb-gold-bright);
+}
+
+.rv-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--mb-gold), var(--mb-gold-badge));
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: left center;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.rv-tab[aria-selected="true"] {
+  color: var(--mb-ink);
+}
+
+.rv-tab[aria-selected="true"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* --- 2. Panels: boxed cards flatten into hairline ledger surfaces --- */
+.app-page-frame .app-panel,
+.app-page-frame .app-panel-soft {
+  border-color: var(--mb-line);
+  background: var(--mb-panel);
+  box-shadow: 0 20px 55px -42px rgba(63, 51, 24, 0.35);
+  backdrop-filter: blur(18px);
+}
+
+.app-page-frame .app-panel::before {
+  opacity: 0.2;
+}
+
+/* --- 3. Badges: unified editorial micro-label voice.
+   Colors stay semantic (set by utilities); only the typographic
+   voice and silhouette are unified. --- */
+.app-page-frame [data-ui="badge"] {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(28, 35, 52, 0.1);
+}
+
+/* --- 4. File inputs: native chooser becomes a gold outline button --- */
+.app-page-frame input[type="file"] {
+  border: 1px dashed var(--mb-line-strong);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--mb-muted);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 200ms ease, background-color 200ms ease;
+}
+
+.app-page-frame input[type="file"]:hover {
+  border-color: var(--mb-gold-hover);
+  background: var(--mb-gold-tint);
+}
+
+.app-page-frame input[type="file"]::file-selector-button {
+  margin-right: 0.9rem;
+  border: 1px solid rgba(143, 110, 54, 0.45);
+  border-radius: 999px;
+  padding: 0.42rem 1rem;
+  background: linear-gradient(160deg, #e9d49c 0%, #cfa963 55%, #b08a45 100%);
+  color: #241a08;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 180ms ease;
+}
+
+.app-page-frame input[type="file"]::file-selector-button:hover {
+  filter: brightness(1.05);
+}
+
+/* --- 5. Editorial key-value cells (replaces tinted field tiles) --- */
+.rv-kv {
+  border-bottom: 1px solid var(--mb-line);
+  padding: 0.65rem 0.1rem;
+  min-width: 0;
+}
+
+.rv-kv-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mb-muted);
+}
+
+.rv-kv-value {
+  margin-top: 0.3rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mb-ink);
+  overflow-wrap: anywhere;
+}
+
+/* --- 6. Editorial work rows (task list items) --- */
+.rv-row {
+  position: relative;
+  border: 1px solid var(--mb-line);
+  background: var(--mb-panel);
+  border-radius: 14px;
+  transition: border-color 240ms ease, background-color 240ms ease;
+}
+
+.rv-row:hover {
+  border-color: var(--mb-gold-hover);
+  background: var(--mb-gold-tint);
+}
+
+.rv-row-tick {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 62%;
+  width: 2px;
+  transform: translateY(-50%);
+  border-radius: 0 999px 999px 0;
+}
+
+.rv-tick-critical { background: var(--mb-critical); }
+.rv-tick-warning { background: var(--mb-gold-badge); }
+.rv-tick-success { background: var(--mb-safe); }
+.rv-tick-neutral { background: var(--mb-tick-neutral); }
+
+.rv-overdue {
+  color: var(--mb-critical-text);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* --- 7. Sticky detail pane on wide screens: the detail column
+   follows the reader instead of getting lost below the list. --- */
+@media (min-width: 1280px) {
+  .rv-sticky-detail {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100dvh - 6.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }

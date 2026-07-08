@@ -33,7 +33,6 @@ import {
   TASK_STATUS_OPTIONS,
   VESSEL_STATE_MODE_OPTIONS,
   YACHT_AREA_OPTIONS,
-  buildObjectivesFilterTabs,
   clampMaintenanceDueDate,
   convertedMoney,
   dateStringFromNow,
@@ -58,6 +57,7 @@ import {
 import { ConfirmActionDialog, QuoteRow, ShareAppButton } from "./contessa_app_components.jsx";
 import { AlertInboxButton, BottomNavButton, SectionNavCard, ShellControlButton } from "./components/app_shell_primitives.jsx";
 import { SmartLabel } from "./components/smart_label.jsx";
+import { ModuleMasthead } from "./components/module_masthead.jsx";
 import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
 
@@ -859,42 +859,38 @@ function ConfirmableTaskFields({
 
   if (!isEditing) {
     return (
-      <div className={`relative mb-5 rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200 bg-slate-50/80"}`}>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="app-kicker mb-2">Task Information</div>
-            <div className={`text-lg font-semibold ${theme.textPrimary}`}>{task.name || task.title || "Task"}</div>
-            <div className={`mt-1 text-sm ${theme.textSecondary}`}>{task.department || "General"}</div>
-          </div>
+      <div className="relative mb-6">
+        <div className="flex items-center justify-between gap-4 border-b border-[var(--mb-line-strong)] pb-2">
+          <div className="rv-masthead-kicker">Task Information</div>
           {canEdit ? (
-            <Button type="button" variant="outline" onClick={() => setIsEditing(true)} className="vessel-outline-button rounded-xl px-4 py-2">
+            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
               Edit
-            </Button>
+            </button>
           ) : (
             <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>
           )}
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
-            <div className="app-compact-label">Assignee</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.assignee || "Unassigned"}</div>
+        <dl className="grid gap-x-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Assignee</dt>
+            <dd className="rv-kv-value">{task.assignee || "Unassigned"}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
-            <div className="app-compact-label">Department</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.department || "General"}</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Department</dt>
+            <dd className="rv-kv-value">{task.department || "General"}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
-            <div className="app-compact-label">Due</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{task.dueDate || "No due date"}</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Due</dt>
+            <dd className="rv-kv-value">{task.dueDate || "No due date"}</dd>
           </div>
-          <div className={`rounded-xl border p-3 ${darkMode ? "border-white/10 bg-slate-950/45" : "border-slate-200 bg-white"}`}>
-            <div className="app-compact-label">Priority</div>
-            <div className={`mt-2 font-semibold ${theme.textPrimary}`}>{formatTaskPriorityLabel(task.priority || "medium")} Priority</div>
+          <div className="rv-kv">
+            <dt className="rv-kv-label">Priority</dt>
+            <dd className="rv-kv-value">{formatTaskPriorityLabel(task.priority || "medium")} Priority</dd>
           </div>
-        </div>
+        </dl>
 
-        <div className={`mt-3 rounded-xl border p-3 text-sm leading-6 ${darkMode ? "border-white/10 bg-slate-950/45 text-slate-300" : "border-slate-200 bg-white text-slate-700"}`}>
+        <div className={`mt-3 text-sm leading-6 ${theme.textSecondary}`}>
           {task.notes || "No notes recorded."}
         </div>
       </div>
@@ -1022,7 +1018,6 @@ export function ObjectivesView({
   assigneeOptions = [],
 }) {
   const theme = themeClasses(darkMode);
-  const filterTabs = buildObjectivesFilterTabs(stats, statusFilter);
   const [mobileTaskPane, setMobileTaskPane] = useState(selectedTask ? "details" : "list");
   const [taskBoardView, setTaskBoardView] = useState("all");
   const taskDetailsRevealRef = useRevealHighlight(Boolean(selectedTask), {
@@ -1089,26 +1084,28 @@ export function ObjectivesView({
   const taskBoardList = taskBoardView === "all"
     ? visibleTasks
     : visibleTasks.filter((task) => getTaskBoardStatus(task) === taskBoardView);
+  const isTaskOverdue = (task) =>
+    Boolean(task?.dueDate) &&
+    !["completed", "approved"].includes(task?.status) &&
+    new Date(`${task.dueDate}T23:59:59`) < new Date();
+  const taskTickClass = (task) => {
+    if (isTaskOverdue(task) || ["urgent", "critical"].includes(task?.priority)) return "rv-tick-critical";
+    if (task?.priority === "high") return "rv-tick-warning";
+    if (["completed", "approved"].includes(task?.status)) return "rv-tick-success";
+    return "rv-tick-neutral";
+  };
   const scopedAssigneeOptions = Array.isArray(assigneeOptions) ? assigneeOptions.filter(Boolean) : [];
 
   return (
     <>
-      <div className={`app-panel app-panel-soft mb-4 min-w-0 overflow-hidden rounded-2xl p-3 shadow-md md:mb-6 md:rounded-lg ${theme.card}`}>
-        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap">
-          {filterTabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => onStatusFilterChange(tab.value)}
-              className={`inline-flex min-h-[38px] shrink-0 items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${tab.active ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_10px_28px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_10px_24px_rgba(15,118,110,0.10)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/55 text-slate-600 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
-            >
-              <span className="whitespace-nowrap">{tab.label} <span className="opacity-70">({tab.count})</span></span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className={`text-xs leading-5 ${theme.textSecondary}`}>Focus the list first, then move into details only when needed.</div>
-          {canEdit ? <Dialog open={newTaskOpen} onOpenChange={onNewTaskOpenChange}>
+      <div className="mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-center md:justify-between">
+        <Input
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(event) => onSearchChange(event.target.value)}
+          className={`h-12 rounded-2xl md:max-w-sm ${theme.input}`}
+        />
+        {canEdit ? <Dialog open={newTaskOpen} onOpenChange={onNewTaskOpenChange}>
             <DialogTrigger asChild>
               <Button className="button-vessel-primary w-full rounded-xl px-4 py-4 text-white md:w-auto md:rounded-lg md:py-4">
                 <Plus className="mr-2 h-4 w-4" />
@@ -1185,7 +1182,6 @@ export function ObjectivesView({
               </div>
             </DialogContent>
           </Dialog> : <Badge className="bg-[#e8eee9] text-[#40534a]">View-only access</Badge>}
-        </div>
       </div>
 
       {selectedTask ? (
@@ -1210,34 +1206,22 @@ export function ObjectivesView({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(520px,680px)] xl:items-start">
         <Card className={`app-panel app-panel-soft shadow-md ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
           <CardContent className="p-4">
-            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="app-kicker">Tasks</div>
-                <div className={`mt-1 text-sm ${theme.textSecondary}`}>Simple board: start work, track progress, wait for approval, then close it.</div>
-              </div>
-              <Input
-                placeholder="Search tasks..."
-                value={search}
-                onChange={(event) => onSearchChange(event.target.value)}
-                className={`h-12 rounded-2xl md:max-w-xs ${theme.input}`}
-              />
-            </div>
             {visibleTasks.length === 0 ? (
               <div className={`app-empty-state rounded-xl border border-dashed text-center text-sm ${theme.textSecondary} ${darkMode ? "border-[#31443a] bg-[#0e171c]" : "border-[#c9ded3] bg-[#f7faf8]"}`}>
                 No tasks match this view.
               </div>
             ) : (
-              <div className={`rounded-[22px] border p-3 ${darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(255,255,255,0.03)]" : "border-[rgba(15,80,70,0.08)] bg-[rgba(255,255,255,0.56)]"}`}>
+              <div className="rounded-[22px] border border-[var(--mb-line)] bg-[rgba(255,255,255,0.45)] p-3">
                 <div className="task-board-scroll flex gap-2 overflow-x-auto pb-3">
                   {taskBoardOptions.map((option) => (
                     <button
                       key={option.key}
                       type="button"
                       onClick={() => setTaskBoardView(option.key)}
-                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${taskBoardView === option.key ? darkMode ? "border-[var(--vessel-border-dark)] bg-[var(--vessel-primary-soft-dark)] text-[var(--vessel-text-accent-dark)] shadow-[0_12px_30px_var(--vessel-glow-dark)]" : "border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-[var(--vessel-text-accent)] shadow-[0_12px_28px_rgba(15,118,110,0.12)]" : darkMode ? "border-white/10 bg-white/[0.035] text-slate-300 hover:border-[var(--vessel-border-dark)] hover:bg-[var(--vessel-primary-soft-dark)] hover:text-[var(--vessel-text-accent-dark)]" : "border-slate-200/70 bg-white/65 text-slate-700 hover:border-[var(--vessel-border)] hover:bg-[var(--vessel-primary-soft)] hover:text-[var(--vessel-text-accent)]"}`}
+                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-200 active:scale-[0.98] ${taskBoardView === option.key ? "vessel-active border-transparent" : "border-[var(--mb-line)] bg-[var(--mb-panel)] text-[var(--mb-soft)] hover:border-[var(--mb-gold-hover)] hover:bg-[var(--mb-gold-tint)] hover:text-[var(--mb-gold-bright)]"}`}
                     >
                       <span className="whitespace-nowrap">{option.label}</span>
-                      <span className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-xs ${taskBoardView === option.key ? "bg-white/70 text-slate-900" : darkMode ? "bg-white/[0.06] text-slate-200" : "bg-slate-100 text-slate-700"}`}>
+                      <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] ${taskBoardView === option.key ? "bg-white/20 text-white" : "bg-[var(--mb-gold-tint)] text-[var(--mb-gold-bright)]"}`}>
                         {option.count}
                       </span>
                     </button>
@@ -1265,9 +1249,9 @@ export function ObjectivesView({
                         window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
                         handleSelectTask(task.id);
                       }}
-                      className={`jump-highlight-target group relative overflow-hidden rounded-2xl border p-4 pl-5 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${selectedId === task.id ? "vessel-active" : darkMode ? "app-dark-card border-[var(--vessel-border-dark)] hover:bg-slate-800/80" : "border-[rgba(15,80,70,0.08)] bg-white/78 hover:bg-white/95"}`}
+                      className={`jump-highlight-target group relative overflow-hidden p-4 pl-5 text-left active:scale-[0.99] ${selectedId === task.id ? "vessel-active rounded-[14px]" : "rv-row"}`}
                     >
-                      <div className={`absolute inset-y-0 left-0 w-1.5 ${task.priority === "high" ? "bg-[#d6a94f]" : task.priority === "urgent" ? "bg-[#b1473f]" : "bg-[var(--vessel-primary)]"}`} />
+                      <span className={`rv-row-tick ${taskTickClass(task)}`} />
                       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                         <div className="min-w-0">
                           <div className="flex min-w-0 items-start justify-between gap-2">
@@ -1289,7 +1273,10 @@ export function ObjectivesView({
                           </div>
                           <div className="flex justify-between gap-2">
                             <span>Due</span>
-                            <span className={`text-right font-medium ${theme.textPrimary}`}>{task.dueDate || "Not set"}</span>
+                            <span className={`text-right font-medium ${theme.textPrimary}`}>
+                              {task.dueDate || "Not set"}
+                              {isTaskOverdue(task) ? <span className={`ml-2 ${selectedId === task.id ? "text-[#ffb9b0]" : "rv-overdue"}`}>Overdue</span> : null}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -1307,7 +1294,7 @@ export function ObjectivesView({
 
         <div
           ref={taskDetailsRevealRef}
-          className={`ui-reveal-target rounded-2xl md:rounded-lg xl:sticky xl:top-6 ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
+          className={`ui-reveal-target rv-sticky-detail rounded-2xl md:rounded-lg ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
           style={{ "--reveal-radius": "22px" }}
         >
           <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"} shadow-md ${theme.card} rounded-2xl md:rounded-lg`}>
@@ -2248,11 +2235,11 @@ export function TaskDetails({
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <div className={`text-sm ${theme.textSecondary}`}>{selectedTask.id}</div>
-          <h2 className={`text-2xl font-semibold ${theme.textPrimary}`}>{selectedTask.name}</h2>
-          <p className={`text-sm ${theme.textSecondary}`}>{selectedTask.area}</p>
+      <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0">
+          <div className="rv-masthead-kicker">{selectedTask.id}</div>
+          <h2 className={`mt-1.5 text-2xl ${theme.textPrimary}`}>{selectedTask.name}</h2>
+          <p className={`mt-0.5 text-sm ${theme.textSecondary}`}>{selectedTask.area}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Badge className={neutralBadgeClass(darkMode)}>{selectedTask.assignee || "Unassigned"}</Badge>
             <Badge className={neutralBadgeClass(darkMode)}>{selectedTask.department || "General"}</Badge>
@@ -2261,9 +2248,9 @@ export function TaskDetails({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 md:items-end">
+        <div className="flex w-full shrink-0 flex-col gap-2.5 md:w-56">
           {canEdit ? <Select value={selectedTask.status} onValueChange={(value) => onUpdateTaskStatus(selectedTask.id, value)}>
-            <SelectTrigger className={`w-full rounded-xl h-12 md:w-44 md:rounded-lg ${theme.input}`}>
+            <SelectTrigger className={`h-12 w-full rounded-xl md:rounded-lg ${theme.input}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -2273,40 +2260,40 @@ export function TaskDetails({
             </SelectContent>
           </Select> : <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(selectedTask.status)}</Badge>}
           {canEdit ? (
-            <div className="grid w-full gap-2 md:w-44">
+            <div className="grid grid-cols-3 gap-1.5">
               <Button
                 type="button"
                 variant="outline"
-                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                className="app-action-button min-h-[44px] rounded-xl px-1 py-2 text-xs"
                 onClick={() => onUpdateTaskStatus(selectedTask.id, "waiting-approval")}
               >
-                Request Approval
+                Approval
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                className="app-action-button min-h-[44px] rounded-xl px-1 py-2 text-xs"
                 onClick={() => onUpdateTaskStatus(selectedTask.id, "completed")}
               >
-                Mark Done
+                Done
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                className="app-action-button w-full rounded-xl px-3 py-2 text-sm"
+                className="app-action-button min-h-[44px] rounded-xl px-1 py-2 text-xs"
                 onClick={() => onUpdateTaskStatus(selectedTask.id, "blocked")}
               >
                 Blocked
               </Button>
             </div>
           ) : null}
-          {canEdit ? <Button
-            variant="outline"
-            className={`w-full rounded-xl px-4 py-3 md:w-auto md:rounded-lg ${darkMode ? "border-[#5b2a2a] bg-[#231515] text-[#ffd9d9] hover:bg-[#382020]" : "border-[#e8bcbc] bg-[#fff3f3] text-[#8a1f2b] hover:bg-[#ffe4e4]"}`}
+          {canEdit ? <button
+            type="button"
+            className="min-h-[44px] self-end text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-critical-text)] transition-colors hover:text-[var(--mb-critical)]"
             onClick={() => onDeleteTaskRequest({ id: selectedTask.id, name: selectedTask.name })}
           >
-            Delete Task
-          </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
+            Delete task
+          </button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
         </div>
       </div>
 
@@ -2496,24 +2483,6 @@ export function TaskDetails({
   );
 }
 
-function WorkspaceSegmentButton({ active = false, onClick, children, darkMode = false }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`min-h-[44px] rounded-2xl px-4 py-2 text-sm font-semibold transition md:rounded-xl ${
-        active
-          ? "vessel-active"
-          : darkMode
-            ? "bg-[#121c21] text-[#dce9e1] hover:bg-[#1a2830]"
-            : "bg-[#eef3f0] text-[#40534a] hover:bg-[#dfe9e3]"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function TaskMaintenanceWorkspace({
   darkMode = false,
   activePanel = "tasks",
@@ -2521,24 +2490,17 @@ export function TaskMaintenanceWorkspace({
   tasksView,
   maintenanceView,
 }) {
-  const theme = themeClasses(darkMode);
   return (
     <div className="grid gap-4">
-      <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <div className="app-kicker">Tasks</div>
-              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Simple work board for daily vessel jobs.</h2>
-              <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Track what needs doing, what is in progress, what needs approval, and what is done.</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <WorkspaceSegmentButton active={activePanel === "tasks"} onClick={() => onChangePanel("tasks")} darkMode={darkMode}>Tasks</WorkspaceSegmentButton>
-              <WorkspaceSegmentButton active={activePanel === "maintenance"} onClick={() => onChangePanel("maintenance")} darkMode={darkMode}>Maint.</WorkspaceSegmentButton>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <ModuleMasthead
+        kicker="Operations"
+        title="The work board."
+        subtitle="Track what needs doing, what is in progress, what needs approval, and what is done."
+        tabs={[
+          { key: "tasks", label: "Tasks", active: activePanel === "tasks", onSelect: () => onChangePanel("tasks") },
+          { key: "maintenance", label: "Maintenance", active: activePanel === "maintenance", onSelect: () => onChangePanel("maintenance") },
+        ]}
+      />
       {activePanel === "maintenance" ? maintenanceView : tasksView}
     </div>
   );
@@ -2551,24 +2513,17 @@ export function CrewCertificatesWorkspace({
   crewView,
   certificatesView,
 }) {
-  const theme = themeClasses(darkMode);
   return (
     <div className="grid gap-4">
-      <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <div className="app-kicker">Crew</div>
-              <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Crew readiness, roles, and certificate warnings.</h2>
-              <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Profiles and certificate risk live together so captains and managers see people and compliance in one place.</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <WorkspaceSegmentButton active={activePanel === "crew"} onClick={() => onChangePanel("crew")} darkMode={darkMode}>Crew</WorkspaceSegmentButton>
-              <WorkspaceSegmentButton active={activePanel === "certificates"} onClick={() => onChangePanel("certificates")} darkMode={darkMode}>Certs</WorkspaceSegmentButton>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <ModuleMasthead
+        kicker="People & Compliance"
+        title="Crew readiness."
+        subtitle="Profiles and certificate risk live together, so people and compliance read in one place."
+        tabs={[
+          { key: "crew", label: "Crew", active: activePanel === "crew", onSelect: () => onChangePanel("crew") },
+          { key: "certificates", label: "Certificates", active: activePanel === "certificates", onSelect: () => onChangePanel("certificates") },
+        ]}
+      />
       {activePanel === "certificates" ? certificatesView : crewView}
     </div>
   );
@@ -2581,17 +2536,13 @@ export function DocumentsView({ darkMode = false, documents = [], vesselName = "
       id="documents-section"
       data-jump-target
       style={{ "--jump-radius": "28px" }}
-      className={`jump-highlight-target scroll-mt-24 rounded-[28px] border p-5 shadow-sm md:scroll-mt-28 ${
-        darkMode
-          ? "border-white/10 bg-slate-900/90"
-          : "border-slate-200/80 bg-white/90"
-      }`}
+      className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28"
     >
-      <div className="min-w-0">
-        <div className="app-kicker">Documents</div>
-        <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Vessel records, legal notices, manuals, and placeholders.</h2>
-        <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>A dedicated document room for {vesselName}, keeping legal/IP notices separate from daily command decisions.</p>
-      </div>
+      <ModuleMasthead
+        kicker="Documents"
+        title="The document room."
+        subtitle={`Vessel records, legal notices, and manuals for ${vesselName}, kept separate from daily command decisions.`}
+      />
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {documents.map((document) => (
           <Card id={`item-${document.id}`} data-jump-target style={{ "--jump-radius": "22px" }} key={document.id} className={`jump-highlight-target rounded-[24px] md:rounded-[22px] ${theme.card}`}>
@@ -2633,13 +2584,11 @@ export function SettingsWorkspaceView({
   const theme = themeClasses(darkMode);
   return (
     <div className="grid gap-4">
-      <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
-        <CardContent className="p-5">
-          <div className="app-kicker">Settings</div>
-          <h2 className={`mt-2 text-2xl font-semibold ${theme.textPrimary}`}>Vessel profile, app state, legal controls, and deployment readiness.</h2>
-          <p className={`mt-1 text-sm leading-6 ${theme.textSecondary}`}>Operational defaults stay visible here without crowding the command surface.</p>
-        </CardContent>
-      </Card>
+      <ModuleMasthead
+        kicker="Settings"
+        title="Vessel profile & app state."
+        subtitle="Operational defaults, exports, and legal controls stay visible here without crowding the command surface."
+      />
       <div className="grid gap-4 xl:grid-cols-2">
         <Card className={`rounded-[24px] md:rounded-[22px] ${theme.card}`}>
           <CardContent className="space-y-4 p-5">
