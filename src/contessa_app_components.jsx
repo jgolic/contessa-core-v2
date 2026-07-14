@@ -227,7 +227,7 @@ export function ConfirmActionDialog({
 export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkMode = false, canEdit = true }) {
   const theme = themeClasses(darkMode);
   const containerClass = isSelected ? theme.selectedTask : theme.unselectedTask;
-  const areaClass = isSelected ? "text-[rgba(240,236,224,0.78)]" : theme.textSecondary;
+  const areaClass = isSelected ? "text-[rgba(23,56,58,0.64)]" : theme.textSecondary;
   const badgeClass = isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : statusStyles[task.status] || statusStyles.pending;
   const priorityClass = isSelected ? "bg-[#efe5cc] text-[#4a3a17]" : priorityStyles[task.priority] || priorityStyles.medium;
   const departmentClass = isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : departmentStyles[task.department] || departmentStyles.General;

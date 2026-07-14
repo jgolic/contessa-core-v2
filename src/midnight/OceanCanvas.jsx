@@ -107,8 +107,8 @@ export default function OceanCanvas({ enabled = true }) {
       camera.position.set(0, 3.4, 10);
       camera.lookAt(0, 0.6, -30);
 
-      // Tide/26: deep petrol water with a restrained champagne signal lane.
-      const palette = { deep: "#071c25", shallow: "#2d7b84", gold: "#e6c37a", dust: 0x9de0d4, dustOpacity: 0.22 };
+      // Daylight Marina: pale sea glass with a restrained warm navigation lane.
+      const palette = { deep: "#82b9b8", shallow: "#d8eee7", gold: "#d7b06b", dust: 0xffffff, dustOpacity: 0.18 };
 
       const uniforms = {
         uTime: { value: 0 },

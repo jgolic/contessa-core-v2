@@ -2544,7 +2544,7 @@ export function themeClasses(darkMode) {
     input:
       "border-[rgba(28,35,52,0.18)] bg-white/95 text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
     selectedTask:
-      "border-[#22324e] bg-[linear-gradient(140deg,#26385a_0%,#1b2840_55%,#141d31_100%)] text-white shadow-[0_22px_48px_-24px_rgba(17,26,44,0.55),inset_0_1px_0_rgba(201,169,106,0.28)]",
+      "border-[#74b8ad] bg-[linear-gradient(140deg,rgba(174,224,213,0.58)_0%,rgba(235,247,241,0.92)_58%,rgba(255,252,244,0.94)_100%)] text-[#17383a] shadow-[0_20px_44px_-28px_rgba(35,88,86,0.42),inset_0_1px_0_rgba(255,255,255,0.85)]",
     unselectedTask:
       "border-[rgba(28,35,52,0.12)] bg-white/92 text-slate-900 shadow-[0_18px_50px_rgba(28,35,52,0.07)]",
     ring: "ring-vessel",
@@ -2844,4 +2844,3 @@ export function buildOperationalNotifications({
   const severityOrder = { critical: 0, warning: 1, info: 2 };
   return notifications.sort((a, b) => (severityOrder[a.level] ?? 9) - (severityOrder[b.level] ?? 9));
 }
-

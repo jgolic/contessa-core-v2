@@ -1636,3 +1636,516 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   TIDE/27 - DAYLIGHT MARINA
+   A bright, calm fleet-operations layer. This remains a visual
+   override only: component structure and product behavior stay intact.
+   ============================================================ */
+
+:root {
+  --neo-abyss: #12383a;
+  --neo-depth: #245c5c;
+  --neo-petrol: #2f7471;
+  --neo-mint: #a8ded2;
+  --neo-mint-soft: rgba(105, 177, 164, 0.13);
+  --neo-champagne: #d7b06b;
+  --neo-coral: #dc7469;
+  --neo-paper: #f3f5f0;
+  --neo-paper-bright: #fcfdf9;
+  --neo-ink: #17383a;
+  --neo-hairline: rgba(33, 83, 82, 0.12);
+  --neo-shadow: 0 26px 70px -44px rgba(24, 69, 67, 0.3);
+
+  --mb-bg: #f3f5f0;
+  --mb-ink: #17383a;
+  --mb-muted: rgba(23, 56, 58, 0.64);
+  --mb-soft: rgba(23, 56, 58, 0.5);
+  --mb-gold: #9b7438;
+  --mb-gold-bright: #765725;
+  --mb-on-gold: #12383a;
+  --mb-gold-badge: #82c5b7;
+  --mb-gold-tint: rgba(105, 177, 164, 0.12);
+  --mb-line: rgba(33, 83, 82, 0.11);
+  --mb-line-strong: rgba(33, 83, 82, 0.19);
+  --mb-gold-hover: rgba(68, 139, 132, 0.55);
+  --mb-panel: rgba(255, 255, 255, 0.68);
+  --mb-panel-strong: rgba(255, 255, 255, 0.94);
+  --mb-scrim: rgba(22, 50, 51, 0.18);
+  --mb-critical: #d9665d;
+  --mb-critical-text: #9d3f38;
+  --mb-safe: #4b9686;
+  --mb-safe-text: #2f7468;
+  --mb-tick-neutral: rgba(23, 56, 58, 0.2);
+  --mb-hero-scrim-soft: rgba(243, 247, 242, 0.5);
+  --mb-hero-scrim-strong: rgba(243, 247, 242, 0.9);
+  --mb-rail-bg: rgba(250, 252, 248, 0.88);
+  --mb-dock-bg: rgba(250, 252, 248, 0.92);
+}
+
+html {
+  background: #eef3ed;
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(141, 207, 193, 0.24), transparent 28rem),
+    radial-gradient(circle at 94% 9%, rgba(232, 205, 151, 0.2), transparent 30rem),
+    radial-gradient(circle at 50% 68%, rgba(255, 255, 255, 0.92), transparent 45rem),
+    linear-gradient(180deg, #edf4ef 0%, #fbfcf8 29rem, #f2f5ef 100%);
+}
+
+body::before {
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(45, 102, 98, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 102, 98, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+::selection {
+  background: rgba(130, 197, 183, 0.46);
+  color: #102f31;
+}
+
+.midnight-grain {
+  opacity: 0.018;
+  mix-blend-mode: multiply;
+}
+
+.midnight-ocean-canvas {
+  opacity: 0.3;
+  filter: saturate(72%) brightness(1.2);
+}
+
+.midnight-ocean-canvas::after {
+  background: linear-gradient(180deg, rgba(246, 250, 246, 0.18) 4%, rgba(246, 250, 246, 0.5) 54%, rgba(243, 245, 240, 0.98) 96%);
+}
+
+/* Light navigation shell */
+.neo-rail,
+.neo-command-header,
+.neo-mobile-dock,
+.neo-shell-panel {
+  --mb-ink: #17383a;
+  --mb-muted: rgba(23, 56, 58, 0.62);
+  --mb-soft: rgba(23, 56, 58, 0.5);
+  --mb-gold: #8d6b34;
+  --mb-gold-bright: #356f6c;
+  --mb-gold-badge: #78beaf;
+  --mb-on-gold: #12383a;
+  --mb-gold-tint: rgba(105, 177, 164, 0.13);
+  --mb-line: rgba(33, 83, 82, 0.1);
+  --mb-line-strong: rgba(33, 83, 82, 0.18);
+  --mb-gold-hover: rgba(68, 139, 132, 0.5);
+  --mb-panel: rgba(255, 255, 255, 0.66);
+  --mb-panel-strong: rgba(253, 254, 251, 0.96);
+}
+
+.neo-rail.mb-rail {
+  border-color: rgba(43, 100, 96, 0.13);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 249, 245, 0.82)),
+    rgba(250, 252, 248, 0.88);
+  box-shadow:
+    0 24px 64px -42px rgba(25, 72, 69, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(28px) saturate(118%);
+  -webkit-backdrop-filter: blur(28px) saturate(118%);
+}
+
+.neo-logo-button {
+  border-color: rgba(43, 100, 96, 0.14) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(224, 241, 234, 0.78)) !important;
+  box-shadow: 0 16px 30px -22px rgba(35, 92, 88, 0.5);
+}
+
+.neo-logo-button::after {
+  background: #65af9f;
+  box-shadow: 0 0 10px rgba(101, 175, 159, 0.55);
+}
+
+.neo-rail .brand-mark--large path:not(.logo-gold-triangle),
+.neo-command-header .brand-mark--large path:not(.logo-gold-triangle),
+.neo-mobile-dock .brand-mark--large path:not(.logo-gold-triangle) {
+  stroke: #2c6664;
+}
+
+.neo-rail .logo-gold-triangle,
+.neo-command-header .logo-gold-triangle,
+.neo-mobile-dock .logo-gold-triangle {
+  stroke: #c89d55;
+}
+
+.neo-rail-item::after {
+  border-radius: 17px;
+}
+
+.neo-rail-item:hover::after,
+.neo-rail-item[aria-current="page"]::after {
+  border-color: rgba(80, 151, 142, 0.18);
+  background: linear-gradient(135deg, rgba(173, 222, 211, 0.3), rgba(255, 255, 255, 0.72));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.neo-command-header {
+  border-color: rgba(43, 100, 96, 0.13);
+  background: rgba(250, 252, 248, 0.88);
+  box-shadow:
+    0 22px 58px -42px rgba(25, 72, 69, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(28px) saturate(120%);
+  -webkit-backdrop-filter: blur(28px) saturate(120%);
+}
+
+.neo-command-header::before {
+  background: linear-gradient(90deg, transparent, rgba(125, 194, 180, 0.13), transparent);
+}
+
+.neo-header-task-action {
+  border-color: #2b6865;
+  background: linear-gradient(135deg, #377d76, #235856);
+  color: #f7fcf8;
+  box-shadow: 0 14px 30px -20px rgba(35, 88, 86, 0.62);
+}
+
+.neo-header-task-action:hover {
+  border-color: #3e8b82;
+  background: linear-gradient(135deg, #448f86, #2b6865);
+  box-shadow: 0 18px 36px -19px rgba(35, 88, 86, 0.62), 0 0 0 4px rgba(130, 197, 183, 0.16);
+}
+
+.neo-mobile-dock.mb-dock {
+  border-color: rgba(43, 100, 96, 0.14);
+  background: rgba(250, 252, 248, 0.94);
+  box-shadow: 0 24px 64px -36px rgba(25, 72, 69, 0.46);
+}
+
+.neo-dock-item[aria-current="page"] {
+  background: linear-gradient(145deg, rgba(168, 222, 210, 0.36), rgba(255, 255, 255, 0.72));
+}
+
+.neo-shell-panel.mb-glass {
+  border-color: rgba(43, 100, 96, 0.14);
+  background: rgba(252, 253, 250, 0.97);
+  box-shadow: 0 32px 90px -42px rgba(25, 72, 69, 0.42);
+}
+
+/* Daylight command hero */
+.neo-hero {
+  --mb-ink: #17383a;
+  --mb-muted: rgba(23, 56, 58, 0.65);
+  --mb-soft: rgba(23, 56, 58, 0.5);
+  --mb-gold: #8f6b31;
+  --mb-gold-bright: #765725;
+  --mb-gold-badge: #58a896;
+  --mb-on-gold: #17383a;
+  --mb-gold-tint: rgba(105, 177, 164, 0.13);
+  --mb-line: rgba(33, 83, 82, 0.11);
+  --mb-line-strong: rgba(33, 83, 82, 0.19);
+  --mb-gold-hover: rgba(68, 139, 132, 0.52);
+  --mb-safe: #489887;
+  --mb-safe-text: #2d7166;
+  background:
+    radial-gradient(circle at 87% 4%, rgba(149, 211, 197, 0.42), transparent 26rem),
+    radial-gradient(circle at 5% 96%, rgba(235, 205, 146, 0.3), transparent 28rem),
+    linear-gradient(137deg, rgba(252, 253, 249, 0.96), rgba(231, 243, 236, 0.94) 54%, rgba(248, 245, 235, 0.96));
+  box-shadow:
+    0 38px 90px -56px rgba(25, 72, 69, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.neo-hero::before {
+  border-color: rgba(43, 100, 96, 0.12);
+}
+
+.neo-hero-grid {
+  opacity: 0.3;
+  background-image:
+    linear-gradient(rgba(54, 124, 117, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(54, 124, 117, 0.09) 1px, transparent 1px);
+}
+
+.neo-hero-glow {
+  opacity: 0.32;
+  background: #8fd2c4;
+  filter: blur(92px);
+}
+
+.neo-live-chip {
+  border-color: rgba(65, 144, 134, 0.22);
+  background: rgba(255, 255, 255, 0.62);
+  color: #337c72;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.neo-vessel-title {
+  background: linear-gradient(112deg, #17383a 2%, #31756f 55%, #9c7436 108%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 13px 24px rgba(46, 104, 98, 0.12));
+}
+
+.neo-command-card {
+  border-color: rgba(43, 100, 96, 0.12);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.91), rgba(247, 251, 247, 0.68)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 28px 64px -46px rgba(25, 72, 69, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.neo-quick-action {
+  border-color: rgba(43, 100, 96, 0.1);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.neo-quick-action:hover {
+  border-color: rgba(68, 139, 132, 0.28);
+  background: rgba(221, 242, 234, 0.72);
+}
+
+.neo-brief-button {
+  border: 1px solid #2e6c68;
+  background: linear-gradient(135deg, #3d817b, #285f5d);
+  color: #f7fcf8;
+  box-shadow: 0 18px 34px -23px rgba(35, 88, 86, 0.6);
+}
+
+.neo-brief-button:hover {
+  background: linear-gradient(135deg, #4a9188, #306c68);
+  box-shadow: 0 22px 40px -22px rgba(35, 88, 86, 0.58);
+}
+
+/* Light, consistent module mastheads */
+.app-module-stage .rv-masthead {
+  --mb-ink: #17383a;
+  --mb-muted: rgba(23, 56, 58, 0.64);
+  --mb-soft: rgba(23, 56, 58, 0.5);
+  border-color: rgba(43, 100, 96, 0.12);
+  background:
+    radial-gradient(circle at 90% 2%, rgba(148, 211, 197, 0.32), transparent 22rem),
+    radial-gradient(circle at 2% 108%, rgba(235, 205, 146, 0.25), transparent 22rem),
+    linear-gradient(140deg, rgba(252, 253, 249, 0.97), rgba(236, 246, 239, 0.94));
+  box-shadow:
+    0 28px 70px -48px rgba(25, 72, 69, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.app-module-stage .rv-masthead::before {
+  background: linear-gradient(180deg, #68b6a6, #d8b46f, transparent 92%);
+}
+
+.rv-tabs-label {
+  color: rgba(23, 56, 58, 0.48);
+}
+
+.app-module-stage .rv-masthead-kicker {
+  color: #397f76;
+}
+
+.app-module-stage .rv-masthead-title {
+  color: #17383a;
+}
+
+.app-module-stage .rv-masthead-sub {
+  color: rgba(23, 56, 58, 0.64);
+}
+
+.app-module-stage .rv-tabs {
+  border-color: rgba(43, 100, 96, 0.11);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.app-module-stage .rv-tab {
+  color: rgba(23, 56, 58, 0.62);
+}
+
+.app-module-stage .rv-tab:hover {
+  background: rgba(168, 222, 210, 0.24);
+  color: #205a57;
+}
+
+.app-module-stage .rv-tab[aria-selected="true"] {
+  background: linear-gradient(145deg, rgba(159, 215, 203, 0.72), rgba(226, 243, 236, 0.9));
+  color: #164643;
+  box-shadow:
+    0 12px 28px -20px rgba(35, 88, 86, 0.38),
+    inset 0 0 0 1px rgba(69, 144, 135, 0.18);
+}
+
+.rv-tab[aria-selected="true"] .rv-tab-indicator {
+  border-color: #286c67;
+  background: #286c67;
+}
+
+.neo-module-hero {
+  background:
+    radial-gradient(circle at 87% 4%, rgba(149, 211, 197, 0.32), transparent 24rem),
+    radial-gradient(circle at 4% 105%, rgba(235, 205, 146, 0.23), transparent 22rem),
+    linear-gradient(140deg, rgba(252, 253, 249, 0.98), rgba(235, 245, 238, 0.95)) !important;
+}
+
+.app-module-stage .app-hero-surface {
+  border-color: rgba(43, 100, 96, 0.12) !important;
+  background: linear-gradient(140deg, rgba(252, 253, 249, 0.97), rgba(235, 245, 238, 0.94)) !important;
+  box-shadow: 0 28px 70px -48px rgba(25, 72, 69, 0.42) !important;
+}
+
+.neo-module-hero .app-kicker {
+  color: #397f76 !important;
+}
+
+.neo-module-hero :is(h1, h2, h3, .text-slate-950, .text-slate-900) {
+  color: #17383a !important;
+}
+
+.neo-module-hero :is(p, .text-slate-700, .text-slate-600, .text-slate-500) {
+  color: rgba(23, 56, 58, 0.64) !important;
+}
+
+.app-module-stage .neo-module-hero .app-panel {
+  border-color: rgba(43, 100, 96, 0.11) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Shared surfaces and form controls */
+.app-page-frame .app-panel,
+.app-page-frame .app-panel-soft,
+.app-page-frame .app-section-shell,
+.app-page-frame .app-section-shell-dark {
+  border-color: rgba(43, 100, 96, 0.1);
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.89), rgba(248, 251, 247, 0.7)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 24px 62px -48px rgba(25, 72, 69, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.app-page-frame :is(input, textarea, select, [role="combobox"]):not([data-map-control]) {
+  border-color: rgba(43, 100, 96, 0.14);
+  background-color: rgba(255, 255, 255, 0.82);
+  color: #17383a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.app-page-frame :is(input, textarea, select, [role="combobox"]):focus {
+  border-color: rgba(67, 143, 134, 0.62);
+  box-shadow: 0 0 0 4px rgba(130, 197, 183, 0.16);
+  outline: none;
+}
+
+.app-primary-action-button,
+.button-vessel-primary {
+  border-color: #2c6865 !important;
+  background: linear-gradient(135deg, #3e817a, #285e5c) !important;
+  color: #f8fcf9 !important;
+  box-shadow: 0 16px 32px -22px rgba(35, 88, 86, 0.56) !important;
+}
+
+.app-primary-action-button:hover,
+.button-vessel-primary:hover {
+  border-color: #3d8981 !important;
+  background: linear-gradient(135deg, #4c938a, #316d69) !important;
+  box-shadow: 0 19px 38px -22px rgba(35, 88, 86, 0.54), 0 0 0 4px rgba(130, 197, 183, 0.14) !important;
+}
+
+section.mb-ledger-row,
+.rv-row,
+.task-clarity-metric,
+.fleet-vessel-row {
+  background: rgba(255, 255, 255, 0.66);
+  border-color: rgba(43, 100, 96, 0.09);
+}
+
+section.mb-ledger-row:hover,
+.rv-row:hover,
+.fleet-vessel-row:hover {
+  border-color: rgba(67, 143, 134, 0.24);
+  background: rgba(232, 246, 239, 0.82);
+}
+
+#mission-cards-section,
+.fleet-command-overview {
+  border-color: rgba(43, 100, 96, 0.11);
+  background:
+    radial-gradient(circle at 94% 2%, rgba(158, 216, 203, 0.2), transparent 22rem),
+    radial-gradient(circle at 4% 100%, rgba(235, 205, 146, 0.15), transparent 20rem),
+    rgba(252, 253, 249, 0.86);
+}
+
+.fleet-filter-button--active,
+.task-date-preset--active {
+  border-color: rgba(62, 135, 127, 0.25);
+  background: linear-gradient(145deg, rgba(159, 215, 203, 0.78), rgba(225, 243, 236, 0.92));
+  color: #164643;
+  box-shadow: 0 12px 28px -22px rgba(35, 88, 86, 0.38);
+}
+
+.fleet-filter-button--active span {
+  background: rgba(255, 255, 255, 0.58);
+  color: #2c6e68;
+}
+
+.fleet-vessel-row--active,
+.vessel-active {
+  border-color: rgba(68, 143, 134, 0.28);
+  background: linear-gradient(135deg, rgba(163, 219, 207, 0.42), rgba(250, 253, 248, 0.88));
+  color: #17383a;
+  box-shadow:
+    0 16px 34px -28px rgba(35, 88, 86, 0.4),
+    inset 0 0 0 1px rgba(112, 186, 172, 0.16);
+}
+
+.vessel-active :where(.text-slate-950, .text-slate-900, .text-slate-800) {
+  color: #17383a !important;
+}
+
+.vessel-active :where(.text-slate-700, .text-slate-600, .text-slate-500) {
+  color: rgba(23, 56, 58, 0.64) !important;
+}
+
+.vessel-active :where(.bg-white, .bg-white\/78, .bg-white\/80, .bg-white\/90, .bg-white\/95, .bg-slate-50, .bg-slate-100) {
+  border-color: rgba(43, 100, 96, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.jump-highlight-target.jump-highlight-active::after {
+  border-color: rgba(67, 143, 134, 0.7);
+  box-shadow:
+    inset 0 0 0 1px rgba(130, 197, 183, 0.22),
+    0 0 0 4px rgba(130, 197, 183, 0.13),
+    0 16px 42px rgba(42, 117, 110, 0.16);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .neo-command-header,
+  .neo-rail.mb-rail,
+  .neo-mobile-dock.mb-dock,
+  .neo-shell-panel.mb-glass {
+    background-color: #fafcf8;
+  }
+}
+
+@media (max-width: 767px) {
+  body::before {
+    background-size: 40px 40px;
+  }
+
+  .neo-command-header {
+    background: rgba(250, 252, 248, 0.94);
+  }
+
+  .neo-hero {
+    min-height: auto;
+    box-shadow: 0 26px 62px -44px rgba(25, 72, 69, 0.42);
+  }
+
+  .neo-mobile-dock.mb-dock {
+    box-shadow: 0 20px 52px -32px rgba(25, 72, 69, 0.48);
+  }
+}
