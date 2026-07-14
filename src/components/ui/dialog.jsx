@@ -32,13 +32,14 @@ export function DialogContent({ className = "", children }) {
     <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/55 p-4" onMouseDown={() => ctx.onOpenChange(false)}>
       <div
         ref={revealRef}
-        className={`ui-reveal-target relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()}
+        className={`app-dialog-surface ui-reveal-target relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()}
         style={{ "--reveal-radius": "30px" }}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          className="absolute right-5 top-5 rounded-lg border border-white/10 bg-[#162119]/92 px-3 py-1 text-sm text-slate-100 shadow"
+          className="app-dialog-close absolute right-5 top-5 z-10 min-h-9 rounded-xl border px-3.5 py-1.5 text-sm font-semibold shadow-sm transition-colors"
+          aria-label="Close dialog"
           onClick={() => ctx.onOpenChange(false)}
         >
           Close

@@ -2215,3 +2215,59 @@ body :is(input, textarea, select, [role="combobox"]):focus {
     box-shadow: 0 20px 52px -32px rgba(25, 72, 69, 0.48);
   }
 }
+
+/* Light-surface contrast guardrails --------------------------------------- */
+body:not(.dark-mode) .app-dialog-surface {
+  border-color: rgba(43, 100, 96, 0.14) !important;
+  color: #17383a;
+}
+
+body:not(.dark-mode) .app-dialog-close {
+  border-color: rgba(43, 100, 96, 0.2) !important;
+  background: rgba(238, 247, 242, 0.98) !important;
+  color: #164643 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  box-shadow:
+    0 10px 24px -18px rgba(25, 72, 69, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+body:not(.dark-mode) .app-dialog-close:hover {
+  border-color: rgba(52, 124, 116, 0.36) !important;
+  background: #dff1e9 !important;
+  color: #103e3b !important;
+}
+
+body:not(.dark-mode) .app-dialog-close:active {
+  background: #d4ebe2 !important;
+}
+
+body:not(.dark-mode) .app-dialog-surface :where(.text-slate-100, .text-slate-200) {
+  color: #17383a !important;
+}
+
+body:not(.dark-mode) .app-dialog-surface :where(.text-slate-300, .text-slate-400) {
+  color: #3f5e60 !important;
+}
+
+body:not(.dark-mode) .app-dialog-surface :where(.text-slate-500, .text-slate-600) {
+  color: #365759 !important;
+}
+
+body:not(.dark-mode) :where(.app-dialog-surface, .app-panel, .app-panel-soft, .settings-popover-light, .fleet-popover-light)
+  :is(input, textarea)::placeholder {
+  color: rgba(23, 56, 58, 0.62) !important;
+  opacity: 1 !important;
+}
+
+body:not(.dark-mode) :where(.app-dialog-surface, .app-page-frame)
+  :is(button, input, textarea, select):disabled {
+  opacity: 0.78 !important;
+}
+
+body:not(.dark-mode) .settings-popover-light .app-action-button:hover {
+  border-color: rgba(52, 124, 116, 0.3) !important;
+  background: #e7f4ee !important;
+  color: #164643 !important;
+}
