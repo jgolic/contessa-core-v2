@@ -189,11 +189,20 @@ async function scrollAndHighlight(targetId, fallbackIdOrOptions = "", maybeOptio
   const element = (await waitForElementById(targetId)) || (fallbackId ? await waitForElementById(fallbackId, 6, 70) : null);
   if (!element) return false;
 
-  element.scrollIntoView({
-    behavior: "smooth",
-    block: options.block || "center",
-    inline: "nearest",
-  });
+  const block = options.block || "center";
+  if (block === "start") {
+    const commandHeader = document.getElementById("app-command-header");
+    const headerRect = commandHeader?.getBoundingClientRect();
+    const safeTop = Math.ceil((headerRect?.height || 72) + Math.max(headerRect?.top || 0, 8) + 24);
+    const targetTop = element.getBoundingClientRect().top + window.scrollY - safeTop;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+  } else {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block,
+      inline: "nearest",
+    });
+  }
 
   window.setTimeout(() => {
     highlightTarget(element);
@@ -1285,9 +1294,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const openModule = (moduleId, options = {}) => {
     const sectionIdByModule = {
       command: "dashboard-section",
-      "tasks-maintenance": "tasks-section",
+      "tasks-maintenance": "tasks-maintenance-section",
       "expenses-approvals": "approvals-section",
-      "crew-certificates": options.panel === "certificates" ? "certificates-section" : "crew-section",
+      "crew-certificates": "crew-certificates-section",
       documents: "documents-section",
       route: "route-section",
       notifications: "alerts-section",
@@ -1296,22 +1305,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     navigateToSection(sectionIdByModule[moduleId] || `${moduleId}-section`, moduleId, options);
   };
 
-  const openDesktopModule = (moduleId, options = {}) => {
-    if (!moduleId) return;
-    setPendingSectionNavigation(null);
-    activateModuleForSection(moduleId, options);
-  };
-
   const openResponsiveModule = (moduleId, options = {}) => {
-    const isDesktopViewport = typeof window !== "undefined"
-      ? window.matchMedia("(min-width: 768px)").matches
-      : true;
-
-    if (isDesktopViewport) {
-      openDesktopModule(moduleId, options);
-      return;
-    }
-
     openModule(moduleId, options);
   };
 
@@ -2839,7 +2833,18 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     });
   };
 
+  const openNewTaskComposer = () => {
+    navigateToSection("tasks-section", "tasks-maintenance", { panel: "tasks" });
+    setNewTaskOpen(true);
+  };
+
   const mobileCommandActions = useMemo(() => {
+    const addTaskAction = {
+      id: "qa-new-task",
+      label: "Create a new task",
+      meta: "Quick entry",
+      onClick: openNewTaskComposer,
+    };
     const captainTaskAction = {
       id: "qa-tasks",
       label: "Review overdue tasks",
@@ -2890,21 +2895,21 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     switch (effectiveRole) {
       case "owner":
       case "manager":
-        return [approvalsAction, captainTaskAction, certificatesAction];
+        return [addTaskAction, approvalsAction, captainTaskAction];
       case "first_mate":
-        return [routeAction, captainTaskAction, maintenanceAction];
+        return [addTaskAction, routeAction, maintenanceAction];
       case "engineer":
-        return [maintenanceAction, captainTaskAction, approvalsAction];
+        return [addTaskAction, maintenanceAction, approvalsAction];
       case "bosun":
       case "deckhand":
-        return [captainTaskAction, routeAction, maintenanceAction];
+        return [addTaskAction, captainTaskAction, maintenanceAction];
       case "stewardess":
-        return [captainTaskAction, crewAction, approvalsAction];
+        return [addTaskAction, captainTaskAction, crewAction];
       case "guest":
         return [routeAction, crewAction, certificatesAction];
       case "captain":
       default:
-        return [captainTaskAction, routeAction, approvalsAction];
+        return [addTaskAction, captainTaskAction, routeAction];
     }
   }, [effectiveRole, stats.crewProfiles, stats.routeWaypoints, todayOperations.dueTodayMaintenance.length, todayOperations.expiringCertificates.length, todayOperations.overdueTasks.length, todayOperations.pendingApprovals.length]);
 
@@ -3117,7 +3122,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   return (
     <div
-      className={`min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-2 transition-colors sm:px-5 md:px-6 md:pt-3 lg:py-4 lg:pl-[7.5rem] lg:pr-10 xl:pl-[8.25rem] xl:pr-14 ${theme.page}`}
+      className={`app-workspace-shell min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-2 transition-colors sm:px-5 md:px-6 md:pt-3 lg:py-4 lg:pl-[7.5rem] lg:pr-10 xl:pl-[8.25rem] xl:pr-14 ${theme.page}`}
       style={vesselThemeVars}
     >
       <AppDialogs
@@ -3133,6 +3138,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         onCancelDeleteCrewExpense={() => setCrewExpenseDeleteRequest(null)}
       />
       <div className="app-page-frame">
+        <a className="app-skip-link" href="#app-module-content">Skip to current workspace</a>
         <AppToastStack toasts={appToasts} darkMode={darkMode} onDismiss={dismissToast} />
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
         <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
@@ -3177,6 +3183,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             activeVesselId={activeVesselId}
             onSwitchFleetVessel={openVesselWorkspace}
             onOpenFleet={() => setFleetOpen(true)}
+            onQuickAddTask={canEditApp ? openNewTaskComposer : null}
             onOpenHistory={() => setHistoryOpen(true)}
             onOpenPreferences={() => setPreferencesOpen(true)}
           />
@@ -3231,7 +3238,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           />
         </AppErrorBoundary>
 
-        <AppErrorBoundary resetKey={activeWorkspaceResetKey}>
+        <main id="app-module-content" className="app-module-stage" data-active-module={expenseView} tabIndex={-1}>
+          <AppErrorBoundary resetKey={activeWorkspaceResetKey}>
         {expenseView === "command" ? (
           <TodayOperationsView
             darkMode={darkMode}
@@ -3259,6 +3267,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             activeVesselId={activeVesselId}
             onOpenFleet={() => setFleetOpen(true)}
             onSwitchFleetVessel={openVesselWorkspace}
+            onQuickAddTask={openNewTaskComposer}
             onOpenTask={openTodayTask}
             onApprovalAction={handleTodayApprovalAction}
             onNavigateToTasks={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
@@ -3473,7 +3482,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             />
           </div>
         )}
-        </AppErrorBoundary>
+          </AppErrorBoundary>
+        </main>
       </div>
       <div className="hidden print:fixed print:bottom-0 print:left-0 print:right-0 print:block print:border-t print:border-[#d8e7df] print:bg-white print:px-6 print:py-2 print:text-center print:text-[11px] print:text-[#64756b]">
         {APP_FOOTER_NOTICE}

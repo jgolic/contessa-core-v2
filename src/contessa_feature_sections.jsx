@@ -32,7 +32,6 @@ import {
   TASK_DEPARTMENT_OPTIONS,
   TASK_STATUS_OPTIONS,
   VESSEL_STATE_MODE_OPTIONS,
-  YACHT_AREA_OPTIONS,
   clampMaintenanceDueDate,
   convertedMoney,
   dateStringFromNow,
@@ -58,6 +57,7 @@ import { ConfirmActionDialog, QuoteRow, ShareAppButton } from "./contessa_app_co
 import { AlertInboxButton, BottomNavButton, SectionNavCard, ShellControlButton } from "./components/app_shell_primitives.jsx";
 import { SmartLabel } from "./components/smart_label.jsx";
 import { ModuleMasthead } from "./components/module_masthead.jsx";
+import { TaskCreateDialog } from "./components/tasks/task-create-dialog.jsx";
 import { DEMO_ROLE_OPTIONS } from "./contessa_access.mjs";
 import { APP_BRAND_NAME, ContessaUiLogo } from "./components/branding.jsx";
 
@@ -1081,13 +1081,37 @@ export function ObjectivesView({
     })),
   ];
   const selectedTaskBoardOption = taskBoardOptions.find((option) => option.key === taskBoardView) || taskBoardOptions[0];
-  const taskBoardList = taskBoardView === "all"
-    ? visibleTasks
-    : visibleTasks.filter((task) => getTaskBoardStatus(task) === taskBoardView);
   const isTaskOverdue = (task) =>
     Boolean(task?.dueDate) &&
     !["completed", "approved"].includes(task?.status) &&
     new Date(`${task.dueDate}T23:59:59`) < new Date();
+  const taskUrgencyScore = (task) => {
+    if (isTaskOverdue(task)) return 0;
+    if (["urgent", "critical"].includes(task?.priority)) return 1;
+    if (task?.priority === "high") return 2;
+    if (!task?.assignee) return 3;
+    if (task?.dueDate) return 4;
+    if (["completed", "approved"].includes(task?.status)) return 7;
+    return 5;
+  };
+  const taskBoardList = (taskBoardView === "all"
+    ? visibleTasks
+    : visibleTasks.filter((task) => getTaskBoardStatus(task) === taskBoardView))
+    .slice()
+    .sort((left, right) => {
+      const urgencyDifference = taskUrgencyScore(left) - taskUrgencyScore(right);
+      if (urgencyDifference) return urgencyDifference;
+      if (left?.dueDate && right?.dueDate) return left.dueDate.localeCompare(right.dueDate);
+      if (left?.dueDate) return -1;
+      if (right?.dueDate) return 1;
+      return String(left?.name || "").localeCompare(String(right?.name || ""));
+    });
+  const taskBoardSummary = {
+    overdue: visibleTasks.filter(isTaskOverdue).length,
+    unassigned: visibleTasks.filter((task) => !task?.assignee && !["completed", "approved"].includes(task?.status)).length,
+    inProgress: visibleTasks.filter((task) => getTaskBoardStatus(task) === "in-progress").length,
+    completed: visibleTasks.filter((task) => getTaskBoardStatus(task) === "done").length,
+  };
   const taskTickClass = (task) => {
     if (isTaskOverdue(task) || ["urgent", "critical"].includes(task?.priority)) return "rv-tick-critical";
     if (task?.priority === "high") return "rv-tick-warning";
@@ -1105,83 +1129,32 @@ export function ObjectivesView({
           onChange={(event) => onSearchChange(event.target.value)}
           className={`h-12 rounded-2xl md:max-w-sm ${theme.input}`}
         />
-        {canEdit ? <Dialog open={newTaskOpen} onOpenChange={onNewTaskOpenChange}>
-            <DialogTrigger asChild>
-              <Button className="button-vessel-primary w-full rounded-xl px-4 py-4 text-white md:w-auto md:rounded-lg md:py-4">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Task
-              </Button>
-            </DialogTrigger>
-            <DialogContent className={`rounded-lg ${darkMode ? "bg-[#111a16] text-[#f4fbf6] border-[#2a3a32]" : "bg-white"}`}>
-              <DialogHeader>
-                <DialogTitle>Add Task</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                <Input placeholder="Task name" value={newTask.name} onChange={(event) => onNewTaskChange({ name: event.target.value })} className={`h-12 ${theme.input}`} />
-                <div>
-                  <Input
-                    list="task-area-options"
-                    placeholder="Area"
-                    value={newTask.area}
-                    onChange={(event) => onNewTaskChange({ area: event.target.value })}
-                    className={`h-12 ${theme.input}`}
-                  />
-                  <datalist id="task-area-options">
-                    {YACHT_AREA_OPTIONS.map((option) => (
-                      <option key={option} value={option} />
-                    ))}
-                  </datalist>
-                </div>
-                <SearchableSelect
-                  label="Assigned To"
-                  value={newTask.assignee}
-                  options={scopedAssigneeOptions}
-                  placeholder={scopedAssigneeOptions.length ? "Select crew member" : "No crew for this vessel"}
-                  onChange={(value) => onNewTaskChange({ assignee: value })}
-                />
-                <Select value={newTask.department} onValueChange={(value) => onNewTaskChange({ department: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TASK_DEPARTMENT_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input type="date" value={newTask.dueDate} onChange={(event) => onNewTaskChange({ dueDate: event.target.value })} className={`h-12 ${theme.input}`} />
-                <Select value={newTask.status} onValueChange={(value) => onNewTaskChange({ status: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TASK_STATUS_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>{formatTaskStatusLabel(option)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={newTask.priority} onValueChange={(value) => onNewTaskChange({ priority: value })}>
-                  <SelectTrigger className={`h-12 ${theme.input}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRIORITY_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>{formatTaskPriorityLabel(option)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <textarea
-                  placeholder="Notes"
-                  value={newTask.notes}
-                  onChange={(event) => onNewTaskChange({ notes: event.target.value })}
-                  className={`min-h-24 w-full rounded-lg border px-3 py-2 outline-none ${theme.input}`}
-                />
-                <Button onClick={onAddTask} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white" data-testid="save-task-button">
-                  Save Task
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog> : <Badge className="bg-[#e8eee9] text-[#40534a]">View-only access</Badge>}
+        {canEdit ? (
+          <TaskCreateDialog
+            open={newTaskOpen}
+            onOpenChange={onNewTaskOpenChange}
+            task={newTask}
+            onTaskChange={onNewTaskChange}
+            onSave={onAddTask}
+            assigneeOptions={scopedAssigneeOptions}
+            darkMode={darkMode}
+          />
+        ) : <Badge className="bg-[#e8eee9] text-[#40534a]">View-only access</Badge>}
+      </div>
+
+      <div className="task-clarity-strip" aria-label="Task overview">
+        <div className={taskBoardSummary.overdue ? "task-clarity-metric task-clarity-metric--critical" : "task-clarity-metric"}>
+          <strong>{taskBoardSummary.overdue}</strong><span>Overdue</span>
+        </div>
+        <div className={taskBoardSummary.unassigned ? "task-clarity-metric task-clarity-metric--watch" : "task-clarity-metric"}>
+          <strong>{taskBoardSummary.unassigned}</strong><span>Unassigned</span>
+        </div>
+        <div className="task-clarity-metric">
+          <strong>{taskBoardSummary.inProgress}</strong><span>In progress</span>
+        </div>
+        <div className="task-clarity-metric task-clarity-metric--ready">
+          <strong>{taskBoardSummary.completed}</strong><span>Completed</span>
+        </div>
       </div>
 
       {selectedTask ? (
@@ -1260,10 +1233,12 @@ export function ObjectivesView({
                               {(task.assignee || "Ops").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "OP"}
                             </span>
                           </div>
-                          <div className={`mt-1 text-sm ${theme.textSecondary}`}>{task.area || task.department || "General"}</div>
+                          <div className={`mt-1 text-sm ${theme.textSecondary}`}>
+                            {[task.department, task.area].filter(Boolean).join(" / ") || "General"}
+                          </div>
                           <div className="mt-3 flex flex-wrap gap-1.5">
-                            <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
-                            <Badge className={neutralBadgeClass(darkMode)}>{formatTaskStatusLabel(task.status)}</Badge>
+                            <Badge className={`task-priority-chip task-priority-chip--${task.priority || "medium"}`}>{formatTaskPriorityLabel(task.priority)} priority</Badge>
+                            <Badge className={`task-status-chip task-status-chip--${getTaskBoardStatus(task)}`}>{formatTaskStatusLabel(task.status)}</Badge>
                           </div>
                         </div>
                         <div className={`grid gap-1 text-xs ${theme.textSecondary} lg:min-w-[220px]`}>
@@ -2491,7 +2466,7 @@ export function TaskMaintenanceWorkspace({
   maintenanceView,
 }) {
   return (
-    <div className="grid gap-4">
+    <div id="tasks-maintenance-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target grid gap-4 rounded-[28px]">
       <ModuleMasthead
         kicker="Operations"
         title="The work board."
@@ -2514,7 +2489,7 @@ export function CrewCertificatesWorkspace({
   certificatesView,
 }) {
   return (
-    <div className="grid gap-4">
+    <div id="crew-certificates-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target grid gap-4 rounded-[28px]">
       <ModuleMasthead
         kicker="People & Compliance"
         title="Crew readiness."

@@ -107,8 +107,8 @@ export default function OceanCanvas({ enabled = true }) {
       camera.position.set(0, 3.4, 10);
       camera.lookAt(0, 0.6, -30);
 
-      // Riviera morning: azure water warming into a champagne sun lane.
-      const palette = { deep: "#5f8fb6", shallow: "#e2eff4", gold: "#eac37e", dust: 0xd8b271, dustOpacity: 0.28 };
+      // Tide/26: deep petrol water with a restrained champagne signal lane.
+      const palette = { deep: "#071c25", shallow: "#2d7b84", gold: "#e6c37a", dust: 0x9de0d4, dustOpacity: 0.22 };
 
       const uniforms = {
         uTime: { value: 0 },

@@ -23,7 +23,7 @@ export function NotificationsView({
     <div className="app-section-grid grid md:gap-6">
       <Card className={`app-panel app-hero-surface app-panel-active overflow-hidden rounded-[30px] md:rounded-[32px] ${theme.card}`}>
         <CardContent className="p-0">
-          <div className={`${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.15),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.08),_transparent_22%),repeating-linear-gradient(90deg,rgba(255,255,255,0.018)_0,rgba(255,255,255,0.018)_1px,transparent_1px,transparent_28px),linear-gradient(135deg,_rgba(13,20,26,0.99),_rgba(8,13,18,0.99))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.1),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.12),_transparent_20%),repeating-linear-gradient(90deg,rgba(15,102,91,0.03)_0,rgba(15,102,91,0.03)_1px,transparent_1px,transparent_26px),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} px-5 py-5 md:px-7 md:py-6`}>
+          <div className={`neo-module-hero ${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.15),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.08),_transparent_22%),repeating-linear-gradient(90deg,rgba(255,255,255,0.018)_0,rgba(255,255,255,0.018)_1px,transparent_1px,transparent_28px),linear-gradient(135deg,_rgba(13,20,26,0.99),_rgba(8,13,18,0.99))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.1),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.12),_transparent_20%),repeating-linear-gradient(90deg,rgba(15,102,91,0.03)_0,rgba(15,102,91,0.03)_1px,transparent_1px,transparent_26px),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} px-5 py-5 md:px-7 md:py-6`}>
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.14fr)_minmax(320px,0.86fr)] xl:items-stretch">
               <div className="flex max-w-2xl flex-col justify-between">
                 <div className="app-kicker">Notifications</div>
@@ -92,7 +92,7 @@ export function NotificationsView({
                       {titleCase(item.level)}
                     </Badge>
                     <Button type="button" onClick={() => onOpenNotification(item)} className="app-action-reveal button-vessel-primary rounded-2xl px-4 py-2 text-white md:rounded-xl">
-                      Open
+                      Open details
                     </Button>
                   </div>
                 </div>

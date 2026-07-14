@@ -19,9 +19,11 @@ import {
   DetailDrawer,
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
+import { FleetOperationsOverview } from "../../components/dashboard/fleet-operations-overview.jsx";
 import GlobalSearch from "../../components/GlobalSearch.jsx";
 import OceanCanvas from "../../midnight/OceanCanvas.jsx";
 import { useMidnightMotion } from "../../midnight/useMidnightMotion.js";
+import { useAutoFitSingleLine } from "../../hooks/useAutoFitSingleLine.js";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -662,6 +664,7 @@ export function TodayOperationsView({
   activeVesselId = "contessa",
   onOpenFleet,
   onSwitchFleetVessel,
+  onQuickAddTask,
   onApprovalAction,
   onNavigateToTasks,
   onNavigateToMaintenance,
@@ -1061,6 +1064,9 @@ export function TodayOperationsView({
     return () => window.removeEventListener("contessa:open-command-item", handleCommandItemOpen);
   }, [operationItems, priorityItemIds]);
 
+  const heroName = String(currentVessel?.name || currentVesselName || "Vessel").replace(/^M\/Y\s+/i, "").toUpperCase();
+  const heroNameRef = useAutoFitSingleLine(heroName);
+
   if (!currentVessel) {
     return (
       <div className="min-h-screen rounded-[28px] bg-slate-950 p-6 text-slate-100">
@@ -1070,14 +1076,18 @@ export function TodayOperationsView({
     );
   }
 
-  const heroName = String(currentVessel?.name || currentVesselName || "Vessel").replace(/^M\/Y\s+/i, "").toUpperCase();
   const heroStatement = resolvedVesselState?.primaryFocus || vesselStateConfig.description;
   const heroOnDeck = [
     stats.pendingApprovals ? `${stats.pendingApprovals} decision${stats.pendingApprovals === 1 ? "" : "s"} waiting` : "",
     stats.certificateDue ? `${stats.certificateDue} certificate${stats.certificateDue === 1 ? "" : "s"} due` : "",
     stats.routeReviewCount ? `${stats.routeReviewCount} route review${stats.routeReviewCount === 1 ? "" : "s"}` : "",
   ].filter(Boolean).join("  ·  ");
-  const nextActionLabel = priorityItems[0]?.title || "Review today's priorities";
+  const visibleQuickActions = (Array.isArray(quickActions) ? quickActions : []).slice(0, 3);
+  const heroMetrics = [
+    { label: "Open work", value: stats.totalObjectives || taskItems.length + maintenanceItems.length },
+    { label: "Decisions", value: stats.pendingApprovals || approvalItems.length },
+    { label: "Crew watch", value: stats.certificateDue || certificateItems.length },
+  ];
 
   return (
     <>
@@ -1085,42 +1095,92 @@ export function TodayOperationsView({
       <div className="midnight-grain" aria-hidden="true" />
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
-        {/* ---- Hero: the bridge on a bright morning ---- */}
-        <section className="flex min-h-[calc(72svh-7rem)] flex-col justify-center py-10 md:py-12">
-          <p data-mb-hero className="text-[10px] font-bold uppercase tracking-[0.34em] text-[var(--mb-gold)] md:text-[11px]">
-            Motor yacht · Command bridge
-          </p>
-          <h1
-            data-mb-hero
-            className="vessel-display-title vessel-title--light mt-4 break-words font-semibold leading-[0.88] tracking-[0.015em]"
-            style={{ fontSize: "clamp(3.2rem, 12vw, 9rem)" }}
-          >
-            {heroName}
-          </h1>
-          <div data-mb-hero className="midnight-gold-rule mt-7 w-48" />
-          <p data-mb-hero className="mt-7 max-w-2xl text-[15px] leading-7 text-[var(--mb-muted)] md:text-[17px] md:leading-8">
-            {heroStatement}
-          </p>
-          {heroOnDeck ? (
-            <p data-mb-hero className="mt-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--mb-muted)]">
-              On deck — {heroOnDeck}
-            </p>
-          ) : null}
+        {/* ---- Hero: a live bridge instrument, not a static landing page ---- */}
+        <section className="neo-hero relative my-4 min-h-[calc(70svh-5rem)] overflow-hidden rounded-[34px] px-5 py-7 sm:px-7 md:rounded-[46px] md:px-10 md:py-10 xl:px-14 xl:py-12">
+          <div className="neo-hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+          <div className="neo-hero-glow pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full" aria-hidden="true" />
 
-          <div data-mb-hero className="mt-8 flex flex-wrap items-center gap-x-9 gap-y-5">
+          <div className="relative z-10 grid min-h-[calc(70svh-11rem)] items-center gap-10 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)] xl:gap-14">
             <div className="min-w-0">
-              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Pending spend</div>
-              <div className="midnight-heading mt-1.5 text-[1.7rem] leading-none text-[var(--mb-gold-bright)]">{pendingSpendLabel}</div>
-            </div>
-            <div className="hidden h-11 w-px bg-[var(--mb-line-strong)] sm:block" />
-            <div className="min-w-0 max-w-full">
-              <div className="text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Next best action</div>
-              <div className="midnight-heading mt-1.5 truncate text-[1.7rem] italic leading-tight text-[var(--mb-ink)]">{nextActionLabel}</div>
-            </div>
-          </div>
+              <div data-mb-hero className="flex flex-wrap items-center gap-3">
+                <span className="neo-live-chip inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[9px] font-extrabold uppercase tracking-[0.24em]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--neo-mint)] shadow-[0_0_12px_var(--neo-mint)]" />
+                  Live command
+                </span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.26em] text-[var(--mb-muted)]">Motor yacht / bridge OS</span>
+              </div>
 
-          <div data-mb-hero className="mt-10 max-w-2xl">
-            <GlobalSearch darkMode={darkMode} results={searchResults} onJump={jumpToResult} />
+              <h1
+                ref={heroNameRef}
+                data-mb-hero
+                className="neo-vessel-title vessel-display-title mt-6 whitespace-nowrap font-semibold leading-[0.78] tracking-[-0.035em]"
+              >
+                {heroName}
+              </h1>
+
+              <div data-mb-hero className="mt-7 grid max-w-3xl gap-6 border-l border-[var(--mb-line-strong)] pl-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:pl-7">
+                <div>
+                  <p className="max-w-2xl text-[15px] leading-7 text-[var(--mb-muted)] md:text-[17px] md:leading-8">{heroStatement}</p>
+                  {heroOnDeck ? (
+                    <p className="mt-3 text-[9.5px] font-bold uppercase tracking-[0.21em] text-[var(--mb-soft)]">On deck / {heroOnDeck}</p>
+                  ) : null}
+                </div>
+                <div className="min-w-0 md:text-right">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.23em] text-[var(--mb-muted)]">Pending spend</div>
+                  <div className="mt-1 font-sans text-[1.55rem] font-semibold tracking-[-0.04em] text-[var(--mb-gold-bright)]">{pendingSpendLabel}</div>
+                </div>
+              </div>
+
+              <div data-mb-hero className="neo-search-shell mt-9 max-w-2xl">
+                <GlobalSearch darkMode results={searchResults} onJump={jumpToResult} />
+              </div>
+            </div>
+
+            <aside data-mb-hero className="neo-command-card min-w-0 rounded-[28px] border p-5 backdrop-blur-2xl md:p-6">
+              <div className="flex items-start justify-between gap-5">
+                <div className="min-w-0">
+                  <div className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-[var(--neo-mint)]">Operational pulse</div>
+                  <h2 className="mt-2 font-sans text-xl font-semibold tracking-[-0.04em] text-[var(--mb-ink)]">{vesselStateConfig.label}</h2>
+                  <p className="mt-2 text-xs leading-5 text-[var(--mb-muted)]">{currentRoleLabel} view / intelligence updated from the active vessel workspace.</p>
+                </div>
+                <ConfidenceRing score={confidenceScore} mood={resolvedVesselState?.mood || "calm"} />
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 border-y border-[var(--mb-line)]">
+                {heroMetrics.map((metric) => (
+                  <div key={metric.label} className="neo-pulse-metric min-w-0 px-2 py-4 first:pl-0 last:pr-0">
+                    <div className="text-[1.45rem] font-semibold leading-none tracking-[-0.05em] text-[var(--mb-ink)]">{metric.value}</div>
+                    <div className="mt-2 truncate text-[8px] font-extrabold uppercase tracking-[0.19em] text-[var(--mb-muted)]">{metric.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5">
+                <div className="text-[8.5px] font-extrabold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Fast launch</div>
+                <div className="mt-3 grid gap-2">
+                  {visibleQuickActions.map((action, index) => (
+                    <button
+                      key={action.id || action.label}
+                      type="button"
+                      onClick={action.onClick}
+                      className="neo-quick-action group flex min-h-12 items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left"
+                    >
+                      <span className="text-[10px] font-bold tabular-nums text-[var(--mb-muted)]">0{index + 1}</span>
+                      <span className="min-w-0 flex-1 truncate text-xs font-semibold text-[var(--mb-ink)]">{action.label}</span>
+                      <span className="shrink-0 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--neo-mint)]">{action.meta}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button type="button" onClick={() => setDailyReportOpen(true)} className="neo-brief-button mt-5 flex min-h-12 w-full items-center justify-between rounded-[16px] px-4 py-3 text-left">
+                <span>
+                  <span className="block text-[8px] font-bold uppercase tracking-[0.22em] opacity-70">Captain brief</span>
+                  <span className="mt-1 block text-sm font-semibold">Open daily report</span>
+                </span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-current/30" aria-hidden="true">↗</span>
+              </button>
+            </aside>
           </div>
 
           <button
@@ -1130,14 +1190,26 @@ export function TodayOperationsView({
               if (typeof document === "undefined") return;
               document.getElementById("vessel-state-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className="group mt-12 inline-flex w-fit items-center gap-3 text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="neo-descend group relative z-10 mt-8 inline-flex w-fit items-center gap-3 text-[9px] font-bold uppercase tracking-[0.27em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)] xl:absolute xl:bottom-8 xl:left-14 xl:mt-0"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] transition-colors group-hover:border-[var(--mb-gold-hover)]">
               <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 animate-bounce [animation-duration:2.2s]"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
-            Descend to operations
+            Enter operations
           </button>
         </section>
+
+        {fleetVessels.length ? (
+          <FleetOperationsOverview
+            vessels={fleetVessels}
+            metricsByVessel={fleetMetricsByVessel}
+            activeVesselId={activeVesselId}
+            currentRole={currentRole}
+            onSwitchVessel={onSwitchFleetVessel}
+            onOpenFleet={onOpenFleet}
+            onQuickAddTask={canEdit ? onQuickAddTask : null}
+          />
+        ) : null}
 
         <div className="grid gap-12 pb-16 xl:grid-cols-12 xl:items-start xl:gap-14">
           <div className="min-w-0 xl:col-span-8">

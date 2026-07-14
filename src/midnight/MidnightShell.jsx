@@ -120,7 +120,7 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       onClick={onClick}
       aria-label={label}
       aria-current={active ? "page" : undefined}
-      className={`group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
+      className={`neo-rail-item group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
         active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)] hover:text-[var(--mb-ink)]"
       }`}
     >
@@ -148,7 +148,8 @@ function DockItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`relative flex min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-2 transition-colors duration-200 ${
+      aria-current={active ? "page" : undefined}
+      className={`neo-dock-item relative flex min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-2 transition-colors duration-200 ${
         active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
       }`}
     >
@@ -174,7 +175,7 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
     <div className="fixed inset-0 z-[24000]">
       <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[var(--mb-scrim)] backdrop-blur-[3px]" />
       <div
-        className={`mb-glass absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
+        className={`neo-shell-panel mb-glass absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
           align === "right" ? "right-3 top-3 bottom-3 rounded-[22px]" : "left-3 bottom-24 rounded-[22px] lg:left-24 lg:bottom-6"
         }`}
       >
@@ -219,6 +220,7 @@ export default function MidnightShell({
   activeVesselId = "contessa",
   onSwitchFleetVessel,
   onOpenFleet,
+  onQuickAddTask,
   onOpenHistory,
   onOpenPreferences,
 }) {
@@ -258,12 +260,12 @@ export default function MidnightShell({
   return (
     <>
       {/* ---- Desktop rail ---- */}
-      <nav className="mb-rail fixed inset-y-0 left-0 z-[20000] hidden w-[5.25rem] flex-col items-center border-r lg:flex">
+      <nav className="neo-rail mb-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[28px] border lg:flex">
         <button
           type="button"
           onClick={navigate(onNavCommand)}
           aria-label="Open command bridge"
-          className="mt-5 flex h-12 w-12 items-center justify-center rounded-[16px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
+          className="neo-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[16px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
         >
           <ContessaUiLogo className="h-9 w-9" />
         </button>
@@ -329,7 +331,7 @@ export default function MidnightShell({
         id="app-command-header"
         data-jump-target
         style={{ "--jump-radius": "18px" }}
-        className="jump-highlight-target relative z-[500] flex items-center justify-between gap-3 rounded-[18px] py-3"
+        className="neo-command-header jump-highlight-target relative z-[500] flex items-center justify-between gap-3 rounded-[18px] px-3 py-3 md:px-4"
       >
         <div className="flex min-w-0 items-center gap-3">
           <button
@@ -342,7 +344,7 @@ export default function MidnightShell({
           </button>
           <div className="min-w-0">
             <div className="flex min-w-0 items-baseline gap-2.5">
-              <span className="midnight-heading truncate text-[1.05rem] tracking-[0.09em] text-[var(--mb-ink)]">{vesselTitle}</span>
+              <span className="midnight-heading whitespace-nowrap text-[clamp(0.7rem,3vw,1.05rem)] tracking-[0.07em] text-[var(--mb-ink)]">{vesselTitle}</span>
               {vesselIdentifier ? (
                 <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-soft)] sm:inline">
                   {vesselIdentifier}
@@ -359,6 +361,19 @@ export default function MidnightShell({
         </div>
 
         <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
+          {onQuickAddTask ? (
+            <button
+              type="button"
+              onClick={navigate(onQuickAddTask)}
+              className="neo-header-task-action"
+              aria-label="Create a new task"
+            >
+              <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5" aria-hidden="true">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              <span className="hidden sm:inline">New task</span>
+            </button>
+          ) : null}
           <span className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] md:inline">
             {roleLabel} view
           </span>
@@ -386,7 +401,7 @@ export default function MidnightShell({
       </header>
 
       {/* ---- Mobile dock ---- */}
-      <nav className="mb-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[24px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
+      <nav className="neo-mobile-dock mb-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[24px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
         <DockItem icon={HelmIcon} label="Bridge" active={activeModule === "command"} onClick={navigate(onNavCommand)} />
         <DockItem icon={TasksIcon} label="Tasks" count={shownCount(counts.tasks || 0)} active={activeModule === "tasks-maintenance"} onClick={navigate(onNavTasks)} />
         <DockItem icon={SealIcon} label="Approve" count={shownCount(counts.approvals || 0)} active={activeModule === "expenses-approvals"} onClick={navigate(onNavApprovals)} />

@@ -3,6 +3,7 @@ import { Card, CardContent } from "../../components/ui/card.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
+import { ModuleMasthead } from "../../components/module_masthead.jsx";
 import {
   Dialog,
   DialogContent,
@@ -201,10 +202,19 @@ export function ExpensesView({
 
   return (
     <div className="grid gap-4">
-      <div className="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-[1fr_1fr_220px_180px]">
-        <button type="button" onClick={() => onExpenseBucketChange("boat")}>
-          <div className={expenseBucket === "boat" ? "" : ""}>
-            <Card className={`app-card-hover rounded-[24px] md:rounded-[22px] ${theme.card} ${expenseBucket === "boat" ? theme.ring : ""}`}>
+      <ModuleMasthead
+        kicker="Financial Control"
+        title="Approvals and spend, in one view."
+        subtitle="See what is included, what is waiting, and what is paid before committing vessel funds."
+        tabs={[
+          { key: "boat", label: "Boat spend", active: expenseBucket === "boat", onSelect: () => onExpenseBucketChange("boat") },
+          { key: "crew", label: "Crew spend", active: expenseBucket === "crew", onSelect: () => onExpenseBucketChange("crew") },
+        ]}
+      />
+      <div className="mt-1 grid grid-cols-2 gap-3 lg:grid-cols-[1fr_1fr_220px_180px]">
+        <button type="button" aria-pressed={expenseBucket === "boat"} onClick={() => onExpenseBucketChange("boat")} className="h-full text-left">
+          <div className="h-full">
+            <Card className={`app-card-hover h-full rounded-[24px] md:rounded-[22px] ${theme.card} ${expenseBucket === "boat" ? theme.ring : ""}`}>
               <CardContent className="p-4">
                 <div className="app-kicker">Boat Summary</div>
                 <div className={`mt-3 text-xl font-semibold tracking-tight md:text-2xl ${theme.textPrimary}`}>{formatMoney(stats.boatTotal, currency)}</div>
@@ -213,9 +223,9 @@ export function ExpensesView({
             </Card>
           </div>
         </button>
-        <button type="button" onClick={() => onExpenseBucketChange("crew")}>
-          <div className={expenseBucket === "crew" ? "" : ""}>
-            <Card className={`app-card-hover rounded-[24px] md:rounded-[22px] ${theme.card} ${expenseBucket === "crew" ? theme.ring : ""}`}>
+        <button type="button" aria-pressed={expenseBucket === "crew"} onClick={() => onExpenseBucketChange("crew")} className="h-full text-left">
+          <div className="h-full">
+            <Card className={`app-card-hover h-full rounded-[24px] md:rounded-[22px] ${theme.card} ${expenseBucket === "crew" ? theme.ring : ""}`}>
               <CardContent className="p-4">
                 <div className="app-kicker">Crew Total</div>
                 <div className={`mt-3 text-xl font-semibold tracking-tight md:text-2xl ${theme.textPrimary}`}>{formatMoney(stats.crewTotal, currency)}</div>

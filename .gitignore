@@ -15,6 +15,12 @@ coverage/
 .turbo/
 tmp/
 temp/
+_chrome-qa-*/
+_edge-qa-*/
+fleet-dashboard-*.png
+fleet-mobile-hero*.png
+fleet-task-dialog.png
+dev-server.*.log
 
 .vercel
 next-dev.log

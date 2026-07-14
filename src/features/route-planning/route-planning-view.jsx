@@ -963,11 +963,16 @@ export function RoutePlanningView({
   useEffect(() => {
     const syncFullscreenState = () => {
       const container = mapContainerRef.current?.parentElement;
-      setIsFullscreen(Boolean(container && document.fullscreenElement === container));
+      const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      setIsFullscreen(Boolean(container && fullscreenElement === container));
     };
 
     document.addEventListener("fullscreenchange", syncFullscreenState);
-    return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
+    document.addEventListener("webkitfullscreenchange", syncFullscreenState);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreenState);
+      document.removeEventListener("webkitfullscreenchange", syncFullscreenState);
+    };
   }, []);
 
   useEffect(() => {
@@ -1571,16 +1576,18 @@ export function RoutePlanningView({
     const container = mapContainerRef.current?.parentElement;
     if (!container || typeof document === "undefined") return;
 
-    if (document.fullscreenElement) {
-      await document.exitFullscreen().catch(() => {});
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      const exitFullscreen = document.exitFullscreen?.bind(document) || document.webkitExitFullscreen?.bind(document);
+      await Promise.resolve(exitFullscreen?.()).catch(() => {});
       setIsFullscreen(false);
       return;
     }
 
-    if (typeof container.requestFullscreen === "function") {
-      const result = await container.requestFullscreen().catch(() => null);
+    const requestFullscreen = container.requestFullscreen?.bind(container) || container.webkitRequestFullscreen?.bind(container);
+    if (requestFullscreen) {
+      const result = await Promise.resolve(requestFullscreen()).catch(() => null);
       if (result !== null) {
-        setIsFullscreen(Boolean(document.fullscreenElement || container.matches?.(":fullscreen")));
+        setIsFullscreen(Boolean(document.fullscreenElement || document.webkitFullscreenElement || container.matches?.(":fullscreen")));
         return;
       }
     }
@@ -1592,7 +1599,7 @@ export function RoutePlanningView({
     <div className="app-section-grid grid min-w-0 max-w-full md:gap-6">
       <Card className={`app-panel app-hero-surface app-panel-active mobile-route-hero min-w-0 overflow-hidden rounded-[28px] md:rounded-[30px] ${theme.card}`}>
         <CardContent className="p-0">
-          <div className={`${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.18),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.1),_transparent_24%),linear-gradient(135deg,_rgba(16,25,23,0.98),_rgba(8,14,12,0.98))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.12),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.14),_transparent_20%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} p-4 md:p-5`}>
+          <div className={`neo-module-hero ${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.18),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.1),_transparent_24%),linear-gradient(135deg,_rgba(16,25,23,0.98),_rgba(8,14,12,0.98))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.12),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.14),_transparent_20%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} p-4 md:p-5`}>
             <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)] xl:items-center">
               <div className="min-w-0 max-w-xl">
                 <div className="app-kicker">Route Planning</div>
