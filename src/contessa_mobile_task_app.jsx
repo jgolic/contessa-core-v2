@@ -374,6 +374,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const routeSyncReadyRef = useRef(false);
   const applyingHistoryNavigationRef = useRef(false);
   const pendingSearchTaskIdRef = useRef("");
+  const globalSearchFocusTimerRef = useRef(null);
   const saveToastTimerRef = useRef(null);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
   const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
@@ -1384,6 +1385,20 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   useEffect(() => {
     if (typeof window === "undefined" || expenseView === "command") return undefined;
 
+    const focusCommandSearchWhenReady = (attempt = 0) => {
+      const input = document.querySelector("[data-global-search-input] input");
+      if (input && input.offsetParent !== null) {
+        input.focus();
+        globalSearchFocusTimerRef.current = null;
+        return;
+      }
+      if (attempt >= 20) {
+        globalSearchFocusTimerRef.current = null;
+        return;
+      }
+      globalSearchFocusTimerRef.current = window.setTimeout(() => focusCommandSearchWhenReady(attempt + 1), 80);
+    };
+
     const handleGlobalSearchShortcut = (event) => {
       if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
       const target = event.target;
@@ -1392,15 +1407,17 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
       event.preventDefault();
       setExpenseView("command");
-      window.setTimeout(() => {
-        const input = document.querySelector("[data-global-search-input] input");
-        input?.focus();
-      }, 80);
+      if (globalSearchFocusTimerRef.current) window.clearTimeout(globalSearchFocusTimerRef.current);
+      focusCommandSearchWhenReady();
     };
 
     window.addEventListener("keydown", handleGlobalSearchShortcut);
     return () => window.removeEventListener("keydown", handleGlobalSearchShortcut);
   }, [expenseView]);
+
+  useEffect(() => () => {
+    if (globalSearchFocusTimerRef.current) window.clearTimeout(globalSearchFocusTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const pendingTaskId = pendingSearchTaskIdRef.current;
