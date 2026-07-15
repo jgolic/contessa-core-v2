@@ -9,6 +9,8 @@ import {
   buildCertificateAlerts,
   buildDashboardSnapshot,
   buildOperationalNotifications,
+  buildPendingApprovalItems,
+  calculateCrewReadinessPercent,
   clampMaintenanceDueDate,
   completeMaintenanceCycle,
   createEmptyAppState,
@@ -60,6 +62,11 @@ import {
   buildDepthSamplePoints,
   isLikelyUsWaters,
 } from "./src/lib/public_bathymetry_sources.mjs";
+import {
+  getWorkspaceView,
+  parseWorkspaceView,
+  updateWorkspaceViewUrl,
+} from "./src/lib/workspace_navigation.mjs";
 
 test("empty app state defaults to editor mode", () => {
   const state = createEmptyAppState();
@@ -72,6 +79,46 @@ test("default fleet always includes Contessa and Octopussy", () => {
 
   assert.equal(state.vessels.some((vessel) => vessel.id === "contessa"), true);
   assert.equal(state.vessels.some((vessel) => vessel.id === "octopussy"), true);
+});
+
+test("workspace URLs preserve active modules and panel choices", () => {
+  assert.deepEqual(parseWorkspaceView("?view=maintenance"), {
+    view: "maintenance",
+    moduleName: "tasks-maintenance",
+    options: { panel: "maintenance" },
+  });
+  assert.equal(getWorkspaceView("crew-certificates", { panel: "certificates" }), "certificates");
+  assert.equal(
+    updateWorkspaceViewUrl("https://contessa.test/vessels/contessa?refresh=1", "route"),
+    "/vessels/contessa?refresh=1&view=route"
+  );
+});
+
+test("approval selector excludes received items and avoids quote task duplicates", () => {
+  const approvals = buildPendingApprovalItems({
+    tasks: [
+      { id: "T-1", name: "Quoted task", approvalStatus: "pending" },
+      { id: "T-2", name: "Standalone task", approvalStatus: "pending", priority: "urgent" },
+    ],
+    boatExpenses: [{ id: "Q-1", taskId: "T-1", supplier: "Yard", amount: 500, status: "requested" }],
+    crewExpenses: [
+      { id: "E-1", title: "Taxi", amount: 40, status: "requested" },
+      { id: "E-2", title: "Received stores", amount: 60, status: "received" },
+    ],
+  });
+
+  assert.deepEqual(approvals.map((item) => item.id), ["boat-T-1-Q-1", "crew-E-1", "task-T-2"]);
+  assert.equal(approvals.reduce((sum, item) => sum + Number(item.amount || 0), 0), 540);
+});
+
+test("crew readiness weights certificate urgency instead of failing every due-soon record", () => {
+  const readiness = calculateCrewReadinessPercent([
+    { certificates: [{ expiryDate: new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 10) }] },
+    { certificates: [{ expiryDate: new Date(Date.now() + 75 * 86400000).toISOString().slice(0, 10) }] },
+    { certificates: [{ expiryDate: new Date(Date.now() + 120 * 86400000).toISOString().slice(0, 10) }] },
+  ]);
+
+  assert.equal(readiness, 82);
 });
 
 test("default vessels and added vessels receive distinct premium themes", () => {

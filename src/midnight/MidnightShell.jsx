@@ -374,9 +374,15 @@ export default function MidnightShell({
               <span className="hidden sm:inline">New task</span>
             </button>
           ) : null}
-          <span className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] md:inline">
+          <button
+            type="button"
+            onClick={() => { closeAll(); onOpenPreferences?.(); }}
+            className="hidden min-h-9 items-center gap-1 rounded-full border border-[var(--mb-line-strong)] px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] md:inline-flex"
+            aria-label={`Change operating role. Current role: ${roleLabel}`}
+          >
             {roleLabel} view
-          </span>
+            <span aria-hidden="true">&#9662;</span>
+          </button>
           <span suppressHydrationWarning className="text-[13px] font-semibold tabular-nums tracking-[0.08em] text-[var(--mb-ink)]">
             {clockLabel}
           </span>
@@ -417,6 +423,7 @@ export default function MidnightShell({
               <li key={notification.id || notification.title}>
                 <button
                   type="button"
+                  aria-label={notification.title || notification.message || "Open notification"}
                   onClick={() => {
                     closeAll();
                     onSelectNotification?.(notification);

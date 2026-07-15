@@ -2307,6 +2307,10 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
   .midnight-ocean-canvas {
     display: none;
   }
+
+  .route-vessel-marker {
+    animation: none;
+  }
 }
 
 /* --- Shell chrome --- */

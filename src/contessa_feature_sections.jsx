@@ -40,6 +40,7 @@ import {
   formatHistoryTime,
   formatMoney,
   formatTaskPriorityLabel,
+  formatAppDate,
   formatTaskStatusLabel,
   filePreviewPlaceholderClass,
   getScheduledNextDue,
@@ -332,7 +333,7 @@ function NotificationButton({ count = 0, darkMode = false, onClick, open = false
           : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_34px_rgba(59,130,246,0.16)]"
       }`}
     >
-      {safeCount > 0 ? <span className="absolute inset-0 animate-pulse rounded-2xl border border-rose-400/40" /> : null}
+      {safeCount > 0 ? <span className="absolute inset-0 rounded-2xl border border-rose-400/40" /> : null}
       <NotificationSignalIcon className="relative h-4 w-4 md:h-5 md:w-5" />
       {safeCount > 0 ? (
         <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1.5 text-[10px] font-bold leading-none text-white shadow-[0_6px_18px_rgba(244,63,94,0.45)] dark:border-slate-950">
@@ -882,7 +883,7 @@ function ConfirmableTaskFields({
           </div>
           <div className="rv-kv">
             <dt className="rv-kv-label">Due</dt>
-            <dd className="rv-kv-value">{task.dueDate || "No due date"}</dd>
+            <dd className="rv-kv-value">{task.dueDate ? formatAppDate(task.dueDate) : "No due date"}</dd>
           </div>
           <div className="rv-kv">
             <dt className="rv-kv-label">Priority</dt>
@@ -1249,7 +1250,7 @@ export function ObjectivesView({
                           <div className="flex justify-between gap-2">
                             <span>Due</span>
                             <span className={`text-right font-medium ${theme.textPrimary}`}>
-                              {task.dueDate || "Not set"}
+                              {task.dueDate ? formatAppDate(task.dueDate) : "Not set"}
                               {isTaskOverdue(task) ? <span className={`ml-2 ${selectedId === task.id ? "text-[#ffb9b0]" : "rv-overdue"}`}>Overdue</span> : null}
                             </span>
                           </div>
@@ -2218,8 +2219,8 @@ export function TaskDetails({
           <div className="mt-3 flex flex-wrap gap-2">
             <Badge className={neutralBadgeClass(darkMode)}>{selectedTask.assignee || "Unassigned"}</Badge>
             <Badge className={neutralBadgeClass(darkMode)}>{selectedTask.department || "General"}</Badge>
-            <Badge className={neutralBadgeClass(darkMode) + " capitalize"}>{selectedTask.priority} priority</Badge>
-            {selectedTask.dueDate ? <Badge className={neutralBadgeClass(darkMode)}>Due {selectedTask.dueDate}</Badge> : null}
+            <Badge className={neutralBadgeClass(darkMode)}>{formatTaskPriorityLabel(selectedTask.priority)} priority</Badge>
+            {selectedTask.dueDate ? <Badge className={neutralBadgeClass(darkMode)}>Due {formatAppDate(selectedTask.dueDate)}</Badge> : null}
           </div>
         </div>
 

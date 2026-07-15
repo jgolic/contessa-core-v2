@@ -26,6 +26,7 @@ import {
   getRejectedAt,
   isPaidMoneyStatus,
   formatTaskPriorityLabel,
+  formatAppDate,
   formatTaskStatusLabel,
   moneyStatusStyles,
   priorityStyles,
@@ -198,6 +199,7 @@ export function ConfirmActionDialog({
   onConfirm,
   onCancel,
   darkMode = false,
+  tone = "danger",
 }) {
   const theme = themeClasses(darkMode);
 
@@ -209,7 +211,10 @@ export function ConfirmActionDialog({
         <h2 className="mb-2 text-xl font-semibold">{title}</h2>
         <p className={`mb-5 text-sm ${theme.textSecondary}`}>{message}</p>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Button onClick={onConfirm} className="rounded-lg bg-[#9b2c20] px-4 py-5 text-white hover:bg-[#7f231b]">
+          <Button
+            onClick={onConfirm}
+            className={`rounded-lg px-4 py-5 text-white ${tone === "success" ? "bg-[#2f746c] hover:bg-[#245f59]" : "bg-[#9b2c20] hover:bg-[#7f231b]"}`}
+          >
             {confirmLabel}
           </Button>
           <Button
@@ -322,7 +327,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
           <Badge className={departmentClass}>{TASK_DEPARTMENT_OPTIONS.includes(task.department) ? task.department : "General"}</Badge>
           <Badge className={`capitalize ${priorityClass}`}>{formatTaskPriorityLabel(task.priority)}</Badge>
           {task.assignee ? <Badge className={isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : neutralBadgeClass(darkMode)}>{task.assignee}</Badge> : null}
-          {task.dueDate ? <Badge className={isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : neutralBadgeClass(darkMode)}>Due {task.dueDate}</Badge> : null}
+          {task.dueDate ? <Badge className={isSelected ? "bg-[#f0f2f7] text-[#1b2840]" : neutralBadgeClass(darkMode)}>Due {formatAppDate(task.dueDate)}</Badge> : null}
         </div>
         {canEdit ? (
           <>

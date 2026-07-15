@@ -34,7 +34,8 @@ import {
   routeSpecsToVesselProfile,
 } from "../../lib/route_planning.mjs";
 
-const MAP_LOAD_FAILURE_MESSAGE = "Map could not load. Check internet connection or tile style URL.";
+const MAP_LOAD_FAILURE_MESSAGE = "Map could not load. Check the internet connection or base-map service, then retry.";
+const MAP_LOAD_TIMEOUT_MS = 10_000;
 const DEPTH_LAYER_UNAVAILABLE_MESSAGE = "Depth-based route highlighting requires nautical chart or bathymetry data.";
 const ACTIVE_OVERLAY_KEYS = ["depth", "depthShading", "shallow", "restricted", "hazards", "speedZones", "weather", "ais"];
 
@@ -315,6 +316,7 @@ export function RoutePlanningView({
   const updateWaypointHandlerRef = useRef(onUpdateWaypoint);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
+  const [mapAttempt, setMapAttempt] = useState(0);
   const [geolocationStatus, setGeolocationStatus] = useState("idle");
   const [geolocationMessage, setGeolocationMessage] = useState("Attempting to locate the vessel from this device.");
   const [currentPosition, setCurrentPosition] = useState(null);
@@ -495,6 +497,15 @@ export function RoutePlanningView({
           : "warning"
     : "unknown";
   const routeCrossesUnsafeShallowWater = routeDepthStatus === "critical" || routeDepthStatus === "warning";
+  const passageReadiness = waypoints.length < 2
+    ? { tone: "warning", label: "Passage readiness: incomplete", detail: "Add at least two waypoints before evaluating the passage." }
+    : routeCrossesUnsafeShallowWater
+      ? { tone: "critical", label: "Passage readiness: blocked", detail: "Unsafe or caution-depth water requires chart review before proceeding." }
+      : routePlan.fuelStatus === "Insufficient"
+        ? { tone: "critical", label: "Passage readiness: blocked", detail: "Estimated fuel demand exceeds fuel available after reserve." }
+        : !depthDataConnected
+          ? { tone: "warning", label: "Passage readiness: chart verification required", detail: "Fuel planning is acceptable, but official depth data is not connected." }
+          : { tone: "safe", label: "Passage readiness: planning checks complete", detail: "No current planning warning is active. Verify with official charts and onboard instruments." };
   const depthSourcePresentation = useMemo(() => getDepthSourcePresentation(depthLayer), [depthLayer]);
   const depthSourceLabel = bathymetryShading.isDemo
     ? "Estimated planning layer"
@@ -766,6 +777,12 @@ export function RoutePlanningView({
     if (!mapContainerRef.current) return;
 
     let cancelled = false;
+    setMapReady(false);
+    setMapError("");
+    const loadTimeoutId = window.setTimeout(() => {
+      if (cancelled || mapReadyRef.current) return;
+      setMapError(MAP_LOAD_FAILURE_MESSAGE);
+    }, MAP_LOAD_TIMEOUT_MS);
 
     ensureMapLibre()
       .then((maplibregl) => {
@@ -804,6 +821,7 @@ export function RoutePlanningView({
 
         map.on("load", () => {
           if (cancelled) return;
+          window.clearTimeout(loadTimeoutId);
           mapReadyRef.current = true;
           setMapReady(true);
           setMapError("");
@@ -827,6 +845,7 @@ export function RoutePlanningView({
         map.on("error", (error) => {
           console.error("MapLibre error:", error);
           if (!mapReadyRef.current) {
+            window.clearTimeout(loadTimeoutId);
             setMapError(MAP_LOAD_FAILURE_MESSAGE);
           }
         });
@@ -836,11 +855,13 @@ export function RoutePlanningView({
       .catch((error) => {
         console.error("MapLibre error:", error);
         if (cancelled) return;
+        window.clearTimeout(loadTimeoutId);
         setMapError(MAP_LOAD_FAILURE_MESSAGE);
       });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(loadTimeoutId);
       waypointMarkersRef.current.forEach((marker) => marker.remove());
       overlayMarkersRef.current.forEach((marker) => marker.remove());
       waypointMarkersRef.current = [];
@@ -874,7 +895,7 @@ export function RoutePlanningView({
       mapReadyRef.current = false;
       mapLibreRef.current = null;
     };
-  }, []);
+  }, [mapAttempt]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1629,6 +1650,17 @@ export function RoutePlanningView({
         </CardContent>
       </Card>
 
+      <div className={`rounded-[22px] border px-4 py-3.5 text-sm shadow-sm ${
+        passageReadiness.tone === "critical"
+          ? "border-[#efb0a6] bg-[#fff1ed] text-[#8f2f25]"
+          : passageReadiness.tone === "safe"
+            ? "border-[#aed8ca] bg-[#edf8f2] text-[#205f56]"
+            : "border-[#ecd28c] bg-[#fff8df] text-[#77531b]"
+      }`} role="status">
+        <div className="font-semibold">{passageReadiness.label}</div>
+        <div className="mt-1 text-xs leading-5 opacity-90">{passageReadiness.detail}</div>
+      </div>
+
       <div className="grid min-w-0 max-w-full gap-5 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
         <div className="grid gap-4">
           <Card className={`app-panel app-panel-soft min-w-0 rounded-[26px] md:rounded-[24px] ${theme.card}`}>
@@ -1698,9 +1730,18 @@ export function RoutePlanningView({
                 ) : null}
 
                 {mapError ? (
-                  <div className="absolute inset-0 flex items-center justify-center p-6">
-                    <div className={`app-empty-state max-w-md border text-center text-sm leading-6 ${theme.textSecondary} ${darkMode ? "border-[#5a4820] bg-[#0d1519]/92" : "border-[#d5e1da] bg-white/92"}`}>
-                      {mapError}
+                  <div className="absolute inset-0 z-30 flex items-center justify-center bg-[rgba(238,245,242,0.78)] p-6 backdrop-blur-sm">
+                    <div className={`app-empty-state max-w-md border text-center text-sm leading-6 ${theme.textSecondary} ${darkMode ? "border-[#5a4820] bg-[#0d1519]/92" : "border-[#d5e1da] bg-white/95"}`}>
+                      <AlertCircle className="mx-auto mb-3 h-7 w-7 text-[#9b6b28]" />
+                      <div className={`font-semibold ${theme.textPrimary}`}>Route map unavailable</div>
+                      <div className="mt-1">{mapError}</div>
+                      <Button
+                        type="button"
+                        onClick={() => setMapAttempt((attempt) => attempt + 1)}
+                        className="app-primary-action-button mt-4 min-h-11 rounded-xl px-5"
+                      >
+                        Retry map
+                      </Button>
                     </div>
                   </div>
                 ) : null}

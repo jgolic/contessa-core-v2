@@ -61,7 +61,7 @@ export const VESSEL_STATE_MODE_OPTIONS = [
   { value: "standby", label: "Standby" },
   { value: "critical", label: "Critical" },
 ];
-const DEMO_ACTIVITY_ANCHOR_MS = Date.parse("2026-04-20T12:00:00.000Z");
+const DEMO_ACTIVITY_ANCHOR_MS = Date.now();
 
 function demoTimestamp(minutesAgo = 0) {
   return new Date(DEMO_ACTIVITY_ANCHOR_MS - (Number(minutesAgo) * 60 * 1000)).toISOString();
@@ -208,7 +208,7 @@ export const FALLBACK_USD_RATES = {
   GBP: 0.79,
   AED: 3.6725,
 };
-export const APP_STATE_VERSION = 3;
+export const APP_STATE_VERSION = 4;
 export const STORAGE_KEY = "contessa-mobile-task-app-v4";
 export const PUBLIC_APP_URL_OVERRIDE_KEY = `${STORAGE_KEY}-public-app-url-override`;
 export const APP_LEGAL_SHORT_COPY = "© 2026 Josip Golic · Proprietary";
@@ -401,7 +401,9 @@ const REQUIRED_FLEET_VESSELS = [
     id: "contessa",
     name: "M/Y Contessa",
     details: {
-      length: 32,
+      length: 131,
+      lengthFeet: 131,
+      lengthMeters: 40,
       vesselType: "Motor Yacht",
       flag: "Jamaica",
       homePort: "Fort Lauderdale / LMC Safe Harbor",
@@ -595,12 +597,12 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
     fuelReservePercentage: 18,
   });
   const routeSpecs = {
-    lengthFeet: 97,
-    beamFeet: 21,
-    draftMeters: 1.95,
-    cruisingSpeedKnots: 18,
-    maxSpeedKnots: 28,
-    fuelCapacityLitres: 8500,
+    lengthFeet: 131,
+    beamFeet: 24.3,
+    draftMeters: 2.3,
+    cruisingSpeedKnots: 16,
+    maxSpeedKnots: 22,
+    fuelCapacityLitres: 18200,
     fuelBurnLitresPerHour: 260,
     reservePercent: 20,
     safeDepthMeters: 5,
@@ -717,7 +719,7 @@ function buildContessaWorkspace(name = "M/Y Contessa") {
       dueDate: dateStringFromNow(1),
       approvalStatus: "pending",
       notes: "Review LMC quote and prepare owner recommendation before approving yard scope.",
-      quotes: [{ id: "CON-Q-001", supplier: "LMC waterline paint quote", amount: 50000, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Graham Ellis" }],
+      quotes: [{ id: "CON-Q-001", title: "Waterline paint quote", supplier: "LMC", amount: 50000, currency: "USD", status: "requested", displayStatus: "Waiting Approval", includeInSummary: true, requestedBy: "Graham Ellis" }],
     },
     {
       id: "CON-TASK-004",
@@ -1248,8 +1250,9 @@ export function createFleetVesselWorkspace({
     id,
     name: displayName,
     details: {
-      length: details.length ?? details.lengthFeet ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0),
-      lengthFeet: Number(details.lengthFeet ?? details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 32 : 0)) || 0,
+      length: details.length ?? details.lengthFeet ?? (isOctopussyPreset ? 30 : isContessaPreset ? 131 : 0),
+      lengthFeet: Number(details.lengthFeet ?? details.length ?? (isOctopussyPreset ? 30 : isContessaPreset ? 131 : 0)) || 0,
+      lengthMeters: Number(details.lengthMeters ?? (isContessaPreset ? 40 : 0)) || 0,
       vesselType: details.vesselType || "Motor Yacht",
       flag: details.flag || (isContessaPreset ? "Jamaica" : "Cayman Islands"),
       homePort: details.homePort || (isOctopussyPreset ? "Oracabessa, Jamaica" : isContessaPreset ? "Fort Lauderdale / LMC Safe Harbor" : ""),
@@ -1493,7 +1496,7 @@ export function getVesselMetrics(vesselId, vessels = []) {
     safetyMargin: routePlanning.safetyMargin,
   });
   const quoteCount = tasks.reduce((sum, task) => sum + (Array.isArray(task.quotes) ? task.quotes.length : 0), 0);
-  const approvalCount = notifications.filter((item) => item.section === "expenses").length;
+  const approvalCount = buildPendingApprovalItems({ tasks, boatExpenses, crewExpenses }).length;
   const counts = getVesselCounts({
     ...normalizedVessel,
     notifications,
@@ -1664,18 +1667,21 @@ export function isPaidMoneyStatus(status) {
 }
 
 export function normalizeMoneyItem(item = {}, defaults = {}, now = Date.now()) {
-  const status = deriveMoneyStatus({ ...defaults, ...item });
+  const normalizedItem = String(item.supplier || "").trim().toLowerCase() === "lmc waterline paint quote"
+    ? { ...item, supplier: "LMC", title: item.title || "Waterline paint quote" }
+    : item;
+  const status = deriveMoneyStatus({ ...defaults, ...normalizedItem });
   const next = {
     ...defaults,
-    ...item,
+    ...normalizedItem,
     status,
     approval: status === "declined" ? "rejected" : status === "approved" || status === "paid" ? "approved" : "pending",
     payment: status === "paid" ? "paid" : "unpaid",
-    currency: CURRENCY_OPTIONS.some((option) => option.code === item.currency) ? item.currency : defaults.currency || "USD",
-    attachments: Array.isArray(item.attachments)
-      ? item.attachments
-      : Array.isArray(item.receipts)
-        ? item.receipts.map((receipt, index) => ({
+    currency: CURRENCY_OPTIONS.some((option) => option.code === normalizedItem.currency) ? normalizedItem.currency : defaults.currency || "USD",
+    attachments: Array.isArray(normalizedItem.attachments)
+      ? normalizedItem.attachments
+      : Array.isArray(normalizedItem.receipts)
+        ? normalizedItem.receipts.map((receipt, index) => ({
           id: createId(`MATT-${index}`),
           name: `Attachment ${index + 1}`,
           type: "image/*",
@@ -1683,9 +1689,9 @@ export function normalizeMoneyItem(item = {}, defaults = {}, now = Date.now()) {
           addedAt: new Date(now).toISOString(),
         }))
         : [],
-    includeInSummary: item.includeInSummary === undefined
+    includeInSummary: normalizedItem.includeInSummary === undefined
       ? Boolean(defaults.includeInSummary)
-      : Boolean(item.includeInSummary),
+      : Boolean(normalizedItem.includeInSummary),
   };
   next.receipts = next.attachments.map((attachment) => attachment.dataUrl).filter(Boolean);
 
@@ -1843,9 +1849,25 @@ export function convertedMoney(value, fromCurrency, toCurrency, exchangeRates) {
   return formatMoney(convertMoney(value, fromCurrency, toCurrency, exchangeRates), toCurrency);
 }
 
+export function formatAppDate(value, { includeTime = false } = {}) {
+  if (!value) return "Not set";
+  const raw = String(value);
+  const localDateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const date = localDateMatch
+    ? new Date(Number(localDateMatch[1]), Number(localDateMatch[2]) - 1, Number(localDateMatch[3]))
+    : new Date(value);
+  if (Number.isNaN(date.getTime())) return raw;
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    ...(includeTime ? { hour: "2-digit", minute: "2-digit", hour12: false } : {}),
+  }).format(date);
+}
+
 export function formatHistoryTime(value) {
-  if (!value) return "Unknown time";
-  return new Date(value).toLocaleString();
+  return value ? formatAppDate(value, { includeTime: true }) : "Unknown time";
 }
 
 export function describePatch(patch) {
@@ -2025,6 +2047,56 @@ export function buildBoatExpenseSummaryItems(tasks, now = Date.now()) {
       }))
       .filter((item) => item.includeInSummary && !isRejectedExpired(item, now))
   );
+}
+
+export function isApprovalDecisionPending(item = {}) {
+  return deriveMoneyStatus(item) === "requested";
+}
+
+export function buildPendingApprovalItems({ tasks = [], boatExpenses = [], crewExpenses = [] } = {}) {
+  const pendingBoatItems = boatExpenses.filter(isApprovalDecisionPending);
+  const quotedTaskIds = new Set(pendingBoatItems.map((item) => item.taskId).filter(Boolean));
+
+  return [
+    ...pendingBoatItems.map((item) => ({
+      id: `boat-${item.taskId}-${item.id}`,
+      sourceType: "boat",
+      taskId: item.taskId,
+      itemId: item.id,
+      title: item.title || item.supplier || item.taskName || "Boat request",
+      supplier: item.supplier || "Not set",
+      amount: item.amount ?? 0,
+      currency: item.currency || "USD",
+      requestedBy: item.requestedBy || item.taskName || item.taskId || "Operations",
+      approvalStatus: item.displayStatus || "Waiting approval",
+      priority: item.priority || "high",
+    })),
+    ...crewExpenses.filter(isApprovalDecisionPending).map((item) => ({
+      id: `crew-${item.id}`,
+      sourceType: "crew",
+      itemId: item.id,
+      title: item.title || "Crew expense",
+      amount: item.amount ?? 0,
+      currency: item.currency || "USD",
+      requestedBy: item.requester || item.requestedBy || "Crew",
+      approvalStatus: item.displayStatus || "Waiting approval",
+      priority: item.priority || "medium",
+    })),
+    ...tasks
+      .filter((task) => (task.approvalStatus === "pending" || (task.requiresApproval && !task.approvalStatus)) && !quotedTaskIds.has(task.id))
+      .map((task) => ({
+        id: `task-${task.id}`,
+        sourceType: "task",
+        taskId: task.id,
+        itemId: task.id,
+        title: task.name,
+        amount: null,
+        currency: null,
+        requestedBy: task.assignee || "Operations",
+        approvalStatus: "Waiting approval",
+        priority: task.priority || "medium",
+      })),
+  ];
 }
 
 export function createEmptyAppState(overrides = {}) {
@@ -2367,6 +2439,55 @@ function migrateStateShapeToVersion3(state = {}) {
   };
 }
 
+function reanchorDemoHistory(history = []) {
+  const entries = pickFirstArray(history);
+  const hasLegacyDemoDates = entries.some((entry) =>
+    /^(CON|OCT)-HIS-/i.test(String(entry?.id || "")) && /^2026-04-20/i.test(String(entry?.at || ""))
+  );
+  if (!hasLegacyDemoDates) return entries;
+
+  return entries.map((entry, index) => {
+    if (!/^(CON|OCT)-HIS-/i.test(String(entry?.id || ""))) return entry;
+    return { ...entry, at: demoTimestamp(20 + index * 24) };
+  });
+}
+
+function migrateStateShapeToVersion4(state = {}) {
+  const migrateWorkspace = (workspace = {}) => {
+    if (workspace.id !== DEFAULT_FLEET_VESSEL_ID) {
+      return { ...workspace, history: reanchorDemoHistory(workspace.history) };
+    }
+
+    const hasLegacyLength = Number(workspace.details?.lengthFeet ?? workspace.details?.length) === 32;
+    const hasLegacyRouteSpecs = Number(workspace.routePlanning?.routeSpecs?.lengthFeet) === 97;
+    const hasLegacyFuelCapacity = Number(workspace.routePlanning?.routeSpecs?.fuelCapacityLitres) === 8500;
+
+    return {
+      ...workspace,
+      details: hasLegacyLength
+        ? { ...workspace.details, length: 131, lengthFeet: 131, lengthMeters: 40 }
+        : workspace.details,
+      routePlanning: workspace.routePlanning
+        ? {
+          ...workspace.routePlanning,
+          routeSpecs: {
+            ...workspace.routePlanning.routeSpecs,
+            ...(hasLegacyRouteSpecs ? { lengthFeet: 131, beamFeet: 24.3, draftMeters: 2.3, cruisingSpeedKnots: 16, maxSpeedKnots: 22 } : {}),
+            ...(hasLegacyFuelCapacity ? { fuelCapacityLitres: 18200 } : {}),
+          },
+        }
+        : workspace.routePlanning,
+      history: reanchorDemoHistory(workspace.history),
+    };
+  };
+
+  return {
+    ...state,
+    history: reanchorDemoHistory(state.history),
+    vessels: Array.isArray(state.vessels) ? state.vessels.map(migrateWorkspace) : state.vessels,
+  };
+}
+
 const APP_STATE_MIGRATIONS = {
   0(payload) {
     return {
@@ -2387,6 +2508,13 @@ const APP_STATE_MIGRATIONS = {
       ...payload,
       version: 3,
       state: migrateStateShapeToVersion3(payload.state),
+    };
+  },
+  3(payload) {
+    return {
+      ...payload,
+      version: 4,
+      state: migrateStateShapeToVersion4(payload.state),
     };
   },
 };
@@ -2413,9 +2541,11 @@ export function migrateImportedAppStatePayload(payload) {
   return {
     ...nextPayload,
     version,
-    state: migrateStateShapeToVersion3(
-      applyKnownStateAliases(
-        migrateStateShapeToVersion2(nextPayload.state && typeof nextPayload.state === "object" ? nextPayload.state : {})
+    state: migrateStateShapeToVersion4(
+      migrateStateShapeToVersion3(
+        applyKnownStateAliases(
+          migrateStateShapeToVersion2(nextPayload.state && typeof nextPayload.state === "object" ? nextPayload.state : {})
+        )
       )
     ),
   };
@@ -2618,6 +2748,29 @@ export function buildCertificateAlerts(crewProfiles, windows = CERTIFICATE_ALERT
     .sort((a, b) => a.daysRemaining - b.daysRemaining);
 }
 
+export function calculateCrewReadinessPercent(crewProfiles = []) {
+  if (!crewProfiles.length) return 0;
+
+  const scores = crewProfiles.map((profile) => {
+    const certificates = Array.isArray(profile?.certificates) ? profile.certificates : [];
+    if (!certificates.length) return 45;
+
+    const certificateScores = certificates.map((certificate) => {
+      const remaining = daysUntil(certificate.expiryDate);
+      if (remaining === null || remaining < 0) return 0;
+      if (remaining <= 7) return 20;
+      if (remaining <= 30) return 55;
+      if (remaining <= 60) return 78;
+      if (remaining <= 90) return 90;
+      return 100;
+    });
+
+    return Math.min(...certificateScores);
+  });
+
+  return Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+}
+
 export function buildDashboardSnapshot({
   tasks = [],
   boatExpenses = [],
@@ -2629,7 +2782,7 @@ export function buildDashboardSnapshot({
   const todayTasks = tasks.filter((task) => !["completed", "approved"].includes(task.status) && isDueToday(task.dueDate));
   const overdueTasks = tasks.filter((task) => isOverdue(task.dueDate, task.status));
   const urgentTasks = tasks.filter((task) => !["completed", "approved"].includes(task.status) && task.priority === "urgent");
-  const pendingApprovals = boatExpenses.filter((item) => !isPaidMoneyStatus(item.status) && item.status !== "declined");
+  const pendingApprovals = buildPendingApprovalItems({ tasks, boatExpenses, crewExpenses });
   const unpaidCrew = crewExpenses.filter((item) => !isPaidMoneyStatus(item.status) && item.status !== "declined");
 
   return {
@@ -2708,46 +2861,7 @@ export function buildTodayOperationsSnapshot({
     }))
     .sort((a, b) => (a.daysRemaining ?? 999) - (b.daysRemaining ?? 999));
 
-  const pendingApprovals = [
-    ...boatExpenses
-      .filter((item) => ["requested", "received"].includes(item.status) || item.approval === "pending")
-      .map((item) => ({
-        id: `boat-${item.taskId}-${item.id}`,
-        sourceType: "boat",
-        taskId: item.taskId,
-        itemId: item.id,
-        title: item.supplier || item.taskName || "Boat request",
-        amount: item.amount ?? 0,
-        currency: item.currency || "USD",
-        requestedBy: item.requestedBy || item.taskName || item.taskId || "Operations",
-        approvalStatus: item.displayStatus || item.status || item.approval || "requested",
-      })),
-    ...crewExpenses
-      .filter((item) => ["requested", "received"].includes(item.status) || item.approval === "pending")
-      .map((item) => ({
-        id: `crew-${item.id}`,
-        sourceType: "crew",
-        itemId: item.id,
-        title: item.title || "Crew expense",
-        amount: item.amount ?? 0,
-        currency: item.currency || "USD",
-        requestedBy: item.requestedBy || "Crew",
-        approvalStatus: item.displayStatus || item.status || item.approval || "requested",
-      })),
-    ...tasks
-      .filter((task) => task.approvalStatus === "pending" || (task.requiresApproval && !task.approvalStatus))
-      .map((task) => ({
-        id: `task-${task.id}`,
-        sourceType: "task",
-        taskId: task.id,
-        itemId: task.id,
-        title: task.name,
-        amount: null,
-        currency: null,
-        requestedBy: task.assignee || "Operations",
-        approvalStatus: task.approvalStatus || "pending",
-      })),
-  ];
+  const pendingApprovals = buildPendingApprovalItems({ tasks, boatExpenses, crewExpenses });
 
   return {
     overdueTasks,

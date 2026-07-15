@@ -296,7 +296,7 @@ export default function GlobalSearch({
 
   const index = useMemo(() => normalizeResults(results, vessel), [results, vessel]);
   const filteredResults = useMemo(() => filterSearchResults(index, query), [index, query]);
-  const showSuggestions = open && query.trim().length > 0 && filteredResults.length > 0;
+  const showSuggestions = open && query.trim().length > 0;
 
   useEffect(() => {
     setActiveIndex(0);
@@ -429,6 +429,12 @@ export default function GlobalSearch({
           className={`h-11 min-w-0 flex-1 bg-transparent text-base font-semibold outline-none lg:text-lg ${inputTextClass}`}
           style={{ colorScheme: "light" }}
           aria-label="Search crew, tasks, documents"
+          aria-controls="global-search-results"
+          aria-expanded={showSuggestions}
+          aria-autocomplete="list"
+          aria-activedescendant={showSuggestions && filteredResults.length ? `global-search-result-${activeIndex}` : undefined}
+          aria-haspopup="listbox"
+          role="combobox"
         />
 
         <div className="hidden shrink-0 items-center gap-2 text-xs font-semibold text-slate-600 lg:flex">
@@ -446,6 +452,7 @@ export default function GlobalSearch({
               setOpen(false);
             }}
             className="rounded-xl px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-[rgba(201,169,106,0.12)]"
+            aria-label="Clear global search"
           >
             Esc
           </button>
@@ -454,14 +461,20 @@ export default function GlobalSearch({
 
       {showSuggestions ? (
         <div
+          id="global-search-results"
+          role="listbox"
+          aria-label="Global search results"
           data-global-search-results
           data-search-suggestions="true"
           className={`absolute left-0 right-0 top-[calc(100%+10px)] z-[10002] max-h-[min(420px,70vh)] overflow-y-auto rounded-3xl border p-2 backdrop-blur-xl ${resultsPanelClass}`}
         >
-          {filteredResults.map((result, index) => (
+          {filteredResults.length ? filteredResults.map((result, index) => (
             <button
               key={result.id || `${result.type}-${result.title}-${index}`}
+              id={`global-search-result-${index}`}
               type="button"
+              role="option"
+              aria-selected={index === activeIndex}
               onMouseDown={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -480,7 +493,11 @@ export default function GlobalSearch({
                 {result.type || "Item"}
               </span>
             </button>
-          ))}
+          )) : (
+            <div className="rounded-2xl px-4 py-5 text-sm text-slate-700" role="status">
+              No matches for <span className="font-semibold text-slate-950">{query.trim()}</span>. Try a task, crew member, document, or module name.
+            </div>
+          )}
         </div>
       ) : null}
     </div>

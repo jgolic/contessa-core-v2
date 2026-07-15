@@ -4,11 +4,13 @@ import dynamic from "next/dynamic";
 import AppErrorBoundary from "./components/AppErrorBoundary.jsx";
 import {
   APP_FOOTER_NOTICE,
+  APP_STATE_VERSION,
   buildBoatExpenseSummaryItems,
   buildTodayOperationsSnapshot,
   getCanonicalPublicAppUrlStatus,
   buildDashboardSnapshot,
   buildCertificateAlerts,
+  calculateCrewReadinessPercent,
   calculateConfidenceScore,
   CURRENCY_OPTIONS,
   CREW_DEPARTMENT_OPTIONS,
@@ -39,6 +41,7 @@ import {
   formatHistoryTime,
   formatVesselNameFromId,
   formatMoney,
+  formatTaskPriorityLabel,
   formatTaskStatusLabel,
   getConfiguredPublicAppUrlEnvValue,
   getCrewOptionsForVessel,
@@ -99,6 +102,11 @@ import {
 import { getCrewId } from "./lib/demo_crew_cv.mjs";
 import { canEditDemoActorIdentity, canPreviewDemoRoles, canUseDemoEditing } from "./lib/runtime_config.mjs";
 import { getCanonicalVesselSlug } from "./lib/vessel_lookup.mjs";
+import {
+  getWorkspaceView,
+  parseWorkspaceView,
+  updateWorkspaceViewUrl,
+} from "./lib/workspace_navigation.mjs";
 import { createActivityLog } from "./lib/data/activity.js";
 import { assertCrewBelongsToVessel, getCrewForVessel } from "./lib/data/crew.js";
 import { getNotificationsForVessel } from "./lib/data/notifications.js";
@@ -261,6 +269,10 @@ function createEmptyTaskDraft(vessel = {}) {
 
 export default function ContessaApp({ routeVesselId = "contessa", onNavigateVessel } = {}) {
   const isDesktopViewport = useMediaQuery("(min-width: 768px)");
+  const initialWorkspaceRoute = useMemo(
+    () => parseWorkspaceView(typeof window !== "undefined" ? window.location.search : ""),
+    []
+  );
   const initialAppState = useMemo(() => {
     const state = getInitialAppState();
     const routeHasWorkspace = Array.isArray(state.vessels) && state.vessels.some((vessel) => vessel?.id === routeVesselId);
@@ -305,10 +317,10 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [selectedCrewId, setSelectedCrewId] = useState(initialActiveWorkspace.crewProfiles?.[0]?.id ?? "");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [expenseView, setExpenseView] = useState("command");
-  const [expenseBucket, setExpenseBucket] = useState("boat");
-  const [tasksMaintenancePanel, setTasksMaintenancePanel] = useState("tasks");
-  const [crewCertificatesPanel, setCrewCertificatesPanel] = useState("crew");
+  const [expenseView, setExpenseView] = useState(initialWorkspaceRoute.moduleName);
+  const [expenseBucket, setExpenseBucket] = useState(initialWorkspaceRoute.options?.bucket || "boat");
+  const [tasksMaintenancePanel, setTasksMaintenancePanel] = useState(initialWorkspaceRoute.options?.panel === "maintenance" ? "maintenance" : "tasks");
+  const [crewCertificatesPanel, setCrewCertificatesPanel] = useState(initialWorkspaceRoute.options?.panel === "certificates" ? "certificates" : "crew");
   const [currentRole, setCurrentRole] = useState(initialAppState.currentRole || "captain");
   const [appMode, setAppMode] = useState(initialAppState.appMode === "editor" ? "editor" : "view");
   const [vesselStateModes, setVesselStateModes] = useState({});
@@ -358,6 +370,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const navigationLockUntilRef = useRef(0);
   const toastIdRef = useRef(0);
   const persistenceReadyRef = useRef(false);
+  const routeSyncReadyRef = useRef(false);
+  const applyingHistoryNavigationRef = useRef(false);
   const saveToastTimerRef = useRef(null);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
   const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
@@ -568,7 +582,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   }, []);
 
   useEffect(() => {
-    setStoredJson(STORAGE_KEY, persistedAppState);
+    setStoredJson(STORAGE_KEY, {
+      app: APP_BRAND_NAME,
+      version: APP_STATE_VERSION,
+      state: persistedAppState,
+    });
 
     if (!persistenceReadyRef.current) {
       persistenceReadyRef.current = true;
@@ -1037,6 +1055,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     const boatTotal = boatExpenses.reduce((sum, quote) => sum + convertMoney(quote.amount, quote.currency || "USD", currency, exchangeRates), 0);
     const crewTotal = crewExpenses.reduce((sum, item) => sum + convertMoney(item.amount, item.currency || "USD", currency, exchangeRates), 0);
     const totalExpenses = boatTotal + crewTotal;
+    const pendingApprovalSpend = todayOperations.pendingApprovals.reduce(
+      (sum, item) => sum + (item.amount === null || item.amount === undefined
+        ? 0
+        : convertMoney(item.amount, item.currency || "USD", currency, exchangeRates)),
+      0
+    );
     const maintenanceDue = maintenanceAlerts.length;
     const crewProfileCount = visibleCrewProfiles.length;
     const certificateDue = certificateAlerts.length;
@@ -1058,6 +1082,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       boatTotal,
       crewTotal,
       totalExpenses,
+      pendingApprovalSpend,
       maintenanceDue,
       crewProfiles: crewProfileCount,
       certificateDue,
@@ -1074,11 +1099,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     };
   }, [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, currency, exchangeRates, visibleCrewProfiles, certificateAlerts, dashboard, accessibleNotifications, todayOperations, routePlanning, routeSummary, documents.length, routeAlerts.length]);
   const vesselOperations = useMemo(() => {
-    const crewBase = Math.max(stats.crewProfiles || 0, 1);
-    const crewReadyPercent = Math.max(
-      0,
-      Math.min(100, Math.round(((crewBase - (stats.certificateDue || 0)) / crewBase) * 100))
-    );
+    const crewReadyPercent = calculateCrewReadinessPercent(visibleCrewProfiles);
 
     return {
       slug: activeVesselWorkspace?.id || activeVesselId,
@@ -1092,6 +1113,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         activeTasks: stats.totalObjectives || 0,
         alerts: accessibleNotifications.length,
         pendingApprovals: stats.pendingApprovals || 0,
+        pendingSpend: formatMoney(stats.pendingApprovalSpend || 0, currency),
         crewReady: `${crewReadyPercent}%`,
         certificatesExpiring: stats.certificateDue || 0,
         openExposure: formatMoney(stats.totalExpenses || 0, currency),
@@ -1105,7 +1127,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             title: task.name,
             subtitle: `${task.area || "General"} / ${task.department || "General"}`,
             status: formatTaskStatusLabel(task.status || "pending"),
-            priority: task.status === "blocked" ? "Critical" : "Review",
+            priority: formatTaskPriorityLabel(task.priority || "medium"),
             assignedTo: task.assignee || "Unassigned",
             requester: task.requester || "Captain",
             dueDate: task.dueDate || "Not set",
@@ -1151,7 +1173,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           title: item.title,
           subtitle: `Requested by ${item.requestedBy || "Operations"}`,
           status: titleCase(item.approvalStatus || "requested"),
-          priority: "Review",
+          priority: formatTaskPriorityLabel(item.priority || "medium"),
           assignedTo: item.assignedTo || currentRoleLabel,
           requester: item.requestedBy || "Operations",
           dueDate: "Awaiting decision",
@@ -1223,7 +1245,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       maintenanceWarnings: maintenanceAlerts || [],
       latestActivity: visibleHistory.slice(0, 8),
       routeStatus: routePlanning?.status || "Planning",
-      pendingSpend: formatMoney(stats.totalExpenses || 0, currency),
+      pendingSpend: formatMoney(stats.pendingApprovalSpend || 0, currency),
     };
   }, [
     activeVesselWorkspace?.name,
@@ -1234,7 +1256,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     maintenanceAlerts,
     visibleHistory,
     routePlanning?.status,
-    stats.totalExpenses,
+    stats.pendingApprovalSpend,
     currency,
   ]);
 
@@ -1308,6 +1330,75 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const openResponsiveModule = (moduleId, options = {}) => {
     openModule(moduleId, options);
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const applyLocationView = () => {
+      const nextRoute = parseWorkspaceView(window.location.search);
+      applyingHistoryNavigationRef.current = true;
+      setExpenseView(nextRoute.moduleName);
+      if (nextRoute.moduleName === "tasks-maintenance") {
+        setTasksMaintenancePanel(nextRoute.options?.panel === "maintenance" ? "maintenance" : "tasks");
+      }
+      if (nextRoute.moduleName === "crew-certificates") {
+        setCrewCertificatesPanel(nextRoute.options?.panel === "certificates" ? "certificates" : "crew");
+      }
+      if (nextRoute.moduleName === "expenses-approvals") {
+        setExpenseBucket(nextRoute.options?.bucket === "crew" ? "crew" : "boat");
+      }
+    };
+
+    window.addEventListener("popstate", applyLocationView);
+    return () => window.removeEventListener("popstate", applyLocationView);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!routeSyncReadyRef.current) {
+      routeSyncReadyRef.current = true;
+      return;
+    }
+    if (applyingHistoryNavigationRef.current) {
+      applyingHistoryNavigationRef.current = false;
+      return;
+    }
+
+    const options = expenseView === "tasks-maintenance"
+      ? { panel: tasksMaintenancePanel }
+      : expenseView === "crew-certificates"
+        ? { panel: crewCertificatesPanel }
+        : expenseView === "expenses-approvals"
+          ? { bucket: expenseBucket }
+          : {};
+    const currentView = parseWorkspaceView(window.location.search).view;
+    const nextView = getWorkspaceView(expenseView, options);
+    if (currentView === nextView) return;
+
+    const nextUrl = updateWorkspaceViewUrl(window.location.href, expenseView, options);
+    window.history.pushState({ ...window.history.state, contessaView: nextView }, "", nextUrl);
+  }, [crewCertificatesPanel, expenseBucket, expenseView, tasksMaintenancePanel]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || expenseView === "command") return undefined;
+
+    const handleGlobalSearchShortcut = (event) => {
+      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target;
+      const tagName = String(target?.tagName || "").toLowerCase();
+      if (tagName === "input" || tagName === "textarea" || tagName === "select" || target?.isContentEditable) return;
+
+      event.preventDefault();
+      setExpenseView("command");
+      window.setTimeout(() => {
+        const input = document.querySelector("[data-global-search-input] input");
+        input?.focus();
+      }, 80);
+    };
+
+    window.addEventListener("keydown", handleGlobalSearchShortcut);
+    return () => window.removeEventListener("keydown", handleGlobalSearchShortcut);
+  }, [expenseView]);
 
   const jumpToAppTarget = ({
     sectionId,
@@ -2699,6 +2790,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     if (item.sourceType === "task" && item.taskId) {
       setPrototypeTaskApprovals((prev) => ({ ...prev, [item.taskId]: decision }));
+      logChange(
+        "Expenses and Quotations",
+        decision === "approved" ? "Task approval confirmed" : "Task approval declined",
+        `${item.title || item.taskId} - ${effectiveActorName} - ${new Date().toISOString()}`
+      );
       setAppBanner({
         type: "success",
         title: decision === "approved" ? "Task approved" : "Task rejected",
@@ -3278,6 +3374,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             onNavigateToRoute={() => openResponsiveModule("route")}
             onNavigateToAlerts={() => openResponsiveModule("notifications")}
             onNavigateToDocuments={() => openResponsiveModule("documents")}
+            commandSearchResults={commandSearchResults}
+            onCommandSearchJump={handleCommandSearchJump}
           />
         ) : expenseView === "route" ? (
           <div id="route-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target scroll-mt-24 rounded-[28px] md:scroll-mt-28">

@@ -5,6 +5,7 @@ import { Button } from "../../components/ui/button.jsx";
 import { Badge } from "../../components/ui/badge.jsx";
 import {
   calculateConfidenceScore,
+  formatAppDate,
   formatHistoryTime,
   formatMoney,
   formatTaskStatusLabel,
@@ -24,6 +25,7 @@ import GlobalSearch from "../../components/GlobalSearch.jsx";
 import OceanCanvas from "../../midnight/OceanCanvas.jsx";
 import { useMidnightMotion } from "../../midnight/useMidnightMotion.js";
 import { useAutoFitSingleLine } from "../../hooks/useAutoFitSingleLine.js";
+import { ConfirmActionDialog } from "../../contessa_app_components.jsx";
 
 const PRIORITY_WEIGHT = {
   critical: 0,
@@ -38,6 +40,11 @@ const PRIORITY_WEIGHT = {
   stable: 9,
   neutral: 10,
 };
+
+function formatOperationalDate(value, fallback = "Not set") {
+  if (!value) return fallback;
+  return /^\d{4}-\d{2}-\d{2}/.test(String(value)) ? formatAppDate(value) : value;
+}
 
 function normalizeTone(item = {}) {
   const priority = String(item.priority || "").toLowerCase();
@@ -73,7 +80,7 @@ function buildOperationCard(item = {}) {
       tone,
       meta: [
         { label: "Owner", value: item.assignedTo || "Unassigned" },
-        { label: "Due", value: item.dueDate || "Not set" },
+        { label: "Due", value: formatOperationalDate(item.dueDate) },
         { label: "Status", value: item.status || "Pending" },
       ],
       chips,
@@ -87,7 +94,7 @@ function buildOperationCard(item = {}) {
       tone,
       meta: [
         { label: "Lead", value: item.assignedTo || "Operations" },
-        { label: "Due", value: item.dueDate || "Today" },
+        { label: "Due", value: formatOperationalDate(item.dueDate, "Today") },
         { label: "Priority", value: item.priority || "Planned" },
       ],
       chips,
@@ -115,7 +122,7 @@ function buildOperationCard(item = {}) {
       tone,
       meta: [
         { label: "Holder", value: item.assignedTo || "Crew" },
-        { label: "Expiry", value: item.dueDate || "Unknown" },
+        { label: "Expiry", value: formatOperationalDate(item.dueDate, "Unknown") },
         { label: "Status", value: item.status || "Review" },
       ],
       chips,
@@ -130,7 +137,7 @@ function buildOperationCard(item = {}) {
       meta: [
         { label: "Area", value: item.subtitle || "Route planning" },
         { label: "Status", value: item.status || "Review" },
-        { label: "Due", value: item.dueDate || "Immediate review" },
+        { label: "Due", value: formatOperationalDate(item.dueDate, "Immediate review") },
       ],
       chips,
     };
@@ -143,7 +150,7 @@ function buildOperationCard(item = {}) {
     meta: [
       { label: "Owner", value: item.assignedTo || "Operations" },
       { label: "Status", value: item.status || "Open" },
-      { label: "Due", value: item.dueDate || "Not set" },
+      { label: "Due", value: formatOperationalDate(item.dueDate) },
     ],
     chips,
   };
@@ -400,7 +407,7 @@ function VesselStateBanner({
   const mood = vesselState?.mood || "calm";
   const config = getVesselStateConfig(mode);
   const isOwnerView = String(role || "").toLowerCase() === "owner";
-  const pendingSpend = currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency);
+  const pendingSpend = currentVessel?.metrics?.pendingSpend || formatMoney(stats.pendingApprovalSpend || 0, currency);
   const focusLine = isOwnerView
     ? `${pendingSpend} pending spend across ${stats.pendingApprovals || 0} decision${(stats.pendingApprovals || 0) === 1 ? "" : "s"}. Detail stays out of the way unless it is material.`
     : config.description;
@@ -674,12 +681,15 @@ export function TodayOperationsView({
   onNavigateToRoute,
   onNavigateToAlerts,
   onNavigateToDocuments,
+  commandSearchResults = [],
+  onCommandSearchJump,
 }) {
   const theme = themeClasses(darkMode);
   const currentVessel = vesselOperations || null;
   const [selectedItem, setSelectedItem] = useState(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [dailyReportOpen, setDailyReportOpen] = useState(false);
+  const [approvalDecisionRequest, setApprovalDecisionRequest] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
     tasksMaintenance: false,
     expensesApprovals: false,
@@ -778,7 +788,7 @@ export function TodayOperationsView({
 
   const vesselStateConfig = getVesselStateConfig(resolvedVesselState?.mode);
   const isOwnerView = String(currentRole || "").toLowerCase() === "owner";
-  const pendingSpendLabel = currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency);
+  const pendingSpendLabel = currentVessel?.metrics?.pendingSpend || formatMoney(stats.pendingApprovalSpend || 0, currency);
   const nextWorkItem = sortByPriority([...taskItems, ...maintenanceItems])[0] || null;
   const tasksTeaser = nextWorkItem ? `Next: ${nextWorkItem.title}` : "Work queue is clear today.";
   const approvalsTeaser = approvalItems[0]
@@ -1035,6 +1045,11 @@ export function TodayOperationsView({
     }
   }
 
+  function requestApprovalDecision(item, decision) {
+    if (!item || !decision) return;
+    setApprovalDecisionRequest({ item, decision });
+  }
+
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
@@ -1096,7 +1111,7 @@ export function TodayOperationsView({
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
         {/* ---- Hero: a live bridge instrument, not a static landing page ---- */}
-        <section className="neo-hero relative my-4 min-h-[calc(70svh-5rem)] overflow-hidden rounded-[34px] px-5 py-7 sm:px-7 md:rounded-[46px] md:px-10 md:py-10 xl:px-14 xl:py-12">
+        <section className="neo-hero relative my-4 min-h-[calc(70svh-5rem)] overflow-visible rounded-[34px] px-5 py-7 sm:px-7 md:rounded-[46px] md:px-10 md:py-10 xl:px-14 xl:py-12">
           <div className="neo-hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="neo-hero-glow pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full" aria-hidden="true" />
 
@@ -1132,7 +1147,10 @@ export function TodayOperationsView({
               </div>
 
               <div data-mb-hero className="neo-search-shell mt-9 max-w-2xl">
-                <GlobalSearch darkMode results={searchResults} onJump={jumpToResult} />
+                <GlobalSearch
+                  results={commandSearchResults.length ? commandSearchResults : searchResults}
+                  onJump={onCommandSearchJump || jumpToResult}
+                />
               </div>
             </div>
 
@@ -1380,7 +1398,7 @@ export function TodayOperationsView({
                     message="No spend or quote decision is waiting at the moment. Open approvals to review the wider board."
                     actionLabel="View approvals"
                     onAction={onNavigateToApprovals}
-                    secondaryContent={<div className={`text-xs ${theme.textSecondary}`}>Pending spend: {currentVessel?.metrics?.openExposure || formatMoney(stats.totalExpenses || 0, currency)}</div>}
+                    secondaryContent={<div className={`text-xs ${theme.textSecondary}`}>Pending spend: {currentVessel?.metrics?.pendingSpend || formatMoney(stats.pendingApprovalSpend || 0, currency)}</div>}
                   />
                 )}
             </SectionAccordion>
@@ -1537,14 +1555,14 @@ export function TodayOperationsView({
                       <div className="grid grid-cols-2 gap-2.5">
                         <button
                           type="button"
-                          onClick={() => onApprovalAction?.(approvalItems[0].raw || approvalItems[0], "approved")}
+                          onClick={() => requestApprovalDecision(approvalItems[0].raw || approvalItems[0], "approved")}
                           className="app-primary-action-button justify-center rounded-[14px] text-center"
                         >
                           Approve
                         </button>
                         <button
                           type="button"
-                          onClick={() => onApprovalAction?.(approvalItems[0].raw || approvalItems[0], "declined")}
+                          onClick={() => requestApprovalDecision(approvalItems[0].raw || approvalItems[0], "declined")}
                           className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-[var(--mb-line-strong)] px-4 py-2.5 text-sm font-semibold text-[var(--mb-soft)] transition-colors hover:border-[rgba(217,119,107,0.6)] hover:text-[var(--mb-critical-text)]"
                         >
                           Decline
@@ -1637,6 +1655,29 @@ export function TodayOperationsView({
         onClose={() => setDailyReportOpen(false)}
       />
 
+      <ConfirmActionDialog
+        isOpen={Boolean(approvalDecisionRequest)}
+        darkMode={darkMode}
+        tone={approvalDecisionRequest?.decision === "approved" ? "success" : "danger"}
+        title={approvalDecisionRequest?.decision === "approved" ? "Approve this request?" : "Decline this request?"}
+        message={approvalDecisionRequest ? [
+          approvalDecisionRequest.item?.title || approvalDecisionRequest.item?.supplier || "Operational request",
+          approvalDecisionRequest.item?.supplier ? `Supplier: ${approvalDecisionRequest.item.supplier}` : "",
+          approvalDecisionRequest.item?.amount !== null && approvalDecisionRequest.item?.amount !== undefined
+            ? `Amount: ${formatMoney(approvalDecisionRequest.item.amount, approvalDecisionRequest.item.currency || currency)}`
+            : "No monetary amount attached",
+          "This decision is recorded in the vessel activity history.",
+        ].filter(Boolean).join(" - ") : ""}
+        confirmLabel={approvalDecisionRequest?.decision === "approved" ? "Confirm approval" : "Confirm decline"}
+        onConfirm={() => {
+          if (approvalDecisionRequest) {
+            onApprovalAction?.(approvalDecisionRequest.item, approvalDecisionRequest.decision);
+          }
+          setApprovalDecisionRequest(null);
+        }}
+        onCancel={() => setApprovalDecisionRequest(null)}
+      />
+
       <DetailDrawer
         darkMode={darkMode}
         open={isInspectorOpen}
@@ -1649,7 +1690,7 @@ export function TodayOperationsView({
           darkMode={darkMode}
           item={selectedItem}
           canEdit={canEdit}
-          onApprovalAction={onApprovalAction}
+          onApprovalAction={requestApprovalDecision}
           onNavigateToTasks={onNavigateToTasks}
           onNavigateToMaintenance={onNavigateToMaintenance}
           onNavigateToCertificates={onNavigateToCertificates}
