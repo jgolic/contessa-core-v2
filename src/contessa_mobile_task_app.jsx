@@ -39,6 +39,7 @@ import {
   describePatch,
   downloadFile,
   formatHistoryTime,
+  formatAppDate,
   formatVesselNameFromId,
   formatMoney,
   formatTaskPriorityLabel,
@@ -1538,6 +1539,12 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     ];
 
     const operationalItems = Array.isArray(vesselOperations?.items) ? vesselOperations.items : [];
+    const operationalTaskIds = new Set(
+      operationalItems
+        .filter((item) => String(item?.type || "").toLowerCase() === "task")
+        .map((item) => item.id)
+        .filter(Boolean)
+    );
     const itemResults = operationalItems.map((item) => {
       const jumpTarget = getOperationalItemSearchTarget(item);
 
@@ -1565,6 +1572,41 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       ]),
       });
     });
+
+    const taskResults = visibleTasks
+      .filter((task) => !operationalTaskIds.has(task.id))
+      .map((task) => {
+        const searchableTask = { ...task, type: "task" };
+        return {
+          id: `command-task-${task.id}`,
+          type: "Task",
+          title: task.name || "Untitled task",
+          context: [
+            vesselName,
+            formatTaskStatusLabel(task.status || "pending"),
+            task.assignee || "Unassigned",
+            task.dueDate ? formatAppDate(task.dueDate) : "No due date",
+          ].join(" / "),
+          sectionId: "tasks-section",
+          targetId: `item-${task.id}`,
+          moduleName: "tasks-maintenance",
+          options: { panel: "tasks" },
+          item: searchableTask,
+          searchText: buildCommandSearchText([
+            task.id,
+            task.name,
+            task.area,
+            task.department,
+            task.status,
+            task.priority,
+            task.assignee,
+            task.requester,
+            task.notes,
+            task.dueDate,
+            ...(task.quotes || []).flatMap((quote) => [quote.title, quote.supplier]),
+          ]),
+        };
+      });
 
     const crewResults = (Array.isArray(visibleCrewProfiles) ? visibleCrewProfiles : []).map((profile) => ({
       id: `command-crew-${profile?.id || profile?.fullName}`,
@@ -1611,11 +1653,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       searchText: buildCommandSearchText([document?.id, document?.title, document?.name, document?.category, document?.type, document?.status, "documents docs vault"]),
     }));
 
-    return [...sectionResults, ...itemResults, ...crewResults, ...crewCvResults, ...documentResults].map((result) => ({
+    return [...sectionResults, ...itemResults, ...taskResults, ...crewResults, ...crewCvResults, ...documentResults].map((result) => ({
       ...result,
       searchText: result.searchText || buildCommandSearchText([result.id, result.type, result.title, result.context]),
     }));
-  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleCrewProfiles, documents, activeVesselState, activeVesselId]);
+  }, [activeVesselWorkspace?.name, vesselProfile?.vesselName, vesselOperations, visibleTasks, visibleCrewProfiles, documents, activeVesselState, activeVesselId]);
 
   const handleCommandSearchJump = (result) => {
     if (!result) return;
