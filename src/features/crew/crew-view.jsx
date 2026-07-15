@@ -688,11 +688,12 @@ export function CrewView({
                   key={profile.id}
                   type="button"
                   onClick={(event) => {
-                    event.currentTarget.classList.remove("jump-highlight-active");
-                    void event.currentTarget.offsetWidth;
-                    event.currentTarget.classList.add("jump-highlight-target");
-                    event.currentTarget.classList.add("jump-highlight-active");
-                    window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
+                    const card = event.currentTarget;
+                    card.classList.remove("jump-highlight-active");
+                    void card.offsetWidth;
+                    card.classList.add("jump-highlight-target");
+                    card.classList.add("jump-highlight-active");
+                    window.setTimeout(() => card.classList.remove("jump-highlight-active"), 1900);
                     onSelectCrewProfile(profile.id);
                   }}
                   className={`jump-highlight-target ${crewCardClass} ${selectedCrewProfile?.id === profile.id ? crewCardSelectedClass : ""}`}

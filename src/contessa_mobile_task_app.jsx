@@ -1385,19 +1385,26 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   useEffect(() => {
     if (typeof window === "undefined" || expenseView === "command") return undefined;
 
-    const focusCommandSearchWhenReady = (attempt = 0) => {
+    const focusCommandSearchWhenReady = (attempt = 0, stabilityCheck = 0) => {
       const input = document.querySelector("[data-global-search-input] input");
       const inputRect = input?.getBoundingClientRect();
       if (input && inputRect && inputRect.width > 0 && inputRect.height > 0) {
         input.focus();
-        globalSearchFocusTimerRef.current = null;
+        if (stabilityCheck >= 12) {
+          globalSearchFocusTimerRef.current = null;
+          return;
+        }
+        globalSearchFocusTimerRef.current = window.setTimeout(
+          () => focusCommandSearchWhenReady(attempt, stabilityCheck + 1),
+          100
+        );
         return;
       }
       if (attempt >= 20) {
         globalSearchFocusTimerRef.current = null;
         return;
       }
-      globalSearchFocusTimerRef.current = window.setTimeout(() => focusCommandSearchWhenReady(attempt + 1), 80);
+      globalSearchFocusTimerRef.current = window.setTimeout(() => focusCommandSearchWhenReady(attempt + 1, 0), 80);
     };
 
     const handleGlobalSearchShortcut = (event) => {

@@ -1216,11 +1216,12 @@ export function ObjectivesView({
                       key={task.id}
                       type="button"
                       onClick={(event) => {
-                        event.currentTarget.classList.remove("jump-highlight-active");
-                        void event.currentTarget.offsetWidth;
-                        event.currentTarget.classList.add("jump-highlight-target");
-                        event.currentTarget.classList.add("jump-highlight-active");
-                        window.setTimeout(() => event.currentTarget.classList.remove("jump-highlight-active"), 1900);
+                        const taskCard = event.currentTarget;
+                        taskCard.classList.remove("jump-highlight-active");
+                        void taskCard.offsetWidth;
+                        taskCard.classList.add("jump-highlight-target");
+                        taskCard.classList.add("jump-highlight-active");
+                        window.setTimeout(() => taskCard.classList.remove("jump-highlight-active"), 1900);
                         handleSelectTask(task.id);
                       }}
                       className={`jump-highlight-target group relative overflow-hidden p-4 pl-5 text-left active:scale-[0.99] ${selectedId === task.id ? "vessel-active rounded-[14px]" : "rv-row"}`}
