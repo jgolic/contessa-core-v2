@@ -310,7 +310,9 @@ export default function GlobalSearch({
       const target = event.target;
       const tagName = String(target?.tagName || "").toLowerCase();
       if (tagName === "input" || tagName === "textarea" || target?.isContentEditable) return;
-      if (!inputRef.current || inputRef.current.offsetParent === null) return;
+      if (!inputRef.current) return;
+      const inputRect = inputRef.current.getBoundingClientRect();
+      if (inputRect.width <= 0 || inputRect.height <= 0) return;
       event.preventDefault();
       inputRef.current.focus();
       setOpen(true);

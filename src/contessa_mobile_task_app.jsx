@@ -1387,7 +1387,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     const focusCommandSearchWhenReady = (attempt = 0) => {
       const input = document.querySelector("[data-global-search-input] input");
-      if (input && input.offsetParent !== null) {
+      const inputRect = input?.getBoundingClientRect();
+      if (input && inputRect && inputRect.width > 0 && inputRect.height > 0) {
         input.focus();
         globalSearchFocusTimerRef.current = null;
         return;
