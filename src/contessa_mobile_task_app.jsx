@@ -372,6 +372,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const persistenceReadyRef = useRef(false);
   const routeSyncReadyRef = useRef(false);
   const applyingHistoryNavigationRef = useRef(false);
+  const pendingSearchTaskIdRef = useRef("");
   const saveToastTimerRef = useRef(null);
   const [prototypeTaskApprovals, setPrototypeTaskApprovals] = useState({});
   const [prototypeSyncState, setPrototypeSyncState] = useState(() => {
@@ -1400,6 +1401,15 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     return () => window.removeEventListener("keydown", handleGlobalSearchShortcut);
   }, [expenseView]);
 
+  useEffect(() => {
+    const pendingTaskId = pendingSearchTaskIdRef.current;
+    if (expenseView !== "tasks-maintenance" || !pendingTaskId) return;
+    if (!visibleTasks.some((task) => task.id === pendingTaskId)) return;
+
+    setSelectedId(pendingTaskId);
+    pendingSearchTaskIdRef.current = "";
+  }, [expenseView, visibleTasks]);
+
   const jumpToAppTarget = ({
     sectionId,
     targetId,
@@ -1633,6 +1643,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
 
     if (result.moduleName) {
+      if (result.moduleName === "tasks-maintenance" && result.item?.type === "task" && result.item?.id) {
+        pendingSearchTaskIdRef.current = result.item.id;
+      }
       if (result.type === "Crew" && result.item?.id) {
         setSelectedCrewId(result.item.id);
       }
