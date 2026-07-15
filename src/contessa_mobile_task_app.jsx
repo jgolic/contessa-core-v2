@@ -1404,11 +1404,16 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   useEffect(() => {
     const pendingTaskId = pendingSearchTaskIdRef.current;
-    if (expenseView !== "tasks-maintenance" || !pendingTaskId) return;
-    if (!visibleTasks.some((task) => task.id === pendingTaskId)) return;
+    if (expenseView !== "tasks-maintenance" || !pendingTaskId) return undefined;
+    if (!visibleTasks.some((task) => task.id === pendingTaskId)) return undefined;
 
-    setSelectedId(pendingTaskId);
-    pendingSearchTaskIdRef.current = "";
+    const selectionTimer = window.setTimeout(() => {
+      if (pendingSearchTaskIdRef.current !== pendingTaskId) return;
+      setSelectedId(pendingTaskId);
+      pendingSearchTaskIdRef.current = "";
+    }, 180);
+
+    return () => window.clearTimeout(selectionTimer);
   }, [expenseView, visibleTasks]);
 
   const jumpToAppTarget = ({
