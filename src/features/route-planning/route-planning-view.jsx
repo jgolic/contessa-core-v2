@@ -379,6 +379,7 @@ export function RoutePlanningView({
     () => calculateRoutePassageSummary({ waypoints, vesselProfile, safetyMargin }),
     [waypoints, vesselProfile, safetyMargin]
   );
+  const routePlan = calculateRoutePlan({ distanceNm: passageSummary.totalDistanceNm }, routeSpecs);
   const minimumSafeDepth = passageSummary.minimumSafeDepth;
   const depthDataConnected = useMemo(() => hasConnectedDepthLayer(depthLayer), [depthLayer]);
   const depthLayerGeoJson = useMemo(
@@ -547,7 +548,6 @@ export function RoutePlanningView({
     : passageSummary.remainingFuelAfterReserve <= passageSummary.fuelReserveAmount * 0.25
       ? "warning"
       : "neutral";
-  const routePlan = calculateRoutePlan({ distanceNm: passageSummary.totalDistanceNm }, routeSpecs);
   const routeFuelTone = routePlan.remainingAfterRoute < 0
     ? "critical"
     : routePlan.fuelStatus === "Tight"
