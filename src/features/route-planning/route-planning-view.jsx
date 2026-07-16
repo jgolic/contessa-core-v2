@@ -202,7 +202,7 @@ function SummaryRow({ darkMode = false, label, value, detail, tone = "neutral" }
           <div className={`app-data-label ${theme.textSecondary}`}>{label}</div>
           <div className={`app-metric-value mt-3 ${theme.textPrimary}`}>{value}</div>
         </div>
-        <Badge className={accentClass}>{tone === "critical" ? "Review" : tone === "warning" ? "Watch" : "Ready"}</Badge>
+        <Badge className={accentClass}>{tone === "critical" ? "Review" : tone === "warning" ? "Attention" : "Ready"}</Badge>
       </div>
       <div className={`app-helper-text mt-2 ${theme.textSecondary}`}>{detail}</div>
     </div>

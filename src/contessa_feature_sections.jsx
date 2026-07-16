@@ -1147,7 +1147,7 @@ export function ObjectivesView({
         <div className={taskBoardSummary.overdue ? "task-clarity-metric task-clarity-metric--critical" : "task-clarity-metric"}>
           <strong>{taskBoardSummary.overdue}</strong><span>Overdue</span>
         </div>
-        <div className={taskBoardSummary.unassigned ? "task-clarity-metric task-clarity-metric--watch" : "task-clarity-metric"}>
+        <div className={taskBoardSummary.unassigned ? "task-clarity-metric task-clarity-metric--attention" : "task-clarity-metric"}>
           <strong>{taskBoardSummary.unassigned}</strong><span>Unassigned</span>
         </div>
         <div className="task-clarity-metric">
@@ -1304,7 +1304,7 @@ export function ObjectivesView({
   );
 }
 
-export function MidnightControlDeck({
+export function HarbourlineControlDeck({
   darkMode = false,
   isOffline = false,
   syncState = null,

@@ -3,14 +3,14 @@
 import { useEffect } from "react";
 
 /**
- * Midnight Bridge motion system.
+ * Harbourline motion system.
  * Targets declarative hooks in the DOM:
  *   [data-mb-hero]  — staggered rise on first paint (hero lines)
  *   [data-mb-reveal] — rise + fade when scrolled into view (once)
  *   [data-mb-count] — numeric count-up; supports data-mb-prefix / data-mb-suffix / data-mb-decimals
  * Skips entirely under prefers-reduced-motion.
  */
-export function useMidnightMotion(deps = []) {
+export function useHarbourlineMotion(deps = []) {
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;

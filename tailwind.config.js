@@ -7,7 +7,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Midnight Bridge remap: cyan carries the champagne-gold accent language.
+        hull: {
+          900: "#0A1626",
+          800: "#10203A",
+          700: "#1A2F4F",
+        },
+        deck: {
+          50: "#FAF7F0",
+          100: "#F1EBDE",
+          200: "#E4DBC8",
+        },
+        signal: "#FF4F30",
+        brass: "#B08D4C",
         cyan: {
           50: "#fbf8ef",
           100: "#f5edd8",
@@ -54,6 +65,7 @@ module.exports = {
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },

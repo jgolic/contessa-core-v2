@@ -71,9 +71,9 @@ const roleProfiles = {
   },
   "First Mate": {
     summary:
-      "Operational deck officer focused on watchkeeping, deck team coordination, tender operations, safety drills, and exterior readiness.",
+      "Operational deck officer focused on bridge duty, deck team coordination, tender operations, safety drills, and exterior readiness.",
     skills: [
-      "Bridge watchkeeping",
+      "Bridge duty and passage support",
       "Deck operations",
       "Tender handling",
       "Safety drills",

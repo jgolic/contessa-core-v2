@@ -472,8 +472,8 @@ function getImplicitThemeNameForVessel(vesselId = DEFAULT_FLEET_VESSEL_ID, custo
 export function normalizeVesselTheme(theme = {}, fallbackThemeName = "contessa") {
   const fallback = cloneVesselThemePreset(fallbackThemeName);
   const stored = theme && typeof theme === "object" ? theme : {};
-  // Persisted workspaces may carry the legacy sea-teal Contessa palette;
-  // migrate them wholesale to the Midnight Bridge preset so SSR and client agree.
+  // Persisted workspaces may carry the legacy sea-teal Contessa palette.
+  // Keep normalizing those records so older backups remain compatible.
   if (stored.primary === "#16786e" || stored.primaryDark === "#2dd4bf") {
     return { ...fallback };
   }
@@ -1176,7 +1176,7 @@ function buildOctopussyWorkspace(name = "M/Y Octopussy") {
     riskNote: "Afternoon squalls possible near coastline",
     waypoints: [
       { id: "OCT-RWP-001", name: "Oracabessa", lng: -76.9436, lat: 18.4031 },
-      { id: "OCT-RWP-002", name: "North coast squall watch", lng: -76.78, lat: 18.56 },
+      { id: "OCT-RWP-002", name: "North coast squall advisory", lng: -76.78, lat: 18.56 },
       { id: "OCT-RWP-003", name: "Port Antonio", lng: -76.4500, lat: 18.1830 },
     ],
   });
@@ -2667,18 +2667,17 @@ export function downloadFile(filename, content, type) {
 export function themeClasses(darkMode) {
   return {
     page: "bg-vessel-page",
-    // Riviera: eggshell surfaces with oxford-navy ink details.
-    card: "border border-[rgba(28,35,52,0.14)] bg-white/92 shadow-[0_18px_50px_rgba(28,35,52,0.08)] backdrop-blur-xl",
-    textPrimary: "text-slate-950 drop-shadow-[0_1px_2px_rgba(255,255,255,0.15)]",
-    textSecondary: "text-slate-700",
+    card: "border border-[var(--deck-200)] bg-[var(--deck-100)]",
+    textPrimary: "text-[var(--ink)]",
+    textSecondary: "text-[var(--ink-soft)]",
     input:
-      "border-[rgba(28,35,52,0.18)] bg-white/95 text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus:ring-2 focus:ring-[var(--vessel-ring)] focus:border-[var(--vessel-border)]",
+      "border-[var(--deck-200)] bg-[var(--deck-50)] text-[var(--ink)] focus:ring-2 focus:ring-[var(--signal)] focus:border-[var(--signal)]",
     selectedTask:
-      "border-[#74b8ad] bg-[linear-gradient(140deg,rgba(174,224,213,0.58)_0%,rgba(235,247,241,0.92)_58%,rgba(255,252,244,0.94)_100%)] text-[#17383a] shadow-[0_20px_44px_-28px_rgba(35,88,86,0.42),inset_0_1px_0_rgba(255,255,255,0.85)]",
+      "border-[var(--signal)] bg-[var(--deck-100)] text-[var(--ink)]",
     unselectedTask:
-      "border-[rgba(28,35,52,0.12)] bg-white/92 text-slate-900 shadow-[0_18px_50px_rgba(28,35,52,0.07)]",
+      "border-[var(--deck-200)] bg-[var(--deck-100)] text-[var(--ink)]",
     ring: "ring-vessel",
-    subtle: "bg-[rgba(244,240,231,0.85)]",
+    subtle: "bg-[var(--deck-100)]",
   };
 }
 

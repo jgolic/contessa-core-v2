@@ -67,6 +67,7 @@ import {
   parseWorkspaceView,
   updateWorkspaceViewUrl,
 } from "./src/lib/workspace_navigation.mjs";
+import { getFleetVesselStatus } from "./src/lib/fleet_status.mjs";
 
 test("empty app state defaults to editor mode", () => {
   const state = createEmptyAppState();
@@ -79,6 +80,12 @@ test("default fleet always includes Contessa and Octopussy", () => {
 
   assert.equal(state.vessels.some((vessel) => vessel.id === "contessa"), true);
   assert.equal(state.vessels.some((vessel) => vessel.id === "octopussy"), true);
+});
+
+test("fleet vessel status lamps prioritize critical, attention, and ready states", () => {
+  assert.equal(getFleetVesselStatus({ alertCount: 3 }).level, "critical");
+  assert.equal(getFleetVesselStatus({ approvalCount: 1 }).level, "attention");
+  assert.equal(getFleetVesselStatus({ alertCount: 0, approvalCount: 0, certificateDue: 0 }).level, "ready");
 });
 
 test("workspace URLs preserve active modules and panel choices", () => {

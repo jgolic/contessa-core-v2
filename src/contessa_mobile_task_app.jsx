@@ -30,7 +30,6 @@ import {
   convertMoney,
   createEmptyAppState,
   buildFleetVesselId,
-  buildVesselThemeCssVars,
   createFleetVesselWorkspace,
   createFullStateExport,
   createPersistedAppState,
@@ -74,13 +73,13 @@ import {
   createEmptyCertificateDraft,
   extractCertificateDraft,
 } from "./contessa_certificate_extraction.mjs";
-import MidnightShell from "./midnight/MidnightShell.jsx";
+import HarbourlineShell from "./harbourline/HarbourlineShell.jsx";
 import {
   AppBanner,
   AppDialogs,
   CrewCertificatesWorkspace,
   DocumentsView,
-  MidnightControlDeck,
+  HarbourlineControlDeck,
   SettingsWorkspaceView,
   ObjectivesView,
   TaskMaintenanceWorkspace,
@@ -299,9 +298,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [activeVesselId, setActiveVesselId] = useState(initialActiveVesselId);
   const [routeNotFound, setRouteNotFound] = useState(initialRouteVesselMissing);
   const [fleetOpen, setFleetOpen] = useState(false);
-  // Single bright theme — night mode retired. Kept as a constant so the many
+  // Harbourline is the only visual theme. Keep the legacy value false so older
   // legacy `darkMode` props stay wired without touching every call site, and
-  // so persistence writes `false` (migrating any stale night preference).
+  // imported backups continue to normalize safely.
   const darkMode = false;
   const [currency, setCurrency] = useState(initialAppState.currency);
   const [exchangeRates, setExchangeRates] = useState({ rates: FALLBACK_USD_RATES, date: "fallback", source: "fallback", live: false });
@@ -510,10 +509,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       vesselsForPersistence.map((vessel) => [vessel.id, getVesselMetrics(vessel.id, vesselsForPersistence)])
     );
   }, [vesselsForPersistence]);
-  const vesselThemeVars = useMemo(
-    () => buildVesselThemeCssVars(activeVesselWorkspace?.theme),
-    [activeVesselWorkspace?.theme]
-  );
   const persistedAppState = useMemo(
     () => createPersistedAppState({ darkMode, currency, actorName: effectiveActorName, currentRole: effectiveRole, appMode: canEditApp ? "editor" : "view", history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vessels: vesselsForPersistence, activeVesselId }),
     [darkMode, currency, effectiveActorName, effectiveRole, canEditApp, history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vesselsForPersistence, activeVesselId]
@@ -3271,7 +3266,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     return (
       <div
         className={`min-h-screen max-w-full overflow-x-hidden px-4 py-6 transition-colors sm:px-6 lg:px-8 ${theme.page}`}
-        style={vesselThemeVars}
       >
         <div className="mx-auto flex min-h-[80vh] max-w-2xl items-center justify-center">
           <section className="w-full rounded-[28px] border border-slate-200/70 bg-white/80 p-6 text-center shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70">
@@ -3304,7 +3298,6 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   return (
     <div
       className={`app-workspace-shell min-h-screen max-w-full overflow-x-hidden px-4 pb-[calc(120px+env(safe-area-inset-bottom))] pt-2 transition-colors sm:px-5 md:px-6 md:pt-3 lg:py-4 lg:pl-[7.5rem] lg:pr-10 xl:pl-[8.25rem] xl:pr-14 ${theme.page}`}
-      style={vesselThemeVars}
     >
       <AppDialogs
         darkMode={darkMode}
@@ -3323,7 +3316,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         <AppToastStack toasts={appToasts} darkMode={darkMode} onDismiss={dismissToast} />
         <AppBanner banner={appBanner} onDismiss={() => setAppBanner(null)} darkMode={darkMode} />
         <AppErrorBoundary resetKey={`header:${activeVesselId}:${effectiveRole}`}>
-          <MidnightShell
+          <HarbourlineShell
             vesselTitle={
               activeVesselWorkspace?.vesselPrintInfo?.displayName ||
               activeVesselWorkspace?.name ||
@@ -3361,6 +3354,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             notificationCount={accessibleNotifications.length}
             onSelectNotification={handleHeaderNotificationSelect}
             fleetVessels={vesselsForPersistence}
+            fleetMetricsByVessel={fleetMetricsByVessel}
             activeVesselId={activeVesselId}
             onSwitchFleetVessel={openVesselWorkspace}
             onOpenFleet={() => setFleetOpen(true)}
@@ -3371,7 +3365,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         </AppErrorBoundary>
 
         <AppErrorBoundary resetKey={`control-deck:${activeVesselId}`}>
-          <MidnightControlDeck
+          <HarbourlineControlDeck
             darkMode={darkMode}
             isOffline={isOffline}
             syncState={prototypeSyncState}

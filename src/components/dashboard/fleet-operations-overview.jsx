@@ -38,7 +38,7 @@ function buildFleetRecord(vessel, metrics = {}, today) {
   const attentionLevel = overdueCount > 0 || alertCount >= 3
     ? "critical"
     : attentionScore > 0
-      ? "watch"
+      ? "attention"
       : "ready";
 
   return {
@@ -73,7 +73,7 @@ function SummaryMetric({ label, value, note, tone = "neutral" }) {
 function FleetVesselRow({ record, active = false, onOpen }) {
   const attentionLabel = record.attentionLevel === "critical"
     ? "Action needed"
-    : record.attentionLevel === "watch"
+    : record.attentionLevel === "attention"
       ? "Monitor"
       : "Ready";
 
@@ -182,9 +182,9 @@ export function FleetOperationsOverview({
 
       <div className="fleet-summary-grid">
         <SummaryMetric label="Fleet" value={records.length} note="Vessels in view" />
-        <SummaryMetric label="Need attention" value={totals.attention} note={`${totals.overdue} overdue`} tone={totals.overdue ? "critical" : totals.attention ? "watch" : "ready"} />
-        <SummaryMetric label="Open work" value={totals.openTasks} note={`${totals.unassigned} unassigned`} tone={totals.unassigned ? "watch" : "neutral"} />
-        <SummaryMetric label="Decisions" value={totals.approvals} note="Awaiting approval" tone={totals.approvals ? "watch" : "ready"} />
+        <SummaryMetric label="Need attention" value={totals.attention} note={`${totals.overdue} overdue`} tone={totals.overdue ? "critical" : totals.attention ? "attention" : "ready"} />
+        <SummaryMetric label="Open work" value={totals.openTasks} note={`${totals.unassigned} unassigned`} tone={totals.unassigned ? "attention" : "neutral"} />
+        <SummaryMetric label="Decisions" value={totals.approvals} note="Awaiting approval" tone={totals.approvals ? "attention" : "ready"} />
       </div>
 
       <div className="fleet-toolbar">

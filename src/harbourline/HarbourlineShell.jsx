@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ContessaUiLogo } from "../components/branding.jsx";
+import { getFleetVesselStatus } from "../lib/fleet_status.mjs";
 
 /* ------------------------------------------------------------------ */
 /* Thin-line icon set (all-new, 1.5px stroke)                          */
@@ -98,6 +99,12 @@ const MoreIcon = (props) => (
   </Icon>
 );
 
+const ChevronIcon = (props) => (
+  <Icon {...props}>
+    <path d="m7 9.5 5 5 5-5" />
+  </Icon>
+);
+
 /* ------------------------------------------------------------------ */
 
 function useClock() {
@@ -120,19 +127,19 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       onClick={onClick}
       aria-label={label}
       aria-current={active ? "page" : undefined}
-      className={`neo-rail-item group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
-        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)] hover:text-[var(--mb-ink)]"
+      className={`harbourline-rail-item group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
+        active ? "text-[var(--fog)]" : "text-[var(--fog-soft)] hover:text-[var(--fog)]"
       }`}
     >
       <span
-        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[2px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-transparent via-[var(--mb-gold)] to-transparent transition-opacity duration-300 ${
+        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--signal)] transition-opacity duration-200 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       />
       <span className="relative">
         <ItemIcon className="h-[21px] w-[21px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+          <span className="harbourline-count absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--signal)] px-1 text-[9px] font-bold leading-none text-white">
             {count}
           </span>
         ) : null}
@@ -149,23 +156,152 @@ function DockItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       onClick={onClick}
       aria-label={label}
       aria-current={active ? "page" : undefined}
-      className={`neo-dock-item relative flex min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-2 transition-colors duration-200 ${
-        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
+      className={`harbourline-dock-item relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 transition-colors duration-200 ${
+        active ? "text-[var(--fog)]" : "text-[var(--fog-soft)]"
       }`}
     >
       <span className="relative">
         <ItemIcon className="h-[22px] w-[22px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+          <span className="harbourline-count absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--signal)] px-1 text-[9px] font-bold leading-none text-white">
             {count}
           </span>
         ) : null}
       </span>
       <span className="max-w-full truncate text-[9px] font-bold uppercase tracking-[0.14em]">{label}</span>
       <span
-        className={`h-[3px] w-[3px] rounded-full bg-[var(--mb-gold-badge)] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
+        className={`h-[3px] w-7 rounded-full bg-[var(--signal)] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
       />
     </button>
+  );
+}
+
+function VesselStatusLamp({ level = "ready", className = "" }) {
+  return <span className={`harbourline-status-lamp harbourline-status-lamp--${level} ${className}`.trim()} aria-hidden="true" />;
+}
+
+function VesselSwitcher({
+  vesselTitle,
+  vesselIdentifier,
+  modeLabel,
+  fleetVessels,
+  fleetMetricsByVessel,
+  activeVesselId,
+  onSwitchFleetVessel,
+  onOpenFleet,
+  open,
+  onOpenChange,
+}) {
+  const switcherRef = useRef(null);
+  const activeVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId) || {};
+  const activeStatus = getFleetVesselStatus(fleetMetricsByVessel?.[activeVesselId] || {}, activeVessel);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const closeOnOutsidePress = (event) => {
+      if (!switcherRef.current?.contains(event.target)) onOpenChange(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onOpenChange, open]);
+
+  return (
+    <div ref={switcherRef} className="harbourline-vessel-switcher relative min-w-0">
+      <button
+        type="button"
+        onClick={() => onOpenChange(!open)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="harbourline-vessel-switcher-button flex min-w-0 items-center gap-3 text-left"
+      >
+        <span className="harbourline-vessel-mark flex h-10 w-10 shrink-0 items-center justify-center">
+          <ContessaUiLogo className="h-7 w-7" />
+        </span>
+        <VesselStatusLamp level={activeStatus.level} className="shrink-0" />
+        <span className="min-w-0">
+          <span className="flex min-w-0 items-baseline gap-2">
+            <span className="harbourline-heading block truncate text-[clamp(0.84rem,2.5vw,1.08rem)] tracking-[0.055em] text-[var(--fog)]">
+              {vesselTitle}
+            </span>
+            {vesselIdentifier ? (
+              <span className="hidden shrink-0 text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--fog-soft)] xl:inline">
+                {vesselIdentifier}
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 flex items-center gap-2 truncate text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--fog-soft)]">
+            <span className="truncate">{activeStatus.label}</span>
+            {modeLabel ? <span className="hidden truncate sm:inline">/ {modeLabel}</span> : null}
+          </span>
+        </span>
+        <ChevronIcon className={`h-4 w-4 shrink-0 text-[var(--fog-soft)] transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open ? (
+        <div className="harbourline-vessel-menu absolute left-0 top-[calc(100%+0.55rem)] z-[26000] w-[min(25rem,calc(100vw-2rem))] overflow-hidden border">
+          <div className="border-b border-[var(--deck-200)] px-4 py-3">
+            <div className="harbourline-micro-label">Fleet vessels</div>
+            <p className="mt-1 text-xs text-[var(--ink-soft)]">Switch workspace without leaving the current module.</p>
+          </div>
+          <div className="max-h-[min(26rem,62vh)] overflow-y-auto p-2" role="listbox" aria-label="Choose vessel">
+            {fleetVessels.map((vessel) => {
+              const isActive = vessel?.id === activeVesselId;
+              const metrics = fleetMetricsByVessel?.[vessel?.id] || {};
+              const status = getFleetVesselStatus(metrics, vessel);
+              return (
+                <button
+                  key={vessel?.id}
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  onClick={() => {
+                    onOpenChange(false);
+                    if (!isActive) onSwitchFleetVessel?.(vessel?.id);
+                  }}
+                  className={`harbourline-vessel-option relative flex w-full items-center gap-3 border-l-[3px] px-3 py-3 text-left ${
+                    isActive ? "harbourline-vessel-option--active" : ""
+                  }`}
+                >
+                  <VesselStatusLamp level={status.level} className="shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-bold text-[var(--ink)]">{vessel?.name || "Vessel"}</span>
+                    <span className="mt-0.5 block truncate text-[10px] uppercase tracking-[0.12em] text-[var(--ink-soft)]">
+                      {status.label} / {status.detail}
+                    </span>
+                  </span>
+                  <span className="harbourline-count shrink-0 text-[10px] text-[var(--ink-soft)]">
+                    {Number(metrics.taskCount || 0)} tasks
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              onOpenChange(false);
+              onOpenFleet?.();
+            }}
+            className="harbourline-vessel-menu-footer flex w-full items-center justify-between border-t border-[var(--deck-200)] px-4 py-3 text-left"
+          >
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink)]">Open fleet manager</span>
+              <span className="mt-0.5 block text-xs text-[var(--ink-soft)]">Add vessels and review fleet details</span>
+            </span>
+            <AnchorIcon className="h-5 w-5 text-[var(--brass)]" />
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -173,18 +309,18 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[24000]">
-      <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[var(--mb-scrim)] backdrop-blur-[3px]" />
+      <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[var(--mb-scrim)]" />
       <div
-        className={`neo-shell-panel mb-glass absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
-          align === "right" ? "right-3 top-3 bottom-3 rounded-[22px]" : "left-3 bottom-24 rounded-[22px] lg:left-24 lg:bottom-6"
+        className={`harbourline-shell-panel absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
+          align === "right" ? "right-3 top-3 bottom-3 rounded-[10px]" : "left-3 bottom-24 rounded-[10px] lg:left-24 lg:bottom-6"
         }`}
       >
         <div className="flex items-center justify-between gap-3 border-b border-[var(--mb-line)] px-5 py-4">
-          <span className="midnight-heading text-lg text-[var(--mb-ink)]">{title}</span>
+          <span className="harbourline-heading text-lg text-[var(--ink)]">{title}</span>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)]"
+            className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[var(--deck-200)] text-[var(--ink-soft)] transition-colors hover:border-[var(--ink-soft)] hover:text-[var(--ink)]"
             aria-label={`Close ${title}`}
           >
             <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -198,7 +334,7 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
 
 /* ------------------------------------------------------------------ */
 
-export default function MidnightShell({
+export default function HarbourlineShell({
   vesselTitle = "M/Y VESSEL",
   vesselIdentifier = "",
   modeLabel = "",
@@ -217,6 +353,7 @@ export default function MidnightShell({
   notificationCount = 0,
   onSelectNotification,
   fleetVessels = [],
+  fleetMetricsByVessel = {},
   activeVesselId = "contessa",
   onSwitchFleetVessel,
   onOpenFleet,
@@ -227,6 +364,7 @@ export default function MidnightShell({
   const clock = useClock();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [vesselSwitcherOpen, setVesselSwitcherOpen] = useState(false);
 
   // Counts come from persisted client state; render them only after mount so
   // server HTML (seed data) never disagrees with the hydrating client.
@@ -250,6 +388,7 @@ export default function MidnightShell({
   const closeAll = () => {
     setNotificationsOpen(false);
     setMoreOpen(false);
+    setVesselSwitcherOpen(false);
   };
 
   const navigate = (fn) => () => {
@@ -260,12 +399,12 @@ export default function MidnightShell({
   return (
     <>
       {/* ---- Desktop rail ---- */}
-      <nav className="neo-rail mb-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[28px] border lg:flex">
+      <nav className="harbourline-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[10px] border lg:flex">
         <button
           type="button"
           onClick={navigate(onNavCommand)}
           aria-label="Open command bridge"
-          className="neo-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[16px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
+          className="harbourline-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[8px] border"
         >
           <ContessaUiLogo className="h-9 w-9" />
         </button>
@@ -288,11 +427,11 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
             aria-label="Open notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="relative flex h-10 w-10 items-center justify-center rounded-[8px] text-[var(--fog-soft)] transition-colors hover:text-[var(--fog)]"
           >
             <BellIcon className="h-5 w-5" />
             {shownCount(notificationCount) ? (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+              <span className="harbourline-count absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--signal)] px-1 text-[9px] font-bold leading-none text-white">
                 {shownCount(notificationCount)}
               </span>
             ) : null}
@@ -301,7 +440,7 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenFleet?.(); }}
             aria-label="Open fleet manager"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="flex h-10 w-10 items-center justify-center rounded-[8px] text-[var(--fog-soft)] transition-colors hover:text-[var(--fog)]"
           >
             <AnchorIcon className="h-5 w-5" />
           </button>
@@ -309,7 +448,7 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenHistory?.(); }}
             aria-label="Open history"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="flex h-10 w-10 items-center justify-center rounded-[8px] text-[var(--fog-soft)] transition-colors hover:text-[var(--fog)]"
           >
             <LogIcon className="h-5 w-5" />
           </button>
@@ -317,8 +456,8 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenPreferences?.(); }}
             aria-label="Open settings"
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:text-[var(--mb-gold-bright)] ${
-              activeModule === "settings" ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
+            className={`flex h-10 w-10 items-center justify-center rounded-[8px] transition-colors hover:text-[var(--fog)] ${
+              activeModule === "settings" ? "text-[var(--signal)]" : "text-[var(--fog-soft)]"
             }`}
           >
             <GearIcon className="h-5 w-5" />
@@ -331,34 +470,20 @@ export default function MidnightShell({
         id="app-command-header"
         data-jump-target
         style={{ "--jump-radius": "18px" }}
-        className="neo-command-header jump-highlight-target relative z-[500] flex items-center justify-between gap-3 rounded-[18px] px-3 py-3 md:px-4"
+        className="harbourline-command-header jump-highlight-target relative z-[500] flex items-center justify-between gap-3 rounded-[10px] px-3 py-2.5 md:px-4"
       >
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={navigate(onNavCommand)}
-            aria-label="Open command bridge"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] lg:hidden"
-          >
-            <ContessaUiLogo className="h-7 w-7" />
-          </button>
-          <div className="min-w-0">
-            <div className="flex min-w-0 items-baseline gap-2.5">
-              <span className="midnight-heading whitespace-nowrap text-[clamp(0.7rem,3vw,1.05rem)] tracking-[0.07em] text-[var(--mb-ink)]">{vesselTitle}</span>
-              {vesselIdentifier ? (
-                <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.24em] text-[var(--mb-soft)] sm:inline">
-                  {vesselIdentifier}
-                </span>
-              ) : null}
-            </div>
-            {modeLabel ? (
-              <div className="mt-0.5 flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.22em] text-[var(--mb-gold)]">
-                <span className="inline-block h-1 w-1 rounded-full bg-[var(--mb-gold-badge)]" />
-                {modeLabel}
-              </div>
-            ) : null}
-          </div>
-        </div>
+        <VesselSwitcher
+          vesselTitle={vesselTitle}
+          vesselIdentifier={vesselIdentifier}
+          modeLabel={modeLabel}
+          fleetVessels={fleetVessels}
+          fleetMetricsByVessel={fleetMetricsByVessel}
+          activeVesselId={activeVesselId}
+          onSwitchFleetVessel={onSwitchFleetVessel}
+          onOpenFleet={onOpenFleet}
+          open={vesselSwitcherOpen}
+          onOpenChange={setVesselSwitcherOpen}
+        />
 
         <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
           {onQuickAddTask ? (
@@ -377,28 +502,28 @@ export default function MidnightShell({
           <button
             type="button"
             onClick={() => { closeAll(); onOpenPreferences?.(); }}
-            className="hidden min-h-9 items-center gap-1 rounded-full border border-[var(--mb-line-strong)] px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] md:inline-flex"
+            className="harbourline-header-secondary hidden min-h-9 items-center gap-1 rounded-[8px] border px-3 text-[10px] font-bold uppercase tracking-[0.16em] md:inline-flex"
             aria-label={`Change operating role. Current role: ${roleLabel}`}
           >
             {roleLabel} view
             <span aria-hidden="true">&#9662;</span>
           </button>
-          <span suppressHydrationWarning className="text-[13px] font-semibold tabular-nums tracking-[0.08em] text-[var(--mb-ink)]">
+          <span suppressHydrationWarning className="harbourline-count text-[13px] font-semibold tracking-[0.08em] text-[var(--fog)]">
             {clockLabel}
           </span>
           <span
             title={isOffline ? "Offline" : "Live"}
-            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[#b1473f]" : "bg-[var(--mb-safe)] shadow-[0_0_8px_rgba(88,174,143,0.8)]"}`}
+            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[var(--crit)]" : "bg-[var(--ok)]"}`}
           />
           <button
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
             aria-label="Open notifications"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)] lg:hidden"
+            className="harbourline-header-secondary relative flex h-9 w-9 items-center justify-center rounded-[8px] border lg:hidden"
           >
             <BellIcon className="h-[18px] w-[18px]" />
             {shownCount(notificationCount) ? (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+              <span className="harbourline-count absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--signal)] px-1 text-[9px] font-bold leading-none text-white">
                 {shownCount(notificationCount)}
               </span>
             ) : null}
@@ -407,7 +532,7 @@ export default function MidnightShell({
       </header>
 
       {/* ---- Mobile dock ---- */}
-      <nav className="neo-mobile-dock mb-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[24px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
+      <nav className="harbourline-mobile-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[10px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
         <DockItem icon={HelmIcon} label="Bridge" active={activeModule === "command"} onClick={navigate(onNavCommand)} />
         <DockItem icon={TasksIcon} label="Tasks" count={shownCount(counts.tasks || 0)} active={activeModule === "tasks-maintenance"} onClick={navigate(onNavTasks)} />
         <DockItem icon={SealIcon} label="Approve" count={shownCount(counts.approvals || 0)} active={activeModule === "expenses-approvals"} onClick={navigate(onNavApprovals)} />
@@ -441,7 +566,7 @@ export default function MidnightShell({
             ))}
           </ul>
         ) : (
-          <p className="px-3 py-6 text-center text-sm italic text-[var(--mb-muted)]">The watch is quiet. No signals right now.</p>
+          <p className="px-3 py-6 text-center text-sm text-[var(--ink-soft)]">No active signals right now.</p>
         )}
         <button
           type="button"
@@ -465,12 +590,12 @@ export default function MidnightShell({
               key={entry.label}
               type="button"
               onClick={navigate(entry.onClick)}
-              className="flex flex-col items-center gap-2 rounded-[16px] border border-[var(--mb-line)] px-3 py-4 text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)]"
+              className="flex flex-col items-center gap-2 rounded-[8px] border border-[var(--deck-200)] px-3 py-4 text-[var(--ink-soft)] transition-colors hover:border-[var(--ink-soft)] hover:text-[var(--ink)]"
             >
               <span className="relative">
                 <entry.icon className="h-6 w-6" />
                 {entry.count ? (
-                  <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+                  <span className="harbourline-count absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--signal)] px-1 text-[9px] font-bold leading-none text-white">
                     {entry.count}
                   </span>
                 ) : null}
@@ -480,33 +605,12 @@ export default function MidnightShell({
           ))}
         </div>
         <div className="mt-3 border-t border-[var(--mb-line)] pt-3">
-          <div className="px-1 pb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-muted)]">Fleet</div>
-          <div className="grid gap-1.5">
-            {fleetVessels.map((vessel) => {
-              const isActive = vessel?.id === activeVesselId;
-              return (
-                <button
-                  key={vessel?.id}
-                  type="button"
-                  onClick={() => {
-                    closeAll();
-                    if (!isActive) onSwitchFleetVessel?.(vessel?.id);
-                  }}
-                  className={`flex items-center justify-between rounded-[14px] border px-3.5 py-2.5 text-left text-sm font-semibold text-[var(--mb-ink)] ${
-                    isActive ? "border-[var(--mb-line-strong)] bg-[var(--mb-gold-tint)]" : "border-transparent hover:bg-[var(--mb-gold-tint)]"
-                  }`}
-                >
-                  {vessel?.name || "Vessel"}
-                  {isActive ? <span className="h-1.5 w-1.5 rounded-full bg-[var(--mb-gold-badge)]" /> : null}
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-1.5">
+          <div className="harbourline-micro-label px-1 pb-2">Workspace</div>
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
               onClick={() => { closeAll(); onOpenFleet?.(); }}
-              className="flex items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
+              className="flex items-center justify-center gap-2 rounded-[8px] border border-[var(--deck-200)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]"
             >
               <AnchorIcon className="h-4 w-4" />
               Fleet manager
@@ -514,7 +618,7 @@ export default function MidnightShell({
             <button
               type="button"
               onClick={() => { closeAll(); onOpenHistory?.(); }}
-              className="flex items-center justify-center gap-2 rounded-[14px] border border-[var(--mb-line-strong)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--mb-soft)]"
+              className="flex items-center justify-center gap-2 rounded-[8px] border border-[var(--deck-200)] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]"
             >
               <LogIcon className="h-4 w-4" />
               History

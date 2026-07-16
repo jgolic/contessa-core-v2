@@ -1,7 +1,7 @@
 import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 /* ------------------------------------------------------------------ */
-/* Midnight Bridge dashboard primitives.                               */
+/* Harbourline dashboard primitives.                                  */
 /* Editorial ledger language: hairlines, serif accents, champagne      */
 /* ticks — no card-soup. Exported API matches the previous primitives. */
 /* ------------------------------------------------------------------ */
@@ -68,7 +68,7 @@ export function SectionAccordion({
             {String(count ?? 0).padStart(2, "0")}
           </span>
           <span className="min-w-0">
-            <span className="midnight-heading block truncate text-xl text-[var(--mb-ink)] md:text-2xl">{title}</span>
+            <span className="harbourline-heading block truncate text-xl text-[var(--mb-ink)] md:text-2xl">{title}</span>
             {subtitle ? (
               <span className="mt-1 block truncate text-[13px] leading-5 text-[var(--mb-muted)]">{subtitle}</span>
             ) : null}
@@ -183,7 +183,7 @@ export function DashboardEmptyState({
 }) {
   return (
     <div className="rounded-[14px] border border-dashed border-[var(--mb-line-strong)] px-5 py-6 text-center">
-      <div className="midnight-heading text-lg italic text-[var(--mb-ink)]">{title}</div>
+      <div className="harbourline-heading text-lg italic text-[var(--mb-ink)]">{title}</div>
       <p className="mx-auto mt-2 max-w-md text-[13px] leading-6 text-[var(--mb-muted)]">{message}</p>
       {secondaryContent ? <div className="mt-3 text-[var(--mb-muted)]">{secondaryContent}</div> : null}
       {onAction ? (
@@ -233,7 +233,7 @@ export function DetailDrawer({
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="text-[10px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Manifest entry</div>
-            <h2 className="midnight-heading mt-2 text-[1.65rem] leading-tight text-[var(--mb-ink)]">{title}</h2>
+            <h2 className="harbourline-heading mt-2 text-[1.65rem] leading-tight text-[var(--mb-ink)]">{title}</h2>
             {subtitle ? <p className="mt-2 text-sm leading-6 text-[var(--mb-muted)]">{subtitle}</p> : null}
           </div>
           <button
@@ -246,7 +246,7 @@ export function DetailDrawer({
           </button>
         </div>
 
-        <div className="midnight-gold-rule mt-5" />
+        <div className="harbourline-rule mt-5" />
 
         {meta?.filter(Boolean).length ? (
           <dl className="mt-4 grid grid-cols-2 gap-x-4">

@@ -80,7 +80,7 @@ const WATER_FRAGMENT = /* glsl */ `
   }
 `;
 
-export default function OceanCanvas({ enabled = true }) {
+export default function ChartCanvas({ enabled = true }) {
   const hostRef = useRef(null);
 
   useEffect(() => {
@@ -233,5 +233,5 @@ export default function OceanCanvas({ enabled = true }) {
   }, [enabled]);
 
   if (!enabled) return null;
-  return <div ref={hostRef} className="midnight-ocean-canvas" aria-hidden="true" />;
+  return <div ref={hostRef} className="harbourline-chart-canvas" aria-hidden="true" />;
 }

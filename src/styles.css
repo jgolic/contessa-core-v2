@@ -2248,21 +2248,21 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
    ============================================================ */
 
 /* --- Backdrop layers (Three.js ocean + grain) --- */
-.midnight-ocean-canvas {
+.harbourline-chart-canvas {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 }
 
-.midnight-ocean-canvas canvas {
+.harbourline-chart-canvas canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
 
 /* Text-protection scrim: keeps hero copy readable over the bright sun lane. */
-.midnight-ocean-canvas::after {
+.harbourline-chart-canvas::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -2275,7 +2275,7 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
   );
 }
 
-.midnight-grain {
+.harbourline-grain {
   position: fixed;
   inset: 0;
   z-index: 2;
@@ -2291,20 +2291,20 @@ body:not(.dark-mode) :where(.app-panel, .app-panel-soft, .app-card, .app-card-so
 }
 
 /* --- Serif display moments --- */
-.midnight-heading {
+.harbourline-heading {
   font-family: var(--font-vessel-display);
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
-.midnight-gold-rule {
+.harbourline-rule {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(201, 169, 106, 0.65), transparent);
 }
 
 /* --- Motion hygiene --- */
 @media (prefers-reduced-motion: reduce) {
-  .midnight-ocean-canvas {
+  .harbourline-chart-canvas {
     display: none;
   }
 

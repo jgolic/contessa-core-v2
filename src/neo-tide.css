@@ -537,11 +537,11 @@ select:focus-visible {
   color: rgba(16, 35, 38, 0.22);
 }
 
-.midnight-grain {
+.harbourline-grain {
   opacity: 0.045;
 }
 
-.midnight-ocean-canvas::after {
+.harbourline-chart-canvas::after {
   background: linear-gradient(180deg, rgba(3, 16, 20, 0.04) 12%, rgba(3, 16, 20, 0.12) 45%, rgba(242, 239, 231, 0.96) 96%);
 }
 
@@ -865,7 +865,7 @@ select:focus-visible {
   color: #b64f47;
 }
 
-.fleet-summary-metric--watch .fleet-summary-value {
+.fleet-summary-metric--attention .fleet-summary-value {
   color: #a0712e;
 }
 
@@ -1037,7 +1037,7 @@ select:focus-visible {
   box-shadow: 0 0 14px rgba(240, 113, 103, 0.28);
 }
 
-.fleet-attention-marker--watch {
+.fleet-attention-marker--attention {
   background: var(--neo-champagne);
 }
 
@@ -1072,7 +1072,7 @@ select:focus-visible {
   color: #a9433c;
 }
 
-.fleet-status-label--watch {
+.fleet-status-label--attention {
   background: rgba(230, 195, 122, 0.2);
   color: #8b6123;
 }
@@ -1318,12 +1318,12 @@ select:focus-visible {
   color: #b64f47;
 }
 
-.task-clarity-metric--watch {
+.task-clarity-metric--attention {
   border-color: rgba(230, 195, 122, 0.34);
   background: rgba(230, 195, 122, 0.1);
 }
 
-.task-clarity-metric--watch strong {
+.task-clarity-metric--attention strong {
   color: #9a6d2b;
 }
 
@@ -1708,17 +1708,17 @@ body::before {
   color: #102f31;
 }
 
-.midnight-grain {
+.harbourline-grain {
   opacity: 0.018;
   mix-blend-mode: multiply;
 }
 
-.midnight-ocean-canvas {
+.harbourline-chart-canvas {
   opacity: 0.3;
   filter: saturate(72%) brightness(1.2);
 }
 
-.midnight-ocean-canvas::after {
+.harbourline-chart-canvas::after {
   background: linear-gradient(180deg, rgba(246, 250, 246, 0.18) 4%, rgba(246, 250, 246, 0.5) 54%, rgba(243, 245, 240, 0.98) 96%);
 }
 

@@ -22,8 +22,8 @@ import {
 } from "../../components/dashboard/dashboard_primitives.jsx";
 import { FleetOperationsOverview } from "../../components/dashboard/fleet-operations-overview.jsx";
 import GlobalSearch from "../../components/GlobalSearch.jsx";
-import OceanCanvas from "../../midnight/OceanCanvas.jsx";
-import { useMidnightMotion } from "../../midnight/useMidnightMotion.js";
+import ChartCanvas from "../../harbourline/ChartCanvas.jsx";
+import { useHarbourlineMotion } from "../../harbourline/useHarbourlineMotion.js";
 import { useAutoFitSingleLine } from "../../hooks/useAutoFitSingleLine.js";
 import { ConfirmActionDialog } from "../../contessa_app_components.jsx";
 
@@ -205,12 +205,12 @@ const VESSEL_STATE_CONFIG = {
   },
   underway: {
     label: "Underway Mode",
-    description: "Route, weather, watchkeeping, fuel, and safety items are prioritized.",
-    focusTerms: ["route", "weather", "watch", "fuel", "safety", "navigation", "bridge", "alert"],
+    description: "Route, weather, bridge duty, fuel, and safety items are prioritized.",
+    focusTerms: ["route", "weather", "passage", "fuel", "safety", "navigation", "bridge", "alert"],
   },
   standby: {
     label: "Standby Mode",
-    description: "Routine readiness is active. The system is watching tasks, documents, crew, and approvals quietly.",
+    description: "Routine readiness is active. Tasks, documents, crew, and approvals remain monitored.",
     focusTerms: ["readiness", "task", "crew", "document", "approval", "route"],
   },
   critical: {
@@ -355,7 +355,7 @@ function IntelligencePanel({
           </button>
         ) : null}
       </div>
-      <div className="midnight-gold-rule mt-3" />
+      <div className="harbourline-rule mt-3" />
       {subtitle ? <p className="mt-3 text-[13px] leading-6 text-[var(--mb-muted)]">{subtitle}</p> : null}
       <div className="mt-4">{children}</div>
     </section>
@@ -423,7 +423,7 @@ function VesselStateBanner({
     >
       <div className="min-w-0">
         <div className={`text-[10px] font-bold uppercase tracking-[0.26em] ${moodText}`}>Vessel state</div>
-        <h2 className="midnight-heading mt-1.5 text-2xl text-[var(--mb-ink)] md:text-[1.7rem]">{config.label}</h2>
+        <h2 className="harbourline-heading mt-1.5 text-2xl text-[var(--mb-ink)] md:text-[1.7rem]">{config.label}</h2>
         <p className="mt-1.5 max-w-2xl text-[13px] leading-6 text-[var(--mb-muted)]">{focusLine}</p>
       </div>
       <ConfidenceRing score={confidenceScore} mood={mood} />
@@ -699,7 +699,7 @@ export function TodayOperationsView({
     activity: false,
   });
 
-  useMidnightMotion([]);
+  useHarbourlineMotion([]);
 
   useEffect(() => {
     if (!isInspectorOpen) return;
@@ -1101,13 +1101,13 @@ export function TodayOperationsView({
   const heroMetrics = [
     { label: "Open work", value: stats.totalObjectives || taskItems.length + maintenanceItems.length },
     { label: "Decisions", value: stats.pendingApprovals || approvalItems.length },
-    { label: "Crew watch", value: stats.certificateDue || certificateItems.length },
+    { label: "Crew readiness", value: stats.certificateDue || certificateItems.length },
   ];
 
   return (
     <>
-      <OceanCanvas enabled />
-      <div className="midnight-grain" aria-hidden="true" />
+      <ChartCanvas enabled />
+      <div className="harbourline-grain" aria-hidden="true" />
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
         {/* ---- Hero: a live bridge instrument, not a static landing page ---- */}
@@ -1251,7 +1251,7 @@ export function TodayOperationsView({
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
                 <div className="min-w-0">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Priority queue</div>
-                  <h2 className="midnight-heading mt-2 text-[1.75rem] leading-tight text-[var(--mb-ink)] md:text-[2rem]">
+                  <h2 className="harbourline-heading mt-2 text-[1.75rem] leading-tight text-[var(--mb-ink)] md:text-[2rem]">
                     {isOwnerView ? "Material signals, surfaced first." : `${vesselStateConfig.label} priorities, surfaced first.`}
                   </h2>
                 </div>
@@ -1295,7 +1295,7 @@ export function TodayOperationsView({
                           <span className={`absolute left-0 top-1/2 h-[46%] w-[2px] -translate-y-1/2 rounded-r-full ${tickClass}`} />
                           <span className="mb-index-numeral shrink-0 text-[2.4rem] md:text-[3.2rem]">{String(index + 1).padStart(2, "0")}</span>
                           <span className="min-w-0 flex-1">
-                            <span className="midnight-heading block text-xl leading-snug text-[var(--mb-ink)] transition-colors duration-300 group-hover:text-[var(--mb-gold-bright)] md:text-[1.5rem]">
+                            <span className="harbourline-heading block text-xl leading-snug text-[var(--mb-ink)] transition-colors duration-300 group-hover:text-[var(--mb-gold-bright)] md:text-[1.5rem]">
                               {item.title}
                             </span>
                             <span className="mt-1.5 block truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--mb-muted)]">

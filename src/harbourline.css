@@ -1,0 +1,425 @@
+/*
+ * HARBOURLINE
+ * One fleet-first visual system: dark hull chrome and warm deck work surfaces.
+ */
+
+:root {
+  --hull-900: #0a1626;
+  --hull-800: #10203a;
+  --hull-700: #1a2f4f;
+  --deck-50: #faf7f0;
+  --deck-100: #f1ebde;
+  --deck-200: #e4dbc8;
+  --ink: #10203a;
+  --ink-soft: #5c6a80;
+  --fog: #e9eef5;
+  --fog-soft: #93a3b8;
+  --brass: #b08d4c;
+  --signal: #ff4f30;
+  --ok: #2e7d5b;
+  --warn: #c98a2d;
+  --crit: #c0392b;
+
+  /* Compatibility aliases while legacy modules are moved onto semantic tokens. */
+  --neo-abyss: var(--hull-900);
+  --neo-depth: var(--hull-800);
+  --neo-petrol: var(--hull-700);
+  --neo-mint: var(--signal);
+  --neo-mint-soft: rgba(255, 79, 48, 0.09);
+  --neo-champagne: var(--brass);
+  --neo-coral: var(--crit);
+  --neo-paper: var(--deck-100);
+  --neo-paper-bright: var(--deck-50);
+  --neo-ink: var(--ink);
+  --neo-hairline: var(--deck-200);
+  --neo-shadow: none;
+
+  --mb-bg: var(--deck-50);
+  --mb-ink: var(--ink);
+  --mb-muted: var(--ink-soft);
+  --mb-soft: var(--ink-soft);
+  --mb-gold: var(--brass);
+  --mb-gold-bright: #886a34;
+  --mb-on-gold: #ffffff;
+  --mb-gold-badge: var(--signal);
+  --mb-gold-tint: rgba(176, 141, 76, 0.08);
+  --mb-line: var(--deck-200);
+  --mb-line-strong: #cfc2a8;
+  --mb-gold-hover: var(--brass);
+  --mb-panel: var(--deck-100);
+  --mb-panel-strong: var(--deck-50);
+  --mb-scrim: rgba(10, 22, 38, 0.58);
+  --mb-critical: var(--crit);
+  --mb-critical-text: var(--crit);
+  --mb-safe: var(--ok);
+  --mb-safe-text: var(--ok);
+  --mb-tick-neutral: rgba(16, 32, 58, 0.18);
+  --mb-hero-scrim-soft: rgba(250, 247, 240, 0.44);
+  --mb-hero-scrim-strong: rgba(250, 247, 240, 0.94);
+  --mb-rail-bg: var(--hull-800);
+  --mb-dock-bg: var(--hull-800);
+
+  --vessel-primary: var(--signal);
+  --vessel-primary-soft: rgba(255, 79, 48, 0.08);
+  --vessel-primary-muted: rgba(255, 79, 48, 0.16);
+  --vessel-secondary: var(--hull-800);
+  --vessel-accent: var(--brass);
+  --vessel-accent-soft: rgba(176, 141, 76, 0.1);
+  --vessel-border: var(--deck-200);
+  --vessel-ring: rgba(255, 79, 48, 0.28);
+  --vessel-primary-rgb: 255, 79, 48;
+  --vessel-secondary-rgb: 16, 32, 58;
+  --vessel-accent-rgb: 176, 141, 76;
+  --vessel-bg-light: var(--deck-50);
+  --vessel-card: var(--deck-100);
+  --vessel-card-strong: var(--deck-50);
+  --vessel-card-light: var(--deck-100);
+}
+
+html {
+  background: var(--deck-50);
+  color-scheme: light;
+}
+
+body {
+  background:
+    linear-gradient(rgba(16, 32, 58, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 32, 58, 0.025) 1px, transparent 1px),
+    var(--deck-50);
+  background-size: 56px 56px;
+  color: var(--ink);
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  display: none;
+}
+
+::selection {
+  background: rgba(255, 79, 48, 0.2);
+  color: var(--ink);
+}
+
+.bg-vessel-page,
+.app-workspace-shell {
+  background: transparent !important;
+}
+
+.harbourline-heading {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+}
+
+.harbourline-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--brass), rgba(176, 141, 76, 0));
+}
+
+.harbourline-count,
+.tabular-nums,
+[data-mb-count],
+.fleet-summary-value,
+.fleet-row-counts,
+.route-metric-value,
+time {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.harbourline-micro-label {
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.harbourline-command-header,
+.harbourline-rail,
+.harbourline-mobile-dock {
+  color: var(--fog);
+  background: var(--hull-800);
+  border-color: rgba(233, 238, 245, 0.1);
+  box-shadow: none;
+}
+
+.harbourline-command-header {
+  position: sticky;
+  top: max(0.75rem, env(safe-area-inset-top));
+}
+
+.harbourline-rail,
+.harbourline-mobile-dock {
+  background:
+    linear-gradient(180deg, rgba(233, 238, 245, 0.025), transparent 22%),
+    var(--hull-800);
+}
+
+.harbourline-logo-button,
+.harbourline-vessel-mark {
+  border-color: rgba(233, 238, 245, 0.13);
+  background: var(--hull-700);
+}
+
+.harbourline-logo-button:hover {
+  border-color: rgba(233, 238, 245, 0.28);
+}
+
+.harbourline-command-header .brand-mark--large path:not(.logo-gold-triangle),
+.harbourline-rail .brand-mark--large path:not(.logo-gold-triangle),
+.harbourline-mobile-dock .brand-mark--large path:not(.logo-gold-triangle) {
+  stroke: var(--fog);
+}
+
+.harbourline-command-header .logo-gold-triangle,
+.harbourline-rail .logo-gold-triangle,
+.harbourline-mobile-dock .logo-gold-triangle {
+  stroke: var(--signal);
+}
+
+.harbourline-rail-item::after {
+  position: absolute;
+  inset: 5px 9px;
+  z-index: -1;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  content: "";
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+.harbourline-rail-item:hover::after,
+.harbourline-rail-item[aria-current="page"]::after {
+  border-color: rgba(233, 238, 245, 0.09);
+  background: var(--hull-700);
+}
+
+.harbourline-dock-item[aria-current="page"] {
+  background: var(--hull-700);
+  border-radius: 8px;
+}
+
+.harbourline-vessel-switcher {
+  flex: 1 1 auto;
+  max-width: min(37rem, 58vw);
+}
+
+.harbourline-vessel-switcher-button {
+  width: 100%;
+  min-height: 44px;
+  padding: 2px 8px 2px 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+.harbourline-vessel-switcher-button:hover,
+.harbourline-vessel-switcher-button[aria-expanded="true"] {
+  border-color: rgba(233, 238, 245, 0.12);
+  background: var(--hull-700);
+}
+
+.harbourline-status-lamp {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.harbourline-status-lamp--ready {
+  background: var(--ok);
+}
+
+.harbourline-status-lamp--attention {
+  background: var(--warn);
+}
+
+.harbourline-status-lamp--critical {
+  background: var(--crit);
+}
+
+.harbourline-vessel-menu,
+.harbourline-shell-panel {
+  color: var(--ink);
+  background: var(--deck-50);
+  border-color: var(--deck-200);
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(16, 32, 58, 0.06);
+}
+
+.harbourline-vessel-option {
+  border-color: transparent;
+  border-radius: 0 8px 8px 0;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+.harbourline-vessel-option:hover {
+  background: var(--deck-100);
+}
+
+.harbourline-vessel-option--active {
+  border-left-color: var(--signal);
+  background: var(--deck-100);
+}
+
+.harbourline-vessel-menu-footer {
+  background: var(--deck-100);
+}
+
+.harbourline-vessel-menu-footer:hover {
+  background: var(--deck-200);
+}
+
+.harbourline-header-secondary {
+  border-color: rgba(233, 238, 245, 0.14);
+  color: var(--fog-soft);
+  background: transparent;
+}
+
+.harbourline-header-secondary:hover {
+  border-color: rgba(233, 238, 245, 0.3);
+  color: var(--fog);
+  background: var(--hull-700);
+}
+
+.neo-header-task-action,
+.app-primary-action-button,
+.button-vessel-primary {
+  border: 1px solid var(--signal) !important;
+  border-radius: 8px !important;
+  background: var(--signal) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.neo-header-task-action:hover,
+.app-primary-action-button:hover,
+.button-vessel-primary:hover {
+  border-color: #e64227 !important;
+  background: #e64227 !important;
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+.app-action-button,
+.vessel-outline-button {
+  border: 1px solid var(--ink) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+.app-action-button:hover,
+.vessel-outline-button:hover {
+  background: var(--deck-100) !important;
+  box-shadow: none !important;
+}
+
+.app-page-frame :is(.app-panel, .app-panel-soft, .app-card, .app-card-soft),
+.app-dialog-surface,
+.settings-popover-light,
+.fleet-popover-light {
+  border-color: var(--deck-200) !important;
+  border-radius: 10px !important;
+  background: var(--deck-100) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-page-frame :is(.app-panel, .app-panel-soft, .app-card, .app-card-soft):hover,
+.app-card-hover:hover {
+  border-color: #cfc2a8 !important;
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+.app-dialog-surface {
+  background: var(--deck-50) !important;
+}
+
+.vessel-active {
+  border-color: var(--deck-200) !important;
+  background: var(--deck-50) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+.jump-highlight-target.vessel-active {
+  box-shadow: inset 3px 0 0 var(--signal) !important;
+}
+
+.jump-highlight-target.jump-highlight-active::after {
+  inset: 12px auto 12px 0 !important;
+  width: 3px !important;
+  border: 0 !important;
+  border-radius: 0 2px 2px 0 !important;
+  background: var(--signal) !important;
+  box-shadow: none !important;
+}
+
+:where(button, a, input, select, textarea, [role="button"], [role="option"], [role="tab"]):focus-visible {
+  outline: 2px solid var(--signal) !important;
+  outline-offset: 3px;
+  box-shadow: none !important;
+}
+
+.fleet-summary-metric--attention .fleet-summary-value,
+.fleet-attention-marker--attention,
+.fleet-status-label--attention {
+  color: var(--warn);
+}
+
+.fleet-attention-marker--attention {
+  background: var(--warn);
+}
+
+@media (max-width: 639px) {
+  .harbourline-command-header {
+    gap: 0.45rem;
+  }
+
+  .harbourline-vessel-switcher {
+    max-width: calc(100vw - 8.75rem);
+  }
+
+  .harbourline-vessel-mark {
+    display: none;
+  }
+
+  .harbourline-vessel-switcher-button {
+    gap: 0.5rem;
+    padding-left: 0.35rem;
+  }
+
+  .harbourline-command-header .neo-header-task-action {
+    width: 38px;
+    padding-inline: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-module-stage > section,
+  .app-module-stage > div {
+    animation: harbourline-rise 200ms ease-out both;
+  }
+
+  @keyframes harbourline-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
