@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Geist_Mono, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -17,25 +17,6 @@ const sansFont = Manrope({
   display: "swap",
 });
 
-const monoFont = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
-
-const themeBootstrapScript = `
-  (() => {
-    const storageKey = "contessa-ui-theme";
-    const supportedThemes = ["day", "night", "red"];
-    let theme = "night";
-    try {
-      const storedTheme = window.localStorage.getItem(storageKey);
-      if (supportedThemes.includes(storedTheme)) theme = storedTheme;
-    } catch {}
-    document.documentElement.dataset.theme = theme;
-  })();
-`;
-
 export const metadata: Metadata = {
   title: "Contessa Operations",
   description: "Premium yacht operations command center for tasks, crew, certificates, expenses, approvals, and passage planning.",
@@ -51,15 +32,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      data-theme="night"
-      suppressHydrationWarning
-      className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
-      </head>
+    <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`}>
       <body>{children}</body>
     </html>
   );

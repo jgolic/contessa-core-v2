@@ -1185,7 +1185,7 @@ export function ObjectivesView({
                 No tasks match this view.
               </div>
             ) : (
-              <div className="task-board-panel rounded-[22px] border border-[var(--mb-line)] bg-[var(--mb-panel)] p-3">
+              <div className="rounded-[22px] border border-[var(--mb-line)] bg-[rgba(255,255,255,0.45)] p-3">
                 <div className="task-board-scroll flex gap-2 overflow-x-auto pb-3">
                   {taskBoardOptions.map((option) => (
                     <button

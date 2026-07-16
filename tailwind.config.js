@@ -7,22 +7,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "ink-0": "var(--ink-0)",
-        "ink-1": "var(--ink-1)",
-        "ink-2": "var(--ink-2)",
-        "ink-3": "var(--ink-3)",
-        line: "var(--line)",
-        "line-strong": "var(--line-strong)",
-        "text-hi": "var(--text-hi)",
-        "text-mid": "var(--text-mid)",
-        "text-low": "var(--text-low)",
-        gold: "var(--gold)",
-        "gold-dim": "var(--gold-dim)",
-        sea: "var(--sea)",
-        ok: "var(--ok)",
-        warn: "var(--warn)",
-        crit: "var(--crit)",
-        info: "var(--info)",
         // Midnight Bridge remap: cyan carries the champagne-gold accent language.
         cyan: {
           50: "#fbf8ef",
@@ -70,7 +54,6 @@ module.exports = {
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },
