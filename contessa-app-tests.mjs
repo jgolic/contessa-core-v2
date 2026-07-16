@@ -67,11 +67,55 @@ import {
   parseWorkspaceView,
   updateWorkspaceViewUrl,
 } from "./src/lib/workspace_navigation.mjs";
+import {
+  applyThemePreference,
+  normalizeThemeMode,
+  readThemePreference,
+  THEME_STORAGE_KEY,
+} from "./src/lib/theme-preference.mjs";
 
 test("empty app state defaults to editor mode", () => {
   const state = createEmptyAppState();
 
   assert.equal(state.appMode, "editor");
+});
+
+test("theme preference defaults to Night Watch and accepts all supported modes", () => {
+  assert.equal(normalizeThemeMode("day"), "day");
+  assert.equal(normalizeThemeMode("night"), "night");
+  assert.equal(normalizeThemeMode("red"), "red");
+  assert.equal(normalizeThemeMode("unknown"), "night");
+  assert.equal(readThemePreference({ getItem: () => null }), "night");
+});
+
+test("theme preference applies without changing the operational app state schema", () => {
+  const stored = new Map();
+  const bodyClasses = new Set();
+  const mockDocument = {
+    documentElement: { dataset: {} },
+    body: {
+      classList: {
+        toggle(className, enabled) {
+          if (enabled) bodyClasses.add(className);
+          else bodyClasses.delete(className);
+        },
+      },
+    },
+  };
+  const mockStorage = {
+    getItem(key) {
+      return stored.get(key) || null;
+    },
+    setItem(key, value) {
+      stored.set(key, value);
+    },
+  };
+
+  assert.equal(applyThemePreference("red", mockDocument, mockStorage), "red");
+  assert.equal(mockDocument.documentElement.dataset.theme, "red");
+  assert.equal(bodyClasses.has("dark-mode"), true);
+  assert.equal(stored.get(THEME_STORAGE_KEY), "red");
+  assert.equal(createPersistedAppState(createEmptyAppState()).darkMode, false);
 });
 
 test("default fleet always includes Contessa and Octopussy", () => {

@@ -108,6 +108,10 @@ import {
   parseWorkspaceView,
   updateWorkspaceViewUrl,
 } from "./lib/workspace_navigation.mjs";
+import {
+  applyThemePreference,
+  readThemePreference,
+} from "./lib/theme-preference.mjs";
 import { createActivityLog } from "./lib/data/activity.js";
 import { assertCrewBelongsToVessel, getCrewForVessel } from "./lib/data/crew.js";
 import { getNotificationsForVessel } from "./lib/data/notifications.js";
@@ -302,7 +306,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   // Single bright theme — night mode retired. Kept as a constant so the many
   // legacy `darkMode` props stay wired without touching every call site, and
   // so persistence writes `false` (migrating any stale night preference).
-  const darkMode = false;
+  const [themeMode, setThemeMode] = useState(() => readThemePreference());
+  const darkMode = themeMode !== "day";
   const [currency, setCurrency] = useState(initialAppState.currency);
   const [exchangeRates, setExchangeRates] = useState({ rates: FALLBACK_USD_RATES, date: "fallback", source: "fallback", live: false });
   const [isOffline, setIsOffline] = useState(false);
@@ -397,6 +402,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const effectiveRole = demoRolePreviewEnabled ? currentRole : "captain";
   const effectiveActorName = actorIdentityEditable ? actorName : "Captain Graham Ellis";
   const canEditApp = demoEditingEnabled && appMode === "editor";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    applyThemePreference(themeMode, document);
+  }, [themeMode]);
 
   const dismissToast = useCallback((toastId) => {
     setAppToasts((prev) => prev.filter((toast) => toast.id !== toastId));
@@ -515,8 +525,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     [activeVesselWorkspace?.theme]
   );
   const persistedAppState = useMemo(
-    () => createPersistedAppState({ darkMode, currency, actorName: effectiveActorName, currentRole: effectiveRole, appMode: canEditApp ? "editor" : "view", history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vessels: vesselsForPersistence, activeVesselId }),
-    [darkMode, currency, effectiveActorName, effectiveRole, canEditApp, history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vesselsForPersistence, activeVesselId]
+    () => createPersistedAppState({ darkMode: false, currency, actorName: effectiveActorName, currentRole: effectiveRole, appMode: canEditApp ? "editor" : "view", history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vessels: vesselsForPersistence, activeVesselId }),
+    [currency, effectiveActorName, effectiveRole, canEditApp, history, declinedTasks, vesselProfile, documents, tasks, crewExpenses, crewProfiles, maintenanceItems, routePlanning, vesselsForPersistence, activeVesselId]
   );
   const visibleModuleKeys = useMemo(
     () => getVisibleModulesForRole(effectiveRole).map((module) => module.key),
@@ -2217,7 +2227,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const resetDemoData = () => {
     if (!requireAdminEdit("Resetting demo data")) return;
-    const resetState = createEmptyAppState({ darkMode, currency, actorName, currentRole, appMode });
+    const resetState = createEmptyAppState({ darkMode: false, currency, actorName, currentRole, appMode });
     applyAppState(resetState);
     const feedback = { type: "success", title: "Demo data reset", message: "The app was reset to a clean local state." };
     setAppBanner(feedback);
@@ -2247,7 +2257,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     try {
       const text = await file.text();
-      const importedState = normalizeImportedAppState(JSON.parse(text), createEmptyAppState({ darkMode, currency, actorName }));
+      const importedState = normalizeImportedAppState(JSON.parse(text), createEmptyAppState({ darkMode: false, currency, actorName }));
       const importEntry = {
         id: `H-${Date.now()}-import`,
         at: new Date().toISOString(),
@@ -3341,6 +3351,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
                 : activeVesselWorkspace?.details?.status || ""
             }
             roleLabel={currentRoleLabel}
+            themeMode={themeMode}
+            onThemeModeChange={setThemeMode}
             isOffline={isOffline}
             activeModule={expenseView}
             counts={{

@@ -2665,6 +2665,23 @@ export function downloadFile(filename, content, type) {
 }
 
 export function themeClasses(darkMode) {
+  if (darkMode) {
+    return {
+      page: "bg-vessel-page",
+      card: "border border-[var(--line)] bg-[var(--ink-2)] text-[var(--text-hi)] shadow-none",
+      textPrimary: "text-[var(--text-hi)]",
+      textSecondary: "text-[var(--text-mid)]",
+      input:
+        "border-[var(--line-strong)] bg-[var(--ink-1)] text-[var(--text-hi)] shadow-none placeholder:text-[var(--text-low)] focus:border-[var(--sea)] focus:ring-2 focus:ring-[var(--sea)]",
+      selectedTask:
+        "border-[var(--sea)] bg-[var(--ink-3)] text-[var(--text-hi)] shadow-none",
+      unselectedTask:
+        "border-[var(--line)] bg-[var(--ink-2)] text-[var(--text-hi)] shadow-none",
+      ring: "ring-[var(--sea)]",
+      subtle: "bg-[var(--ink-1)]",
+    };
+  }
+
   return {
     page: "bg-vessel-page",
     // Riviera: eggshell surfaces with oxford-navy ink details.

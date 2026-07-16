@@ -579,9 +579,9 @@ export function CrewView({
   const smallOpenButton =
     "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border px-3.5 text-xs font-semibold transition-all duration-200 border-blue-300 bg-blue-50 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100 dark:hover:border-cyan-300/60 dark:hover:bg-cyan-300/25";
   const crewCardClass =
-    "w-full rounded-3xl border p-4 text-left transition-all duration-200 border-slate-200 bg-white text-slate-950 shadow-sm hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10";
+    "crew-roster-card w-full rounded-2xl border p-4 text-left transition-all duration-200 focus:outline-none";
   const crewCardSelectedClass =
-    "border-blue-400 bg-blue-50/70 shadow-[0_0_0_1px_rgba(59,130,246,0.35),0_18px_45px_rgba(59,130,246,0.12)] dark:border-cyan-300/60 dark:bg-cyan-300/12 dark:shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_20px_50px_rgba(34,211,238,0.18)]";
+    "crew-roster-card--selected";
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;

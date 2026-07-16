@@ -98,6 +98,26 @@ const MoreIcon = (props) => (
   </Icon>
 );
 
+const SunIcon = (props) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="3.25" />
+    <path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.45 5.45l1.4 1.4M17.15 17.15l1.4 1.4M18.55 5.45l-1.4 1.4M6.85 17.15l-1.4 1.4" />
+  </Icon>
+);
+
+const MoonIcon = (props) => (
+  <Icon {...props}>
+    <path d="M19.1 15.4A7.5 7.5 0 0 1 8.6 4.9 7.9 7.9 0 1 0 19.1 15.4Z" />
+  </Icon>
+);
+
+const RedWatchIcon = (props) => (
+  <Icon {...props}>
+    <path d="M4 15.5h16M6.2 15.5v-3.2a5.8 5.8 0 0 1 11.6 0v3.2" />
+    <path d="M12 5V2.8M5.4 7.2 3.8 5.7M18.6 7.2l1.6-1.5" />
+  </Icon>
+);
+
 /* ------------------------------------------------------------------ */
 
 function useClock() {
@@ -121,18 +141,18 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       aria-label={label}
       aria-current={active ? "page" : undefined}
       className={`neo-rail-item group relative flex w-full flex-col items-center gap-1 py-3 transition-colors duration-200 ${
-        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)] hover:text-[var(--mb-ink)]"
+        active ? "text-[var(--sea)]" : "text-[var(--text-low)] hover:text-[var(--text-hi)]"
       }`}
     >
       <span
-        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[2px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-transparent via-[var(--mb-gold)] to-transparent transition-opacity duration-300 ${
+        className={`pointer-events-none absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--sea)] transition-opacity duration-200 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       />
       <span className="relative">
         <ItemIcon className="h-[21px] w-[21px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+          <span className="instrument-number absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-[var(--line-strong)] bg-[var(--ink-3)] px-1 text-[9px] font-bold leading-none text-[var(--sea)]">
             {count}
           </span>
         ) : null}
@@ -150,22 +170,52 @@ function DockItem({ icon: ItemIcon, label, count, active = false, onClick }) {
       aria-label={label}
       aria-current={active ? "page" : undefined}
       className={`neo-dock-item relative flex min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-2 transition-colors duration-200 ${
-        active ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
+        active ? "text-[var(--sea)]" : "text-[var(--text-low)]"
       }`}
     >
       <span className="relative">
         <ItemIcon className="h-[22px] w-[22px]" />
         {count ? (
-          <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+          <span className="instrument-number absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-[var(--line-strong)] bg-[var(--ink-3)] px-1 text-[9px] font-bold leading-none text-[var(--sea)]">
             {count}
           </span>
         ) : null}
       </span>
       <span className="max-w-full truncate text-[9px] font-bold uppercase tracking-[0.14em]">{label}</span>
       <span
-        className={`h-[3px] w-[3px] rounded-full bg-[var(--mb-gold-badge)] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
+        className={`h-[3px] w-4 rounded-full bg-[var(--sea)] transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`}
       />
     </button>
+  );
+}
+
+function ThemeToggle({ value = "night", onChange }) {
+  const options = [
+    { value: "day", label: "Day", icon: SunIcon },
+    { value: "night", label: "Night Watch", icon: MoonIcon },
+    { value: "red", label: "Red Watch", icon: RedWatchIcon },
+  ];
+
+  return (
+    <div className="night-watch-theme-toggle" role="group" aria-label="Display theme">
+      {options.map((option) => {
+        const ThemeIcon = option.icon;
+        const selected = value === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            title={option.label}
+            aria-label={`Use ${option.label} theme`}
+            aria-pressed={selected}
+            onClick={() => onChange?.(option.value)}
+            className="night-watch-theme-option"
+          >
+            <ThemeIcon className="h-3.5 w-3.5" />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -176,7 +226,7 @@ function ShellPanel({ open, onClose, title, children, align = "right" }) {
       <button type="button" aria-label="Close panel" onClick={onClose} className="absolute inset-0 bg-[var(--mb-scrim)] backdrop-blur-[3px]" />
       <div
         className={`neo-shell-panel mb-glass absolute flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border ${
-          align === "right" ? "right-3 top-3 bottom-3 rounded-[22px]" : "left-3 bottom-24 rounded-[22px] lg:left-24 lg:bottom-6"
+          align === "right" ? "right-3 top-3 bottom-3 rounded-[16px]" : "left-3 bottom-24 rounded-[16px] lg:left-24 lg:bottom-6"
         }`}
       >
         <div className="flex items-center justify-between gap-3 border-b border-[var(--mb-line)] px-5 py-4">
@@ -203,6 +253,8 @@ export default function MidnightShell({
   vesselIdentifier = "",
   modeLabel = "",
   roleLabel = "Captain",
+  themeMode = "night",
+  onThemeModeChange,
   isOffline = false,
   activeModule = "command",
   counts = {},
@@ -260,12 +312,12 @@ export default function MidnightShell({
   return (
     <>
       {/* ---- Desktop rail ---- */}
-      <nav className="neo-rail mb-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[28px] border lg:flex">
+      <nav className="neo-rail mb-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[16px] border lg:flex">
         <button
           type="button"
           onClick={navigate(onNavCommand)}
           aria-label="Open command bridge"
-          className="neo-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[16px] border border-[var(--mb-line-strong)] bg-[var(--mb-panel)] transition-shadow duration-300 hover:shadow-[0_0_24px_rgba(201,169,106,0.35)]"
+          className="neo-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[var(--line-strong)] bg-[var(--ink-2)] transition-colors duration-200"
         >
           <ContessaUiLogo className="h-9 w-9" />
         </button>
@@ -288,11 +340,11 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); setNotificationsOpen(true); }}
             aria-label="Open notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="relative flex h-10 w-10 items-center justify-center rounded-[12px] text-[var(--text-low)] transition-colors hover:bg-[var(--ink-3)] hover:text-[var(--text-hi)]"
           >
             <BellIcon className="h-5 w-5" />
             {shownCount(notificationCount) ? (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--mb-gold-badge)] px-1 text-[9px] font-bold leading-none text-[var(--mb-on-gold)]">
+              <span className="instrument-number absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full border border-[var(--line-strong)] bg-[var(--ink-3)] px-1 text-[9px] font-bold leading-none text-[var(--sea)]">
                 {shownCount(notificationCount)}
               </span>
             ) : null}
@@ -301,7 +353,7 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenFleet?.(); }}
             aria-label="Open fleet manager"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="flex h-10 w-10 items-center justify-center rounded-[12px] text-[var(--text-low)] transition-colors hover:bg-[var(--ink-3)] hover:text-[var(--text-hi)]"
           >
             <AnchorIcon className="h-5 w-5" />
           </button>
@@ -309,7 +361,7 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenHistory?.(); }}
             aria-label="Open history"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="flex h-10 w-10 items-center justify-center rounded-[12px] text-[var(--text-low)] transition-colors hover:bg-[var(--ink-3)] hover:text-[var(--text-hi)]"
           >
             <LogIcon className="h-5 w-5" />
           </button>
@@ -317,8 +369,8 @@ export default function MidnightShell({
             type="button"
             onClick={() => { closeAll(); onOpenPreferences?.(); }}
             aria-label="Open settings"
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:text-[var(--mb-gold-bright)] ${
-              activeModule === "settings" ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-soft)]"
+            className={`flex h-10 w-10 items-center justify-center rounded-[12px] transition-colors hover:bg-[var(--ink-3)] hover:text-[var(--text-hi)] ${
+              activeModule === "settings" ? "text-[var(--sea)]" : "text-[var(--text-low)]"
             }`}
           >
             <GearIcon className="h-5 w-5" />
@@ -330,8 +382,8 @@ export default function MidnightShell({
       <header
         id="app-command-header"
         data-jump-target
-        style={{ "--jump-radius": "18px" }}
-        className="neo-command-header jump-highlight-target relative z-[500] flex items-center justify-between gap-3 rounded-[18px] px-3 py-3 md:px-4"
+        style={{ "--jump-radius": "16px" }}
+        className="neo-command-header jump-highlight-target relative z-[500] flex items-center justify-between gap-2 rounded-[16px] px-3 py-2.5 md:gap-3 md:px-4"
       >
         <div className="flex min-w-0 items-center gap-3">
           <button
@@ -352,15 +404,15 @@ export default function MidnightShell({
               ) : null}
             </div>
             {modeLabel ? (
-              <div className="mt-0.5 flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.22em] text-[var(--mb-gold)]">
-                <span className="inline-block h-1 w-1 rounded-full bg-[var(--mb-gold-badge)]" />
+              <div className="mt-1 inline-flex max-w-full items-center gap-1.5 rounded-full border border-[color:var(--gold-dim)] px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
+                <span className="inline-block h-1 w-1 rounded-full bg-[var(--gold)]" />
                 {modeLabel}
               </div>
             ) : null}
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
           {onQuickAddTask ? (
             <button
               type="button"
@@ -374,6 +426,7 @@ export default function MidnightShell({
               <span className="hidden sm:inline">New task</span>
             </button>
           ) : null}
+          <ThemeToggle value={themeMode} onChange={onThemeModeChange} />
           <button
             type="button"
             onClick={() => { closeAll(); onOpenPreferences?.(); }}
@@ -383,12 +436,12 @@ export default function MidnightShell({
             {roleLabel} view
             <span aria-hidden="true">&#9662;</span>
           </button>
-          <span suppressHydrationWarning className="text-[13px] font-semibold tabular-nums tracking-[0.08em] text-[var(--mb-ink)]">
+          <span suppressHydrationWarning className="instrument-number hidden text-[12px] font-semibold tracking-[0.08em] text-[var(--text-hi)] min-[430px]:inline">
             {clockLabel}
           </span>
           <span
             title={isOffline ? "Offline" : "Live"}
-            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[#b1473f]" : "bg-[var(--mb-safe)] shadow-[0_0_8px_rgba(88,174,143,0.8)]"}`}
+            className={`inline-block h-1.5 w-1.5 rounded-full ${isOffline ? "bg-[var(--crit)]" : "bg-[var(--ok)]"}`}
           />
           <button
             type="button"
@@ -407,7 +460,7 @@ export default function MidnightShell({
       </header>
 
       {/* ---- Mobile dock ---- */}
-      <nav className="neo-mobile-dock mb-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[24px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
+      <nav className="neo-mobile-dock mb-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[16px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
         <DockItem icon={HelmIcon} label="Bridge" active={activeModule === "command"} onClick={navigate(onNavCommand)} />
         <DockItem icon={TasksIcon} label="Tasks" count={shownCount(counts.tasks || 0)} active={activeModule === "tasks-maintenance"} onClick={navigate(onNavTasks)} />
         <DockItem icon={SealIcon} label="Approve" count={shownCount(counts.approvals || 0)} active={activeModule === "expenses-approvals"} onClick={navigate(onNavApprovals)} />

@@ -32,6 +32,8 @@ export function DialogContent({ className = "", children }) {
     <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/55 p-4" onMouseDown={() => ctx.onOpenChange(false)}>
       <div
         ref={revealRef}
+        role="dialog"
+        aria-modal="true"
         className={`app-dialog-surface ui-reveal-target relative max-h-[92vh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl ${className}`.trim()}
         style={{ "--reveal-radius": "30px" }}
         onMouseDown={(event) => event.stopPropagation()}

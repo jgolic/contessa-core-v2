@@ -2271,3 +2271,649 @@ body:not(.dark-mode) .settings-popover-light .app-action-button:hover {
   background: #e7f4ee !important;
   color: #164643 !important;
 }
+
+/* ============================================================
+   NIGHT WATCH / PASS 1
+   Shared instrument tokens, three persisted visual themes, and
+   shell chrome. Module structure and product behavior are unchanged.
+   ============================================================ */
+
+html[data-theme="day"] {
+  --ink-0: #eef3ed;
+  --ink-1: #f7faf6;
+  --ink-2: #ffffff;
+  --ink-3: #e7f1ec;
+  --line: rgba(33, 83, 82, 0.11);
+  --line-strong: rgba(33, 83, 82, 0.2);
+  --text-hi: #17383a;
+  --text-mid: #3f5e60;
+  --text-low: #557170;
+  --gold: #96733a;
+  --gold-dim: #765725;
+  --sea: #2f746c;
+  --ok: #397f6d;
+  --warn: #a87527;
+  --crit: #b64f45;
+  --info: #547c9a;
+  --theme-tint: rgba(105, 177, 164, 0.13);
+  --theme-scrim: rgba(22, 50, 51, 0.18);
+}
+
+html[data-theme="night"] {
+  --ink-0: #060b0a;
+  --ink-1: #0b1210;
+  --ink-2: #101917;
+  --ink-3: #16211e;
+  --line: rgba(214, 240, 230, 0.08);
+  --line-strong: rgba(214, 240, 230, 0.16);
+  --text-hi: #e8f1ec;
+  --text-mid: #a8bbb3;
+  --text-low: #82958d;
+  --gold: #c8a96a;
+  --gold-dim: #8a7448;
+  --sea: #6fd3b4;
+  --ok: #4fb08c;
+  --warn: #d9a441;
+  --crit: #d96a5a;
+  --info: #7fa8c9;
+  --theme-tint: rgba(111, 211, 180, 0.08);
+  --theme-scrim: rgba(2, 7, 6, 0.78);
+}
+
+html[data-theme="red"] {
+  --ink-0: #0a0505;
+  --ink-1: #100707;
+  --ink-2: #160b0a;
+  --ink-3: #21100e;
+  --line: rgba(230, 140, 120, 0.12);
+  --line-strong: rgba(230, 140, 120, 0.22);
+  --text-hi: #e8b4a8;
+  --text-mid: #c98f82;
+  --text-low: #ac756a;
+  --gold: #e06a50;
+  --gold-dim: #9b4636;
+  --sea: #e06a50;
+  --ok: #c76a58;
+  --warn: #e09162;
+  --crit: #f06f5b;
+  --info: #d88473;
+  --theme-tint: rgba(224, 106, 80, 0.1);
+  --theme-scrim: rgba(8, 2, 2, 0.82);
+}
+
+html[data-theme] {
+  --mb-bg: var(--ink-0);
+  --mb-ink: var(--text-hi);
+  --mb-muted: var(--text-mid);
+  --mb-soft: var(--text-low);
+  --mb-gold: var(--gold);
+  --mb-gold-bright: var(--gold);
+  --mb-on-gold: var(--ink-0);
+  --mb-gold-badge: var(--sea);
+  --mb-gold-tint: var(--theme-tint);
+  --mb-line: var(--line);
+  --mb-line-strong: var(--line-strong);
+  --mb-gold-hover: var(--gold);
+  --mb-panel: var(--ink-2);
+  --mb-panel-strong: var(--ink-3);
+  --mb-scrim: var(--theme-scrim);
+  --mb-critical: var(--crit);
+  --mb-critical-text: var(--crit);
+  --mb-safe: var(--ok);
+  --mb-safe-text: var(--ok);
+  --mb-tick-neutral: var(--line-strong);
+  --mb-hero-scrim-soft: color-mix(in srgb, var(--ink-0) 55%, transparent);
+  --mb-hero-scrim-strong: color-mix(in srgb, var(--ink-0) 94%, transparent);
+  --mb-rail-bg: var(--ink-1);
+  --mb-dock-bg: var(--ink-1);
+  color-scheme: dark;
+  background: var(--ink-0);
+}
+
+html[data-theme="day"] {
+  color-scheme: light;
+}
+
+html[data-theme] body {
+  color: var(--text-hi);
+  font-variant-numeric: tabular-nums;
+  transition: background-color 180ms ease-out, color 180ms ease-out;
+}
+
+html[data-theme="night"] body {
+  background:
+    radial-gradient(circle at 78% -8%, rgba(200, 169, 106, 0.09), transparent 29rem),
+    linear-gradient(180deg, #08100e 0%, var(--ink-0) 34rem, #050908 100%);
+}
+
+html[data-theme="red"] body {
+  background:
+    radial-gradient(circle at 76% -8%, rgba(224, 106, 80, 0.08), transparent 28rem),
+    linear-gradient(180deg, #100706 0%, var(--ink-0) 34rem, #070303 100%);
+}
+
+html[data-theme="night"] body::before,
+html[data-theme="red"] body::before {
+  opacity: 0;
+}
+
+html[data-theme="night"] body::after,
+html[data-theme="red"] body::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+.instrument-number,
+[data-mb-count],
+[data-ui="badge"],
+.app-page-frame :is(time, input[type="number"], input[type="date"], input[type="time"]) {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.night-watch-theme-toggle {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--ink-1);
+}
+
+.night-watch-theme-option {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-low);
+  transition: color 170ms ease-out, border-color 170ms ease-out, background-color 170ms ease-out;
+}
+
+.night-watch-theme-option:hover {
+  color: var(--text-hi);
+  background: var(--ink-3);
+}
+
+.night-watch-theme-option[aria-pressed="true"] {
+  border-color: var(--line-strong);
+  background: var(--ink-3);
+  color: var(--sea);
+}
+
+html[data-theme="night"] :where(
+  .neo-rail,
+  .neo-command-header,
+  .neo-mobile-dock,
+  .neo-shell-panel,
+  .neo-hero,
+  .neo-search-shell [role="dialog"],
+  .neo-search-shell [role="listbox"]
+),
+html[data-theme="red"] :where(
+  .neo-rail,
+  .neo-command-header,
+  .neo-mobile-dock,
+  .neo-shell-panel,
+  .neo-hero,
+  .neo-search-shell [role="dialog"],
+  .neo-search-shell [role="listbox"]
+) {
+  --mb-ink: var(--text-hi);
+  --mb-muted: var(--text-mid);
+  --mb-soft: var(--text-low);
+  --mb-gold: var(--gold);
+  --mb-gold-bright: var(--gold);
+  --mb-gold-badge: var(--sea);
+  --mb-on-gold: var(--ink-0);
+  --mb-gold-tint: var(--theme-tint);
+  --mb-line: var(--line);
+  --mb-line-strong: var(--line-strong);
+  --mb-gold-hover: var(--gold);
+  --mb-panel: var(--ink-2);
+  --mb-panel-strong: var(--ink-3);
+  --mb-safe: var(--ok);
+  --mb-safe-text: var(--ok);
+}
+
+html[data-theme="night"] .neo-rail.mb-rail,
+html[data-theme="red"] .neo-rail.mb-rail {
+  border-color: var(--line);
+  background: var(--ink-1);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="night"] .neo-command-header,
+html[data-theme="red"] .neo-command-header {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--ink-1) 96%, transparent);
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+html[data-theme="night"] .neo-command-header::before,
+html[data-theme="red"] .neo-command-header::before {
+  left: auto;
+  right: 9%;
+  width: 26%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--gold) 7%, transparent), transparent);
+}
+
+html[data-theme="night"] .neo-mobile-dock.mb-dock,
+html[data-theme="red"] .neo-mobile-dock.mb-dock,
+html[data-theme="night"] .neo-shell-panel.mb-glass,
+html[data-theme="red"] .neo-shell-panel.mb-glass {
+  border-color: var(--line);
+  background: var(--ink-1);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="night"] .neo-logo-button,
+html[data-theme="red"] .neo-logo-button {
+  border-color: var(--line-strong) !important;
+  background: var(--ink-2) !important;
+  box-shadow: none;
+}
+
+html[data-theme="night"] .neo-logo-button::after,
+html[data-theme="red"] .neo-logo-button::after {
+  background: var(--sea);
+  box-shadow: none;
+}
+
+html[data-theme="night"] :where(.neo-rail, .neo-command-header, .neo-mobile-dock) .brand-mark--large path:not(.logo-gold-triangle),
+html[data-theme="red"] :where(.neo-rail, .neo-command-header, .neo-mobile-dock) .brand-mark--large path:not(.logo-gold-triangle) {
+  stroke: var(--text-hi);
+}
+
+html[data-theme="night"] :where(.neo-rail, .neo-command-header, .neo-mobile-dock) .logo-gold-triangle,
+html[data-theme="red"] :where(.neo-rail, .neo-command-header, .neo-mobile-dock) .logo-gold-triangle {
+  stroke: var(--gold);
+}
+
+html[data-theme="night"] .neo-rail-item::after,
+html[data-theme="red"] .neo-rail-item::after {
+  inset: 6px 8px;
+  border-radius: 12px;
+  transform: none;
+}
+
+html[data-theme="night"] .neo-rail-item:hover::after,
+html[data-theme="night"] .neo-rail-item[aria-current="page"]::after,
+html[data-theme="red"] .neo-rail-item:hover::after,
+html[data-theme="red"] .neo-rail-item[aria-current="page"]::after {
+  border-color: var(--line);
+  background: var(--ink-3);
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="night"] .neo-dock-item[aria-current="page"],
+html[data-theme="red"] .neo-dock-item[aria-current="page"] {
+  background: var(--ink-3);
+}
+
+html[data-theme="night"] .neo-header-task-action,
+html[data-theme="red"] .neo-header-task-action {
+  border-color: var(--gold);
+  background: transparent;
+  color: var(--gold);
+  box-shadow: none;
+  transition: color 180ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out;
+}
+
+html[data-theme="night"] .neo-header-task-action:hover,
+html[data-theme="red"] .neo-header-task-action:hover {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink-0);
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="night"] .neo-hero,
+html[data-theme="red"] .neo-hero {
+  border-color: var(--line);
+  color: var(--text-hi);
+  background:
+    radial-gradient(circle at 78% 8%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 25rem),
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px),
+    var(--ink-1);
+  background-size: auto, 64px 64px, 64px 64px, auto;
+  box-shadow: none;
+}
+
+html[data-theme="night"] .midnight-ocean-canvas {
+  opacity: 0.22;
+  filter: saturate(45%) brightness(34%);
+}
+
+html[data-theme="red"] .midnight-ocean-canvas {
+  opacity: 0.16;
+  filter: sepia(100%) saturate(140%) hue-rotate(325deg) brightness(28%);
+}
+
+html[data-theme="night"] .midnight-ocean-canvas::after,
+html[data-theme="red"] .midnight-ocean-canvas::after {
+  background: linear-gradient(180deg, transparent 24%, var(--mb-hero-scrim-soft) 66%, var(--mb-hero-scrim-strong) 100%);
+}
+
+html[data-theme="night"] .app-page-frame :where(.app-panel, .app-panel-soft, .app-card, .app-card-soft, .app-section-shell, .app-section-shell-dark, .rv-row),
+html[data-theme="red"] .app-page-frame :where(.app-panel, .app-panel-soft, .app-card, .app-card-soft, .app-section-shell, .app-section-shell-dark, .rv-row) {
+  border-color: var(--line) !important;
+  border-radius: 16px;
+  background: var(--ink-2) !important;
+  color: var(--text-hi);
+  box-shadow: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="night"] .app-page-frame :where(.app-panel, .app-card-hover, .rv-row):hover,
+html[data-theme="red"] .app-page-frame :where(.app-panel, .app-card-hover, .rv-row):hover {
+  border-color: var(--line-strong) !important;
+  background: var(--ink-3) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html[data-theme="night"] .app-page-frame [class*="hover:-translate-y"]:hover,
+html[data-theme="red"] .app-page-frame [class*="hover:-translate-y"]:hover {
+  transform: none !important;
+}
+
+html[data-theme="night"] .app-page-frame :is(.text-slate-950, .text-slate-900, .text-slate-100, .text-slate-50, .text-white),
+html[data-theme="red"] .app-page-frame :is(.text-slate-950, .text-slate-900, .text-slate-100, .text-slate-50, .text-white) {
+  color: var(--text-hi) !important;
+}
+
+html[data-theme="night"] .app-page-frame :is(.text-slate-800, .text-slate-700, .text-slate-600, .text-slate-400, .text-slate-300),
+html[data-theme="red"] .app-page-frame :is(.text-slate-800, .text-slate-700, .text-slate-600, .text-slate-400, .text-slate-300) {
+  color: var(--text-mid) !important;
+}
+
+html[data-theme="night"] .app-page-frame .text-slate-500,
+html[data-theme="red"] .app-page-frame .text-slate-500 {
+  color: var(--text-low) !important;
+}
+
+html[data-theme="night"] .app-page-frame :is(input, textarea, select, [role="combobox"]):not([data-map-control]),
+html[data-theme="red"] .app-page-frame :is(input, textarea, select, [role="combobox"]):not([data-map-control]) {
+  border-color: var(--line-strong) !important;
+  background: var(--ink-1) !important;
+  color: var(--text-hi) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] .app-page-frame :is(input, textarea)::placeholder,
+html[data-theme="red"] .app-page-frame :is(input, textarea)::placeholder {
+  color: var(--text-low) !important;
+  opacity: 1;
+}
+
+html[data-theme="night"] :where(button, [role="button"], a, input, textarea, select):focus-visible,
+html[data-theme="red"] :where(button, [role="button"], a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--sea) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] body :is(input, textarea, select, [role="combobox"]):focus,
+html[data-theme="red"] body :is(input, textarea, select, [role="combobox"]):focus {
+  border-color: var(--sea) !important;
+  outline-color: var(--sea) !important;
+  box-shadow: 0 0 0 2px var(--sea) !important;
+}
+
+html[data-theme="night"] .app-primary-action-button,
+html[data-theme="red"] .app-primary-action-button {
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  box-shadow: none;
+}
+
+html[data-theme="night"] .app-primary-action-button:hover,
+html[data-theme="red"] .app-primary-action-button:hover {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink-0);
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="night"] .app-action-button,
+html[data-theme="red"] .app-action-button {
+  border-color: var(--line-strong);
+  background: var(--ink-2);
+  color: var(--text-hi);
+  box-shadow: none;
+}
+
+html[data-theme="night"] .route-vessel-marker,
+html[data-theme="red"] .route-vessel-marker {
+  animation: none !important;
+}
+
+html[data-theme="night"] :where(.neo-command-card, .neo-quick-action, #mission-cards-section, section.mb-ledger-row, .fleet-command-overview, .fleet-vessel-row, .task-clarity-metric),
+html[data-theme="red"] :where(.neo-command-card, .neo-quick-action, #mission-cards-section, section.mb-ledger-row, .fleet-command-overview, .fleet-vessel-row, .task-clarity-metric) {
+  --mb-ink: var(--text-hi);
+  --mb-muted: var(--text-mid);
+  --mb-soft: var(--text-low);
+  border-color: var(--line) !important;
+  background: var(--ink-2) !important;
+  color: var(--text-hi);
+  box-shadow: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.crew-roster-card {
+  border-color: var(--mb-line);
+  background: var(--mb-panel);
+  color: var(--mb-ink);
+  box-shadow: none;
+}
+
+.crew-roster-card:hover {
+  border-color: var(--sea);
+  background: var(--theme-tint);
+}
+
+.crew-roster-card:focus-visible {
+  outline: 2px solid var(--sea);
+  outline-offset: 2px;
+}
+
+.crew-roster-card--selected {
+  border-color: var(--sea);
+  background: var(--theme-tint);
+  box-shadow: inset 3px 0 0 var(--sea);
+}
+
+html[data-theme="night"] :where(.neo-quick-action, section.mb-ledger-row, .fleet-vessel-row):hover,
+html[data-theme="red"] :where(.neo-quick-action, section.mb-ledger-row, .fleet-vessel-row):hover {
+  border-color: var(--line-strong) !important;
+  background: var(--ink-3) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html[data-theme="night"] :where(.fleet-vessel-row--active, .vessel-active),
+html[data-theme="red"] :where(.fleet-vessel-row--active, .vessel-active) {
+  border-color: var(--sea) !important;
+  background: var(--ink-3) !important;
+  color: var(--text-hi) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] :where(.fleet-vessel-row--active, .vessel-active) :where(.text-slate-950, .text-slate-900, .text-slate-800),
+html[data-theme="red"] :where(.fleet-vessel-row--active, .vessel-active) :where(.text-slate-950, .text-slate-900, .text-slate-800) {
+  color: var(--text-hi) !important;
+}
+
+html[data-theme="night"] :where(#mission-cards-section, .fleet-command-overview)::before,
+html[data-theme="red"] :where(#mission-cards-section, .fleet-command-overview)::before {
+  background: var(--sea);
+}
+
+html[data-theme="night"] .neo-hero-glow,
+html[data-theme="red"] .neo-hero-glow {
+  opacity: 0.07;
+  background: var(--gold);
+  filter: blur(52px);
+}
+
+html[data-theme="night"] .neo-live-chip,
+html[data-theme="red"] .neo-live-chip {
+  border-color: var(--line-strong);
+  background: var(--ink-2);
+  color: var(--sea);
+  box-shadow: none;
+}
+
+html[data-theme="night"] .neo-vessel-title,
+html[data-theme="red"] .neo-vessel-title {
+  background: linear-gradient(112deg, var(--text-hi) 0%, var(--sea) 58%, var(--gold) 108%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: none;
+}
+
+html[data-theme="night"] .neo-search-shell [data-global-search-input],
+html[data-theme="red"] .neo-search-shell [data-global-search-input] {
+  border-color: var(--line-strong) !important;
+  border-radius: 14px;
+  background: var(--ink-1) !important;
+  color: var(--text-hi) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="night"] .neo-search-shell [data-global-search-input] > button,
+html[data-theme="red"] .neo-search-shell [data-global-search-input] > button {
+  border-color: var(--line-strong) !important;
+  border-radius: 10px;
+  background: var(--ink-2) !important;
+  color: var(--gold) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html[data-theme="night"] .neo-search-shell :where(.search-popover-light, [role="listbox"]),
+html[data-theme="red"] .neo-search-shell :where(.search-popover-light, [role="listbox"]) {
+  border-color: var(--line-strong) !important;
+  background: var(--ink-3) !important;
+  color: var(--text-hi) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] .app-module-stage .rv-masthead,
+html[data-theme="red"] .app-module-stage .rv-masthead,
+html[data-theme="night"] .neo-module-hero,
+html[data-theme="red"] .neo-module-hero,
+html[data-theme="night"] .app-module-stage .app-hero-surface,
+html[data-theme="red"] .app-module-stage .app-hero-surface {
+  --mb-ink: var(--text-hi);
+  --mb-muted: var(--text-mid);
+  --mb-soft: var(--text-low);
+  border-color: var(--line) !important;
+  background: var(--ink-1) !important;
+  color: var(--text-hi) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] .app-module-stage .rv-masthead::before,
+html[data-theme="red"] .app-module-stage .rv-masthead::before {
+  background: linear-gradient(180deg, var(--sea), var(--gold), transparent 92%);
+}
+
+html[data-theme="night"] .app-module-stage :where(.rv-masthead-title, .rv-masthead-kicker, .app-kicker),
+html[data-theme="red"] .app-module-stage :where(.rv-masthead-title, .rv-masthead-kicker, .app-kicker) {
+  color: var(--text-hi) !important;
+}
+
+html[data-theme="night"] .app-module-stage :where(.rv-masthead-sub, .rv-tabs-label),
+html[data-theme="red"] .app-module-stage :where(.rv-masthead-sub, .rv-tabs-label) {
+  color: var(--text-mid) !important;
+}
+
+html[data-theme="night"] .app-module-stage .rv-tabs,
+html[data-theme="red"] .app-module-stage .rv-tabs {
+  border-color: var(--line);
+  background: var(--ink-2);
+  box-shadow: none;
+}
+
+html[data-theme="night"] .app-module-stage .rv-tab,
+html[data-theme="red"] .app-module-stage .rv-tab {
+  color: var(--text-mid);
+}
+
+html[data-theme="night"] .app-module-stage .rv-tab:hover,
+html[data-theme="red"] .app-module-stage .rv-tab:hover {
+  background: var(--ink-3);
+  color: var(--text-hi);
+}
+
+html[data-theme="night"] .app-module-stage .rv-tab[aria-selected="true"],
+html[data-theme="red"] .app-module-stage .rv-tab[aria-selected="true"] {
+  border-color: var(--line-strong);
+  background: var(--ink-3);
+  color: var(--sea);
+  box-shadow: none;
+}
+
+html[data-theme="night"] .app-module-stage .neo-module-hero .app-panel,
+html[data-theme="red"] .app-module-stage .neo-module-hero .app-panel {
+  border-color: var(--line) !important;
+  background: var(--ink-2) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="night"] .fleet-search-field,
+html[data-theme="red"] .fleet-search-field {
+  border-color: var(--line-strong);
+  background: var(--ink-2);
+  color: var(--text-mid);
+}
+
+@media (max-width: 420px) {
+  .night-watch-theme-toggle {
+    gap: 1px;
+    padding: 2px;
+  }
+
+  .night-watch-theme-option {
+    width: 27px;
+    height: 29px;
+  }
+}
+
+@media print {
+  html[data-theme] {
+    color-scheme: light;
+  }
+
+  html[data-theme] body::after {
+    display: none;
+  }
+}
