@@ -20,7 +20,6 @@ import {
   DetailDrawer,
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
-import { FleetOperationsOverview } from "../../components/dashboard/fleet-operations-overview.jsx";
 import GlobalSearch from "../../components/GlobalSearch.jsx";
 import ChartCanvas from "../../harbourline/ChartCanvas.jsx";
 import { useHarbourlineMotion } from "../../harbourline/useHarbourlineMotion.js";
@@ -667,10 +666,8 @@ export function TodayOperationsView({
   recentActivity = [],
   quickActions = [],
   fleetVessels = [],
-  fleetMetricsByVessel = {},
   activeVesselId = "contessa",
   onOpenFleet,
-  onSwitchFleetVessel,
   onQuickAddTask,
   onApprovalAction,
   onNavigateToTasks,
@@ -1216,18 +1213,6 @@ export function TodayOperationsView({
             Enter operations
           </button>
         </section>
-
-        {fleetVessels.length ? (
-          <FleetOperationsOverview
-            vessels={fleetVessels}
-            metricsByVessel={fleetMetricsByVessel}
-            activeVesselId={activeVesselId}
-            currentRole={currentRole}
-            onSwitchVessel={onSwitchFleetVessel}
-            onOpenFleet={onOpenFleet}
-            onQuickAddTask={canEdit ? onQuickAddTask : null}
-          />
-        ) : null}
 
         <div className="grid gap-12 pb-16 xl:grid-cols-12 xl:items-start xl:gap-14">
           <div className="min-w-0 xl:col-span-8">

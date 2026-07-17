@@ -88,6 +88,7 @@ import {
 import { canAccessCrewProfile, canAccessModule, canAccessTask, getVisibleModulesForRole } from "./contessa_access.mjs";
 import { APP_BRAND_NAME } from "./components/branding.jsx";
 import AppToastStack from "./components/AppToastStack.jsx";
+import { FleetOperationsOverview } from "./components/dashboard/fleet-operations-overview.jsx";
 import {
   calculateRoutePassageSummary,
   createRouteWaypoint,
@@ -317,7 +318,11 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
   const [selectedCrewId, setSelectedCrewId] = useState(initialActiveWorkspace.crewProfiles?.[0]?.id ?? "");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [expenseView, setExpenseView] = useState(initialWorkspaceRoute.moduleName);
+  const [expenseView, setExpenseView] = useState(
+    initialWorkspaceRoute.moduleName === "fleet" && !canAccessModule(initialAppState.currentRole, "fleet")
+      ? "command"
+      : initialWorkspaceRoute.moduleName
+  );
   const [expenseBucket, setExpenseBucket] = useState(initialWorkspaceRoute.options?.bucket || "boat");
   const [tasksMaintenancePanel, setTasksMaintenancePanel] = useState(initialWorkspaceRoute.options?.panel === "maintenance" ? "maintenance" : "tasks");
   const [crewCertificatesPanel, setCrewCertificatesPanel] = useState(initialWorkspaceRoute.options?.panel === "certificates" ? "certificates" : "crew");
@@ -752,6 +757,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     }
 
     if (
+      (expenseView === "fleet" && !visibleModuleKeys.includes("fleet")) ||
       (expenseView === "command" && !visibleModuleKeys.includes("today")) ||
       (expenseView === "tasks-maintenance" && !visibleModuleKeys.includes("tasks") && !visibleModuleKeys.includes("maintenance")) ||
       (expenseView === "crew-certificates" && !visibleModuleKeys.includes("crew") && !visibleModuleKeys.includes("certificates")) ||
@@ -1313,6 +1319,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
   const openModule = (moduleId, options = {}) => {
     const sectionIdByModule = {
+      fleet: "fleet-command-section",
       command: "dashboard-section",
       "tasks-maintenance": "tasks-maintenance-section",
       "expenses-approvals": "approvals-section",
@@ -1334,22 +1341,25 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
     const applyLocationView = () => {
       const nextRoute = parseWorkspaceView(window.location.search);
+      const nextModuleName = nextRoute.moduleName === "fleet" && !visibleModuleKeys.includes("fleet")
+        ? "command"
+        : nextRoute.moduleName;
       applyingHistoryNavigationRef.current = true;
-      setExpenseView(nextRoute.moduleName);
-      if (nextRoute.moduleName === "tasks-maintenance") {
+      setExpenseView(nextModuleName);
+      if (nextModuleName === "tasks-maintenance") {
         setTasksMaintenancePanel(nextRoute.options?.panel === "maintenance" ? "maintenance" : "tasks");
       }
-      if (nextRoute.moduleName === "crew-certificates") {
+      if (nextModuleName === "crew-certificates") {
         setCrewCertificatesPanel(nextRoute.options?.panel === "certificates" ? "certificates" : "crew");
       }
-      if (nextRoute.moduleName === "expenses-approvals") {
+      if (nextModuleName === "expenses-approvals") {
         setExpenseBucket(nextRoute.options?.bucket === "crew" ? "crew" : "boat");
       }
     };
 
     window.addEventListener("popstate", applyLocationView);
     return () => window.removeEventListener("popstate", applyLocationView);
-  }, []);
+  }, [visibleModuleKeys]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1869,21 +1879,42 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     setCrewExpenseDeleteRequest(null);
   };
 
-  const openVesselWorkspace = (vesselId) => {
+  const openVesselWorkspace = (vesselId, destination = {}) => {
     const nextFleet = vesselsForPersistence;
     const nextVessel = nextFleet.find((vessel) => vessel.id === vesselId);
     if (!nextVessel) return;
+
+    const moduleName = destination.moduleName || "command";
+    const options = destination.options || {};
 
     setVessels(nextFleet);
     setActiveVesselId(vesselId);
     setRouteNotFound(false);
     loadVesselWorkspace(nextVessel, currency);
+    setExpenseView(moduleName);
+    if (moduleName === "tasks-maintenance") {
+      setTasksMaintenancePanel(options.panel === "maintenance" ? "maintenance" : "tasks");
+    }
+    if (moduleName === "crew-certificates") {
+      setCrewCertificatesPanel(options.panel === "certificates" ? "certificates" : "crew");
+    }
+    if (moduleName === "expenses-approvals") {
+      setExpenseBucket(options.bucket === "crew" ? "crew" : "boat");
+    }
     setFleetOpen(false);
-    onNavigateVessel?.(vesselId);
+    onNavigateVessel?.(vesselId, getWorkspaceView(moduleName, options));
     setAppBanner({
       type: "success",
       title: "Vessel opened",
       message: `${nextVessel.name} is now the active workspace.`,
+    });
+  };
+
+  const openFleetIssue = (issue) => {
+    if (!issue?.vesselId) return;
+    openVesselWorkspace(issue.vesselId, {
+      moduleName: issue.moduleName || "command",
+      options: issue.options || {},
     });
   };
 
@@ -3343,6 +3374,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               docs: stats.documentCount || 0,
               route: routeAlerts.length,
             }}
+            onNavFleet={canAccessSection("fleet") ? () => openResponsiveModule("fleet") : null}
             onNavCommand={() => openResponsiveModule("command")}
             onNavTasks={() => openResponsiveModule("tasks-maintenance", { panel: "tasks" })}
             onNavApprovals={() => openResponsiveModule("expenses-approvals", { bucket: "boat" })}
@@ -3415,7 +3447,20 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
 
         <main id="app-module-content" className="app-module-stage" data-active-module={expenseView} tabIndex={-1}>
           <AppErrorBoundary resetKey={activeWorkspaceResetKey}>
-        {expenseView === "command" ? (
+        {expenseView === "fleet" ? (
+          <FleetOperationsOverview
+            vessels={vesselsForPersistence}
+            metricsByVessel={fleetMetricsByVessel}
+            activeVesselId={activeVesselId}
+            currentRole={effectiveRole}
+            currency={currency}
+            exchangeRates={exchangeRates}
+            onSwitchVessel={openVesselWorkspace}
+            onOpenIssue={openFleetIssue}
+            onOpenFleet={() => setFleetOpen(true)}
+            onQuickAddTask={canEditApp ? openNewTaskComposer : null}
+          />
+        ) : expenseView === "command" ? (
           <TodayOperationsView
             darkMode={darkMode}
             canEdit={canEditApp}
@@ -3438,10 +3483,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             recentActivity={visibleHistory.slice(0, 6)}
             quickActions={mobileCommandActions}
             fleetVessels={vesselsForPersistence}
-            fleetMetricsByVessel={fleetMetricsByVessel}
             activeVesselId={activeVesselId}
             onOpenFleet={() => setFleetOpen(true)}
-            onSwitchFleetVessel={openVesselWorkspace}
             onQuickAddTask={openNewTaskComposer}
             onOpenTask={openTodayTask}
             onApprovalAction={handleTodayApprovalAction}

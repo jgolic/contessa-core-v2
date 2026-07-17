@@ -68,6 +68,7 @@ import {
   updateWorkspaceViewUrl,
 } from "./src/lib/workspace_navigation.mjs";
 import { getFleetVesselStatus } from "./src/lib/fleet_status.mjs";
+import { buildFleetCommandModel } from "./src/lib/fleet_command.mjs";
 
 test("empty app state defaults to editor mode", () => {
   const state = createEmptyAppState();
@@ -89,16 +90,68 @@ test("fleet vessel status lamps prioritize critical, attention, and ready states
 });
 
 test("workspace URLs preserve active modules and panel choices", () => {
+  assert.deepEqual(parseWorkspaceView(""), {
+    view: "fleet",
+    moduleName: "fleet",
+  });
   assert.deepEqual(parseWorkspaceView("?view=maintenance"), {
     view: "maintenance",
     moduleName: "tasks-maintenance",
     options: { panel: "maintenance" },
   });
   assert.equal(getWorkspaceView("crew-certificates", { panel: "certificates" }), "certificates");
+  assert.equal(getWorkspaceView("fleet"), "fleet");
+  assert.equal(
+    updateWorkspaceViewUrl("https://contessa.test/vessels/contessa?view=bridge", "fleet"),
+    "/vessels/contessa"
+  );
   assert.equal(
     updateWorkspaceViewUrl("https://contessa.test/vessels/contessa?refresh=1", "route"),
     "/vessels/contessa?refresh=1&view=route"
   );
+});
+
+test("fleet command is visible only to vessel-wide leadership roles", () => {
+  assert.equal(canAccessModule("owner", "fleet"), true);
+  assert.equal(canAccessModule("manager", "fleet"), true);
+  assert.equal(canAccessModule("captain", "fleet"), true);
+  assert.equal(canAccessModule("deckhand", "fleet"), false);
+});
+
+test("fleet command combines vessel-tagged operational issues", () => {
+  const model = buildFleetCommandModel([
+    {
+      id: "test-vessel",
+      name: "Test Vessel",
+      tasks: [{
+        id: "T-OVERDUE",
+        name: "Service anchor windlass",
+        status: "pending",
+        priority: "high",
+        dueDate: "2000-01-01",
+        area: "Foredeck",
+        assignee: "Bosun",
+        quotes: [],
+      }],
+      crewProfiles: [],
+      crewExpenses: [],
+      maintenanceItems: [],
+      routePlanning: {
+        riskNote: "Weather review required",
+        waypoints: [
+          { id: "WP-1", name: "Start", lng: 14.4, lat: 43.5 },
+          { id: "WP-2", name: "Arrival", lng: 14.6, lat: 43.6 },
+        ],
+      },
+    },
+  ]);
+
+  assert.equal(model.records.length, 1);
+  assert.equal(model.totals.attention, 1);
+  assert.equal(model.issues[0].vesselId, "test-vessel");
+  assert.equal(model.issues[0].type, "task");
+  assert.equal(model.issues[0].severity, "critical");
+  assert.equal(model.issues.every((issue) => issue.vesselName === "Test Vessel"), true);
 });
 
 test("approval selector excludes received items and avoids quote task duplicates", () => {

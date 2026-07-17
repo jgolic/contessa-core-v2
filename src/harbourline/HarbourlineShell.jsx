@@ -342,6 +342,7 @@ export default function HarbourlineShell({
   isOffline = false,
   activeModule = "command",
   counts = {},
+  onNavFleet,
   onNavCommand,
   onNavTasks,
   onNavApprovals,
@@ -365,6 +366,7 @@ export default function HarbourlineShell({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [vesselSwitcherOpen, setVesselSwitcherOpen] = useState(false);
+  const canNavigateFleet = typeof onNavFleet === "function";
 
   // Counts come from persisted client state; render them only after mount so
   // server HTML (seed data) never disagrees with the hydrating client.
@@ -377,6 +379,7 @@ export default function HarbourlineShell({
   }, [clock]);
 
   const railItems = [
+    ...(canNavigateFleet ? [{ key: "fleet", label: "Fleet", icon: AnchorIcon, onClick: onNavFleet, count: 0 }] : []),
     { key: "command", label: "Bridge", icon: HelmIcon, onClick: onNavCommand, count: 0 },
     { key: "tasks-maintenance", label: "Tasks", icon: TasksIcon, onClick: onNavTasks, count: counts.tasks || 0 },
     { key: "expenses-approvals", label: "Approve", icon: SealIcon, onClick: onNavApprovals, count: counts.approvals || 0 },
@@ -402,8 +405,8 @@ export default function HarbourlineShell({
       <nav className="harbourline-rail fixed inset-y-3 left-3 z-[20000] hidden w-[5.25rem] flex-col items-center rounded-[10px] border lg:flex">
         <button
           type="button"
-          onClick={navigate(onNavCommand)}
-          aria-label="Open command bridge"
+          onClick={navigate(canNavigateFleet ? onNavFleet : onNavCommand)}
+          aria-label={canNavigateFleet ? "Open fleet command" : "Open command bridge"}
           className="harbourline-logo-button mt-5 flex h-12 w-12 items-center justify-center rounded-[8px] border"
         >
           <ContessaUiLogo className="h-9 w-9" />
@@ -533,11 +536,12 @@ export default function HarbourlineShell({
 
       {/* ---- Mobile dock ---- */}
       <nav className="harbourline-mobile-dock fixed inset-x-3 bottom-3 z-[20000] grid grid-cols-5 gap-0.5 rounded-[10px] border px-2 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1.5 lg:hidden">
+        {canNavigateFleet ? <DockItem icon={AnchorIcon} label="Fleet" active={activeModule === "fleet"} onClick={navigate(onNavFleet)} /> : null}
         <DockItem icon={HelmIcon} label="Bridge" active={activeModule === "command"} onClick={navigate(onNavCommand)} />
         <DockItem icon={TasksIcon} label="Tasks" count={shownCount(counts.tasks || 0)} active={activeModule === "tasks-maintenance"} onClick={navigate(onNavTasks)} />
         <DockItem icon={SealIcon} label="Approve" count={shownCount(counts.approvals || 0)} active={activeModule === "expenses-approvals"} onClick={navigate(onNavApprovals)} />
-        <DockItem icon={CrewIcon} label="Crew" count={shownCount(counts.crew || 0)} active={activeModule === "crew-certificates"} onClick={navigate(onNavCrew)} />
-        <DockItem icon={MoreIcon} label="More" active={["documents", "route", "notifications", "settings"].includes(activeModule)} onClick={() => { closeAll(); setMoreOpen(true); }} />
+        {!canNavigateFleet ? <DockItem icon={CrewIcon} label="Crew" count={shownCount(counts.crew || 0)} active={activeModule === "crew-certificates"} onClick={navigate(onNavCrew)} /> : null}
+        <DockItem icon={MoreIcon} label="More" active={["crew-certificates", "documents", "route", "notifications", "settings"].includes(activeModule)} onClick={() => { closeAll(); setMoreOpen(true); }} />
       </nav>
 
       {/* ---- Notifications drawer ---- */}
@@ -581,6 +585,7 @@ export default function HarbourlineShell({
       <ShellPanel open={moreOpen} onClose={closeAll} title="More" align="left">
         <div className="grid grid-cols-2 gap-1.5">
           {[
+            { label: "Crew", icon: CrewIcon, onClick: onNavCrew, count: shownCount(counts.crew || 0) },
             { label: "Vault", icon: VaultIcon, onClick: onNavDocs, count: shownCount(counts.docs || 0) },
             { label: "Route", icon: RouteIcon, onClick: onNavRoute, count: shownCount(counts.route || 0) },
             { label: "Alerts", icon: BellIcon, onClick: onNavAlerts, count: shownCount(notificationCount) },

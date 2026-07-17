@@ -1,4 +1,5 @@
 export const APP_MODULES = [
+  { key: "fleet", label: "Fleet" },
   { key: "today", label: "Dashboard" },
   { key: "dashboard", label: "Dashboard Analytics" },
   { key: "route", label: "Route" },
@@ -21,13 +22,13 @@ export const ROLE_DEFINITIONS = {
   },
   manager: {
     label: "Manager",
-    modules: ["today", "dashboard", "route", "tasks", "expenses", "maintenance", "crew", "certificates", "documents", "notifications", "settings"],
+    modules: ["fleet", "today", "dashboard", "route", "tasks", "expenses", "maintenance", "crew", "certificates", "documents", "notifications", "settings"],
     taskScope: "all",
     departments: ["all"],
   },
   captain: {
     label: "Captain",
-    modules: ["today", "dashboard", "route", "tasks", "expenses", "maintenance", "crew", "certificates", "documents", "notifications", "settings"],
+    modules: ["fleet", "today", "dashboard", "route", "tasks", "expenses", "maintenance", "crew", "certificates", "documents", "notifications", "settings"],
     taskScope: "all",
     departments: ["all"],
   },

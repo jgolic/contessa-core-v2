@@ -33,8 +33,9 @@ export function VesselWorkspace({ vesselId }) {
   return (
     <ContessaApp
       routeVesselId={vesselId}
-      onNavigateVessel={(nextVesselId) => {
-        router.push(`/vessels/${nextVesselId}`);
+      onNavigateVessel={(nextVesselId, nextView = "fleet") => {
+        const query = nextView === "fleet" ? "" : `?view=${encodeURIComponent(nextView)}`;
+        router.push(`/vessels/${nextVesselId}${query}`);
       }}
     />
   );

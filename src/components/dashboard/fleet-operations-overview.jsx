@@ -1,117 +1,114 @@
 import { useMemo, useState } from "react";
+import {
+  convertMoney,
+  FALLBACK_USD_RATES,
+  formatMoney,
+} from "../../contessa_app_data.mjs";
+import { buildFleetCommandModel } from "../../lib/fleet_command.mjs";
 
-const COMPLETE_TASK_STATUSES = new Set(["completed", "declined"]);
-const HIGH_PRIORITY_LEVELS = new Set(["high", "urgent", "critical"]);
+const ISSUE_FILTERS = [
+  { id: "all", label: "All signals" },
+  { id: "task", label: "Overdue work" },
+  { id: "approval", label: "Decisions" },
+  { id: "certificate", label: "Certificates" },
+  { id: "route", label: "Route" },
+];
 
-function parseLocalDate(value) {
-  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return null;
-  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+function statusLabel(level) {
+  if (level === "critical") return "Action needed";
+  if (level === "attention") return "Needs review";
+  return "Ready";
 }
 
-function isTaskOverdue(task, today) {
-  if (!task?.dueDate || COMPLETE_TASK_STATUSES.has(String(task.status || "").toLowerCase())) return false;
-  const dueDate = parseLocalDate(task.dueDate);
-  return Boolean(dueDate && dueDate < today);
-}
-
-function vesselDescriptor(vessel = {}) {
-  const details = vessel.details || {};
-  const profile = vessel.vesselProfile || {};
-  const length = details.lengthMeters || profile.lengthMeters || details.lengthFeet || profile.lengthFeet;
-  const lengthUnit = details.lengthMeters || profile.lengthMeters ? "m" : length ? "ft" : "";
-  const type = details.vesselType || details.type || profile.vesselType || profile.type || "Vessel";
-  const port = details.homePort || profile.homePort || "Port not set";
-  return [length ? `${length}${lengthUnit}` : "", type, port].filter(Boolean).join(" / ");
-}
-
-function buildFleetRecord(vessel, metrics = {}, today) {
-  const tasks = Array.isArray(vessel?.tasks) ? vessel.tasks : [];
-  const openTasks = tasks.filter((task) => !COMPLETE_TASK_STATUSES.has(String(task?.status || "").toLowerCase()));
-  const overdueCount = openTasks.filter((task) => isTaskOverdue(task, today)).length;
-  const unassignedCount = openTasks.filter((task) => !String(task?.assignee || task?.assignedTo || "").trim()).length;
-  const highPriorityCount = openTasks.filter((task) => HIGH_PRIORITY_LEVELS.has(String(task?.priority || "").toLowerCase())).length;
-  const alertCount = Number(metrics.alertCount || 0);
-  const approvalCount = Number(metrics.approvalCount || 0);
-  const certificateDue = Number(metrics.certificateDue || 0);
-  const attentionScore = overdueCount * 7 + alertCount * 4 + approvalCount * 3 + certificateDue * 2 + highPriorityCount * 2 + unassignedCount;
-  const attentionLevel = overdueCount > 0 || alertCount >= 3
-    ? "critical"
-    : attentionScore > 0
-      ? "attention"
-      : "ready";
-
-  return {
-    vessel,
-    id: vessel?.id,
-    name: vessel?.name || vessel?.vesselProfile?.vesselName || "Unnamed vessel",
-    descriptor: vesselDescriptor(vessel),
-    status: metrics.status || vessel?.details?.status || "Operational",
-    openTasks: openTasks.length,
-    overdueCount,
-    unassignedCount,
-    highPriorityCount,
-    alertCount,
-    approvalCount,
-    certificateDue,
-    crewCount: Number(metrics.crewCount || 0),
-    attentionScore,
-    attentionLevel,
-  };
-}
-
-function SummaryMetric({ label, value, note, tone = "neutral" }) {
+function FleetKpi({ label, value, note, tone = "neutral" }) {
   return (
-    <div className={`fleet-summary-metric fleet-summary-metric--${tone}`}>
-      <div className="fleet-summary-value">{value}</div>
-      <div className="fleet-summary-label">{label}</div>
-      <div className="fleet-summary-note">{note}</div>
+    <div className={`fleet-home-kpi fleet-home-kpi--${tone}`}>
+      <div className="fleet-home-kpi-value">{value}</div>
+      <div className="fleet-home-kpi-label">{label}</div>
+      <div className="fleet-home-kpi-note">{note}</div>
     </div>
   );
 }
 
-function FleetVesselRow({ record, active = false, onOpen }) {
-  const attentionLabel = record.attentionLevel === "critical"
-    ? "Action needed"
-    : record.attentionLevel === "attention"
-      ? "Monitor"
-      : "Ready";
+function VesselIssueLine({ issue }) {
+  return (
+    <span className="fleet-home-card-issue">
+      <span className={`fleet-home-lamp fleet-home-lamp--${issue.severity}`} aria-hidden="true" />
+      <span className="min-w-0 flex-1 truncate">{issue.title}</span>
+      <span className="fleet-home-mono shrink-0">{issue.ageLabel}</span>
+    </span>
+  );
+}
+
+function VesselCard({ record, lead = false, active = false, onOpen }) {
+  const topIssues = record.issues.slice(0, lead ? 3 : 1);
 
   return (
     <button
       type="button"
       onClick={() => onOpen?.(record.id)}
-      className={`fleet-vessel-row ${active ? "fleet-vessel-row--active" : ""}`}
-      aria-label={`Open ${record.name} vessel workspace`}
+      className={`fleet-home-vessel-card fleet-home-vessel-card--${record.attentionLevel} ${lead ? "fleet-home-vessel-card--lead" : ""} ${active ? "fleet-home-vessel-card--active" : ""}`}
+      aria-label={`Open ${record.name} bridge`}
     >
-      <span className={`fleet-attention-marker fleet-attention-marker--${record.attentionLevel}`} aria-hidden="true" />
-      <span className="min-w-0">
-        <span className="flex min-w-0 items-center gap-2.5">
-          <span className="truncate text-[1.05rem] font-semibold tracking-[-0.02em] text-[var(--neo-ink)]">{record.name}</span>
-          {active ? <span className="fleet-active-label">Current</span> : null}
-        </span>
-        <span className="mt-1 block truncate text-[11px] font-semibold uppercase tracking-[0.13em] text-[var(--mb-muted)]">
-          {record.descriptor}
-        </span>
+      <span className="fleet-home-vessel-card-topline">
+        <span className={`fleet-home-lamp fleet-home-lamp--${record.attentionLevel}`} aria-hidden="true" />
+        <span>{statusLabel(record.attentionLevel)}</span>
+        {active ? <span className="fleet-home-current-label">Current vessel</span> : null}
       </span>
 
-      <span className="fleet-row-status">
-        <span className={`fleet-status-label fleet-status-label--${record.attentionLevel}`}>{attentionLabel}</span>
-        <span className="mt-1 block truncate text-[11px] text-[var(--mb-muted)]">{record.status}</span>
-      </span>
+      <span className="fleet-home-vessel-name">{record.name}</span>
+      <span className="fleet-home-vessel-descriptor">{record.descriptor}</span>
 
-      <span className="fleet-row-counts">
+      <span className="fleet-home-vessel-metrics">
+        <span><strong>{record.readiness}%</strong> readiness</span>
         <span><strong>{record.openTasks}</strong> open</span>
-        <span className={record.overdueCount ? "fleet-count-critical" : ""}><strong>{record.overdueCount}</strong> overdue</span>
         <span><strong>{record.approvalCount}</strong> decisions</span>
-        <span><strong>{record.crewCount}</strong> crew</span>
       </span>
 
-      <span className="fleet-row-arrow" aria-hidden="true">
-        <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5">
+      {topIssues.length ? (
+        <span className="fleet-home-card-issues">
+          {topIssues.map((issue) => <VesselIssueLine key={issue.id} issue={issue} />)}
+        </span>
+      ) : (
+        <span className="fleet-home-card-clear">No material operational signals.</span>
+      )}
+
+      <span className="fleet-home-open-link">
+        Open bridge
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </span>
+    </button>
+  );
+}
+
+function AttentionRow({ issue, currency, exchangeRates, onOpen }) {
+  const amount = issue.amount === null || issue.amount === undefined
+    ? ""
+    : formatMoney(
+        convertMoney(issue.amount, issue.currency || currency, currency, exchangeRates),
+        currency
+      );
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen?.(issue)}
+      className={`fleet-home-ledger-row fleet-home-ledger-row--${issue.severity}`}
+      aria-label={`Open ${issue.title} for ${issue.vesselName}`}
+    >
+      <span className={`fleet-home-lamp fleet-home-lamp--${issue.severity}`} aria-hidden="true" />
+      <span className="fleet-home-vessel-chip">{issue.vesselName}</span>
+      <span className="min-w-0">
+        <span className="fleet-home-ledger-title">{issue.title}</span>
+        <span className="fleet-home-ledger-detail">{issue.detail}</span>
+      </span>
+      {amount ? <span className="fleet-home-ledger-amount">{amount}</span> : null}
+      <span className="fleet-home-ledger-age">{issue.ageLabel}</span>
+      <svg viewBox="0 0 16 16" fill="none" className="fleet-home-ledger-arrow" aria-hidden="true">
+        <path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </button>
   );
 }
@@ -121,121 +118,195 @@ export function FleetOperationsOverview({
   metricsByVessel = {},
   activeVesselId,
   currentRole = "manager",
+  currency = "USD",
+  exchangeRates = FALLBACK_USD_RATES,
   onSwitchVessel,
+  onOpenIssue,
   onOpenFleet,
   onQuickAddTask,
 }) {
-  const [filter, setFilter] = useState("attention");
+  const [vesselFilter, setVesselFilter] = useState("attention");
+  const [issueFilter, setIssueFilter] = useState("all");
   const [query, setQuery] = useState("");
-  const [showAll, setShowAll] = useState(false);
+  const [showAllVessels, setShowAllVessels] = useState(false);
+  const [showAllIssues, setShowAllIssues] = useState(false);
 
-  const records = useMemo(() => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return (Array.isArray(vessels) ? vessels : [])
-      .filter(Boolean)
-      .map((vessel) => buildFleetRecord(vessel, metricsByVessel?.[vessel.id] || {}, today))
-      .sort((left, right) => right.attentionScore - left.attentionScore || left.name.localeCompare(right.name));
-  }, [metricsByVessel, vessels]);
-
-  const totals = useMemo(() => records.reduce((summary, record) => ({
-    attention: summary.attention + (record.attentionScore > 0 ? 1 : 0),
-    openTasks: summary.openTasks + record.openTasks,
-    overdue: summary.overdue + record.overdueCount,
-    unassigned: summary.unassigned + record.unassignedCount,
-    approvals: summary.approvals + record.approvalCount,
-  }), { attention: 0, openTasks: 0, overdue: 0, unassigned: 0, approvals: 0 }), [records]);
+  const model = useMemo(
+    () => buildFleetCommandModel(vessels, metricsByVessel),
+    [metricsByVessel, vessels]
+  );
+  const pendingSpend = useMemo(() => model.records.reduce((total, record) => (
+    total + record.pendingApprovals.reduce((subtotal, approval) => (
+      subtotal + (approval.amount === null || approval.amount === undefined
+        ? 0
+        : convertMoney(approval.amount, approval.currency || currency, currency, exchangeRates))
+    ), 0)
+  ), 0), [currency, exchangeRates, model.records]);
 
   const filteredRecords = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
-    return records.filter((record) => {
-      if (filter === "attention" && record.attentionScore <= 0) return false;
-      if (filter === "ready" && record.attentionScore > 0) return false;
+    return model.records.filter((record) => {
+      if (vesselFilter === "attention" && !record.issues.length) return false;
+      if (vesselFilter === "ready" && record.issues.length) return false;
       if (!cleanQuery) return true;
       return `${record.name} ${record.descriptor} ${record.status}`.toLowerCase().includes(cleanQuery);
     });
-  }, [filter, query, records]);
+  }, [model.records, query, vesselFilter]);
+  const visibleRecords = showAllVessels ? filteredRecords : filteredRecords.slice(0, 7);
+  const filteredIssues = issueFilter === "all"
+    ? model.issues
+    : model.issues.filter((issue) => issue.type === issueFilter);
+  const visibleIssues = showAllIssues ? filteredIssues : filteredIssues.slice(0, 10);
+  const leadRecord = visibleRecords[0] || null;
+  const remainingRecords = leadRecord ? visibleRecords.slice(1) : [];
+  const roleLabel = String(currentRole).toLowerCase() === "owner" ? "Owner" : "Fleet manager";
+  const vesselWord = model.totals.vessels === 1 ? "vessel" : "vessels";
+  const needWord = model.totals.attention === 1 ? "needs" : "need";
 
-  const visibleRecords = showAll ? filteredRecords : filteredRecords.slice(0, 8);
-  const roleLabel = String(currentRole || "manager").toLowerCase() === "owner" ? "Owner" : "Fleet manager";
+  const handleIssueOpen = (issue) => {
+    if (onOpenIssue) onOpenIssue(issue);
+    else onSwitchVessel?.(issue.vesselId);
+  };
 
   return (
-    <section id="fleet-command-section" className="fleet-command-overview" data-mb-reveal>
-      <div className="fleet-command-heading">
-        <div>
-          <div className="fleet-command-kicker">{roleLabel} workspace</div>
-          <h2 className="fleet-command-title">Your fleet, ordered by what needs you next.</h2>
-          <p className="fleet-command-copy">
-            One operational queue across large yachts, tenders, and speedboats. Open work, decisions, and compliance stay attached to the correct vessel.
+    <section id="fleet-command-section" className="fleet-home" data-mb-reveal>
+      <div className="fleet-home-hero">
+        <div className="fleet-home-chart-lines" aria-hidden="true" />
+        <div className="fleet-home-hero-content">
+          <div className="fleet-home-eyebrow">
+            <span className="fleet-home-live-dot" aria-hidden="true" />
+            {roleLabel} command
+          </div>
+          <h1 className="fleet-home-headline">
+            <span>{model.totals.vessels} {vesselWord}.</span>
+            <span>{model.totals.attention} {needWord} you.</span>
+          </h1>
+          <p className="fleet-home-intro">
+            One operating picture across yachts, tenders, and speedboats. Work is ranked by consequence so the next decision is always clear.
           </p>
+
+          <div className="fleet-home-hero-actions">
+            {onQuickAddTask ? (
+              <button type="button" onClick={onQuickAddTask} className="fleet-home-primary-action">
+                <span aria-hidden="true">+</span>
+                New task
+              </button>
+            ) : null}
+            <button type="button" onClick={onOpenFleet} className="fleet-home-secondary-action">Manage vessels</button>
+          </div>
         </div>
-        <div className="fleet-command-actions">
-          {onQuickAddTask ? (
-            <button type="button" onClick={onQuickAddTask} className="fleet-primary-action">
-              <span className="text-lg leading-none">+</span>
-              New task
-            </button>
-          ) : null}
-          <button type="button" onClick={onOpenFleet} className="fleet-secondary-action">Manage fleet</button>
+
+        <div className="fleet-home-kpi-grid">
+          <FleetKpi label="Fleet" value={model.totals.vessels} note="Vessels in command" />
+          <FleetKpi label="Open work" value={model.totals.openTasks} note={`${model.totals.critical} critical signals`} tone={model.totals.critical ? "critical" : "neutral"} />
+          <FleetKpi label="Decisions" value={model.totals.approvals} note="Awaiting approval" tone={model.totals.approvals ? "attention" : "ready"} />
+          <FleetKpi label="Pending spend" value={formatMoney(pendingSpend, currency)} note="Across active requests" tone="money" />
         </div>
       </div>
 
-      <div className="fleet-summary-grid">
-        <SummaryMetric label="Fleet" value={records.length} note="Vessels in view" />
-        <SummaryMetric label="Need attention" value={totals.attention} note={`${totals.overdue} overdue`} tone={totals.overdue ? "critical" : totals.attention ? "attention" : "ready"} />
-        <SummaryMetric label="Open work" value={totals.openTasks} note={`${totals.unassigned} unassigned`} tone={totals.unassigned ? "attention" : "neutral"} />
-        <SummaryMetric label="Decisions" value={totals.approvals} note="Awaiting approval" tone={totals.approvals ? "attention" : "ready"} />
-      </div>
+      <div className="fleet-home-deck">
+        <div className="fleet-home-section-heading">
+          <div>
+            <div className="fleet-home-kicker">Fleet readiness</div>
+            <h2>Every vessel, ranked by attention.</h2>
+          </div>
+          <label className="fleet-home-search">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="m13 13 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find vessel, port, or type" />
+          </label>
+        </div>
 
-      <div className="fleet-toolbar">
-        <div className="fleet-filter-group" aria-label="Filter fleet">
+        <div className="fleet-home-filter-row" aria-label="Filter vessels">
           {[
-            { id: "attention", label: "Needs attention", count: totals.attention },
-            { id: "all", label: "All vessels", count: records.length },
-            { id: "ready", label: "Ready", count: Math.max(records.length - totals.attention, 0) },
-          ].map((option) => (
+            { id: "attention", label: "Needs attention", count: model.totals.attention },
+            { id: "all", label: "All vessels", count: model.totals.vessels },
+            { id: "ready", label: "Ready", count: Math.max(model.totals.vessels - model.totals.attention, 0) },
+          ].map((filter) => (
             <button
-              key={option.id}
+              key={filter.id}
               type="button"
-              onClick={() => { setFilter(option.id); setShowAll(false); }}
-              aria-pressed={filter === option.id}
-              className={`fleet-filter-button ${filter === option.id ? "fleet-filter-button--active" : ""}`}
+              onClick={() => { setVesselFilter(filter.id); setShowAllVessels(false); }}
+              aria-pressed={vesselFilter === filter.id}
+              className="fleet-home-filter"
             >
-              {option.label}
-              <span>{option.count}</span>
+              {filter.label}<span>{filter.count}</span>
             </button>
           ))}
         </div>
-        <label className="fleet-search-field">
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5" />
-            <path d="m13 13 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find vessel, port, or type" />
-        </label>
-      </div>
 
-      <div className="fleet-vessel-list">
-        {visibleRecords.length ? visibleRecords.map((record) => (
-          <FleetVesselRow
-            key={record.id}
-            record={record}
-            active={record.id === activeVesselId}
-            onOpen={onSwitchVessel}
-          />
-        )) : (
-          <div className="fleet-empty-state">
+        {leadRecord ? (
+          <div className="fleet-home-vessel-grid">
+            <VesselCard record={leadRecord} lead active={leadRecord.id === activeVesselId} onOpen={onSwitchVessel} />
+            {remainingRecords.map((record) => (
+              <VesselCard key={record.id} record={record} active={record.id === activeVesselId} onOpen={onSwitchVessel} />
+            ))}
+          </div>
+        ) : (
+          <div className="fleet-home-empty">
             <strong>No vessels match this view.</strong>
             <span>Try another filter or search term.</span>
           </div>
         )}
-      </div>
 
-      {filteredRecords.length > 8 ? (
-        <button type="button" onClick={() => setShowAll((current) => !current)} className="fleet-show-all">
-          {showAll ? "Show priority vessels" : `Show all ${filteredRecords.length} vessels`}
-        </button>
-      ) : null}
+        {filteredRecords.length > 7 ? (
+          <button type="button" onClick={() => setShowAllVessels((value) => !value)} className="fleet-home-show-all">
+            {showAllVessels ? "Show priority vessels" : `Show all ${filteredRecords.length} vessels`}
+          </button>
+        ) : null}
+
+        <div className="fleet-home-ledger-section">
+          <div className="fleet-home-section-heading fleet-home-section-heading--ledger">
+            <div>
+              <div className="fleet-home-kicker">Needs attention</div>
+              <h2>One queue. No blind spots.</h2>
+            </div>
+            <p>Operational signals stay tagged to their vessel and ordered by severity.</p>
+          </div>
+
+          <div className="fleet-home-filter-row" aria-label="Filter attention queue">
+            {ISSUE_FILTERS.map((filter) => {
+              const count = filter.id === "all" ? model.issues.length : model.issues.filter((issue) => issue.type === filter.id).length;
+              return (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => { setIssueFilter(filter.id); setShowAllIssues(false); }}
+                  aria-pressed={issueFilter === filter.id}
+                  className="fleet-home-filter"
+                >
+                  {filter.label}<span>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="fleet-home-ledger">
+            {visibleIssues.length ? visibleIssues.map((issue) => (
+              <AttentionRow
+                key={issue.id}
+                issue={issue}
+                currency={currency}
+                exchangeRates={exchangeRates}
+                onOpen={handleIssueOpen}
+              />
+            )) : (
+              <div className="fleet-home-empty fleet-home-empty--ledger">
+                <strong>No active signals in this category.</strong>
+                <span>The queue will update as vessel records change.</span>
+              </div>
+            )}
+          </div>
+
+          {filteredIssues.length > 10 ? (
+            <button type="button" onClick={() => setShowAllIssues((value) => !value)} className="fleet-home-show-all">
+              {showAllIssues ? "Show priority signals" : `Show all ${filteredIssues.length} signals`}
+            </button>
+          ) : null}
+        </div>
+      </div>
     </section>
   );
 }
