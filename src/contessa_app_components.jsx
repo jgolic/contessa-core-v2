@@ -207,7 +207,7 @@ export function ConfirmActionDialog({
 
   return (
     <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/55 p-4">
-      <div className={`w-full max-w-sm rounded-lg border p-5 shadow-2xl ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-white text-[#1d2b25]"}`}>
+      <div className={`w-full max-w-sm rounded-lg border p-5  ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-white text-[#1d2b25]"}`}>
         <h2 className="mb-2 text-xl font-semibold">{title}</h2>
         <p className={`mb-5 text-sm ${theme.textSecondary}`}>{message}</p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -249,7 +249,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
       ? [{ key: "complete", label: "Done", onClick: () => onStatusChange("completed"), className: darkMode ? "bg-[#193628] text-[#d8f7e8]" : "bg-[#ebf6f1] text-[#166155]" }]
       : []),
     ...(task.status === "completed"
-      ? [{ key: "approve", label: "Approve", onClick: () => onStatusChange("approved"), className: darkMode ? "border border-amber-300/25 bg-amber-300/14 text-amber-100" : "border border-amber-300 bg-amber-100 text-amber-950" }]
+      ? [{ key: "approve", label: "Approve", onClick: () => onStatusChange("approved"), className: darkMode ? "border border-warn-300/25 bg-warn-300/14 text-warn-100" : "border border-warn-300 bg-warn-100 text-warn-950" }]
       : []),
   ].slice(0, 3);
 
@@ -296,7 +296,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
               key={`${task.id}-${action.key}`}
               type="button"
               onClick={(event) => handleSwipeAction(event, action)}
-              className={`flex-1 rounded-[16px] px-2 text-[11px] font-semibold tracking-[0.04em] shadow-sm ${action.className}`}
+              className={`flex-1 rounded-[16px] px-2 text-[11px] font-semibold tracking-[0.04em]  ${action.className}`}
             >
               {action.label}
             </button>
@@ -315,7 +315,7 @@ export function TaskListItem({ task, isSelected, onSelect, onStatusChange, darkM
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
         style={{ transform: `translateX(${swipeOffset}px)` }}
-        className={`relative z-10 w-full cursor-pointer rounded-xl border p-4 text-left transition md:rounded-lg md:p-5 ${containerClass} ${swipeOpen ? "shadow-[0_18px_40px_-28px_rgba(8,24,30,0.45)]" : ""}`}
+        className={`relative z-10 w-full cursor-pointer rounded-xl border p-4 text-left transition md:rounded-lg md:p-5 ${containerClass} ${swipeOpen ? "" : ""}`}
       >
         <div className="flex items-center justify-between gap-2">
           <span className="font-semibold">{task.id}</span>
@@ -424,7 +424,7 @@ export function QuoteRow({
               {isPaidMoneyStatus(quote.status) ? "Paid" : "Unpaid"}
             </Badge>
             {canEdit ? (
-              <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
+              <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-accent)] transition-colors hover:text-[var(--mb-accent-bright)]">
                 Edit
               </button>
             ) : (
@@ -466,7 +466,7 @@ export function QuoteRow({
       {canEdit ? <button
         type="button"
         onClick={onRemoveRequest}
-        className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold shadow-sm transition ${
+        className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold  transition ${
           darkMode ? "bg-[#2b231f] text-[#ffd8cf] hover:bg-[#432d28]" : "bg-[#fff0ed] text-[#9b2c20] hover:bg-[#ffe0da]"
         }`}
         aria-label="Remove quote"
@@ -556,7 +556,7 @@ export function QuoteRow({
         </Button> : <Badge className={neutralBadgeClass(darkMode)}>View only</Badge>}
       </div>
       {quote.status === "declined" && (
-        <div className={`mt-3 rounded-lg p-3 text-sm ${darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-amber-50 text-amber-900"}`}>
+        <div className={`mt-3 rounded-lg p-3 text-sm ${darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-warn-50 text-warn-900"}`}>
           Rejected. Held for reconsideration{holdHours !== null ? ` for about ${holdHours} more hours` : ""}. After 24 hours it leaves Expenses and the value becomes 0 on the task.
         </div>
       )}
@@ -641,7 +641,7 @@ export function ExpenseRow({
         </div>
       </div>
       {expense.status === "declined" && (
-        <div className={`mt-3 rounded-lg p-3 text-sm ${darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-amber-50 text-amber-900"}`}>
+        <div className={`mt-3 rounded-lg p-3 text-sm ${darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-warn-50 text-warn-900"}`}>
           Rejected. Held for reconsideration{holdHours !== null ? ` for about ${holdHours} more hours` : ""}. After 24 hours it leaves Expenses and the value becomes 0 on the task.
         </div>
       )}

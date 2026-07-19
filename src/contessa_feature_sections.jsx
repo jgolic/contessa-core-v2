@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useMemo } from "react";
 import AnchoredPopover from "./components/AnchoredPopover.jsx";
@@ -66,8 +66,8 @@ const premiumShellClass = (darkMode = false) =>
   [
     "rounded-[28px] border p-5 backdrop-blur-xl",
     darkMode
-      ? "border-white/10 bg-slate-950/70 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
-      : "border-slate-200/80 bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.06)]",
+      ? "border-white/10 bg-slate-950/70 "
+      : "border-slate-200/80 bg-white/90 ",
   ].join(" ");
 
 const premiumInnerClass = (darkMode = false) =>
@@ -75,7 +75,7 @@ const premiumInnerClass = (darkMode = false) =>
     "rounded-2xl border",
     darkMode
       ? "border-white/10 bg-white/[0.04]"
-      : "border-slate-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]",
+      : "border-slate-200/80 bg-white/80 ",
   ].join(" ");
 
 const premiumLabelClass = "text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700 dark:text-slate-200";
@@ -83,19 +83,19 @@ const premiumValueClass = "text-lg font-semibold tracking-tight text-slate-900 d
 const primaryButtonClass = "app-primary-action-button inline-flex items-center justify-center";
 const mutedButtonClass = "app-action-button inline-flex items-center justify-center";
 const chipBase =
-  "inline-flex min-h-9 items-center justify-center rounded-full border px-4 py-1.5 text-sm font-semibold shadow-sm transition-all duration-200";
+  "inline-flex min-h-9 items-center justify-center rounded-full border px-4 py-1.5 text-sm font-semibold  transition-all duration-200";
 const liveChipClass = (darkMode = false) =>
   darkMode
-    ? `${chipBase} border-teal-300/40 bg-teal-300/15 text-teal-100`
-    : `${chipBase} border-teal-300 bg-teal-50 text-teal-800`;
-const blueChipClass = (darkMode = false) =>
+    ? `${chipBase} border-navy-300/40 bg-navy-300/15 text-navy-100`
+    : `${chipBase} border-navy-300 bg-navy-50 text-navy-800`;
+const navyChipClass = (darkMode = false) =>
   darkMode
-    ? `${chipBase} border-cyan-300/40 bg-cyan-300/15 text-cyan-100`
-    : `${chipBase} border-blue-300 bg-blue-50 text-blue-800`;
-const goldChipClass = (darkMode = false) =>
+    ? `${chipBase} border-navy-300/40 bg-navy-300/15 text-navy-100`
+    : `${chipBase} border-navy-300 bg-navy-50 text-navy-800`;
+const accentChipClass = (darkMode = false) =>
   darkMode
-    ? `${chipBase} border-amber-300/40 bg-amber-300/15 text-amber-100`
-    : `${chipBase} border-amber-300 bg-amber-50 text-amber-800`;
+    ? `${chipBase} border-warn-300/40 bg-warn-300/15 text-warn-100`
+    : `${chipBase} border-warn-300 bg-warn-50 text-warn-800`;
 
 const yachtTypeOptions = [
   "Motor Yacht",
@@ -235,7 +235,7 @@ function SearchableSelect({
     <div className="relative min-w-0">
       <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200">
         {label}
-        {required ? <span className="ml-1 text-rose-500">*</span> : null}
+        {required ? <span className="ml-1 text-accent-500">*</span> : null}
       </label>
       <input
         ref={anchorRef}
@@ -250,7 +250,7 @@ function SearchableSelect({
           setActiveIndex(0);
         }}
         onKeyDown={handleKeyDown}
-        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-600 dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-300 dark:focus:border-cyan-300 dark:focus:ring-cyan-300/20 dark:disabled:bg-slate-900 dark:disabled:text-slate-400"
+        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-600 focus:border-navy-400 focus:ring-2 focus:ring-navy-400/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-600 dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-300 dark:focus:border-navy-300 dark:focus:ring-navy-300/20 dark:disabled:bg-slate-900 dark:disabled:text-slate-400"
       />
       <AnchoredPopover
         open={open && !disabled}
@@ -275,7 +275,7 @@ function SearchableSelect({
                 className={[
                   "w-full rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition",
                   index === activeIndex
-                    ? "bg-blue-50 text-blue-800 dark:bg-cyan-300/10 dark:text-cyan-100"
+                    ? "bg-navy-50 text-navy-800 dark:bg-navy-300/10 dark:text-navy-100"
                     : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/10",
                 ].join(" ")}
               >
@@ -327,16 +327,16 @@ function NotificationButton({ count = 0, darkMode = false, onClick, open = false
       onClick={onClick}
       aria-expanded={open}
       aria-label={`Open notifications${safeCount ? `, ${safeCount} unread` : ""}`}
-      className={`relative h-10 w-10 shrink-0 overflow-visible rounded-2xl p-0 shadow-[0_10px_26px_rgba(15,23,42,0.08)] transition-all duration-200 md:h-12 md:w-12 md:rounded-[20px] ${
+      className={`relative h-10 w-10 shrink-0 overflow-visible rounded-2xl p-0  transition-all duration-200 md:h-12 md:w-12 md:rounded-[20px] ${
         darkMode
-          ? "border-cyan-300/25 bg-slate-900/90 text-cyan-100 shadow-[0_14px_36px_rgba(0,0,0,0.38)] hover:border-cyan-300/50 hover:bg-cyan-300/10"
-          : "border-slate-200 bg-white/90 text-slate-900 hover:border-blue-300 hover:bg-blue-50 hover:shadow-[0_14px_34px_rgba(59,130,246,0.16)]"
+          ? "border-navy-300/25 bg-slate-900/90 text-navy-100  hover:border-navy-300/50 hover:bg-navy-300/10"
+          : "border-slate-200 bg-white/90 text-slate-900 hover:border-navy-300 hover:bg-navy-50 "
       }`}
     >
-      {safeCount > 0 ? <span className="absolute inset-0 rounded-2xl border border-rose-400/40" /> : null}
+      {safeCount > 0 ? <span className="absolute inset-0 rounded-2xl border border-accent-400/40" /> : null}
       <NotificationSignalIcon className="relative h-4 w-4 md:h-5 md:w-5" />
       {safeCount > 0 ? (
-        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1.5 text-[10px] font-bold leading-none text-white shadow-[0_6px_18px_rgba(244,63,94,0.45)] dark:border-slate-950">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-accent-500 px-1.5 text-[10px] font-bold leading-none text-white  dark:border-slate-950">
           {displayCount}
         </span>
       ) : null}
@@ -389,36 +389,36 @@ function NotificationsPanel({
     const normalized = priorityLabel(item).toLowerCase();
     if (normalized.includes("critical") || normalized.includes("urgent")) {
       return darkMode
-        ? "border border-rose-300/30 bg-rose-300/10 text-rose-100"
-        : "border border-rose-200 bg-rose-50 text-rose-700";
+        ? "border border-accent-300/30 bg-accent-300/10 text-accent-100"
+        : "border border-accent-200 bg-accent-50 text-accent-700";
     }
     if (normalized.includes("warning") || normalized.includes("review")) {
       return darkMode
-        ? "border border-amber-300/30 bg-amber-300/10 text-amber-100"
-        : "border border-amber-200 bg-amber-50 text-amber-800";
+        ? "border border-warn-300/30 bg-warn-300/10 text-warn-100"
+        : "border border-warn-200 bg-warn-50 text-warn-800";
     }
     return darkMode
-      ? "border border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
-      : "border border-blue-200 bg-blue-50 text-blue-800";
+      ? "border border-navy-300/30 bg-navy-300/10 text-navy-100"
+      : "border border-navy-200 bg-navy-50 text-navy-800";
   };
   const panelSurfaceClass = darkMode
-    ? "notification-popover-dark border-white/10 bg-slate-950 text-slate-50 shadow-[0_32px_110px_rgba(0,0,0,0.75)]"
-    : "notification-popover-light border-slate-200/90 bg-white text-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)]";
+    ? "notification-popover-dark border-white/10 bg-slate-950 text-slate-50 "
+    : "notification-popover-light border-slate-200/90 bg-white text-slate-950 ";
   const headerBorderClass = darkMode ? "border-white/10" : "border-slate-200";
   const headerTitleClass = darkMode ? "text-slate-50" : "text-slate-950";
   const headerSubtitleClass = darkMode ? "text-slate-300" : "text-slate-600";
   const countBadgeClass = darkMode
-    ? "border-rose-300/30 bg-rose-300/10 text-rose-100"
-    : "border-rose-200 bg-rose-50 text-rose-700";
+    ? "border-accent-300/30 bg-accent-300/10 text-accent-100"
+    : "border-accent-200 bg-accent-50 text-accent-700";
   const emptyStateClass = darkMode
     ? "border-white/10 bg-slate-800 text-slate-100"
     : "border-slate-200 bg-slate-50 text-slate-700";
   const rowClass = darkMode
-    ? "border-transparent hover:border-cyan-300/30 hover:bg-cyan-300/10"
-    : "border-transparent hover:border-blue-200 hover:bg-blue-50/80";
+    ? "border-transparent hover:border-navy-300/30 hover:bg-navy-300/10"
+    : "border-transparent hover:border-navy-200 hover:bg-navy-50/80";
   const iconClass = darkMode
-    ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
-    : "border-blue-200 bg-blue-50 text-blue-700";
+    ? "border-navy-300/30 bg-navy-300/10 text-navy-100"
+    : "border-navy-200 bg-navy-50 text-navy-700";
   const titleTextClass = darkMode ? "text-slate-50" : "text-slate-950";
   const contextTextClass = darkMode ? "text-slate-300" : "text-slate-600";
 
@@ -580,8 +580,8 @@ function DesktopVesselIdentityLockup({
   commandStatement = "Private yacht command workspace for crew, approvals, routing, documents, and operational readiness.",
 }) {
   const dockShellClass = darkMode
-    ? "border-white/8 bg-[linear-gradient(180deg,rgba(12,26,39,0.92),rgba(5,15,27,0.98))] shadow-[0_30px_72px_rgba(0,0,0,0.38)]"
-    : "border-white/84 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(243,248,250,0.92))] shadow-[inset_0_1px_0_rgba(255,255,255,0.94),0_22px_56px_rgba(15,23,42,0.12)]";
+    ? "border-white/8 bg-[none] "
+    : "border-white/84 bg-[none] ";
 
   return (
     <div className="hidden min-w-0 pl-[6.375rem] pt-3 lg:block xl:pl-[7rem]">
@@ -591,15 +591,15 @@ function DesktopVesselIdentityLockup({
         <div
           className={`rounded-[36px] p-[2px] ${
             darkMode
-              ? "bg-[linear-gradient(180deg,rgba(9,21,34,0.98),rgba(3,11,22,1))]"
-              : "bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(244,248,250,0.90))]"
+              ? "bg-[none]"
+              : "bg-[none]"
           }`}
         >
           <div
             className={`flex h-[100px] w-[100px] items-center justify-center rounded-[32px] border backdrop-blur-xl xl:h-[104px] xl:w-[104px] ${
               darkMode
-                ? "border-white/10 bg-slate-900/80 shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
-                : "border-slate-200/80 bg-white/84 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_20px_48px_rgba(15,23,42,0.10)]"
+                ? "border-white/10 bg-slate-900/80 "
+                : "border-slate-200/80 bg-white/84 "
             }`}
           >
             <ContessaUiLogo className="h-16 w-16 object-contain" />
@@ -618,7 +618,7 @@ function DesktopVesselIdentityLockup({
         <p className={`mt-4 whitespace-nowrap text-sm font-bold uppercase tracking-[0.28em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
           {safeText(vesselIdentifier, "IMO pending verification")}
         </p>
-        <div className="mt-4 h-px w-48 bg-gradient-to-r from-transparent via-amber-400/65 to-transparent dark:via-amber-300/60" />
+        <div className="mt-4 h-px w-48     dark:" />
       </div>
 
       <p className={`mt-8 max-w-3xl text-lg font-medium leading-8 ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
@@ -629,10 +629,10 @@ function DesktopVesselIdentityLockup({
         <span className={liveChipClass(darkMode)}>
           Live vessel workspace
         </span>
-        <span className={blueChipClass(darkMode)}>
+        <span className={navyChipClass(darkMode)}>
           {safeText(vesselMode, "Command mode")}
         </span>
-        <span className={goldChipClass(darkMode)}>
+        <span className={accentChipClass(darkMode)}>
           {safeText(currentRoleLabel, "Captain")} view
         </span>
       </div>
@@ -642,25 +642,25 @@ function DesktopVesselIdentityLockup({
 
 function HeroLensTile({ darkMode = false, label, value, tone = "neutral" }) {
   const toneClass = {
-    cyan: darkMode
-      ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100"
-      : "border-cyan-200 bg-cyan-50/80 text-cyan-900",
-    amber: darkMode
-      ? "border-amber-300/25 bg-amber-300/10 text-amber-100"
-      : "border-amber-200 bg-amber-50/90 text-amber-900",
-    teal: darkMode
-      ? "border-teal-300/25 bg-teal-300/10 text-teal-100"
-      : "border-teal-200 bg-teal-50/80 text-teal-900",
-    rose: darkMode
-      ? "border-rose-300/25 bg-rose-300/10 text-rose-100"
-      : "border-rose-200 bg-rose-50/80 text-rose-900",
+    navy: darkMode
+      ? "border-navy-300/25 bg-navy-300/10 text-navy-100"
+      : "border-navy-200 bg-navy-50/80 text-navy-900",
+    warn: darkMode
+      ? "border-warn-300/25 bg-warn-300/10 text-warn-100"
+      : "border-warn-200 bg-warn-50/90 text-warn-900",
+    navy: darkMode
+      ? "border-navy-300/25 bg-navy-300/10 text-navy-100"
+      : "border-navy-200 bg-navy-50/80 text-navy-900",
+    accent: darkMode
+      ? "border-accent-300/25 bg-accent-300/10 text-accent-100"
+      : "border-accent-200 bg-accent-50/80 text-accent-900",
     neutral: darkMode
       ? "border-white/10 bg-white/[0.04] text-slate-100"
       : "border-slate-200/80 bg-white/82 text-slate-900",
   }[tone] || (darkMode ? "border-white/10 bg-white/[0.04] text-slate-100" : "border-slate-200/80 bg-white/82 text-slate-900");
   const shellClass = darkMode
-    ? "bg-[linear-gradient(180deg,rgba(10,18,28,0.96),rgba(6,14,24,0.98))] shadow-[0_10px_24px_rgba(0,0,0,0.20)]"
-    : "bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(241,246,250,0.92))] shadow-[0_10px_24px_rgba(15,23,42,0.08)]";
+    ? "bg-[none] "
+    : "bg-[none] ";
 
   return (
     <div className={`rounded-[18px] p-[2px] ${shellClass}`}>
@@ -685,20 +685,20 @@ function HeroCommandLens({
   onOpenApprovals,
 }) {
   const safeConfidence = Math.round(Math.max(0, Math.min(100, Number(confidence) || 0)));
-  const confidenceTone = safeConfidence >= 82 ? "teal" : safeConfidence >= 65 ? "amber" : "rose";
+  const confidenceTone = safeConfidence >= 82 ? "navy" : safeConfidence >= 65 ? "warn" : "accent";
   const panelClass = darkMode
-    ? "border-cyan-300/15 bg-slate-950/58 text-slate-50 shadow-[0_26px_70px_rgba(0,0,0,0.34)]"
-    : "border-white/80 bg-white/76 text-[#071A3A] shadow-[0_28px_80px_rgba(15,23,42,0.10)]";
+    ? "border-navy-300/15 bg-slate-950/58 text-slate-50 "
+    : "border-white/80 bg-white/76 text-[#071A3A] ";
   const lensShellClass = darkMode
-    ? "bg-[linear-gradient(180deg,rgba(10,18,28,0.96),rgba(6,14,24,0.98))] shadow-[0_12px_30px_rgba(0,0,0,0.24)]"
-    : "bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(241,246,250,0.92))] shadow-[0_12px_30px_rgba(15,23,42,0.08)]";
+    ? "bg-[none] "
+    : "bg-[none] ";
 
   return (
     <aside className={`relative min-w-0 overflow-hidden rounded-[34px] border p-5 backdrop-blur-2xl ${panelClass}`}>
-      <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-6 top-0 h-px    " />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className={`text-[11px] font-bold uppercase tracking-[0.2em] ${darkMode ? "text-cyan-100" : "text-cyan-800"}`}>
+          <p className={`text-[11px] font-bold uppercase tracking-[0.2em] ${darkMode ? "text-navy-100" : "text-navy-800"}`}>
             Command Lens
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">Vessel intelligence</h2>
@@ -707,15 +707,15 @@ function HeroCommandLens({
           </p>
         </div>
 
-        <div className={`flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-[26px] border ${confidenceTone === "teal" ? (darkMode ? "border-teal-300/30 bg-teal-300/10 text-teal-100" : "border-teal-200 bg-teal-50 text-teal-900") : confidenceTone === "amber" ? (darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-900") : (darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-900")}`}>
+        <div className={`flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-[26px] border ${confidenceTone === "navy" ? (darkMode ? "border-navy-300/30 bg-navy-300/10 text-navy-100" : "border-navy-200 bg-navy-50 text-navy-900") : confidenceTone === "warn" ? (darkMode ? "border-warn-300/30 bg-warn-300/10 text-warn-100" : "border-warn-200 bg-warn-50 text-warn-900") : (darkMode ? "border-accent-300/30 bg-accent-300/10 text-accent-100" : "border-accent-200 bg-accent-50 text-accent-900")}`}>
           <span className="text-2xl font-black leading-none">{safeConfidence}%</span>
           <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em]">Ready</span>
         </div>
       </div>
 
       <div className={`mt-5 rounded-[28px] p-[2px] ${lensShellClass}`}>
-        <div className={`rounded-[26px] border p-4 ${darkMode ? "border-amber-300/20 bg-amber-300/10" : "border-amber-200/80 bg-amber-50/65"}`}>
-          <p className={`text-[10px] font-bold uppercase tracking-[0.18em] ${darkMode ? "text-amber-100" : "text-amber-800"}`}>
+        <div className={`rounded-[26px] border p-4 ${darkMode ? "border-warn-300/20 bg-warn-300/10" : "border-warn-200/80 bg-warn-50/65"}`}>
+          <p className={`text-[10px] font-bold uppercase tracking-[0.18em] ${darkMode ? "text-warn-100" : "text-warn-800"}`}>
             Next best action
           </p>
           <p className={`mt-2 text-base font-semibold leading-6 ${darkMode ? "text-slate-50" : "text-slate-950"}`}>
@@ -725,10 +725,10 @@ function HeroCommandLens({
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <HeroLensTile darkMode={darkMode} label="Route" value={routeStatus} tone="cyan" />
-        <HeroLensTile darkMode={darkMode} label="Pending spend" value={pendingSpend} tone="amber" />
-        <HeroLensTile darkMode={darkMode} label="Approval" value={`${Number(pendingApprovals) || 0} waiting`} tone={pendingApprovals ? "amber" : "neutral"} />
-        <HeroLensTile darkMode={darkMode} label="Crew" value={crewReadiness} tone="teal" />
+        <HeroLensTile darkMode={darkMode} label="Route" value={routeStatus} tone="navy" />
+        <HeroLensTile darkMode={darkMode} label="Pending spend" value={pendingSpend} tone="warn" />
+        <HeroLensTile darkMode={darkMode} label="Approval" value={`${Number(pendingApprovals) || 0} waiting`} tone={pendingApprovals ? "warn" : "neutral"} />
+        <HeroLensTile darkMode={darkMode} label="Crew" value={crewReadiness} tone="navy" />
       </div>
 
       <div className={`mt-4 rounded-[26px] p-[2px] ${lensShellClass}`}>
@@ -760,8 +760,8 @@ function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdent
       <div
         className={`mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] border backdrop-blur-xl ${
           darkMode
-            ? "border-white/10 bg-slate-900/80 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
-            : "border-slate-200/80 bg-white/86 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_34px_rgba(15,23,42,0.08)]"
+            ? "border-white/10 bg-slate-900/80 "
+            : "border-slate-200/80 bg-white/86 "
         }`}
       >
         <ContessaUiLogo className="h-11 w-11 object-contain" />
@@ -777,7 +777,7 @@ function MobileVesselIdentityLockup({ darkMode = false, vesselTitle, vesselIdent
       <p className={`mt-3 whitespace-nowrap text-center text-xs font-bold uppercase tracking-[0.24em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
         {vesselIdentifier}
       </p>
-      <div className="mx-auto mt-4 h-px w-36 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent dark:via-amber-300/55" />
+      <div className="mx-auto mt-4 h-px w-36     dark:" />
     </div>
   );
 }
@@ -864,7 +864,7 @@ function ConfirmableTaskFields({
         <div className="flex items-center justify-between gap-4 border-b border-[var(--mb-line-strong)] pb-2">
           <div className="rv-masthead-kicker">Task Information</div>
           {canEdit ? (
-            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
+            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-accent)] transition-colors hover:text-[var(--mb-accent-bright)]">
               Edit
             </button>
           ) : (
@@ -1178,7 +1178,7 @@ export function ObjectivesView({
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(520px,680px)] xl:items-start">
-        <Card className={`app-panel app-panel-soft shadow-md ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
+        <Card className={`app-panel app-panel-soft  ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
           <CardContent className="p-4">
             {visibleTasks.length === 0 ? (
               <div className={`app-empty-state rounded-xl border border-dashed text-center text-sm ${theme.textSecondary} ${darkMode ? "border-[#31443a] bg-[#0e171c]" : "border-[#c9ded3] bg-[#f7faf8]"}`}>
@@ -1192,10 +1192,10 @@ export function ObjectivesView({
                       key={option.key}
                       type="button"
                       onClick={() => setTaskBoardView(option.key)}
-                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-200 active:scale-[0.98] ${taskBoardView === option.key ? "vessel-active border-transparent" : "border-[var(--mb-line)] bg-[var(--mb-panel)] text-[var(--mb-soft)] hover:border-[var(--mb-gold-hover)] hover:bg-[var(--mb-gold-tint)] hover:text-[var(--mb-gold-bright)]"}`}
+                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-200 active:scale-[0.98] ${taskBoardView === option.key ? "vessel-active border-transparent" : "border-[var(--mb-line)] bg-[var(--mb-panel)] text-[var(--mb-soft)] hover:border-[var(--mb-accent-hover)] hover:bg-[var(--mb-accent-tint)] hover:text-[var(--mb-accent-bright)]"}`}
                     >
                       <span className="whitespace-nowrap">{option.label}</span>
-                      <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] ${taskBoardView === option.key ? "bg-white/20 text-white" : "bg-[var(--mb-gold-tint)] text-[var(--mb-gold-bright)]"}`}>
+                      <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] ${taskBoardView === option.key ? "bg-white/20 text-white" : "bg-[var(--mb-accent-tint)] text-[var(--mb-accent-bright)]"}`}>
                         {option.count}
                       </span>
                     </button>
@@ -1274,7 +1274,7 @@ export function ObjectivesView({
           className={`ui-reveal-target rv-sticky-detail rounded-2xl md:rounded-lg ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
           style={{ "--reveal-radius": "22px" }}
         >
-          <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"} shadow-md ${theme.card} rounded-2xl md:rounded-lg`}>
+          <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"}  ${theme.card} rounded-2xl md:rounded-lg`}>
             <CardContent className="p-4 md:p-6">
               <TaskDetails
                 selectedTask={selectedTask}
@@ -1372,8 +1372,8 @@ export function HarbourlineControlDeck({
   const selectedFleetFlag = normalizeFlag(fleetDraft.flag);
   const fleetHomePortOptions = homePortsByFlag[selectedFleetFlag] || [];
   const settingsCardClass = darkMode
-    ? "settings-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-    : "settings-popover-card-light rounded-2xl border border-slate-300 bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]";
+    ? "settings-popover-card-dark rounded-2xl border border-white/15 bg-slate-900/92 p-3 "
+    : "settings-popover-card-light rounded-2xl border border-slate-300 bg-white p-3 ";
   const settingsLabelClass = darkMode
     ? "settings-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
     : "settings-popover-label-light text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700";
@@ -1383,7 +1383,7 @@ export function HarbourlineControlDeck({
   const settingsValueBoxClass = darkMode
     ? "settings-popover-field-dark border-white/15 bg-slate-800/95 text-slate-50"
     : "settings-popover-field-light border-slate-300 bg-white text-slate-950";
-  const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-cyan-300/40 hover:!bg-cyan-300/12" : ""}`;
+  const settingsMutedActionClass = `${mutedButtonClass} w-full justify-start ${darkMode ? "!border-white/15 !bg-slate-800/92 !text-slate-50 hover:!border-navy-300/40 hover:!bg-navy-300/12" : ""}`;
   const settingsMetaClass = darkMode ? "text-slate-200" : "settings-popover-meta-light text-slate-700";
   const fleetLabelClass = darkMode
     ? "fleet-popover-label-dark text-[11px] font-bold uppercase tracking-[0.18em] text-slate-100"
@@ -1398,8 +1398,8 @@ export function HarbourlineControlDeck({
     ? `${Math.max(syncPendingCount, 1)} pending local change${Math.max(syncPendingCount, 1) === 1 ? "" : "s"}`
     : "Saved locally";
   const syncStatusClass = isOffline || syncPendingCount > 0
-    ? "border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/18 dark:text-amber-50"
-    : "border-teal-300/70 bg-teal-50/90 text-teal-800 dark:border-cyan-300/35 dark:bg-cyan-300/14 dark:text-cyan-50";
+    ? "border-warn-300/70 bg-warn-50/90 text-warn-800 dark:border-warn-300/35 dark:bg-warn-300/18 dark:text-warn-50"
+    : "border-navy-300/70 bg-navy-50/90 text-navy-800 dark:border-navy-300/35 dark:bg-navy-300/14 dark:text-navy-50";
 
   return (
     <>
@@ -1493,7 +1493,7 @@ export function HarbourlineControlDeck({
 
       {/* ---- Preferences (role, mode, vessel state, persistence) ---- */}
       <Dialog open={preferencesOpen} onOpenChange={onPreferencesOpenChange}>
-        <DialogContent className={`max-h-[88vh] overflow-y-auto rounded-[28px] ${darkMode ? "settings-popover-dark border-cyan-300/15 bg-slate-950 text-slate-50" : "settings-popover-light border-slate-200/90 bg-white text-slate-950"}`}>
+        <DialogContent className={`max-h-[88vh] overflow-y-auto rounded-[28px] ${darkMode ? "settings-popover-dark border-navy-300/15 bg-slate-950 text-slate-50" : "settings-popover-light border-slate-200/90 bg-white text-slate-950"}`}>
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>
           </DialogHeader>
@@ -1541,7 +1541,7 @@ export function HarbourlineControlDeck({
               </div>
               <div className={settingsCardClass}>
                 <div className={settingsLabelClass}>Status</div>
-                <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-bold ${canEditApp ? "border border-amber-300/70 bg-amber-50/90 text-amber-800 dark:border-amber-300/35 dark:bg-amber-300/20 dark:text-amber-50" : "border border-slate-200/80 bg-slate-50/80 text-slate-700 dark:border-white/15 dark:bg-slate-800/95 dark:text-slate-50"}`}>
+                <Badge className={`mt-2 flex min-h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-bold ${canEditApp ? "border border-warn-300/70 bg-warn-50/90 text-warn-800 dark:border-warn-300/35 dark:bg-warn-300/20 dark:text-warn-50" : "border border-slate-200/80 bg-slate-50/80 text-slate-700 dark:border-white/15 dark:bg-slate-800/95 dark:text-slate-50"}`}>
                   {canEditApp ? "Editor Mode" : "View Mode"}
                 </Badge>
               </div>
@@ -1631,8 +1631,8 @@ export function HarbourlineControlDeck({
                 onClick={() => { setFleetDraftError(""); setFleetFormOpen(true); }}
                 className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 ${
                   darkMode
-                    ? "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-100 hover:border-cyan-300/45 hover:bg-cyan-300/[0.12]"
-                    : "border-amber-300/70 bg-amber-50/80 text-amber-900 hover:border-amber-400 hover:bg-amber-100/70"
+                    ? "border-navy-300/25 bg-navy-300/[0.08] text-navy-100 hover:border-navy-300/45 hover:bg-navy-300/[0.12]"
+                    : "border-warn-300/70 bg-warn-50/80 text-warn-900 hover:border-warn-400 hover:bg-warn-100/70"
                 }`}
               >
                 <span>Add Vessel</span>
@@ -1647,13 +1647,13 @@ export function HarbourlineControlDeck({
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className={fleetFormLabelClass}>
-                      Vessel Name <span className="text-rose-500">*</span>
+                      Vessel Name <span className="text-accent-500">*</span>
                     </label>
                     <Input placeholder="M/Y Vessel Name" value={fleetDraft.vesselName} onChange={(event) => setFleetDraft((prev) => ({ ...prev, vesselName: event.target.value }))} className={`h-14 rounded-2xl text-base font-semibold ${theme.input}`} />
                   </div>
                   <div>
                     <label className={fleetFormLabelClass}>
-                      Length <span className="text-rose-500">*</span>
+                      Length <span className="text-accent-500">*</span>
                     </label>
                     <div className="relative">
                       <Input type="number" min="1" step="0.1" inputMode="decimal" placeholder="125" value={fleetDraft.lengthFeet} onChange={(event) => setFleetDraft((prev) => ({ ...prev, lengthFeet: event.target.value }))} className={`h-14 rounded-2xl pr-12 text-base font-semibold ${theme.input}`} />
@@ -1700,7 +1700,7 @@ export function HarbourlineControlDeck({
                   className={`mt-3 min-h-24 w-full rounded-2xl border px-3 py-3 outline-none ${theme.input}`}
                 />
                 {fleetDraftError ? (
-                  <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 dark:border-rose-300/30 dark:bg-rose-300/10 dark:text-rose-100">
+                  <div className="mt-3 rounded-2xl border border-accent-200 bg-accent-50 px-4 py-3 text-sm font-semibold text-accent-700 dark:border-accent-300/30 dark:bg-accent-300/10 dark:text-accent-100">
                     {fleetDraftError}
                   </div>
                 ) : null}
@@ -1769,7 +1769,7 @@ export function HarbourlineControlDeck({
                   ];
 
                   return (
-                    <div key={vessel.id} className={`relative flex h-full flex-col gap-2.5 overflow-hidden rounded-[22px] border p-4 transition-all duration-200 ${vesselToneClass} ${isActive ? (darkMode ? "ring-1 ring-cyan-300/25" : "ring-1 ring-amber-300/60") : ""}`}>
+                    <div key={vessel.id} className={`relative flex h-full flex-col gap-2.5 overflow-hidden rounded-[22px] border p-4 transition-all duration-200 ${vesselToneClass} ${isActive ? (darkMode ? "ring-1 ring-navy-300/25" : "ring-1 ring-warn-300/60") : ""}`}>
                       <div className="flex items-start justify-between gap-2.5">
                         <div>
                           <div className={fleetLabelClass}>Vessel</div>
@@ -1804,7 +1804,7 @@ export function HarbourlineControlDeck({
                           <Button
                             type="button"
                             onClick={() => { onFleetOpenChange?.(false); onSwitchFleetVessel?.(vessel.id); }}
-                            className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-cyan-300/30 !bg-cyan-300/10 !text-cyan-100" : ""}`}
+                            className={`${primaryButtonClass} h-11 w-full ${darkMode ? "!border-navy-300/30 !bg-navy-300/10 !text-navy-100" : ""}`}
                           >
                             Open Vessel
                           </Button>
@@ -1893,7 +1893,7 @@ export function AppSectionCards({
       </div>
 
       <div
-        className={`fixed inset-x-3 bottom-3 z-[3000] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[28px] border p-2 pb-[calc(0.55rem+env(safe-area-inset-bottom))] shadow-[0_-14px_44px_-18px_rgba(17,46,39,0.24)] backdrop-blur-2xl md:hidden ${
+        className={`fixed inset-x-3 bottom-3 z-[3000] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[28px] border p-2 pb-[calc(0.55rem+env(safe-area-inset-bottom))]  backdrop-blur-2xl md:hidden ${
           darkMode ? "border-[var(--vessel-border-dark)] bg-[rgba(4,12,18,0.86)] text-[#f4fbf6]" : "border-[rgba(15,80,70,0.10)] bg-[rgba(255,255,255,0.88)] text-[#13231d]"
         }`}
       >
@@ -1990,11 +1990,11 @@ export function MaintenanceReminderModal({
 
   return (
     <div className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/45 p-4">
-      <div className={`w-full max-w-xl rounded-lg border p-5 shadow-2xl ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-[#fbfefd] text-[#1d2b24]"}`}>
+      <div className={`w-full max-w-xl rounded-lg border p-5  ${darkMode ? "border-[#2a3a32] bg-[#111a16] text-[#f4fbf6]" : "border-[#d7e8df] bg-[#fbfefd] text-[#1d2b24]"}`}>
         <div className="text-premium-label mb-2 text-xs font-semibold uppercase">Maintenance Reminder</div>
         <h2 className="text-2xl font-semibold">{maintenancePopupItem.title}</h2>
         <p className={`mt-1 text-sm ${theme.textSecondary}`}>{maintenancePopupItem.area} - Due {maintenancePopupItem.nextDueDate}</p>
-        <div className="mt-4 rounded-lg bg-amber-50 p-4 text-amber-900">
+        <div className="mt-4 rounded-lg bg-warn-50 p-4 text-warn-900">
           {maintenancePopupFollowUp
             ? "Seven hours have passed since this was noted. Is the maintenance completed?"
             : "This maintenance item needs attention. Choose how you want to handle the reminder."}
@@ -2036,7 +2036,7 @@ export function MaintenanceReminderModal({
               <div className={`rounded-lg border p-3 ${darkMode ? "border-[#31443a] bg-[#18211d]/80" : "border-[#d8e7df] bg-white"}`}>
                 <div className={`mb-2 text-sm font-medium ${theme.textSecondary}`}>Postpone</div>
                 {maintenancePopupItem.extensionUsed ? (
-                  <div className="mb-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-900">
+                  <div className="mb-2 rounded-lg bg-warn-50 p-2 text-xs text-warn-900">
                     This maintenance cycle has already been extended once.
                   </div>
                 ) : null}
@@ -2075,7 +2075,7 @@ export function AppBanner({ banner, onDismiss, darkMode = false }) {
   };
 
   return (
-    <div className={`fixed left-4 right-4 top-4 z-[10001] mx-auto flex max-w-xl items-start justify-between gap-3 rounded-2xl border p-4 shadow-2xl ${variants[banner.type] || variants.info}`}>
+    <div className={`fixed left-4 right-4 top-4 z-[10001] mx-auto flex max-w-xl items-start justify-between gap-3 rounded-2xl border p-4  ${variants[banner.type] || variants.info}`}>
       <div>
         {banner.title ? <div className="font-semibold">{banner.title}</div> : null}
         <div className="text-sm">{banner.message}</div>

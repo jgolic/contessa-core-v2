@@ -1,0 +1,936 @@
+/* CONTESSA MANIFEST: one quiet operational language. */
+
+:root {
+  --paper: #f6f3ec;
+  --paper-2: #ede8dc;
+  --hairline: #ddd5c4;
+  --navy: #0e1f38;
+  --navy-soft: #64708a;
+  --accent: #e8442e;
+  --ok: #3d7a5c;
+  --warn: #b7822e;
+  --crit: var(--accent);
+  --chrome-text: var(--paper);
+  --chrome-soft: #93a0b8;
+  --hull-900: var(--navy);
+  --hull-800: var(--navy);
+  --hull-700: var(--navy);
+  --deck-50: var(--paper);
+  --deck-100: var(--paper-2);
+  --deck-200: var(--hairline);
+  --ink: var(--navy);
+  --ink-soft: var(--navy-soft);
+  --fog: var(--paper);
+  --fog-soft: var(--chrome-soft);
+  --signal: var(--accent);
+  --neo-abyss: var(--navy);
+  --neo-depth: var(--navy);
+  --neo-petrol: var(--navy);
+  --neo-accent: var(--accent);
+  --neo-accent-soft: var(--paper-2);
+  --neo-champagne: var(--navy);
+  --neo-coral: var(--accent);
+  --neo-paper: var(--paper);
+  --neo-paper-bright: var(--paper);
+  --neo-ink: var(--navy);
+  --neo-hairline: var(--hairline);
+  --neo-shadow: none;
+  --mb-bg: var(--paper);
+  --mb-ink: var(--navy);
+  --mb-muted: var(--navy-soft);
+  --mb-soft: var(--navy-soft);
+  --mb-accent: var(--navy);
+  --mb-accent-bright: var(--navy);
+  --mb-on-accent: var(--paper);
+  --mb-accent-badge: var(--accent);
+  --mb-accent-tint: var(--paper-2);
+  --mb-line: var(--hairline);
+  --mb-line-strong: var(--hairline);
+  --mb-accent-hover: var(--navy);
+  --mb-panel: var(--paper-2);
+  --mb-panel-strong: var(--paper);
+  --mb-scrim: rgb(14 31 56 / 58%);
+  --mb-critical: var(--accent);
+  --mb-critical-text: var(--accent);
+  --mb-safe: var(--ok);
+  --mb-safe-text: var(--ok);
+  --mb-tick-neutral: var(--hairline);
+  --mb-hero-scrim-soft: transparent;
+  --mb-hero-scrim-strong: transparent;
+  --mb-rail-bg: var(--navy);
+  --mb-dock-bg: var(--navy);
+  --vessel-primary: var(--accent);
+  --vessel-primary-soft: var(--paper-2);
+  --vessel-primary-muted: var(--hairline);
+  --vessel-secondary: var(--navy);
+  --vessel-accent: var(--navy);
+  --vessel-accent-soft: var(--paper-2);
+  --vessel-border: var(--hairline);
+  --vessel-ring: var(--navy);
+  --vessel-primary-rgb: 232, 68, 46;
+  --vessel-secondary-rgb: 14, 31, 56;
+  --vessel-accent-rgb: 14, 31, 56;
+  --vessel-bg-light: var(--paper);
+  --vessel-card: var(--paper-2);
+  --vessel-card-strong: var(--paper);
+  --vessel-card-light: var(--paper-2);
+}
+
+:where(.app-workspace-shell, .app-workspace-shell *) {
+  --neo-abyss: var(--navy) !important;
+  --neo-depth: var(--navy) !important;
+  --neo-petrol: var(--navy) !important;
+  --neo-accent: var(--accent) !important;
+  --neo-accent-soft: var(--paper-2) !important;
+  --neo-champagne: var(--navy) !important;
+  --neo-coral: var(--accent) !important;
+  --neo-paper: var(--paper) !important;
+  --neo-paper-bright: var(--paper) !important;
+  --neo-ink: var(--navy) !important;
+  --neo-hairline: var(--hairline) !important;
+  --neo-shadow: none !important;
+  --mb-bg: var(--paper) !important;
+  --mb-ink: var(--navy) !important;
+  --mb-muted: var(--navy-soft) !important;
+  --mb-soft: var(--navy-soft) !important;
+  --mb-accent: var(--navy) !important;
+  --mb-accent-bright: var(--navy) !important;
+  --mb-on-accent: var(--paper) !important;
+  --mb-accent-badge: var(--accent) !important;
+  --mb-accent-tint: var(--paper-2) !important;
+  --mb-line: var(--hairline) !important;
+  --mb-line-strong: var(--hairline) !important;
+  --mb-accent-hover: var(--navy) !important;
+  --mb-panel: var(--paper-2) !important;
+  --mb-panel-strong: var(--paper) !important;
+  --mb-critical: var(--accent) !important;
+  --mb-critical-text: var(--accent) !important;
+  --mb-safe: var(--ok) !important;
+  --mb-safe-text: var(--ok) !important;
+  --mb-tick-neutral: var(--hairline) !important;
+  --vessel-primary: var(--accent) !important;
+  --vessel-primary-soft: var(--paper-2) !important;
+  --vessel-primary-muted: var(--accent) !important;
+  --vessel-secondary: var(--navy) !important;
+  --vessel-accent: var(--navy) !important;
+  --vessel-accent-soft: var(--paper-2) !important;
+  --vessel-border: var(--hairline) !important;
+  --vessel-ring: var(--navy) !important;
+  --vessel-primary-rgb: 232, 68, 46 !important;
+  --vessel-secondary-rgb: 14, 31, 56 !important;
+  --vessel-accent-rgb: 14, 31, 56 !important;
+  --vessel-bg-light: var(--paper) !important;
+  --vessel-bg-dark: var(--paper) !important;
+  --vessel-card: var(--paper-2) !important;
+  --vessel-card-strong: var(--paper) !important;
+  --vessel-card-light: var(--paper-2) !important;
+  --vessel-card-dark: var(--paper-2) !important;
+  --vessel-border-dark: var(--hairline) !important;
+  --vessel-text-accent: var(--navy) !important;
+  --vessel-text-accent-dark: var(--navy) !important;
+  --vessel-text-primary-dark: var(--navy) !important;
+  --vessel-text-secondary-dark: var(--navy-soft) !important;
+  --vessel-primary-dark: var(--accent) !important;
+  --vessel-primary-soft-dark: var(--paper-2) !important;
+  --vessel-glow-dark: transparent !important;
+}
+
+html {
+  background: var(--paper);
+  color-scheme: light;
+}
+
+body,
+.app-bg,
+.app-bg-dark,
+.bg-vessel-page,
+.vessel-page-dark,
+.app-workspace-shell,
+.app-page-frame,
+.app-module-stage {
+  background: var(--paper) !important;
+  background-image: none !important;
+  color: var(--navy) !important;
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+body::before,
+body::after,
+.app-panel::before,
+.app-panel::after,
+.vessel-hero-card::before,
+.vessel-hero-card::after,
+.neo-command-header::before,
+.neo-hero::before,
+.neo-hero-glow,
+.harbourline-grain,
+.harbourline-chart-canvas::after,
+.fleet-command-overview::before,
+.fleet-home-chart-lines {
+  display: none !important;
+}
+
+::selection {
+  background: rgb(232 68 46 / 18%);
+  color: var(--navy);
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--navy) !important;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+:where(button, a, input, select, textarea) {
+  -webkit-tap-highlight-color: rgb(232 68 46 / 12%);
+}
+
+.app-skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 30000;
+  transform: translateY(calc(-100% - 24px));
+  border: 1px solid var(--paper) !important;
+  border-radius: 8px;
+  background: var(--navy) !important;
+  color: var(--paper) !important;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-skip-link:focus,
+.app-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.app-workspace-shell :where(*:not(.maplibregl-map, .maplibregl-map *)) {
+  background-image: none !important;
+  box-shadow: none;
+  filter: none !important;
+  text-shadow: none;
+}
+
+.app-workspace-shell :where([class*="shadow-"]:not(.maplibregl-map, .maplibregl-map *)) {
+  box-shadow: none;
+}
+
+.app-workspace-shell [class*="bg-[#"] {
+  background: var(--paper-2) !important;
+  background-image: none !important;
+}
+
+.app-workspace-shell [class*="text-[#"] {
+  color: var(--navy) !important;
+}
+
+.app-workspace-shell [class*="border-[#"] {
+  border-color: var(--hairline) !important;
+}
+
+.app-workspace-shell [class*="bg-ok-"],
+.app-workspace-shell [class*="bg-warn-"] {
+  background: transparent !important;
+}
+
+.app-workspace-shell [class*="bg-accent-"] {
+  background: var(--paper-2) !important;
+}
+
+[data-mb-hero],
+[data-mb-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+.harbourline-command-header,
+.harbourline-rail,
+.harbourline-mobile-dock,
+.neo-command-header,
+.neo-rail,
+.neo-mobile-dock,
+.mb-rail,
+.mb-dock {
+  background: var(--navy) !important;
+  background-image: none !important;
+  border: 1px solid rgb(246 243 236 / 12%) !important;
+  color: var(--paper) !important;
+  box-shadow: none;
+}
+
+.harbourline-command-header *,
+.harbourline-rail *,
+.harbourline-mobile-dock *,
+.neo-command-header *,
+.neo-rail *,
+.neo-mobile-dock * {
+  border-color: rgb(246 243 236 / 12%);
+}
+
+.harbourline-logo-button,
+.harbourline-vessel-mark,
+.harbourline-rail-item[aria-current="page"]::after,
+.harbourline-dock-item[aria-current="page"] {
+  background: rgb(246 243 236 / 7%) !important;
+}
+
+.harbourline-command-header .logo-accent-triangle,
+.harbourline-rail .logo-accent-triangle,
+.harbourline-mobile-dock .logo-accent-triangle {
+  stroke: var(--accent) !important;
+}
+
+.harbourline-vessel-menu,
+.harbourline-shell-panel,
+.app-dialog-surface,
+[data-slot="dialog-content"],
+[role="dialog"] {
+  background: var(--paper) !important;
+  background-image: none !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 10px !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.harbourline-vessel-option:hover,
+.harbourline-vessel-menu-footer:hover,
+.harbourline-shell-panel button:hover {
+  background: var(--paper-2) !important;
+}
+
+.neo-hero,
+.vessel-hero-card,
+.fleet-home-hero,
+.fleet-command-overview {
+  background: var(--paper) !important;
+  background-image: none !important;
+  border-color: var(--hairline) !important;
+  border-radius: 0 !important;
+  box-shadow: none;
+}
+
+.neo-hero,
+.vessel-hero-card {
+  border-bottom: 1px solid var(--hairline) !important;
+  border-top: 1px solid var(--hairline) !important;
+}
+
+.neo-vessel-title {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  text-wrap: nowrap;
+  white-space: nowrap;
+  width: 100%;
+  font-size: var(--auto-fit-font-size, clamp(4rem, 11vw, 9.6rem)) !important;
+}
+
+.neo-live-chip {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--ok) !important;
+}
+
+.neo-pulse-metric + .neo-pulse-metric {
+  border-left: 1px solid var(--hairline);
+}
+
+.neo-quick-action {
+  background: var(--paper) !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 8px !important;
+  color: var(--navy) !important;
+  transition: background-color 180ms ease;
+}
+
+.neo-quick-action:hover {
+  background: var(--hairline) !important;
+  transform: none !important;
+}
+
+.neo-module-hero,
+#mission-cards-section,
+#vessel-state-section {
+  background: var(--paper-2) !important;
+  background-image: none !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 10px !important;
+  box-shadow: none;
+}
+
+.neo-vessel-title,
+.vessel-display-title,
+.vessel-title,
+.brand-wordmark,
+.brand-title,
+.fleet-home-headline,
+.rv-masthead-title,
+.text-premium-title,
+.harbourline-heading,
+.app-surface-title {
+  background: transparent !important;
+  color: var(--navy) !important;
+  -webkit-text-fill-color: var(--navy) !important;
+  text-shadow: none;
+}
+
+.neo-command-card,
+.app-card,
+.app-card-soft,
+.app-panel,
+.app-panel-soft,
+.app-panel-active,
+.app-hero-surface,
+.app-section-shell,
+.app-control-block,
+.app-dark-panel,
+.app-dark-card,
+.app-dark-inner,
+.mb-glass,
+.rv-row,
+.fleet-summary-metric,
+.fleet-vessel-row,
+.fleet-home-kpi,
+.fleet-home-vessel-card,
+.fleet-home-ledger,
+.settings-popover-card-light,
+.settings-popover-card-dark,
+.fleet-popover-card-light,
+.fleet-popover-card-dark,
+[data-ui="card"] {
+  background: var(--paper-2) !important;
+  background-image: none !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 10px !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+  filter: none !important;
+}
+
+.app-card-hover:hover,
+.rv-row:hover,
+.fleet-vessel-row:hover,
+.fleet-home-vessel-card:hover,
+.fleet-home-ledger-row:hover {
+  background: var(--hairline) !important;
+  border-color: var(--hairline) !important;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.neo-brief-button {
+  background: var(--navy) !important;
+  border: 1px solid var(--navy) !important;
+  color: var(--paper) !important;
+  box-shadow: none;
+}
+
+.neo-header-task-action,
+.fleet-home-primary-action {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 8px !important;
+  color: var(--paper) !important;
+  box-shadow: none;
+}
+
+.fleet-primary-action,
+.button-vessel-primary {
+  background: var(--navy) !important;
+  border: 1px solid var(--navy) !important;
+  border-radius: 8px !important;
+  color: var(--paper) !important;
+  box-shadow: none;
+}
+
+.fleet-primary-action:hover,
+.button-vessel-primary:hover {
+  background: var(--navy) !important;
+  color: var(--paper) !important;
+  opacity: 0.9;
+  transform: none !important;
+}
+
+.app-primary-action-button,
+.app-action-button,
+.vessel-outline-button,
+.fleet-home-secondary-action,
+.fleet-secondary-action,
+.app-muted-button,
+.app-dark-action {
+  background: transparent !important;
+  border: 1px solid var(--navy) !important;
+  border-radius: 8px !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.app-primary-action-button:hover,
+.app-action-button:hover,
+.vessel-outline-button:hover,
+.fleet-home-secondary-action:hover,
+.fleet-secondary-action:hover,
+.app-muted-button:hover,
+.app-dark-action:hover {
+  background: var(--navy) !important;
+  color: var(--paper) !important;
+  transform: none !important;
+}
+
+input,
+select,
+textarea,
+.task-date-input,
+.fleet-search-field,
+.fleet-home-search,
+.search-command-card {
+  background: var(--paper) !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 8px !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+::placeholder {
+  color: var(--navy-soft) !important;
+  opacity: 1;
+}
+
+.app-compact-label,
+.app-data-label,
+.app-kicker,
+.harbourline-micro-label,
+.rv-masthead-kicker,
+.task-create-label,
+.fleet-summary-label,
+.fleet-home-kpi-label,
+.fleet-home-kicker,
+.text-premium-label,
+.rv-kv-label {
+  color: var(--navy-soft) !important;
+  font-family: var(--font-sans), sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+}
+
+.app-readable-muted,
+.app-helper-text,
+.rv-masthead-sub,
+.fleet-summary-note,
+.fleet-home-kpi-note,
+.fleet-home-intro,
+.app-dark-muted {
+  color: var(--navy-soft) !important;
+}
+
+.rv-masthead {
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 1.25rem;
+  padding: 0.35rem 0.25rem 1.25rem;
+}
+
+.rv-masthead-layout {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.rv-masthead-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.rv-tab-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.rv-tabs-label {
+  color: var(--navy-soft);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rv-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.rv-tab {
+  position: relative;
+  min-height: 42px;
+  border: 0 !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--navy-soft) !important;
+  padding: 0.68rem 0.85rem;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rv-tab:hover {
+  background: var(--paper-2) !important;
+  color: var(--navy) !important;
+}
+
+.rv-tab[aria-selected="true"] {
+  border-left-color: var(--accent) !important;
+  background: var(--paper-2) !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.rv-tab-indicator {
+  display: none;
+}
+
+.task-clarity-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin: 0 0 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--hairline);
+}
+
+.task-clarity-metric {
+  display: flex;
+  min-width: 0;
+  min-height: 66px;
+  align-items: baseline;
+  gap: 0.55rem;
+  border-left: 3px solid transparent;
+  background: var(--paper-2);
+  padding: 0.9rem 1rem;
+}
+
+.task-clarity-metric strong {
+  color: var(--navy);
+  font-family: var(--font-mono), monospace;
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.task-clarity-metric span {
+  color: var(--navy-soft);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.task-clarity-metric--critical {
+  border-left-color: var(--accent);
+}
+
+.task-clarity-metric--critical :where(strong, span) {
+  color: var(--accent);
+}
+
+.task-clarity-metric--attention {
+  border-left-color: var(--warn);
+}
+
+.task-clarity-metric--attention :where(strong, span) {
+  color: var(--warn);
+}
+
+.task-clarity-metric--ready {
+  border-left-color: var(--ok);
+}
+
+.task-clarity-metric--ready :where(strong, span) {
+  color: var(--ok);
+}
+
+.task-create-dialog {
+  width: min(720px, calc(100vw - 24px));
+  max-width: 720px !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 10px !important;
+  background: var(--paper) !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.task-create-kicker,
+.task-create-label,
+.task-create-optional {
+  color: var(--navy-soft) !important;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.task-create-intro {
+  max-width: 58ch;
+  color: var(--navy-soft) !important;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.task-create-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.task-create-field,
+.task-create-date-block {
+  display: grid;
+  min-width: 0;
+  gap: 0.45rem;
+}
+
+.task-create-field--primary {
+  border-top: 1px solid var(--hairline);
+  padding-top: 1rem;
+}
+
+.task-create-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--hairline);
+  padding-top: 1rem;
+}
+
+.app-metric-value,
+.text-premium-metric,
+.fleet-summary-value,
+.fleet-row-counts,
+.fleet-home-kpi-value,
+.fleet-home-ledger-amount,
+.route-metric-value,
+.harbourline-count,
+[data-mb-count],
+time,
+input[type="number"] {
+  color: var(--navy) !important;
+  font-family: var(--font-mono), monospace !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-status-chip,
+.vessel-pill,
+.vessel-pill-strong,
+[data-ui="badge"] {
+  background: transparent !important;
+  border: 0 !important;
+  border-left: 3px solid var(--navy-soft) !important;
+  border-radius: 0 !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+[data-ui="badge"][class*="text-ok-"],
+.manifest-status--ok {
+  border-left-color: var(--ok) !important;
+  color: var(--ok) !important;
+}
+
+[data-ui="badge"][class*="text-warn-"],
+.manifest-status--warn {
+  border-left-color: var(--warn) !important;
+  color: var(--warn) !important;
+}
+
+[data-ui="badge"][class*="text-accent-"],
+.manifest-status--crit {
+  border-left-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.task-status-chip--blocked,
+.task-status-chip--waiting-approval,
+.fleet-status-label--critical,
+.fleet-attention-marker--critical {
+  border-left-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.task-status-chip--in-progress,
+.fleet-status-label--attention,
+.fleet-attention-marker--attention {
+  border-left-color: var(--warn) !important;
+  color: var(--warn) !important;
+}
+
+.task-status-chip--done,
+.fleet-status-label--ready,
+.fleet-attention-marker--ready {
+  border-left-color: var(--ok) !important;
+  color: var(--ok) !important;
+}
+
+.vessel-active,
+.fleet-filter-button--active,
+.rv-tab[aria-selected="true"],
+.fleet-home-filter[aria-pressed="true"] {
+  background: transparent !important;
+  border-color: var(--navy) !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.jump-highlight-target.jump-highlight-active::after,
+.ui-reveal-target.ui-reveal-active::after {
+  border: 1px solid var(--navy) !important;
+  box-shadow: none;
+}
+
+.harbourline-rule,
+.app-glass-line,
+.mb-hairline {
+  background: var(--hairline) !important;
+  background-image: none !important;
+}
+
+.route-waypoint-marker,
+.route-vessel-marker-core {
+  background: var(--accent) !important;
+  border-color: var(--paper) !important;
+  color: var(--paper) !important;
+  box-shadow: none;
+}
+
+.route-leg-marker,
+.route-overlay-marker,
+.route-legend-chip {
+  background: var(--paper) !important;
+  border-color: var(--hairline) !important;
+  color: var(--navy) !important;
+  box-shadow: none;
+}
+
+.route-legend-chip--line {
+  background: var(--navy) !important;
+}
+
+.app-alert-strong,
+.app-alert-strong-dark,
+.text-premium-warning,
+.rv-overdue {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--paper) !important;
+}
+
+@media (max-width: 767px) {
+  .rv-masthead-layout {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rv-masthead-controls {
+    width: 100%;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .rv-tab-group {
+    width: 100%;
+  }
+
+  .rv-tabs {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .rv-tab {
+    flex: 1 0 auto;
+  }
+
+  .task-clarity-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .task-clarity-metric {
+    min-height: 60px;
+    padding: 0.75rem;
+  }
+
+  .task-create-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .harbourline-command-header {
+    min-width: 0;
+    padding-inline: 10px !important;
+  }
+
+  .harbourline-vessel-switcher {
+    min-width: 0;
+    max-width: calc(100vw - 10.75rem);
+  }
+
+  .harbourline-vessel-switcher-button {
+    gap: 7px !important;
+    min-width: 0;
+  }
+
+  .harbourline-vessel-mark {
+    height: 34px !important;
+    width: 34px !important;
+  }
+
+  .harbourline-command-header time,
+  .harbourline-command-header .harbourline-count {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 359px) {
+  .harbourline-vessel-switcher {
+    max-width: calc(100vw - 8.75rem);
+  }
+
+  .neo-header-task-action span,
+  .harbourline-command-header [aria-label^="Change operating role"] {
+    display: none !important;
+  }
+
+  .harbourline-clock {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

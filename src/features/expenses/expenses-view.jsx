@@ -74,7 +74,7 @@ function ConfirmableCrewExpenseRow({
         <button
           type="button"
           onClick={() => onDeleteRequest({ id: item.id, title: item.title })}
-          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold shadow-sm transition ${
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold  transition ${
             darkMode ? "bg-[#2b231f] text-[#ffd8cf] hover:bg-[#432d28]" : "bg-[#fff0ed] text-[#9b2c20] hover:bg-[#ffe0da]"
           }`}
           aria-label="Remove crew expense"

@@ -1,7 +1,7 @@
 @import "../src/tailwind.css";
 @import "../src/styles.css";
-@import "../src/neo-tide.css";
 @import "../src/harbourline.css";
+@import "../src/manifest.css";
 
 html,
 body {
@@ -65,7 +65,7 @@ video {
   padding: 0 16px;
   font: 700 13px/1 "Avenir Next", "Segoe UI", Arial, sans-serif;
   text-decoration: none;
-  box-shadow: 0 12px 34px rgba(7, 26, 58, 0.08);
+  box-shadow: none;
   cursor: pointer;
 }
 
@@ -105,7 +105,7 @@ video {
   color: #071a3a;
   padding: 16mm 18mm;
   box-sizing: border-box;
-  box-shadow: 0 28px 80px rgba(7, 26, 58, 0.14);
+  box-shadow: none;
   overflow: hidden;
   transform-origin: top center;
 }
@@ -525,7 +525,7 @@ video {
   .crew-cv-print-sheet .crew-demo-id-portrait,
   .crew-cv-print-sheet figure {
     border-radius: 5mm !important;
-    box-shadow: none !important;
+    box-shadow: none;
     height: 40mm !important;
     width: 32mm !important;
   }
@@ -565,7 +565,7 @@ video {
 
   .crew-print-page,
   .crew-a4-page {
-    box-shadow: none !important;
+    box-shadow: none;
     break-after: avoid !important;
     break-before: avoid !important;
     height: 297mm !important;

@@ -21,8 +21,6 @@ import {
   SectionAccordion,
 } from "../../components/dashboard/dashboard_primitives.jsx";
 import GlobalSearch from "../../components/GlobalSearch.jsx";
-import ChartCanvas from "../../harbourline/ChartCanvas.jsx";
-import { useHarbourlineMotion } from "../../harbourline/useHarbourlineMotion.js";
 import { useAutoFitSingleLine } from "../../hooks/useAutoFitSingleLine.js";
 import { ConfirmActionDialog } from "../../contessa_app_components.jsx";
 
@@ -226,23 +224,23 @@ function getVesselStateConfig(mode = "standby") {
 function getMoodClasses(darkMode = false, mood = "calm") {
   if (mood === "critical") {
     return darkMode
-      ? "border-rose-300/30 bg-rose-400/10 shadow-[0_0_34px_rgba(251,113,133,0.12)]"
-      : "border-rose-200/80 bg-rose-50/70 shadow-[0_18px_46px_rgba(225,29,72,0.08)]";
+      ? "border-accent-300/30 bg-accent-400/10 "
+      : "border-accent-200/80 bg-accent-50/70 ";
   }
   if (mood === "pressure") {
     return darkMode
-      ? "border-amber-300/30 bg-amber-300/10 shadow-[0_0_34px_rgba(251,191,36,0.12)]"
-      : "border-amber-200/80 bg-amber-50/70 shadow-[0_18px_46px_rgba(180,83,9,0.08)]";
+      ? "border-warn-300/30 bg-warn-300/10 "
+      : "border-warn-200/80 bg-warn-50/70 ";
   }
   return darkMode
-    ? "border-cyan-300/25 bg-cyan-300/10 shadow-[0_0_34px_rgba(34,211,238,0.12)]"
-    : "border-cyan-200/80 bg-cyan-50/70 shadow-[0_18px_46px_rgba(14,165,233,0.08)]";
+    ? "border-navy-300/25 bg-navy-300/10 "
+    : "border-navy-200/80 bg-navy-50/70 ";
 }
 
 function getMoodTextClass(darkMode = false, mood = "calm") {
-  if (mood === "critical") return darkMode ? "text-rose-200" : "text-rose-700";
-  if (mood === "pressure") return darkMode ? "text-amber-200" : "text-amber-700";
-  return darkMode ? "text-cyan-200" : "text-cyan-700";
+  if (mood === "critical") return darkMode ? "text-accent-200" : "text-accent-700";
+  if (mood === "pressure") return darkMode ? "text-warn-200" : "text-warn-700";
+  return darkMode ? "text-navy-200" : "text-navy-700";
 }
 
 function vesselModeWeight(item = {}, mode = "standby") {
@@ -342,12 +340,12 @@ function IntelligencePanel({
   return (
     <section data-mb-reveal className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">{title}</h3>
+        <h3 className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-accent)]">{title}</h3>
         {onAction ? (
           <button
             type="button"
             onClick={onAction}
-            className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+            className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-accent-bright)]"
           >
             {actionLabel}
             <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -361,10 +359,9 @@ function IntelligencePanel({
   );
 }
 
-function ConfidenceRing({ score = 0, mood = "calm" }) {
+function ConfidenceRing({ score = 0 }) {
   const radius = 30;
   const circumference = 2 * Math.PI * radius;
-  const stroke = mood === "critical" ? "var(--mb-critical)" : mood === "pressure" ? "var(--mb-gold)" : "var(--mb-safe)";
 
   return (
     <div className="relative h-[88px] w-[88px] shrink-0" title="Vessel confidence, calculated live from open work, approvals, and compliance">
@@ -375,7 +372,7 @@ function ConfidenceRing({ score = 0, mood = "calm" }) {
           cy="36"
           r={radius}
           fill="none"
-          stroke={stroke}
+          stroke="var(--navy)"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -410,7 +407,7 @@ function VesselStateBanner({
   const focusLine = isOwnerView
     ? `${pendingSpend} pending spend across ${stats.pendingApprovals || 0} decision${(stats.pendingApprovals || 0) === 1 ? "" : "s"}. Detail stays out of the way unless it is material.`
     : config.description;
-  const moodText = mood === "critical" ? "text-[var(--mb-critical-text)]" : mood === "pressure" ? "text-[var(--mb-gold-bright)]" : "text-[var(--mb-safe-text)]";
+  const moodText = mood === "critical" ? "text-[var(--mb-critical-text)]" : mood === "pressure" ? "text-[var(--mb-accent-bright)]" : "text-[var(--mb-safe-text)]";
 
   return (
     <section
@@ -472,7 +469,7 @@ function DetailPanelBody({
           {titleCase(item.type || "Item")}
         </Badge>
         {item.priority ? (
-          <Badge className={normalizeTone(item) === "critical" ? (darkMode ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm" : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm") : warningBadgeClass(darkMode)}>
+          <Badge className={normalizeTone(item) === "critical" ? (darkMode ? "border border-accent-300/40 bg-accent-300/15 text-accent-100 " : "border border-accent-300 bg-accent-50 text-accent-800 ") : warningBadgeClass(darkMode)}>
             {item.priority}
           </Badge>
         ) : null}
@@ -549,7 +546,7 @@ function DetailPanelBody({
         </section>
       ) : null}
 
-      <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5 shadow-[0_-18px_42px_-34px_rgba(0,0,0,0.46)] backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
+      <div className={`sticky bottom-0 z-10 -mx-1 grid gap-2 rounded-[22px] border p-2.5  backdrop-blur-xl sm:grid-cols-2 ${darkMode ? "app-dark-panel border-[var(--vessel-border-dark)]" : "border-[rgba(15,80,70,0.08)] bg-white/86"}`}>
         <Button type="button" onClick={primaryAction.onClick} className="app-primary-action-button">
           {primaryAction.label}
         </Button>
@@ -562,7 +559,7 @@ function DetailPanelBody({
         <Button
           type="button"
           onClick={item.type === "approval" || item.type === "quote" ? () => onApprovalAction?.(item.raw || item, "approved") : undefined}
-          className={`min-h-11 rounded-2xl px-4 py-3 font-semibold ${item.type === "approval" || item.type === "quote" ? "border border-amber-300 bg-amber-100 text-amber-950 shadow-[0_14px_30px_-24px_rgba(180,83,9,0.55)] hover:bg-amber-200 dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100 dark:hover:bg-amber-300/25" : "border border-slate-300 bg-white text-slate-800 shadow-sm hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-slate-700"} disabled:cursor-not-allowed disabled:opacity-60`}
+          className={`min-h-11 rounded-2xl px-4 py-3 font-semibold ${item.type === "approval" || item.type === "quote" ? "border border-warn-300 bg-warn-100 text-warn-950  hover:bg-warn-200 dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100 dark:hover:bg-warn-300/25" : "border border-slate-300 bg-white text-slate-800  hover:border-navy-300 hover:bg-navy-50 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-navy-300/40 dark:hover:bg-slate-700"} disabled:cursor-not-allowed disabled:opacity-60`}
           disabled={!canEdit && (item.type === "approval" || item.type === "quote")}
         >
           {item.type === "approval" || item.type === "quote" ? "Approve" : "Mark reviewed"}
@@ -605,7 +602,7 @@ function DailyReportModal({ open = false, darkMode = false, report = {}, onClose
   return createPortal(
     <div className="fixed inset-0 z-[30000] flex items-center justify-center p-4">
       <button type="button" aria-label="Close daily report" className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <section className={`relative max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border p-5 shadow-[0_30px_100px_rgba(15,23,42,0.32)] ${panelClass}`}>
+      <section className={`relative max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border p-5  ${panelClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="app-kicker">Daily Report</div>
@@ -662,7 +659,7 @@ export function TodayOperationsView({
   notificationPermission = "default",
   onRequestNotifications,
   mobileHomeConfig = null,
-  routeAlerts = [],
+  routeNotices = [],
   recentActivity = [],
   quickActions = [],
   fleetVessels = [],
@@ -695,8 +692,6 @@ export function TodayOperationsView({
     routePlanning: false,
     activity: false,
   });
-
-  useHarbourlineMotion([]);
 
   useEffect(() => {
     if (!isInspectorOpen) return;
@@ -1103,20 +1098,14 @@ export function TodayOperationsView({
 
   return (
     <>
-      <ChartCanvas enabled />
-      <div className="harbourline-grain" aria-hidden="true" />
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
-        {/* ---- Hero: a live bridge instrument, not a static landing page ---- */}
-        <section className="neo-hero relative my-4 min-h-[calc(70svh-5rem)] overflow-visible rounded-[34px] px-5 py-7 sm:px-7 md:rounded-[46px] md:px-10 md:py-10 xl:px-14 xl:py-12">
-          <div className="neo-hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="neo-hero-glow pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full" aria-hidden="true" />
-
-          <div className="relative z-10 grid min-h-[calc(70svh-11rem)] items-center gap-10 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)] xl:gap-14">
+        <section className="neo-hero relative my-4 overflow-visible px-5 py-8 sm:px-7 md:px-10 md:py-10 xl:px-12">
+          <div className="relative z-10 grid items-center gap-9 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)] xl:gap-12">
             <div className="min-w-0">
               <div data-mb-hero className="flex flex-wrap items-center gap-3">
-                <span className="neo-live-chip inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[9px] font-extrabold uppercase tracking-[0.24em]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--neo-mint)] shadow-[0_0_12px_var(--neo-mint)]" />
+                <span className="neo-live-chip inline-flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.24em]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
                   Live command
                 </span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.26em] text-[var(--mb-muted)]">Motor yacht / bridge OS</span>
@@ -1139,7 +1128,7 @@ export function TodayOperationsView({
                 </div>
                 <div className="min-w-0 md:text-right">
                   <div className="text-[9px] font-bold uppercase tracking-[0.23em] text-[var(--mb-muted)]">Pending spend</div>
-                  <div className="mt-1 font-sans text-[1.55rem] font-semibold tracking-[-0.04em] text-[var(--mb-gold-bright)]">{pendingSpendLabel}</div>
+                  <div className="mt-1 font-mono text-[1.55rem] font-semibold tracking-[-0.04em] text-[var(--navy)]">{pendingSpendLabel}</div>
                 </div>
               </div>
 
@@ -1151,10 +1140,10 @@ export function TodayOperationsView({
               </div>
             </div>
 
-            <aside data-mb-hero className="neo-command-card min-w-0 rounded-[28px] border p-5 backdrop-blur-2xl md:p-6">
+            <aside data-mb-hero className="neo-command-card min-w-0 rounded-[10px] border p-5 md:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div className="min-w-0">
-                  <div className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-[var(--neo-mint)]">Operational pulse</div>
+                  <div className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-[var(--mb-muted)]">Operational pulse</div>
                   <h2 className="mt-2 font-sans text-xl font-semibold tracking-[-0.04em] text-[var(--mb-ink)]">{vesselStateConfig.label}</h2>
                   <p className="mt-2 text-xs leading-5 text-[var(--mb-muted)]">{currentRoleLabel} view / intelligence updated from the active vessel workspace.</p>
                 </div>
@@ -1182,7 +1171,7 @@ export function TodayOperationsView({
                     >
                       <span className="text-[10px] font-bold tabular-nums text-[var(--mb-muted)]">0{index + 1}</span>
                       <span className="min-w-0 flex-1 truncate text-xs font-semibold text-[var(--mb-ink)]">{action.label}</span>
-                      <span className="shrink-0 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--neo-mint)]">{action.meta}</span>
+                      <span className="shrink-0 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--mb-soft)]">{action.meta}</span>
                     </button>
                   ))}
                 </div>
@@ -1205,9 +1194,9 @@ export function TodayOperationsView({
               if (typeof document === "undefined") return;
               document.getElementById("vessel-state-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className="neo-descend group relative z-10 mt-8 inline-flex w-fit items-center gap-3 text-[9px] font-bold uppercase tracking-[0.27em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)] xl:absolute xl:bottom-8 xl:left-14 xl:mt-0"
+            className="neo-descend group relative z-10 mt-8 inline-flex w-fit items-center gap-3 text-[9px] font-bold uppercase tracking-[0.27em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-accent-bright)] xl:absolute xl:bottom-8 xl:left-14 xl:mt-0"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] transition-colors group-hover:border-[var(--mb-gold-hover)]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] transition-colors group-hover:border-[var(--mb-accent-hover)]">
               <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 animate-bounce [animation-duration:2.2s]"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
             Enter operations
@@ -1235,7 +1224,7 @@ export function TodayOperationsView({
             >
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
                 <div className="min-w-0">
-                  <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Priority queue</div>
+                  <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-accent)]">Priority queue</div>
                   <h2 className="harbourline-heading mt-2 text-[1.75rem] leading-tight text-[var(--mb-ink)] md:text-[2rem]">
                     {isOwnerView ? "Material signals, surfaced first." : `${vesselStateConfig.label} priorities, surfaced first.`}
                   </h2>
@@ -1251,7 +1240,7 @@ export function TodayOperationsView({
                   <button
                     type="button"
                     onClick={onNavigateToTasks}
-                    className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)]"
+                    className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-accent-bright)]"
                   >
                     All work
                     <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1266,7 +1255,7 @@ export function TodayOperationsView({
                     const metaLine = [compactTypeLabel(item.type), item.badge, item.assignedTo || item.requester, dueMeta?.value, item.amount]
                       .filter(Boolean)
                       .join("  ·  ");
-                    const tickClass = item.tone === "critical" ? "bg-[var(--mb-critical)]" : item.tone === "warning" ? "bg-[var(--mb-gold-badge)]" : "bg-[var(--mb-tick-neutral)]";
+                    const tickClass = item.tone === "critical" ? "bg-[var(--mb-critical)]" : item.tone === "warning" ? "bg-[var(--mb-accent-badge)]" : "bg-[var(--mb-tick-neutral)]";
                     return (
                       <li key={item.id}>
                         <button
@@ -1280,14 +1269,14 @@ export function TodayOperationsView({
                           <span className={`absolute left-0 top-1/2 h-[46%] w-[2px] -translate-y-1/2 rounded-r-full ${tickClass}`} />
                           <span className="mb-index-numeral shrink-0 text-[2.4rem] md:text-[3.2rem]">{String(index + 1).padStart(2, "0")}</span>
                           <span className="min-w-0 flex-1">
-                            <span className="harbourline-heading block text-xl leading-snug text-[var(--mb-ink)] transition-colors duration-300 group-hover:text-[var(--mb-gold-bright)] md:text-[1.5rem]">
+                            <span className="harbourline-heading block text-xl leading-snug text-[var(--mb-ink)] transition-colors duration-300 group-hover:text-[var(--mb-accent-bright)] md:text-[1.5rem]">
                               {item.title}
                             </span>
                             <span className="mt-1.5 block truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--mb-muted)]">
                               {metaLine}
                             </span>
                           </span>
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-all duration-300 group-hover:border-[var(--mb-gold-hover)] group-hover:text-[var(--mb-gold-bright)]" aria-hidden="true">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-all duration-300 group-hover:border-[var(--mb-accent-hover)] group-hover:text-[var(--mb-accent-bright)]" aria-hidden="true">
                             <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                           </span>
                         </button>
@@ -1309,7 +1298,7 @@ export function TodayOperationsView({
             </section>
 
             <div className="mt-14">
-              <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Operations ledger</div>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.26em] text-[var(--mb-accent)]">Operations ledger</div>
             </div>
 
             <SectionAccordion
@@ -1463,7 +1452,7 @@ export function TodayOperationsView({
               title="Route"
               subtitle={routeTeaser}
               count={stats.routeReviewCount || routeReviewItems.length}
-              tone={stats.routeReviewCount || routeAlerts.length ? "warning" : "neutral"}
+              tone={stats.routeReviewCount || routeNotices.length ? "warning" : "neutral"}
               module="route"
               isOpen={expandedSections.routePlanning}
               onToggle={() => toggleSection("routePlanning")}
@@ -1605,16 +1594,16 @@ export function TodayOperationsView({
                 <ol id="activity-section" className="relative ml-1 grid gap-0 border-l border-[var(--mb-line)]">
                   {activityItems.slice(0, 5).map((item) => (
                     <li key={item.id} className="relative">
-                      <span className="absolute -left-[4.5px] top-[1.35rem] h-2 w-2 rounded-full border border-[var(--mb-gold)] bg-[var(--mb-bg)]" aria-hidden="true" />
+                      <span className="absolute -left-[4.5px] top-[1.35rem] h-2 w-2 rounded-full border border-[var(--mb-accent)] bg-[var(--mb-bg)]" aria-hidden="true" />
                       <button
                         id={`activity-item-${item.id}`}
                         data-jump-target
                         style={{ "--jump-radius": "12px" }}
                         type="button"
                         onClick={() => openInspector(item)}
-                        className="jump-highlight-target group w-full min-w-0 rounded-[12px] py-3.5 pl-5 pr-2 text-left transition-colors duration-200 hover:bg-[var(--mb-gold-tint)]"
+                        className="jump-highlight-target group w-full min-w-0 rounded-[12px] py-3.5 pl-5 pr-2 text-left transition-colors duration-200 hover:bg-[var(--mb-accent-tint)]"
                       >
-                        <div className="truncate text-sm font-semibold text-[var(--mb-ink)] transition-colors group-hover:text-[var(--mb-gold-bright)]">{item.title}</div>
+                        <div className="truncate text-sm font-semibold text-[var(--mb-ink)] transition-colors group-hover:text-[var(--mb-accent-bright)]">{item.title}</div>
                         <div className="mt-0.5 line-clamp-2 text-xs leading-5 text-[var(--mb-muted)]">{item.subtitle}</div>
                         <div suppressHydrationWarning className="mt-1.5 text-[9.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-muted)]">{`${item.assignedTo} · ${item.dueDate}`}</div>
                       </button>

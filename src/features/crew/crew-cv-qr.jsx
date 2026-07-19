@@ -20,10 +20,10 @@ export function CrewCvQr({
     delay: 180,
     triggerKey: crewRouteId || "crew-cv",
   });
-  const labelClass = darkMode ? "text-cyan-50" : "text-[#071A3A]";
+  const labelClass = darkMode ? "text-navy-50" : "text-[#071A3A]";
   const descriptionClass = darkMode ? "text-slate-100" : "text-slate-700";
   const actionButtonClass =
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[#071A3A] bg-[#071A3A] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-blue-700 hover:bg-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/14 dark:text-cyan-50 dark:hover:bg-cyan-300/22";
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[#071A3A] bg-[#071A3A] px-5 py-2.5 text-sm font-semibold text-white  transition-all duration-200 hover:border-navy-700 hover:bg-navy-900  focus:outline-none focus:ring-2 focus:ring-navy-400/30 dark:border-navy-300/40 dark:bg-navy-300/14 dark:text-navy-50 dark:hover:bg-navy-300/22";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -35,7 +35,7 @@ export function CrewCvQr({
   return (
     <div
       ref={revealRef}
-      className={`ui-reveal-target rounded-[24px] border p-4 ${darkMode ? "border-cyan-300/15 bg-slate-950/70" : "border-slate-200/90 bg-white/90"} shadow-sm`}
+      className={`ui-reveal-target rounded-[24px] border p-4 ${darkMode ? "border-navy-300/15 bg-slate-950/70" : "border-slate-200/90 bg-white/90"} `}
       style={{ "--reveal-radius": "24px" }}
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -48,7 +48,7 @@ export function CrewCvQr({
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+        <div className="flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white p-2 ">
           <QRCodeSVG value={url} size={104} fgColor="#071A3A" bgColor="#ffffff" />
         </div>
       </div>

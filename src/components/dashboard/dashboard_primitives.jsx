@@ -8,14 +8,14 @@ import { useRevealHighlight } from "../../hooks/useRevealHighlight.js";
 
 const TONE_TICK = {
   critical: "bg-[var(--mb-critical)]",
-  warning: "bg-[var(--mb-gold-badge)]",
+  warning: "bg-[var(--mb-accent-badge)]",
   success: "bg-[var(--mb-safe)]",
   neutral: "bg-[var(--mb-tick-neutral)]",
 };
 
 const TONE_TEXT = {
   critical: "text-[var(--mb-critical-text)]",
-  warning: "text-[var(--mb-gold-bright)]",
+  warning: "text-[var(--mb-accent-bright)]",
   success: "text-[var(--mb-safe-text)]",
   neutral: "text-[var(--mb-soft)]",
 };
@@ -80,7 +80,7 @@ export function SectionAccordion({
             <button
               type="button"
               onClick={onAction}
-              className="hidden items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-gold-bright)] sm:inline-flex"
+              className="hidden items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-soft)] transition-colors hover:text-[var(--mb-accent-bright)] sm:inline-flex"
             >
               {actionLabel}
               <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -93,8 +93,8 @@ export function SectionAccordion({
             aria-expanded={isOpen}
             className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 ${
               isOpen
-                ? "border-[var(--mb-gold-hover)] text-[var(--mb-gold-bright)]"
-                : "border-[var(--mb-line-strong)] text-[var(--mb-soft)] group-hover:border-[var(--mb-gold-hover)] group-hover:text-[var(--mb-gold-bright)]"
+                ? "border-[var(--mb-accent-hover)] text-[var(--mb-accent-bright)]"
+                : "border-[var(--mb-line-strong)] text-[var(--mb-soft)] group-hover:border-[var(--mb-accent-hover)] group-hover:text-[var(--mb-accent-bright)]"
             }`}
           >
             <svg viewBox="0 0 16 16" fill="none" className={`h-3.5 w-3.5 transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
@@ -111,7 +111,7 @@ export function SectionAccordion({
             <button
               type="button"
               onClick={onAction}
-              className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)] sm:hidden"
+              className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-accent)] transition-colors hover:text-[var(--mb-accent-bright)] sm:hidden"
             >
               {actionLabel}
               <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -148,8 +148,8 @@ export function CompactItemCard({
       }}
       className={`jump-highlight-target group relative w-full min-w-0 rounded-[14px] border px-4 py-3.5 text-left transition-all duration-300 ${
         selected
-          ? "border-[var(--mb-gold-hover)] bg-[var(--mb-gold-tint)]"
-          : "border-[var(--mb-line)] bg-[var(--mb-panel)] hover:border-[var(--mb-gold-hover)] hover:bg-[var(--mb-gold-tint)]"
+          ? "border-[var(--mb-accent-hover)] bg-[var(--mb-accent-tint)]"
+          : "border-[var(--mb-line)] bg-[var(--mb-panel)] hover:border-[var(--mb-accent-hover)] hover:bg-[var(--mb-accent-tint)]"
       }`}
     >
       <span className={`absolute left-0 top-1/2 h-[60%] w-[2px] -translate-y-1/2 rounded-r-full ${TONE_TICK[tone] || TONE_TICK.neutral}`} />
@@ -165,7 +165,7 @@ export function CompactItemCard({
             </span>
           ) : null}
         </span>
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-all duration-300 group-hover:border-[var(--mb-gold-hover)] group-hover:text-[var(--mb-gold-bright)]" aria-hidden="true">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-all duration-300 group-hover:border-[var(--mb-accent-hover)] group-hover:text-[var(--mb-accent-bright)]" aria-hidden="true">
           <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </span>
       </span>
@@ -190,7 +190,7 @@ export function DashboardEmptyState({
         <button
           type="button"
           onClick={onAction}
-          className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]"
+          className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--mb-accent)] transition-colors hover:text-[var(--mb-accent-bright)]"
         >
           {actionLabel}
           <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -232,7 +232,7 @@ export function DetailDrawer({
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-[0.26em] text-[var(--mb-gold)]">Manifest entry</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.26em] text-[var(--mb-accent)]">Manifest entry</div>
             <h2 className="harbourline-heading mt-2 text-[1.65rem] leading-tight text-[var(--mb-ink)]">{title}</h2>
             {subtitle ? <p className="mt-2 text-sm leading-6 text-[var(--mb-muted)]">{subtitle}</p> : null}
           </div>
@@ -240,7 +240,7 @@ export function DetailDrawer({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-gold-hover)] hover:text-[var(--mb-gold-bright)]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--mb-line-strong)] text-[var(--mb-soft)] transition-colors hover:border-[var(--mb-accent-hover)] hover:text-[var(--mb-accent-bright)]"
           >
             <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>

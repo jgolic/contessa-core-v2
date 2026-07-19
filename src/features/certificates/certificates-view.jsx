@@ -24,7 +24,7 @@ export function CertificatesView({
   darkMode = false,
   canEdit = true,
   canViewCertificates = false,
-  certificateAlerts,
+  certificateNotices,
   visibleCertificates,
   visibleCrewProfiles = [],
   newCertificateOpen,
@@ -41,13 +41,13 @@ export function CertificatesView({
   onOpenCrewProfile,
 }) {
   const theme = themeClasses(darkMode);
-  const withinWindowCount = (windowDays) => certificateAlerts.filter((item) => item.daysRemaining !== null && item.daysRemaining <= windowDays).length;
+  const withinWindowCount = (windowDays) => certificateNotices.filter((item) => item.daysRemaining !== null && item.daysRemaining <= windowDays).length;
 
   if (!canViewCertificates) {
     return (
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-5">
-          <div className={`rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+          <div className={`rounded-[22px] border p-4 md:rounded-xl ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-warn-300 bg-warn-50 text-warn-900"}`}>
             Certificates are limited for the current role. Switch to Captain, Manager, or Owner to review vessel-wide certificate compliance.
           </div>
         </CardContent>
@@ -59,7 +59,7 @@ export function CertificatesView({
     <div className="grid gap-5 md:gap-6">
       <Card className={`overflow-hidden rounded-[30px] md:rounded-[32px] ${theme.card}`}>
         <CardContent className="p-0">
-          <div className={`${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.18),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.1),_transparent_24%),linear-gradient(135deg,_rgba(16,25,23,0.98),_rgba(8,14,12,0.98))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.12),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.14),_transparent_20%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} p-5 md:p-7`}>
+          <div className={`${darkMode ? "bg-[none,none,none]" : "bg-[none,none,none]"} p-5 md:p-7`}>
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] xl:items-end">
               <div className="max-w-2xl">
                 <div className="app-kicker">Certificates</div>
@@ -93,10 +93,10 @@ export function CertificatesView({
           ))}
       </div>
 
-      {certificateAlerts.length > 0 ? (
+      {certificateNotices.length > 0 ? (
         <div className="space-y-3">
-          {certificateAlerts.map((item) => (
-            <div key={`alert-${item.id}`} className="rounded-[22px] border border-amber-300 bg-amber-50 p-4 text-amber-900 md:rounded-xl">
+          {certificateNotices.map((item) => (
+            <div key={`alert-${item.id}`} className="rounded-[22px] border border-warn-300 bg-warn-50 p-4 text-warn-900 md:rounded-xl">
               <div className="font-semibold">{item.name} for {item.crewName}</div>
               <div className="mt-1 text-sm leading-6">{item.department} - expires {item.expiryDate} - {formatDaysRemaining(item.daysRemaining)}</div>
             </div>

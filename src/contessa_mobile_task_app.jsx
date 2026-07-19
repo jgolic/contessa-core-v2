@@ -9,7 +9,7 @@ import {
   buildTodayOperationsSnapshot,
   getCanonicalPublicAppUrlStatus,
   buildDashboardSnapshot,
-  buildCertificateAlerts,
+  buildCertificateNotices,
   calculateCrewReadinessPercent,
   calculateConfidenceScore,
   CURRENCY_OPTIONS,
@@ -132,7 +132,7 @@ function buildCommandSearchText(parts = []) {
 
 function DeferredFeatureFallback() {
   return (
-    <div className="app-panel app-panel-soft rounded-[26px] border border-slate-200/60 bg-white/70 p-5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60">
+    <div className="app-panel app-panel-soft rounded-[26px] border border-slate-200/60 bg-white/70 p-5  backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60">
       <div className="app-compact-label text-xs font-semibold uppercase">Loading</div>
       <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">Preparing workspace...</div>
     </div>
@@ -922,7 +922,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     [visibleCrewProfiles]
   );
 
-  const certificateAlerts = useMemo(() => buildCertificateAlerts(visibleCrewProfiles), [visibleCrewProfiles]);
+  const certificateNotices = useMemo(() => buildCertificateNotices(visibleCrewProfiles), [visibleCrewProfiles]);
   const operationalNotifications = useMemo(
     () =>
       getNotificationsForVessel(activeVesselId, {
@@ -991,13 +991,13 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         boatExpenses,
         crewExpenses,
         maintenanceAlerts,
-        certificateAlerts,
+        certificateNotices,
         history: visibleHistory,
       }),
       highlightItems: accessibleNotifications.slice(0, 6),
       notificationCount: accessibleNotifications.length,
     }),
-    [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, certificateAlerts, visibleHistory, accessibleNotifications]
+    [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, certificateNotices, visibleHistory, accessibleNotifications]
   );
   const todayOperations = useMemo(
     () =>
@@ -1019,7 +1019,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     () => calculateRoutePassageSummary({ waypoints: routePlanning?.waypoints || [], vesselProfile: routePlanning?.vesselProfile || {} }),
     [routePlanning]
   );
-  const routeAlerts = useMemo(() => {
+  const routeNotices = useMemo(() => {
     const alerts = [];
     if ((routePlanning?.waypoints || []).length < 2) {
       alerts.push({
@@ -1067,7 +1067,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     );
     const maintenanceDue = maintenanceAlerts.length;
     const crewProfileCount = visibleCrewProfiles.length;
-    const certificateDue = certificateAlerts.length;
+    const certificateDue = certificateNotices.length;
     const dashboardItems = dashboard.todayTasks.length + dashboard.overdueTasks.length + dashboard.urgentTasks.length;
     const notificationCount = accessibleNotifications.length;
     const todayAttentionCount =
@@ -1099,9 +1099,9 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
       documentCount: documents.length,
       routeWaypoints: routePlanning?.waypoints?.length || 0,
       routeDistanceNm: routeSummary.totalDistanceNm,
-      routeReviewCount: routeAlerts.length,
+      routeReviewCount: routeNotices.length,
     };
-  }, [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, currency, exchangeRates, visibleCrewProfiles, certificateAlerts, dashboard, accessibleNotifications, todayOperations, routePlanning, routeSummary, documents.length, routeAlerts.length]);
+  }, [visibleTasks, boatExpenses, crewExpenses, maintenanceAlerts, currency, exchangeRates, visibleCrewProfiles, certificateNotices, dashboard, accessibleNotifications, todayOperations, routePlanning, routeSummary, documents.length, routeNotices.length]);
   const vesselOperations = useMemo(() => {
     const crewReadyPercent = calculateCrewReadinessPercent(visibleCrewProfiles);
 
@@ -1201,7 +1201,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
           checklist: [],
           activity: [],
         })),
-        ...routeAlerts.map((alert, index) => ({
+        ...routeNotices.map((alert, index) => ({
           id: alert.id || `route-${index + 1}`,
           type: "alert",
           title: alert.title,
@@ -1230,7 +1230,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
     visibleTasks,
     todayOperations,
     expiringCertificates,
-    routeAlerts,
+    routeNotices,
     currentRoleLabel,
     activeVesselState,
   ]);
@@ -3299,8 +3299,8 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
         className={`min-h-screen max-w-full overflow-x-hidden px-4 py-6 transition-colors sm:px-6 lg:px-8 ${theme.page}`}
       >
         <div className="mx-auto flex min-h-[80vh] max-w-2xl items-center justify-center">
-          <section className="w-full rounded-[28px] border border-slate-200/70 bg-white/80 p-6 text-center shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70">
-            <p className="app-compact-label text-blue-700 dark:text-cyan-200">Fleet</p>
+          <section className="w-full rounded-[28px] border border-slate-200/70 bg-white/80 p-6 text-center  backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70">
+            <p className="app-compact-label text-navy-700 dark:text-navy-200">Fleet</p>
             <h1 className={`mt-3 text-2xl font-semibold tracking-tight ${theme.textPrimary}`}>Vessel not found</h1>
             <p className={`mx-auto mt-2 max-w-lg text-sm leading-6 ${theme.textSecondary}`}>
               No separate workspace exists for "{formatVesselNameFromId(routeVesselId || "vessel")}". Choose an available vessel below.
@@ -3311,7 +3311,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
                   key={vessel.id}
                   type="button"
                   onClick={() => openVesselWorkspace(vessel.id)}
-                  className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900/85 dark:hover:border-cyan-300/40 dark:hover:bg-slate-800/80"
+                  className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-left  transition-all duration-200 hover:-translate-y-0.5 hover:border-navy-300 hover:bg-navy-50 dark:border-white/10 dark:bg-slate-900/85 dark:hover:border-navy-300/40 dark:hover:bg-slate-800/80"
                 >
                   <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{vessel.name}</span>
                   <span className="mt-1 block text-xs text-slate-600 dark:text-slate-300">{vessel.details?.status || "Operational"}</span>
@@ -3372,7 +3372,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               approvals: stats.pendingApprovals || 0,
               crew: stats.certificateDue || 0,
               docs: stats.documentCount || 0,
-              route: routeAlerts.length,
+              route: routeNotices.length,
             }}
             onNavFleet={canAccessSection("fleet") ? () => openResponsiveModule("fleet") : null}
             onNavCommand={() => openResponsiveModule("command")}
@@ -3479,7 +3479,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
             notificationPermission={notificationPermission}
             onRequestNotifications={requestDeviceNotifications}
             mobileHomeConfig={mobileHomeConfig}
-            routeAlerts={routeAlerts}
+            routeNotices={routeNotices}
             recentActivity={visibleHistory.slice(0, 6)}
             quickActions={mobileCommandActions}
             fleetVessels={vesselsForPersistence}
@@ -3614,7 +3614,7 @@ export default function ContessaApp({ routeVesselId = "contessa", onNavigateVess
               currentRole={effectiveRole}
               onCurrentRoleChange={setCurrentRole}
               canViewCertificates={canAccessModule(effectiveRole, "certificates")}
-              certificateAlerts={certificateAlerts}
+              certificateNotices={certificateNotices}
               visibleCertificates={visibleCertificates}
               visibleCrewProfiles={visibleCrewProfiles}
               newCertificateOpen={newCertificateOpen}

@@ -47,7 +47,7 @@ function ContessaSymbol({
         strokeWidth={accentEnabled ? accentWidth : strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="logo-gold-triangle"
+        className="logo-accent-triangle"
       />
     </svg>
   );
@@ -76,18 +76,18 @@ export function ContessaSplashLogo({ className = "" }) {
     <div className={className}>
       <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <linearGradient id="contessa-splash-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearLayer id="contessa-splash-bg" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#13201b" />
             <stop offset="100%" stopColor="#0b110f" />
-          </linearGradient>
-          <linearGradient id="contessa-splash-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+          </linearLayer>
+          <linearLayer id="contessa-splash-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#f7fbf8" />
             <stop offset="100%" stopColor="#c7d3cf" />
-          </linearGradient>
-          <linearGradient id="contessa-splash-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+          </linearLayer>
+          <linearLayer id="contessa-splash-accent" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#e0ca92" />
             <stop offset="100%" stopColor="#9e8753" />
-          </linearGradient>
+          </linearLayer>
         </defs>
         <rect width="900" height="320" rx="36" fill="url(#contessa-splash-bg)" />
         <g transform="translate(74 48)">

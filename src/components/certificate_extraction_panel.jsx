@@ -94,7 +94,7 @@ export function CertificateExtractionPanel({
             {draft.expiryDate && expiryMeta.daysRemaining !== null ? <Badge className={darkMode ? "bg-[#2a2218] text-[#e7ccb0]" : "bg-[#f3e9de] text-[#7a5630]"}>{expiryMeta.daysRemaining} day(s)</Badge> : null}
           </div>
           {draft.reviewReasons?.length ? (
-            <div className={`mt-2 space-y-1 text-sm ${darkMode ? "text-[#f5ddb0]" : "text-amber-900"}`}>
+            <div className={`mt-2 space-y-1 text-sm ${darkMode ? "text-[#f5ddb0]" : "text-warn-900"}`}>
               {draft.reviewReasons.map((reason, index) => <div key={`certificate-review-${index}`}>{reason}</div>)}
             </div>
           ) : null}
@@ -125,7 +125,7 @@ export function CertificateReviewFields({
       <div className={`mt-3 rounded-lg border p-3 ${draft.expiryDate ? "border-vessel bg-[var(--vessel-primary-soft)]" : darkMode ? "border-[#7a5416] bg-[#2b2318]" : "border-[#f0d79a] bg-[#fff6df]"}`}>
         <div className={`mb-2 text-sm font-medium ${theme.textPrimary}`}>Expiration Date</div>
         <Input type="date" value={draft.expiryDate || ""} onChange={(event) => onChange({ expiryDate: event.target.value })} className={`h-12 ${theme.input}`} />
-        {!draft.expiryDate ? <div className={`mt-2 text-sm ${darkMode ? "text-[#f5ddb0]" : "text-amber-900"}`}>No expiration date found. Enter it manually before saving.</div> : <div className={`mt-2 text-sm ${theme.textSecondary}`}>{expiryMeta.statusLabel} - {expiryMeta.statusText}</div>}
+        {!draft.expiryDate ? <div className={`mt-2 text-sm ${darkMode ? "text-[#f5ddb0]" : "text-warn-900"}`}>No expiration date found. Enter it manually before saving.</div> : <div className={`mt-2 text-sm ${theme.textSecondary}`}>{expiryMeta.statusLabel} - {expiryMeta.statusText}</div>}
       </div>
       <textarea value={draft.notes || ""} onChange={(event) => onChange({ notes: event.target.value })} placeholder="Certificate notes" className={`mt-3 min-h-24 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--vessel-ring)] ${theme.input}`} />
     </div>

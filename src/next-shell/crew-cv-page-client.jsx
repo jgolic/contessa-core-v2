@@ -75,7 +75,7 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
             Demo CV QR for dynamic vessels uses localStorage and works in the same browser.
             For QR codes to work across devices, persist vessels and crew in a database.
           </p>
-          <Link href="/vessels/contessa" className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+          <Link href="/vessels/contessa" className="mt-6 inline-flex rounded-2xl border border-navy-300/30 bg-navy-300/10 px-4 py-2 text-sm font-semibold text-navy-100">
             Back to Contessa
           </Link>
         </div>
@@ -96,7 +96,7 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
           <pre className="mt-4 overflow-x-auto rounded-2xl bg-black/30 p-4 text-xs text-slate-300">
             Requested crew id: {crewId}
           </pre>
-          <Link href={`/vessels/${canonicalVesselSlug}`} className="mt-6 inline-flex rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100">
+          <Link href={`/vessels/${canonicalVesselSlug}`} className="mt-6 inline-flex rounded-2xl border border-navy-300/30 bg-navy-300/10 px-4 py-2 text-sm font-semibold text-navy-100">
             Back to vessel
           </Link>
         </div>
@@ -112,7 +112,7 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
         <div className="no-print mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href={`/vessels/${canonicalVesselSlug}`}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-blue-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800  hover:bg-navy-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100"
           >
             Back to vessel
           </Link>
@@ -124,15 +124,15 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
           </div>
         </div>
 
-        <article className="cv-screen-card no-print rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.10)] dark:border-white/10 dark:bg-slate-900 sm:p-8">
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100">
+        <article className="cv-screen-card no-print rounded-[32px] border border-slate-200 bg-white p-6  dark:border-white/10 dark:bg-slate-900 sm:p-8">
+          <div className="rounded-2xl border border-warn-200 bg-warn-50 px-4 py-3 text-sm font-bold text-warn-800 dark:border-warn-300/30 dark:bg-warn-300/10 dark:text-warn-100">
             {cv.disclaimer}
           </div>
 
           <header className="mt-8 border-b border-slate-200 pb-8 dark:border-white/10">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-navy-700 dark:text-navy-200">
                   Crew Digital Passport
                 </p>
                 <h1 className="mt-3 font-serif text-4xl font-semibold tracking-[0.06em] text-[#071A3A] dark:text-slate-50 sm:text-5xl">
@@ -192,7 +192,7 @@ export function CrewCvPageClient({ vesselId = "", crewId = "" }) {
                     <p className="font-semibold text-slate-950 dark:text-slate-50">{entry.role}</p>
                     <p className="text-sm text-slate-500 dark:text-slate-400">{entry.period}</p>
                   </div>
-                  <p className="mt-1 text-sm font-medium text-blue-700 dark:text-cyan-200">{entry.vessel}</p>
+                  <p className="mt-1 text-sm font-medium text-navy-700 dark:text-navy-200">{entry.vessel}</p>
                   <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{entry.details}</p>
                 </div>
               ))}
@@ -306,7 +306,7 @@ function CvList({ title, items = [] }) {
       <ul className="mt-4 space-y-2">
         {items.map((item) => (
           <li key={item} className="flex gap-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 dark:bg-cyan-300" />
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-navy-500 dark:bg-navy-300" />
             <span>{item}</span>
           </li>
         ))}

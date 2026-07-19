@@ -1,4 +1,4 @@
-﻿export const STATUS_OPTIONS = ["pending", "ongoing", "completed"];
+export const STATUS_OPTIONS = ["pending", "ongoing", "completed"];
 export const TASK_STATUS_OPTIONS = ["pending", "ongoing", "waiting-approval", "blocked", "completed", "approved", "declined"];
 export const PRIORITY_OPTIONS = ["low", "medium", "high", "urgent"];
 export const ASSIGNEE_OPTIONS = ["Captain Graham Ellis", "Oliver Reed", "Marko Vukovic", "Daniel Price", "Elena Kovac", "Marcus Bell", "Nina Hayes", "Adrian Cole", "Leo Grant", "Mia Laurent", "Tomas Reed"];
@@ -243,159 +243,43 @@ const DEFAULT_VESSEL_STATES = {
     confidenceScore: 86,
   },
 };
-const VESSEL_THEME_PRESETS = {
-  contessa: {
-    name: "Contessa",
-    primary: "#8f6e36",
-    secondary: "#a98b4f",
-    accent: "#c9a96a",
-    primarySoft: "rgba(143, 110, 54, 0.12)",
-    primaryMuted: "#a98b4f",
-    accentSoft: "rgba(201, 169, 106, 0.14)",
-    border: "rgba(143, 110, 54, 0.24)",
-    ring: "rgba(201, 169, 106, 0.30)",
-    bgStart: "#f7f4ec",
-    bgEnd: "#fcfaf4",
-    card: "rgba(255,255,255,0.72)",
-    cardStrong: "rgba(255,255,255,0.82)",
-    textAccent: "#7d6031",
-    backgroundLight: "radial-gradient(circle at top left, rgba(201, 169, 106, 0.16), transparent 30%), radial-gradient(circle at 84% 4%, rgba(20, 33, 61, 0.08), transparent 22%), linear-gradient(180deg, #fcfaf4 0%, #f5f1e7 48%, #efe9db 100%)",
-    backgroundDark: "radial-gradient(ellipse at 18% -4%, rgba(201, 169, 106, 0.12), transparent 34%), radial-gradient(ellipse at 86% 2%, rgba(38, 66, 122, 0.20), transparent 30%), radial-gradient(ellipse at 50% 120%, rgba(16, 28, 54, 0.55), transparent 60%), linear-gradient(180deg, #04060d 0%, #060b18 46%, #050912 100%)",
-    cardLight: "rgba(255,255,255,0.72)",
-    cardDark: "rgba(10, 15, 29, 0.62)",
-    bgDarkStart: "#04060d",
-    bgDarkEnd: "#0a1120",
-    cardDarkStrong: "rgba(14, 20, 38, 0.90)",
-    borderDark: "rgba(201, 169, 106, 0.20)",
-    textAccentDark: "#e6cf9f",
-    textPrimaryDark: "#f4f0e6",
-    textSecondaryDark: "rgba(229, 223, 209, 0.78)",
-    primaryDark: "#c9a96a",
-    primarySoftDark: "rgba(201, 169, 106, 0.12)",
-    glowDark: "rgba(201, 169, 106, 0.15)",
-  },
-  octopussy: {
-    name: "Octopussy",
-    primary: "#2563eb",
-    secondary: "#3b82f6",
-    accent: "#0ea5e9",
-    primarySoft: "rgba(37, 99, 235, 0.12)",
-    primaryMuted: "#3b82f6",
-    accentSoft: "rgba(14, 165, 233, 0.14)",
-    border: "rgba(37, 99, 235, 0.22)",
-    ring: "rgba(14, 165, 233, 0.28)",
-    bgStart: "#eef6ff",
-    bgEnd: "#f8fbff",
-    card: "rgba(255,255,255,0.7)",
-    cardStrong: "rgba(255,255,255,0.8)",
-    textAccent: "#1e5f99",
-    backgroundLight: "radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 30%), radial-gradient(circle at 82% 6%, rgba(14, 165, 233, 0.12), transparent 20%), linear-gradient(180deg, #eef6ff 0%, #f3f8ff 48%, #f8fbff 100%)",
-    backgroundDark: "radial-gradient(circle at top left, rgba(30,64,175,0.08), transparent 35%), linear-gradient(135deg, #010814 0%, #04111f 45%, #061626 100%)",
-    cardLight: "rgba(255,255,255,0.7)",
-    cardDark: "rgba(6, 18, 34, 0.82)",
-    bgDarkStart: "#010814",
-    bgDarkEnd: "#04111f",
-    cardDarkStrong: "rgba(5, 20, 38, 0.90)",
-    borderDark: "rgba(96, 165, 250, 0.18)",
-    textAccentDark: "#93c5fd",
-    textPrimaryDark: "#e5edf8",
-    textSecondaryDark: "rgba(226, 232, 240, 0.88)",
-    primaryDark: "#3b82f6",
-    primarySoftDark: "rgba(59, 130, 246, 0.08)",
-    glowDark: "rgba(37, 99, 235, 0.10)",
-  },
-  burgundy: {
-    name: "Burgundy",
-    primary: "#7e4657",
-    secondary: "#94606f",
-    accent: "#c6919a",
-    primarySoft: "rgba(126, 70, 87, 0.12)",
-    primaryMuted: "#94606f",
-    accentSoft: "rgba(198, 145, 154, 0.14)",
-    border: "rgba(126, 70, 87, 0.22)",
-    ring: "rgba(198, 145, 154, 0.28)",
-    bgStart: "#f8f1f3",
-    bgEnd: "#fcf7f8",
-    card: "rgba(255,255,255,0.69)",
-    cardStrong: "rgba(255,255,255,0.79)",
-    textAccent: "#7e4657",
-    backgroundLight: "radial-gradient(circle at top left, rgba(180, 115, 132, 0.16), transparent 30%), radial-gradient(circle at 84% 6%, rgba(232, 206, 214, 0.18), transparent 22%), linear-gradient(180deg, #fcf7f8 0%, #f6edef 48%, #f0e6e8 100%)",
-    backgroundDark: "radial-gradient(circle at top left, rgba(126, 70, 87, 0.26), transparent 24%), radial-gradient(circle at 84% 4%, rgba(198, 145, 154, 0.12), transparent 16%), linear-gradient(180deg, #140d12 0%, #1b1117 44%, #120b10 100%)",
-    cardLight: "rgba(255,255,255,0.69)",
-    cardDark: "rgba(24,14,20,0.74)",
-    bgDarkStart: "#160a0f",
-    bgDarkEnd: "#261018",
-    cardDarkStrong: "rgba(42,18,28,0.88)",
-    borderDark: "rgba(190, 113, 136, 0.17)",
-    textAccentDark: "#f0bdc9",
-    textPrimaryDark: "#f2e7eb",
-    textSecondaryDark: "rgba(233, 221, 226, 0.88)",
-    primaryDark: "#d38ca0",
-    primarySoftDark: "rgba(211, 140, 160, 0.12)",
-    glowDark: "rgba(168, 85, 107, 0.20)",
-  },
-  champagne: {
-    name: "Champagne",
-    primary: "#9a7a3f",
-    secondary: "#b39152",
-    accent: "#d7be82",
-    primarySoft: "rgba(154, 122, 63, 0.12)",
-    primaryMuted: "#b39152",
-    accentSoft: "rgba(215, 190, 130, 0.14)",
-    border: "rgba(154, 122, 63, 0.22)",
-    ring: "rgba(215, 190, 130, 0.28)",
-    bgStart: "#f8f1e6",
-    bgEnd: "#fcfaf5",
-    card: "rgba(255,255,255,0.72)",
-    cardStrong: "rgba(255,255,255,0.82)",
-    textAccent: "#8d6b34",
-    backgroundLight: "radial-gradient(circle at top left, rgba(215, 190, 130, 0.18), transparent 28%), radial-gradient(circle at 84% 6%, rgba(245, 234, 201, 0.22), transparent 22%), linear-gradient(180deg, #fcfaf5 0%, #f7f1e6 48%, #f1eadc 100%)",
-    backgroundDark: "radial-gradient(circle at top left, rgba(154, 122, 63, 0.22), transparent 24%), radial-gradient(circle at 84% 4%, rgba(215, 190, 130, 0.11), transparent 16%), linear-gradient(180deg, #15110b 0%, #1c1710 44%, #141009 100%)",
-    cardLight: "rgba(255,255,255,0.72)",
-    cardDark: "rgba(24,20,14,0.74)",
-    bgDarkStart: "#161108",
-    bgDarkEnd: "#261c10",
-    cardDarkStrong: "rgba(43,32,18,0.88)",
-    borderDark: "rgba(217, 190, 120, 0.16)",
-    textAccentDark: "#f2dfac",
-    textPrimaryDark: "#f5efe0",
-    textSecondaryDark: "rgba(236, 226, 207, 0.88)",
-    primaryDark: "#d9be78",
-    primarySoftDark: "rgba(217, 190, 120, 0.11)",
-    glowDark: "rgba(180, 131, 54, 0.18)",
-  },
-  violet: {
-    name: "Violet",
-    primary: "#635d8f",
-    secondary: "#7c76a8",
-    accent: "#a7a1d4",
-    primarySoft: "rgba(99, 93, 143, 0.12)",
-    primaryMuted: "#7c76a8",
-    accentSoft: "rgba(167, 161, 212, 0.14)",
-    border: "rgba(99, 93, 143, 0.22)",
-    ring: "rgba(167, 161, 212, 0.28)",
-    bgStart: "#f0edf8",
-    bgEnd: "#f8f7fc",
-    card: "rgba(255,255,255,0.7)",
-    cardStrong: "rgba(255,255,255,0.8)",
-    textAccent: "#5c5890",
-    backgroundLight: "radial-gradient(circle at top left, rgba(124, 118, 168, 0.16), transparent 30%), radial-gradient(circle at 84% 6%, rgba(224, 220, 245, 0.22), transparent 22%), linear-gradient(180deg, #f8f7fc 0%, #efedf8 48%, #e7e5f1 100%)",
-    backgroundDark: "radial-gradient(circle at top left, rgba(99, 93, 143, 0.22), transparent 24%), radial-gradient(circle at 84% 4%, rgba(167, 161, 212, 0.11), transparent 16%), linear-gradient(180deg, #0f1018 0%, #151624 44%, #0d0e16 100%)",
-    cardLight: "rgba(255,255,255,0.7)",
-    cardDark: "rgba(16,17,30,0.74)",
-    bgDarkStart: "#0b0c17",
-    bgDarkEnd: "#17192d",
-    cardDarkStrong: "rgba(25,27,47,0.88)",
-    borderDark: "rgba(167, 161, 212, 0.17)",
-    textAccentDark: "#d7d1ff",
-    textPrimaryDark: "#ece9fb",
-    textSecondaryDark: "rgba(227, 223, 243, 0.88)",
-    primaryDark: "#b8b0ff",
-    primarySoftDark: "rgba(184, 176, 255, 0.11)",
-    glowDark: "rgba(124, 118, 168, 0.20)",
-  },
-};
-const ADDITIONAL_VESSEL_THEME_SEQUENCE = ["burgundy", "champagne", "violet"];
+const MANIFEST_VESSEL_THEME = Object.freeze({
+  name: "Manifest",
+  primary: "#E8442E",
+  secondary: "#0E1F38",
+  accent: "#0E1F38",
+  primarySoft: "#EDE8DC",
+  primaryMuted: "#E8442E",
+  accentSoft: "#EDE8DC",
+  border: "#DDD5C4",
+  ring: "#0E1F38",
+  bgStart: "#F6F3EC",
+  bgEnd: "#F6F3EC",
+  card: "#EDE8DC",
+  cardStrong: "#F6F3EC",
+  textAccent: "#0E1F38",
+  backgroundLight: "#F6F3EC",
+  backgroundDark: "#F6F3EC",
+  cardLight: "#EDE8DC",
+  cardDark: "#EDE8DC",
+  bgDarkStart: "#F6F3EC",
+  bgDarkEnd: "#F6F3EC",
+  cardDarkStrong: "#F6F3EC",
+  borderDark: "#DDD5C4",
+  textAccentDark: "#0E1F38",
+  textPrimaryDark: "#0E1F38",
+  textSecondaryDark: "#64708A",
+  primaryDark: "#E8442E",
+  primarySoftDark: "#EDE8DC",
+  glowDark: "transparent",
+});
+const VESSEL_THEME_PRESETS = Object.fromEntries(
+  ["contessa", "octopussy", "manifest-a", "manifest-b", "manifest-c"].map((key) => [
+    key,
+    { ...MANIFEST_VESSEL_THEME, name: key },
+  ]),
+);
+const ADDITIONAL_VESSEL_THEME_SEQUENCE = ["manifest-a", "manifest-b", "manifest-c"];
 const REQUIRED_FLEET_VESSELS = [
   {
     id: "contessa",
@@ -453,14 +337,14 @@ function cloneVesselThemePreset(name = "contessa") {
 
 function hexToRgbChannels(hex = "") {
   const normalized = String(hex || "").trim().replace("#", "");
-  if (!/^[\da-f]{6}$/i.test(normalized)) return "22, 120, 110";
+  if (!/^[\da-f]{6}$/i.test(normalized)) return "232, 68, 46";
   const value = Number.parseInt(normalized, 16);
-  const red = (value >> 16) & 255;
-  const green = (value >> 8) & 255;
-  const blue = value & 255;
+  const channelR = (value >> 16) & 255;
+  const channelG = (value >> 8) & 255;
+  const channelB = value & 255;
   // Comma-separated: every consumer wraps these in legacy rgba(var(--x), a)
   // syntax, which is invalid with space-separated channels.
-  return `${red}, ${green}, ${blue}`;
+  return `${channelR}, ${channelG}, ${channelB}`;
 }
 
 function getImplicitThemeNameForVessel(vesselId = DEFAULT_FLEET_VESSEL_ID, customIndex = 0) {
@@ -472,12 +356,7 @@ function getImplicitThemeNameForVessel(vesselId = DEFAULT_FLEET_VESSEL_ID, custo
 export function normalizeVesselTheme(theme = {}, fallbackThemeName = "contessa") {
   const fallback = cloneVesselThemePreset(fallbackThemeName);
   const stored = theme && typeof theme === "object" ? theme : {};
-  // Persisted workspaces may carry the legacy sea-teal Contessa palette.
-  // Keep normalizing those records so older backups remain compatible.
-  if (stored.primary === "#16786e" || stored.primaryDark === "#2dd4bf") {
-    return { ...fallback };
-  }
-  return { ...fallback, ...stored };
+  return { ...fallback, name: String(stored.name || fallback.name) };
 }
 
 export function getNextFleetTheme(vessels = []) {
@@ -1481,14 +1360,14 @@ export function getVesselMetrics(vesselId, vessels = []) {
   const workers = Array.isArray(normalizedVessel.workers) ? normalizedVessel.workers : [];
   const routePlanning = normalizeRoutePlanningState(normalizedVessel.routePlanning || {});
   const boatExpenses = buildBoatExpenseSummaryItems(tasks);
-  const certificateAlerts = buildCertificateAlerts(crewProfiles);
+  const certificateNotices = buildCertificateNotices(crewProfiles);
   const maintenanceAlerts = buildMaintenanceAlerts(maintenanceItems);
   const notifications = buildOperationalNotifications({
     tasks,
     boatExpenses,
     crewExpenses,
     maintenanceAlerts,
-    certificateAlerts,
+    certificateNotices,
   });
   const routeSummary = calculateRoutePassageSummary({
     waypoints: routePlanning.waypoints || [],
@@ -1514,7 +1393,7 @@ export function getVesselMetrics(vesselId, vessels = []) {
   return {
     taskCount: counts.taskCount,
     crewCount: crewProfiles.length,
-    certificateDue: certificateAlerts.length,
+    certificateDue: certificateNotices.length,
     documentCount: documents.length,
     expenseCount: crewExpenses.length + boatExpenses.length,
     quoteCount,
@@ -1530,75 +1409,75 @@ export function getVesselMetrics(vesselId, vessels = []) {
 }
 
 export const statusStyles = {
-  pending: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
-  ongoing: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  "waiting-approval": "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
-  blocked: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
-  completed: "border border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm dark:border-emerald-300/40 dark:bg-emerald-300/15 dark:text-emerald-100",
-  approved: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  declined: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
+  pending: "border border-slate-300 bg-white text-slate-800  dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  ongoing: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  "waiting-approval": "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  blocked: "border border-accent-300 bg-accent-50 text-accent-800  dark:border-accent-300/40 dark:bg-accent-300/15 dark:text-accent-100",
+  completed: "border border-ok-300 bg-ok-50 text-ok-800  dark:border-ok-300/40 dark:bg-ok-300/15 dark:text-ok-100",
+  approved: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  declined: "border border-accent-300 bg-accent-50 text-accent-800  dark:border-accent-300/40 dark:bg-accent-300/15 dark:text-accent-100",
 };
 
 export const priorityStyles = {
-  low: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
-  medium: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
-  high: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  urgent: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
+  low: "border border-slate-300 bg-white text-slate-800  dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  medium: "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  high: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  urgent: "border border-accent-300 bg-accent-50 text-accent-800  dark:border-accent-300/40 dark:bg-accent-300/15 dark:text-accent-100",
 };
 
 export const departmentStyles = {
-  General: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
-  Deck: "border border-teal-300 bg-teal-50 text-teal-800 shadow-sm dark:border-teal-300/40 dark:bg-teal-300/15 dark:text-teal-100",
-  Engineering: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  Interior: "border border-violet-300 bg-violet-50 text-violet-800 shadow-sm dark:border-violet-300/40 dark:bg-violet-300/15 dark:text-violet-100",
-  Bridge: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
-  Admin: "border border-slate-300 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  General: "border border-slate-300 bg-white text-slate-800  dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
+  Deck: "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  Engineering: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  Interior: "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  Bridge: "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  Admin: "border border-slate-300 bg-white text-slate-800  dark:border-white/10 dark:bg-slate-800 dark:text-slate-100",
 };
 
 export const moneyStatusStyles = {
-  requested: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  received: "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100",
-  approved: "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-100",
-  declined: "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm dark:border-rose-300/40 dark:bg-rose-300/15 dark:text-rose-100",
-  paid: "border border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm dark:border-emerald-300/40 dark:bg-emerald-300/15 dark:text-emerald-100",
+  requested: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  received: "border border-navy-300 bg-navy-50 text-navy-800  dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100",
+  approved: "border border-warn-300 bg-warn-50 text-warn-800  dark:border-warn-300/40 dark:bg-warn-300/15 dark:text-warn-100",
+  declined: "border border-accent-300 bg-accent-50 text-accent-800  dark:border-accent-300/40 dark:bg-accent-300/15 dark:text-accent-100",
+  paid: "border border-ok-300 bg-ok-50 text-ok-800  dark:border-ok-300/40 dark:bg-ok-300/15 dark:text-ok-100",
 };
 
 export function neutralBadgeClass(darkMode = false) {
   return darkMode
-    ? "border border-white/10 bg-slate-800 text-slate-100 shadow-sm"
-    : "border border-slate-300 bg-white text-slate-800 shadow-sm";
+    ? "border border-white/10 bg-slate-800 text-slate-100 "
+    : "border border-slate-300 bg-white text-slate-800 ";
 }
 
 export function infoBadgeClass(darkMode = false) {
   return darkMode
-    ? "border border-cyan-300/40 bg-cyan-300/15 text-cyan-100 shadow-sm"
-    : "border border-blue-300 bg-blue-50 text-blue-800 shadow-sm";
+    ? "border border-navy-300/40 bg-navy-300/15 text-navy-100 "
+    : "border border-navy-300 bg-navy-50 text-navy-800 ";
 }
 
 export function successBadgeClass(darkMode = false) {
   return darkMode
-    ? "border border-teal-300/40 bg-teal-300/15 text-teal-100 shadow-sm"
-    : "border border-teal-300 bg-teal-50 text-teal-800 shadow-sm";
+    ? "border border-ok-300/40 bg-ok-300/15 text-ok-100 "
+    : "border border-ok-300 bg-ok-50 text-ok-800 ";
 }
 
 export function warningBadgeClass(darkMode = false) {
   return darkMode
-    ? "border border-amber-300/40 bg-amber-300/15 text-amber-100 shadow-sm"
-    : "border border-amber-300 bg-amber-50 text-amber-800 shadow-sm";
+    ? "border border-warn-300/40 bg-warn-300/15 text-warn-100 "
+    : "border border-warn-300 bg-warn-50 text-warn-800 ";
 }
 
 export function criticalBadgeClass(darkMode = false) {
   return darkMode
-    ? "border border-rose-300/40 bg-rose-300/15 text-rose-100 shadow-sm"
-    : "border border-rose-300 bg-rose-50 text-rose-800 shadow-sm";
+    ? "border border-accent-300/40 bg-accent-300/15 text-accent-100 "
+    : "border border-accent-300 bg-accent-50 text-accent-800 ";
 }
 
 export function filePreviewCardClass(darkMode = false) {
-  return darkMode ? "overflow-hidden rounded-lg border border-[#31443a] bg-[#111a16] p-3" : "overflow-hidden rounded-lg border border-[#d8e7df] bg-white p-3";
+  return "overflow-hidden rounded-lg border border-[var(--hairline)] bg-[var(--paper-2)] p-3 text-[var(--navy)]";
 }
 
 export function filePreviewPlaceholderClass(darkMode = false) {
-  return darkMode ? "flex h-24 items-center justify-center rounded-md bg-[#162119] text-center text-xs font-medium text-[#d5e4dd]" : "flex h-24 items-center justify-center rounded-md bg-[#f3faf6] text-center text-xs font-medium text-[#40534a]";
+  return "flex h-24 items-center justify-center rounded-md bg-[var(--paper)] text-center text-xs font-medium text-[var(--navy-soft)]";
 }
 
 export function normalizeDocumentRecord(item = {}) {
@@ -2406,7 +2285,7 @@ function pickFirstArray(...values) {
   return values.find((value) => Array.isArray(value)) || [];
 }
 
-function applyKnownStateAliases(state = {}) {
+function applyKnownAliases(state = {}) {
   return {
     ...state,
     actorName: pickFirstDefined(state.actorName, state.actor, state.userName, "User"),
@@ -2423,7 +2302,7 @@ function applyKnownStateAliases(state = {}) {
 
 function migrateStateShapeToVersion2(state = {}) {
   return {
-    ...applyKnownStateAliases(state),
+    ...applyKnownAliases(state),
   };
 }
 
@@ -2435,7 +2314,7 @@ function migrateStateShapeToVersion3(state = {}) {
       : {};
 
   return {
-    ...applyKnownStateAliases(state),
+    ...applyKnownAliases(state),
     darkMode: Boolean(pickFirstDefined(state.darkMode, preferences.darkMode, state.uiTheme === "dark")),
     currency: pickFirstDefined(state.currency, preferences.currency, preferences.summaryCurrency, "USD"),
     history: pickFirstArray(state.history, state.activityLog, state.auditTrail),
@@ -2546,7 +2425,7 @@ export function migrateImportedAppStatePayload(payload) {
     version,
     state: migrateStateShapeToVersion4(
       migrateStateShapeToVersion3(
-        applyKnownStateAliases(
+        applyKnownAliases(
           migrateStateShapeToVersion2(nextPayload.state && typeof nextPayload.state === "object" ? nextPayload.state : {})
         )
       )
@@ -2726,7 +2605,7 @@ export function completeMaintenanceCycle(item, completedDate = todayDateString()
   });
 }
 
-export function buildCertificateAlerts(crewProfiles, windows = CERTIFICATE_ALERT_WINDOWS) {
+export function buildCertificateNotices(crewProfiles, windows = CERTIFICATE_ALERT_WINDOWS) {
   return crewProfiles
     .flatMap((profile) =>
       (profile.certificates || []).map((certificate) => {
@@ -2778,7 +2657,7 @@ export function buildDashboardSnapshot({
   boatExpenses = [],
   crewExpenses = [],
   maintenanceAlerts = [],
-  certificateAlerts = [],
+  certificateNotices = [],
   history = [],
 } = {}) {
   const todayTasks = tasks.filter((task) => !["completed", "approved"].includes(task.status) && isDueToday(task.dueDate));
@@ -2793,7 +2672,7 @@ export function buildDashboardSnapshot({
     urgentTasks,
     pendingApprovals,
     unpaidCrew,
-    expiringCertificates: certificateAlerts,
+    expiringCertificates: certificateNotices,
     maintenanceAlerts,
     recentActivity: history.slice(0, 6),
   };
@@ -2878,7 +2757,7 @@ export function buildOperationalNotifications({
   boatExpenses = [],
   crewExpenses = [],
   maintenanceAlerts = [],
-  certificateAlerts = [],
+  certificateNotices = [],
 } = {}) {
   const notifications = [];
   const describeStatus = (status) => titleCase(status || "requested");
@@ -2917,7 +2796,7 @@ export function buildOperationalNotifications({
     });
   });
 
-  certificateAlerts.forEach((item) => {
+  certificateNotices.forEach((item) => {
     notifications.push({
       id: `certificate-${item.crewId}-${item.id}`,
       level: item.daysRemaining < 0 ? "critical" : item.daysRemaining <= 30 ? "warning" : "info",

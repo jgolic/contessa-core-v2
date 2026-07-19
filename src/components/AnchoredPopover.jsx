@@ -80,8 +80,8 @@ export default function AnchoredPopover({
           maxHeight: position.maxHeight,
         }}
         className={[
-          "fixed z-[30001] rounded-3xl border border-slate-200/90 bg-white text-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)] backdrop-blur-xl",
-          "dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 dark:shadow-[0_32px_110px_rgba(0,0,0,0.75)]",
+          "fixed z-[30001] rounded-3xl border border-slate-200/90 bg-white text-slate-950  backdrop-blur-xl",
+          "dark:border-white/10 dark:bg-slate-950 dark:text-slate-50 ",
           panelClassName,
         ].filter(Boolean).join(" ")}
         onMouseDown={(event) => event.stopPropagation()}

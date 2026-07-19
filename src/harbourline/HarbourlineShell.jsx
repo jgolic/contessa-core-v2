@@ -297,7 +297,7 @@ function VesselSwitcher({
               <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink)]">Open fleet manager</span>
               <span className="mt-0.5 block text-xs text-[var(--ink-soft)]">Add vessels and review fleet details</span>
             </span>
-            <AnchorIcon className="h-5 w-5 text-[var(--brass)]" />
+            <AnchorIcon className="h-5 w-5 text-[var(--navy)]" />
           </button>
         </div>
       ) : null}
@@ -511,7 +511,7 @@ export default function HarbourlineShell({
             {roleLabel} view
             <span aria-hidden="true">&#9662;</span>
           </button>
-          <span suppressHydrationWarning className="harbourline-count text-[13px] font-semibold tracking-[0.08em] text-[var(--fog)]">
+          <span suppressHydrationWarning className="harbourline-clock harbourline-count text-[13px] font-semibold tracking-[0.08em] text-[var(--fog)]">
             {clockLabel}
           </span>
           <span
@@ -557,7 +557,7 @@ export default function HarbourlineShell({
                     closeAll();
                     onSelectNotification?.(notification);
                   }}
-                  className="w-full rounded-[14px] border border-transparent px-3.5 py-3 text-left transition-colors hover:border-[var(--mb-line-strong)] hover:bg-[var(--mb-gold-tint)]"
+                  className="w-full rounded-[14px] border border-transparent px-3.5 py-3 text-left transition-colors hover:border-[var(--mb-line-strong)] hover:bg-[var(--mb-accent-tint)]"
                 >
                   <div className="truncate text-sm font-semibold text-[var(--mb-ink)]">{notification.title || notification.message}</div>
                   {notification.detail || notification.description ? (

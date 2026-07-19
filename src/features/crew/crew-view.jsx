@@ -134,7 +134,7 @@ function ConfirmableCrewProfileFields({
             </p>
           </div>
           {canEdit ? (
-            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-gold)] transition-colors hover:text-[var(--mb-gold-bright)]">
+            <button type="button" onClick={() => setIsEditing(true)} className="min-h-[44px] shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[var(--mb-accent)] transition-colors hover:text-[var(--mb-accent-bright)]">
               Edit
             </button>
           ) : null}
@@ -445,7 +445,7 @@ function ConfirmableCertificateRow({
             {draft.extractedAt ? <Badge className={draft.extractionReviewed ? "bg-[#dff5ea] text-[#176342]" : "bg-[#fff3c4] text-[#7a5416]"}>{draft.extractionReviewed ? "Reviewed" : "Review required"}</Badge> : null}
           </div>
           {draft.reviewReasons?.length ? (
-            <div className="mt-2 space-y-1 text-sm text-amber-900">
+            <div className="mt-2 space-y-1 text-sm text-warn-900">
               {draft.reviewReasons.map((reason, index) => <div key={`${certificate.id}-review-${index}`}>{reason}</div>)}
             </div>
           ) : null}
@@ -482,14 +482,14 @@ function CrewListToolsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`max-h-[90dvh] w-[calc(100vw-2rem)] max-w-lg overflow-y-auto rounded-[28px] border p-4 shadow-2xl sm:p-5 md:rounded-[30px] ${darkMode ? "border-white/10 bg-slate-950/95 text-slate-100" : "border-slate-200/80 bg-white text-slate-950"}`}>
+      <DialogContent className={`max-h-[90dvh] w-[calc(100vw-2rem)] max-w-lg overflow-y-auto rounded-[28px] border p-4  sm:p-5 md:rounded-[30px] ${darkMode ? "border-white/10 bg-slate-950/95 text-slate-100" : "border-slate-200/80 bg-white text-slate-950"}`}>
         <DialogHeader>
           <DialogTitle>Crew List</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4">
           <div className={`flex min-w-0 flex-col gap-4 rounded-3xl border p-4 min-[420px]:flex-row min-[420px]:items-center ${darkMode ? "border-white/10 bg-white/[0.04]" : "border-slate-200/80 bg-slate-50/80"}`}>
-            <div className={`flex h-28 w-20 shrink-0 flex-col items-center justify-start rounded-xl border px-2 py-3 shadow-sm ${darkMode ? "border-cyan-300/20 bg-slate-900 text-slate-100" : "border-slate-200 bg-white text-slate-900"}`}>
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700 dark:text-cyan-200">Crew</div>
+            <div className={`flex h-28 w-20 shrink-0 flex-col items-center justify-start rounded-xl border px-2 py-3  ${darkMode ? "border-navy-300/20 bg-slate-900 text-slate-100" : "border-slate-200 bg-white text-slate-900"}`}>
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-navy-700 dark:text-navy-200">Crew</div>
               <div className="mt-2 h-px w-full bg-slate-300/70 dark:bg-white/20" />
               <div className="mt-3 grid w-full gap-1.5">
                 <span className="h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
@@ -573,15 +573,15 @@ export function CrewView({
   const privacyNote = getCrewIdentifierPrivacyNote({ exposeSensitiveData: exposeSensitiveCrewData });
   const [crewListOpen, setCrewListOpen] = useState(false);
   const primaryActionButton =
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-blue-300 bg-blue-50 text-blue-800 shadow-sm hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100 dark:hover:border-cyan-300/60 dark:hover:bg-cyan-300/25";
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-navy-300 bg-navy-50 text-navy-800  hover:border-navy-400 hover:bg-navy-100 hover:text-navy-900  focus:outline-none focus:ring-2 focus:ring-navy-400/30 dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100 dark:hover:border-navy-300/60 dark:hover:bg-navy-300/25";
   const secondaryActionButton =
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-slate-300 bg-white text-slate-800 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-cyan-300/40 dark:hover:bg-slate-700";
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 border-slate-300 bg-white text-slate-800  hover:border-navy-300 hover:bg-navy-50 hover:text-navy-800  focus:outline-none focus:ring-2 focus:ring-navy-400/30 dark:border-white/10 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-navy-300/40 dark:hover:bg-slate-700";
   const smallOpenButton =
-    "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border px-3.5 text-xs font-semibold transition-all duration-200 border-blue-300 bg-blue-50 text-blue-800 hover:border-blue-400 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-cyan-300/40 dark:bg-cyan-300/15 dark:text-cyan-100 dark:hover:border-cyan-300/60 dark:hover:bg-cyan-300/25";
+    "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border px-3.5 text-xs font-semibold transition-all duration-200 border-navy-300 bg-navy-50 text-navy-800 hover:border-navy-400 hover:bg-navy-100 hover:text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-400/30 dark:border-navy-300/40 dark:bg-navy-300/15 dark:text-navy-100 dark:hover:border-navy-300/60 dark:hover:bg-navy-300/25";
   const crewCardClass =
-    "w-full rounded-3xl border p-4 text-left transition-all duration-200 border-slate-200 bg-white text-slate-950 shadow-sm hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400/30 dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-300/10";
+    "w-full rounded-3xl border p-4 text-left transition-all duration-200 border-slate-200 bg-white text-slate-950  hover:border-navy-300 hover:bg-navy-50/40  focus:outline-none focus:ring-2 focus:ring-navy-400/30 dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-50 dark:hover:border-navy-300/40 dark:hover:bg-navy-300/10";
   const crewCardSelectedClass =
-    "border-blue-400 bg-blue-50/70 shadow-[0_0_0_1px_rgba(59,130,246,0.35),0_18px_45px_rgba(59,130,246,0.12)] dark:border-cyan-300/60 dark:bg-cyan-300/12 dark:shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_20px_50px_rgba(34,211,238,0.18)]";
+    "border-navy-400 bg-navy-50/70  dark:border-navy-300/60 dark:bg-navy-300/12 ";
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -595,7 +595,7 @@ export function CrewView({
     return (
       <Card className={`rounded-[26px] md:rounded-[24px] ${theme.card}`}>
         <CardContent className="p-5">
-          <div className="rounded-[22px] border border-amber-300 bg-amber-50 p-4 text-amber-900 md:rounded-xl">
+          <div className="rounded-[22px] border border-warn-300 bg-warn-50 p-4 text-warn-900 md:rounded-xl">
             Crew profiles are limited for the current role. Switch to Captain, Manager, or Owner to manage full crew records.
           </div>
         </CardContent>

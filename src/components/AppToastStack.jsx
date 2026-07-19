@@ -2,36 +2,36 @@
 
 function getToastTone(type = "info", darkMode = false) {
   const surface = darkMode
-    ? "border-white/10 bg-slate-950/95 text-slate-50 shadow-[0_24px_70px_rgba(0,0,0,0.48)]"
-    : "border-slate-200/90 bg-white/95 text-slate-950 shadow-[0_24px_70px_rgba(15,23,42,0.16)]";
+    ? "border-white/10 bg-slate-950/95 text-slate-50 "
+    : "border-slate-200/90 bg-white/95 text-slate-950 ";
 
   const tones = {
     success: {
-      rail: darkMode ? "bg-emerald-300" : "bg-emerald-500",
+      rail: darkMode ? "bg-ok-300" : "bg-ok-500",
       pill: darkMode
-        ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-100"
-        : "border-emerald-200 bg-emerald-50 text-emerald-800",
+        ? "border-ok-300/30 bg-ok-300/10 text-ok-100"
+        : "border-ok-200 bg-ok-50 text-ok-800",
       label: "Saved",
     },
     error: {
-      rail: darkMode ? "bg-rose-300" : "bg-rose-500",
+      rail: darkMode ? "bg-accent-300" : "bg-accent-500",
       pill: darkMode
-        ? "border-rose-300/30 bg-rose-300/10 text-rose-100"
-        : "border-rose-200 bg-rose-50 text-rose-700",
+        ? "border-accent-300/30 bg-accent-300/10 text-accent-100"
+        : "border-accent-200 bg-accent-50 text-accent-700",
       label: "Needs attention",
     },
     warning: {
-      rail: darkMode ? "bg-amber-300" : "bg-amber-500",
+      rail: darkMode ? "bg-warn-300" : "bg-warn-500",
       pill: darkMode
-        ? "border-amber-300/30 bg-amber-300/10 text-amber-100"
-        : "border-amber-200 bg-amber-50 text-amber-800",
+        ? "border-warn-300/30 bg-warn-300/10 text-warn-100"
+        : "border-warn-200 bg-warn-50 text-warn-800",
       label: "Review",
     },
     info: {
-      rail: darkMode ? "bg-cyan-300" : "bg-blue-500",
+      rail: darkMode ? "bg-navy-300" : "bg-navy-500",
       pill: darkMode
-        ? "border-cyan-300/30 bg-cyan-300/10 text-cyan-100"
-        : "border-blue-200 bg-blue-50 text-blue-800",
+        ? "border-navy-300/30 bg-navy-300/10 text-navy-100"
+        : "border-navy-200 bg-navy-50 text-navy-800",
       label: "Update",
     },
   };

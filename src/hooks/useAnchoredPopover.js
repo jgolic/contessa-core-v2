@@ -40,8 +40,8 @@ function resolvePopoverPosition(anchorRect, options = {}) {
   if (align === "center") left = anchorRect.left + (anchorRect.width - width) / 2;
   left = clamp(left, margin, viewportWidth - width - margin);
 
-  const minTopForHeight = Math.max(margin, viewportHeight - minHeight - margin);
-  const top = clamp(anchorRect.bottom + gap, margin, minTopForHeight);
+  const minAllowedTop = Math.max(margin, viewportHeight - minHeight - margin);
+  const top = clamp(anchorRect.bottom + gap, margin, minAllowedTop);
   const availableHeight = Math.max(120, viewportHeight - top - margin);
   const heightLimit = Math.max(120, Math.min(maxHeight, availableHeight));
   const anchorCenter = anchorRect.left + anchorRect.width / 2;

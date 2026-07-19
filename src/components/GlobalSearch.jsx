@@ -380,15 +380,15 @@ export default function GlobalSearch({
     }
   }
 
-  // Riviera palette: champagne borders, gold accents on porcelain white.
+  // Riviera palette: champagne borders, accent accents on porcelain white.
   const inputShellClass =
-    "border-[rgba(143,110,54,0.30)] bg-white/95 text-slate-950 shadow-[0_16px_45px_rgba(143,110,54,0.14)] hover:border-[rgba(143,110,54,0.48)] focus-within:border-[rgba(125,95,46,0.6)] focus-within:shadow-[0_0_0_4px_rgba(168,131,74,0.14),0_22px_60px_rgba(143,110,54,0.18)]";
+    "border-[rgba(143,110,54,0.30)] bg-white/95 text-slate-950  hover:border-[rgba(143,110,54,0.48)] focus-within:border-[rgba(125,95,46,0.6)] focus-within:";
   const iconClass =
     "border-[rgba(143,110,54,0.32)] bg-[rgba(233,212,156,0.35)] text-[#7d5f2e] hover:border-[rgba(125,95,46,0.55)] focus:ring-[rgba(168,131,74,0.35)]";
   const inputTextClass =
     "text-slate-950 placeholder:text-slate-500 caret-[#8f6e36] selection:bg-[rgba(201,169,106,0.30)]";
   const resultsPanelClass =
-    "search-popover-light border-[rgba(143,110,54,0.25)] bg-white text-slate-950 shadow-[0_30px_100px_rgba(31,27,16,0.22)]";
+    "search-popover-light border-[rgba(143,110,54,0.25)] bg-white text-slate-950 ";
   const resultRowClass = (active) =>
     active
       ? "bg-[rgba(201,169,106,0.16)] text-slate-950"
@@ -410,10 +410,10 @@ export default function GlobalSearch({
             inputRef.current?.focus();
             setOpen(Boolean(query.trim()));
           }}
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-inner transition-all duration-200 hover:scale-[1.03] focus:outline-none focus:ring-2 lg:h-12 lg:w-12 ${iconClass}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border  transition-all duration-200 hover:scale-[1.03] focus:outline-none focus:ring-2 lg:h-12 lg:w-12 ${iconClass}`}
           aria-label="Focus global search"
         >
-          <CommandSearchMark className="h-5 w-5 drop-shadow-[0_0_10px_rgba(168,131,74,0.25)] md:h-6 md:w-6" />
+          <CommandSearchMark className="h-5 w-5  md:h-6 md:w-6" />
         </button>
 
         <input
@@ -441,7 +441,7 @@ export default function GlobalSearch({
 
         <div className="hidden shrink-0 items-center gap-2 text-xs font-semibold text-slate-600 lg:flex">
           <span>Jump anywhere</span>
-          <span className="rounded-lg border border-[rgba(143,110,54,0.35)] bg-white px-2 py-1 text-slate-800 shadow-sm">
+          <span className="rounded-lg border border-[rgba(143,110,54,0.35)] bg-white px-2 py-1 text-slate-800 ">
             Press /
           </span>
         </div>

@@ -6,37 +6,37 @@ import { useRevealHighlight } from "../hooks/useRevealHighlight.js";
 function getMetricToneClasses(tone = "neutral", darkMode = false) {
   if (tone === "critical") {
     return darkMode
-      ? "border-rose-300/30 bg-rose-300/10 text-rose-100 hover:border-rose-300/45 hover:bg-rose-300/15"
-      : "border-rose-200 bg-rose-50/90 text-rose-900 hover:border-rose-300 hover:bg-rose-50";
+      ? "border-accent-300/30 bg-accent-300/10 text-accent-100 hover:border-accent-300/45 hover:bg-accent-300/15"
+      : "border-accent-200 bg-accent-50/90 text-accent-900 hover:border-accent-300 hover:bg-accent-50";
   }
 
   if (tone === "warning") {
     return darkMode
-      ? "border-amber-300/30 bg-amber-300/10 text-amber-100 hover:border-amber-300/45 hover:bg-amber-300/15"
-      : "border-amber-200 bg-amber-50/90 text-amber-900 hover:border-amber-300 hover:bg-amber-50";
+      ? "border-warn-300/30 bg-warn-300/10 text-warn-100 hover:border-warn-300/45 hover:bg-warn-300/15"
+      : "border-warn-200 bg-warn-50/90 text-warn-900 hover:border-warn-300 hover:bg-warn-50";
   }
 
   return darkMode
-    ? "border-white/10 bg-slate-800/80 text-slate-50 hover:border-cyan-300/40 hover:bg-cyan-300/10"
-    : "border-slate-200 bg-white text-slate-950 hover:border-blue-300 hover:bg-blue-50/70";
+    ? "border-white/10 bg-slate-800/80 text-slate-50 hover:border-navy-300/40 hover:bg-navy-300/10"
+    : "border-slate-200 bg-white text-slate-950 hover:border-navy-300 hover:bg-navy-50/70";
 }
 
 function getDetailToneClasses(tone = "neutral", darkMode = false) {
   if (tone === "critical") {
     return darkMode
-      ? "border-rose-300/30 bg-rose-300/10"
-      : "border-rose-200 bg-rose-50/90";
+      ? "border-accent-300/30 bg-accent-300/10"
+      : "border-accent-200 bg-accent-50/90";
   }
 
   if (tone === "warning") {
     return darkMode
-      ? "border-amber-300/30 bg-amber-300/10"
-      : "border-amber-200 bg-amber-50/90";
+      ? "border-warn-300/30 bg-warn-300/10"
+      : "border-warn-200 bg-warn-50/90";
   }
 
   return darkMode
-    ? "border-cyan-300/25 bg-cyan-300/10"
-    : "border-blue-200 bg-blue-50/80";
+    ? "border-navy-300/25 bg-navy-300/10"
+    : "border-navy-200 bg-navy-50/80";
 }
 
 export function ExpandableMetricGroup({ title, metrics = [], darkMode = false }) {
@@ -58,7 +58,7 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
   if (!safeMetrics.length) return null;
 
   return (
-    <section className={`w-full min-w-0 rounded-3xl border p-4 shadow-sm ${darkMode ? "border-white/10 bg-slate-900/90 text-slate-50 shadow-[0_18px_50px_rgba(0,0,0,0.28)]" : "border-slate-200/80 bg-white/90 text-slate-950 shadow-[0_16px_45px_rgba(15,23,42,0.06)]"}`}>
+    <section className={`w-full min-w-0 rounded-3xl border p-4  ${darkMode ? "border-white/10 bg-slate-900/90 text-slate-50 " : "border-slate-200/80 bg-white/90 text-slate-950 "}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         {title ? (
           <h3 className={`text-xs font-bold uppercase tracking-[0.14em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
@@ -70,7 +70,7 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
           type="button"
           onClick={() => setExpanded((value) => !value)}
           aria-label={expanded ? "Close section" : "Expand section"}
-          className={`inline-flex min-h-9 items-center justify-center rounded-xl border ${expanded ? "w-10 px-0 text-lg leading-none" : "px-3 py-1.5 text-xs"} font-semibold transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-800 text-slate-100 hover:border-cyan-300/40 hover:bg-slate-700" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"}`}
+          className={`inline-flex min-h-9 items-center justify-center rounded-xl border ${expanded ? "w-10 px-0 text-lg leading-none" : "px-3 py-1.5 text-xs"} font-semibold transition-all duration-200 ${darkMode ? "border-white/10 bg-slate-800 text-slate-100 hover:border-navy-300/40 hover:bg-slate-700" : "border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50"}`}
         >
           {expanded ? <span aria-hidden="true">&times;</span> : "Expand"}
         </button>
@@ -82,7 +82,7 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
             key={metric.id || metric.label}
             type="button"
             onClick={() => setSelectedMetric(metric)}
-            className={`min-w-0 rounded-2xl border p-3 text-left shadow-sm transition-all duration-200 hover:-translate-y-[1px] hover:shadow-md ${getMetricToneClasses(metric.tone, darkMode)}`}
+            className={`min-w-0 rounded-2xl border p-3 text-left  transition-all duration-200 hover:-translate-y-[1px]  ${getMetricToneClasses(metric.tone, darkMode)}`}
           >
             <p className={`text-[10px] font-bold uppercase tracking-[0.1em] ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
               {metric.shortLabel || metric.label}
@@ -143,7 +143,7 @@ export function ExpandableMetricGroup({ title, metrics = [], darkMode = false })
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className={`text-xs font-bold uppercase tracking-[0.14em] ${darkMode ? "text-cyan-100" : "text-blue-800"}`}>
+              <p className={`text-xs font-bold uppercase tracking-[0.14em] ${darkMode ? "text-navy-100" : "text-navy-800"}`}>
                 {selectedMetric.label}
               </p>
               <p className={`mt-2 text-2xl font-semibold ${darkMode ? "text-slate-50" : "text-slate-950"}`}>

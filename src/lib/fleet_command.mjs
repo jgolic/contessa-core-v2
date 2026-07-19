@@ -1,6 +1,6 @@
 import {
   buildBoatExpenseSummaryItems,
-  buildCertificateAlerts,
+  buildCertificateNotices,
   buildTodayOperationsSnapshot,
   calculateConfidenceScore,
   calculateCrewReadinessPercent,
@@ -172,7 +172,7 @@ function buildFleetRecord(rawVessel, metrics = {}, now = new Date()) {
   const crewProfiles = Array.isArray(vessel.crewProfiles) ? vessel.crewProfiles : [];
   const crewExpenses = Array.isArray(vessel.crewExpenses) ? vessel.crewExpenses : [];
   const boatExpenses = buildBoatExpenseSummaryItems(tasks);
-  const certificates = buildCertificateAlerts(crewProfiles);
+  const certificates = buildCertificateNotices(crewProfiles);
   const snapshot = buildTodayOperationsSnapshot({
     tasks: tasks.filter((task) => String(task?.status || "").toLowerCase() !== "declined"),
     maintenanceItems: vessel.maintenanceItems || [],

@@ -110,7 +110,7 @@ export default function CrewDemoIdPortrait({
     <div className="crew-demo-id-portrait-shell flex flex-col items-center gap-3">
       <figure
         className={[
-          "crew-demo-id-portrait relative overflow-hidden rounded-[26px] border bg-white shadow-[0_18px_55px_rgba(15,23,42,0.14)]",
+          "crew-demo-id-portrait relative overflow-hidden rounded-[26px] border bg-white ",
           "border-slate-200 dark:border-white/10 dark:bg-slate-900",
           className,
         ].join(" ")}
@@ -124,8 +124,8 @@ export default function CrewDemoIdPortrait({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-white to-blue-50 text-center dark:from-slate-900 dark:via-slate-950 dark:to-cyan-950/40">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-slate-300 bg-white text-2xl font-semibold text-[#071A3A] shadow-inner dark:border-white/10 dark:bg-slate-800 dark:text-cyan-100">
+          <div className="flex h-full w-full flex-col items-center justify-center   via-white  text-center dark: dark: dark:">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-slate-300 bg-white text-2xl font-semibold text-[#071A3A]  dark:border-white/10 dark:bg-slate-800 dark:text-navy-100">
               {initials}
             </div>
             <p className="mt-4 px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
@@ -147,12 +147,12 @@ export default function CrewDemoIdPortrait({
             type="button"
             onClick={generatePortrait}
             disabled={isGenerating}
-            className="inline-flex min-h-10 w-full items-center justify-center rounded-2xl border border-amber-300 bg-amber-50 px-3 text-xs font-bold uppercase tracking-[0.12em] text-amber-900 shadow-sm transition hover:bg-amber-100 disabled:cursor-wait disabled:opacity-70 dark:border-amber-300/30 dark:bg-amber-300/10 dark:text-amber-100 dark:hover:bg-amber-300/18"
+            className="inline-flex min-h-10 w-full items-center justify-center rounded-2xl border border-warn-300 bg-warn-50 px-3 text-xs font-bold uppercase tracking-[0.12em] text-warn-900  transition hover:bg-warn-100 disabled:cursor-wait disabled:opacity-70 dark:border-warn-300/30 dark:bg-warn-300/10 dark:text-warn-100 dark:hover:bg-warn-300/18"
           >
             {isGenerating ? "Generating..." : imageUrl && !imageFailed ? "Regenerate" : "Generate AI Portrait"}
           </button>
           {generationError ? (
-            <p className="mt-2 text-center text-xs font-medium text-rose-700 dark:text-rose-200">
+            <p className="mt-2 text-center text-xs font-medium text-accent-700 dark:text-accent-200">
               {generationError}
             </p>
           ) : null}

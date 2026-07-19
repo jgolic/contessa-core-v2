@@ -6,7 +6,7 @@ import {
   buildAbsolutePublicAppUrl,
   buildMaintenanceAlerts,
   buildBoatExpenseSummaryItems,
-  buildCertificateAlerts,
+  buildCertificateNotices,
   buildDashboardSnapshot,
   buildOperationalNotifications,
   buildPendingApprovalItems,
@@ -181,15 +181,15 @@ test("crew readiness weights certificate urgency instead of failing every due-so
   assert.equal(readiness, 82);
 });
 
-test("default vessels and added vessels receive distinct premium themes", () => {
+test("all fleet vessels use the canonical Manifest theme", () => {
   const state = createEmptyAppState();
   const contessa = state.vessels.find((vessel) => vessel.id === "contessa");
   const octopussy = state.vessels.find((vessel) => vessel.id === "octopussy");
   const aurora = createFleetVesselWorkspace({ id: "aurora", name: "Aurora" });
 
-  assert.equal(contessa.theme.primary, "#8f6e36");
-  assert.equal(octopussy.theme.primary, "#2563eb");
-  assert.equal(aurora.theme.primary, "#7e4657");
+  assert.equal(contessa.theme.primary, "#E8442E");
+  assert.equal(octopussy.theme.primary, "#E8442E");
+  assert.equal(aurora.theme.primary, "#E8442E");
 });
 
 test("fleet metrics are calculated per vessel only", () => {
@@ -891,7 +891,7 @@ test("certificate alerts surface items inside the configured alert windows", () 
   const later = new Date(today);
   later.setDate(later.getDate() + 120);
 
-  const alerts = buildCertificateAlerts([
+  const alerts = buildCertificateNotices([
     {
       id: "CRW-1",
       fullName: "Chief Mate",
@@ -997,7 +997,7 @@ test("dashboard snapshot surfaces urgent, overdue, and approval totals", () => {
     boatExpenses: [{ id: "Q-1", status: "requested" }],
     crewExpenses: [{ id: "CE-1", status: "approved" }],
     maintenanceAlerts: [{ id: "MI-1" }],
-    certificateAlerts: [{ id: "CERT-1" }],
+    certificateNotices: [{ id: "CERT-1" }],
     history: [{ id: "H-1", at: "2026-04-20T12:00:00.000Z", action: "Updated", detail: "Something changed", section: "History" }],
   });
 
@@ -1012,7 +1012,7 @@ test("operational notifications prioritize critical items first", () => {
   const notifications = buildOperationalNotifications({
     tasks: [{ id: "CT-1", name: "Overdue Task", area: "Bridge", status: "pending", dueDate: "2026-04-19" }],
     maintenanceAlerts: [{ id: "MI-1", title: "Generator", area: "Engine Room", daysRemaining: -1 }],
-    certificateAlerts: [{ id: "CERT-1", crewId: "CRW-1", crewName: "Captain", name: "Medical", daysRemaining: 20 }],
+    certificateNotices: [{ id: "CERT-1", crewId: "CRW-1", crewName: "Captain", name: "Medical", daysRemaining: 20 }],
   });
 
   assert.equal(notifications[0].level, "critical");

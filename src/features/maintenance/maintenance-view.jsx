@@ -51,7 +51,7 @@ function ConfirmableMaintenanceItemRow({
   });
   const remaining = daysUntil(item.nextDueDate);
   const statusText = remaining === null ? "No due date" : remaining < 0 ? `${Math.abs(remaining)} days overdue` : remaining === 0 ? "Due today" : remaining === 1 ? "Due tomorrow" : `Due in ${remaining} days`;
-  const statusClass = remaining !== null && remaining <= 1 ? (darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-amber-100 text-amber-800") : "vessel-pill";
+  const statusClass = remaining !== null && remaining <= 1 ? (darkMode ? "bg-[#2d2414] text-[#f5ddb0]" : "bg-warn-100 text-warn-800") : "vessel-pill";
   const extensionText = item.extensionUsed ? "Extension used for this cycle" : "One extension available";
   const isDirty =
     draft.title !== (item.title || "") ||
@@ -354,7 +354,7 @@ export function MaintenanceView({
                   <Button onClick={onAddMaintenanceItem} className="button-vessel-primary w-full rounded-lg px-4 py-6 text-white">
                     Save Maintenance Alert
                   </Button>
-                  {maintenanceError ? <div className="rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{maintenanceError}</div> : null}
+                  {maintenanceError ? <div className="rounded-lg bg-accent-50 p-3 text-sm text-accent-800">{maintenanceError}</div> : null}
                 </div>
               </DialogContent>
             </Dialog> : <Badge className={neutralBadgeClass(darkMode)}>View-only access</Badge>}
@@ -362,7 +362,7 @@ export function MaintenanceView({
         </div>
 
         {maintenanceError ? (
-          <div className={`mb-4 rounded-lg p-3 text-sm ${darkMode ? "bg-[#381d1f] text-[#ffd8dc]" : "bg-rose-50 text-rose-800"}`}>
+          <div className={`mb-4 rounded-lg p-3 text-sm ${darkMode ? "bg-[#381d1f] text-[#ffd8dc]" : "bg-accent-50 text-accent-800"}`}>
             {maintenanceError}
           </div>
         ) : null}
@@ -372,7 +372,7 @@ export function MaintenanceView({
             {maintenanceAlerts.map((item) => {
               const alertText = item.daysRemaining < 0 ? `${Math.abs(item.daysRemaining)} days overdue` : item.daysRemaining === 0 ? "Due today" : "Due tomorrow";
               return (
-                <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "16px" }} key={`${item.id}-alert`} className={`jump-highlight-target rounded-lg border p-4 ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+                <div id={`item-${item.id}`} data-jump-target style={{ "--jump-radius": "16px" }} key={`${item.id}-alert`} className={`jump-highlight-target rounded-lg border p-4 ${darkMode ? "border-[#5e4920] bg-[#2d2414] text-[#f5ddb0]" : "border-warn-300 bg-warn-50 text-warn-900"}`}>
                   <div className="font-semibold">{alertText}: {item.title}</div>
                   <div className="text-sm">{item.area} - Due {item.nextDueDate}</div>
                 </div>

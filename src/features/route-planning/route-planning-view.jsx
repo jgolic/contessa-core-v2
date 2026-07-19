@@ -116,7 +116,7 @@ function calculateRoutePlan(route = {}, specs = {}) {
 
 function RouteControlBracket({ title, subtitle, open, onToggle, children, darkMode = false }) {
   return (
-    <section className={`rounded-3xl border p-4 shadow-sm ${darkMode ? "border-white/10 bg-slate-800/80" : "border-slate-200/80 bg-white/90"}`}>
+    <section className={`rounded-3xl border p-4  ${darkMode ? "border-white/10 bg-slate-800/80" : "border-slate-200/80 bg-white/90"}`}>
       <button
         type="button"
         onClick={onToggle}
@@ -1042,7 +1042,7 @@ export function RoutePlanningView({
           visibility: overlayToggles.route ? "visible" : "none",
         },
         paint: {
-          "line-color": darkMode ? "rgba(6, 14, 18, 0.82)" : "rgba(255, 255, 255, 0.92)",
+          "line-color": "#f6f3ec",
           "line-width": 8.5,
           "line-opacity": 0.9,
         },
@@ -1058,15 +1058,7 @@ export function RoutePlanningView({
           visibility: overlayToggles.route ? "visible" : "none",
         },
         paint: {
-          "line-color": (overlayToggles.depth || overlayToggles.depthShading) && depthDataConnected
-            ? [
-              "match",
-              ["get", "routeStatus"],
-              "unsafe", "#d6533a",
-              "caution", "#d7a436",
-              "#2f74ff",
-            ]
-            : "#2f74ff",
+          "line-color": "#0e1f38",
           "line-width": 4.5,
           "line-opacity": 0.98,
         },
@@ -1077,15 +1069,7 @@ export function RoutePlanningView({
       map.setPaintProperty(
         routeLineId,
         "line-color",
-        (overlayToggles.depth || overlayToggles.depthShading) && depthDataConnected
-          ? [
-            "match",
-            ["get", "routeStatus"],
-            "unsafe", "#d6533a",
-            "caution", "#d7a436",
-            "#2f74ff",
-          ]
-          : "#2f74ff"
+        "#0e1f38"
       );
     }
   }, [darkMode, depthAwareRoute.geoJson, depthDataConnected, mapReady, overlayToggles.depth, overlayToggles.depthShading, overlayToggles.route, styleRevision]);
@@ -1574,11 +1558,11 @@ export function RoutePlanningView({
     `min-h-10 rounded-2xl border px-3 py-2 text-xs font-semibold transition-all duration-200 ${
       active
         ? darkMode
-          ? "border-cyan-300/40 bg-cyan-300/12 text-cyan-100"
-          : "border-blue-300 bg-blue-50 text-blue-800"
+          ? "border-navy-300/40 bg-navy-300/12 text-navy-100"
+          : "border-navy-300 bg-navy-50 text-navy-800"
         : darkMode
-          ? "border-white/10 bg-slate-900 text-slate-200 hover:border-cyan-300/30 hover:bg-cyan-300/10"
-          : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"
+          ? "border-white/10 bg-slate-900 text-slate-200 hover:border-navy-300/30 hover:bg-navy-300/10"
+          : "border-slate-200 bg-white text-slate-700 hover:border-navy-300 hover:bg-navy-50"
     }`;
 
   const handleFitRoute = () => {
@@ -1620,7 +1604,7 @@ export function RoutePlanningView({
     <div className="app-section-grid grid min-w-0 max-w-full md:gap-6">
       <Card className={`app-panel app-hero-surface app-panel-active mobile-route-hero min-w-0 overflow-hidden rounded-[28px] md:rounded-[30px] ${theme.card}`}>
         <CardContent className="p-0">
-          <div className={`neo-module-hero ${darkMode ? "bg-[radial-gradient(circle_at_top_left,_rgba(118,214,180,0.18),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.1),_transparent_24%),linear-gradient(135deg,_rgba(16,25,23,0.98),_rgba(8,14,12,0.98))]" : "bg-[radial-gradient(circle_at_top_left,_rgba(16,124,108,0.12),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(198,163,91,0.14),_transparent_20%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(239,245,241,0.98))]"} p-4 md:p-5`}>
+          <div className={`neo-module-hero ${darkMode ? "bg-[none,none,none]" : "bg-[none,none,none]"} p-4 md:p-5`}>
             <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)] xl:items-center">
               <div className="min-w-0 max-w-xl">
                 <div className="app-kicker">Route Planning</div>
@@ -1650,7 +1634,7 @@ export function RoutePlanningView({
         </CardContent>
       </Card>
 
-      <div className={`rounded-[22px] border px-4 py-3.5 text-sm shadow-sm ${
+      <div className={`rounded-[22px] border px-4 py-3.5 text-sm  ${
         passageReadiness.tone === "critical"
           ? "border-[#efb0a6] bg-[#fff1ed] text-[#8f2f25]"
           : passageReadiness.tone === "safe"
@@ -1697,7 +1681,7 @@ export function RoutePlanningView({
                 </div>
               </div>
 
-                <div className={`route-map-workspace order-1 app-panel relative max-w-full overflow-hidden rounded-[30px] border shadow-[0_30px_70px_-34px_rgba(8,24,30,0.52)] xl:order-2 ${isFullscreen ? "route-map-workspace-fullscreen" : ""} ${darkMode ? "border-[#21343b] bg-[#091310] shadow-[0_30px_80px_-38px_rgba(0,0,0,0.72)]" : "border-[#d5e1da] bg-[#eef5f2] shadow-[0_26px_60px_-30px_rgba(18,47,40,0.2)]"}`}>
+                <div className={`route-map-workspace order-1 app-panel relative max-w-full overflow-hidden rounded-[30px] border  xl:order-2 ${isFullscreen ? "route-map-workspace-fullscreen" : ""} ${darkMode ? "border-[#21343b] bg-[#091310] " : "border-[#d5e1da] bg-[#eef5f2] "}`}>
                 <div
                   ref={mapContainerRef}
                   className="route-map-frame route-map-frame-mobile w-full overflow-hidden rounded-[30px] md:h-[70vh] md:min-h-[650px] xl:max-h-[820px]"
@@ -1828,7 +1812,7 @@ export function RoutePlanningView({
                     className={`rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-slate-900/80" : "border-slate-200 bg-white"}`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-cyan-300/10 text-cyan-100" : "bg-blue-50 text-blue-800"}`}>{index + 1}</div>
+                      <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-navy-300/10 text-navy-100" : "bg-navy-50 text-navy-800"}`}>{index + 1}</div>
                       <div className="min-w-0 flex-1">
                         <Input
                           disabled={!canEdit}
@@ -1846,7 +1830,7 @@ export function RoutePlanningView({
                         <button
                           type="button"
                           onClick={() => onDeleteWaypoint(waypoint.id)}
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-rose-300/10 text-rose-100 hover:bg-rose-300/15" : "bg-rose-50 text-rose-700 hover:bg-rose-100"}`}
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${darkMode ? "bg-accent-300/10 text-accent-100 hover:bg-accent-300/15" : "bg-accent-50 text-accent-700 hover:bg-accent-100"}`}
                           aria-label={`Delete ${waypoint.name || `Waypoint ${index + 1}`}`}
                         >
                           x
@@ -1899,7 +1883,7 @@ export function RoutePlanningView({
             open={openRouteControls.fuelModel}
             onToggle={() => toggleRouteControlBracket("fuelModel")}
           >
-            <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeFuelTone === "critical" ? darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-800" : routeFuelTone === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-800"}`}>
+            <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeFuelTone === "critical" ? darkMode ? "border-accent-300/30 bg-accent-300/10 text-accent-100" : "border-accent-200 bg-accent-50 text-accent-800" : routeFuelTone === "warning" ? darkMode ? "border-warn-300/30 bg-warn-300/10 text-warn-100" : "border-warn-200 bg-warn-50 text-warn-800" : darkMode ? "border-navy-300/25 bg-navy-300/10 text-navy-100" : "border-navy-200 bg-navy-50 text-navy-800"}`}>
               <div className="font-semibold">{routePlan.fuelStatus} fuel margin</div>
               <div className="mt-1">Usable fuel after reserve: {formatCompactNumber(routePlan.usableFuelLitres)} L.</div>
               <div>Remaining after route: {formatCompactNumber(routePlan.remainingAfterRoute)} L.</div>
@@ -1915,7 +1899,7 @@ export function RoutePlanningView({
           >
             <div className="space-y-3">
               {routeMinimumAvailableDepth !== null ? (
-                <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeDepthStatus === "critical" ? darkMode ? "border-rose-300/30 bg-rose-300/10 text-rose-100" : "border-rose-200 bg-rose-50 text-rose-800" : routeDepthStatus === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-cyan-300/25 bg-cyan-300/10 text-cyan-100" : "border-blue-200 bg-blue-50 text-blue-800"}`}>
+                <div className={`rounded-2xl border p-4 text-sm leading-6 ${routeDepthStatus === "critical" ? darkMode ? "border-accent-300/30 bg-accent-300/10 text-accent-100" : "border-accent-200 bg-accent-50 text-accent-800" : routeDepthStatus === "warning" ? darkMode ? "border-warn-300/30 bg-warn-300/10 text-warn-100" : "border-warn-200 bg-warn-50 text-warn-800" : darkMode ? "border-navy-300/25 bg-navy-300/10 text-navy-100" : "border-navy-200 bg-navy-50 text-navy-800"}`}>
                   Sampled minimum: {routeMinimumAvailableDepth.toFixed(1)} m - Draft: {Number(routeSpecs.draftMeters || 0).toFixed(1)} m - Safe depth: {Number(routeSpecs.safeDepthMeters || 0).toFixed(1)} m.
                 </div>
               ) : (
@@ -1924,7 +1908,7 @@ export function RoutePlanningView({
                 </div>
               )}
               {depthWarnings.length ? depthWarnings.map((warning) => (
-                <div key={warning.id} className={`rounded-2xl border p-3 text-sm leading-6 ${warning.severity === "warning" ? darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800" : darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                <div key={warning.id} className={`rounded-2xl border p-3 text-sm leading-6 ${warning.severity === "warning" ? darkMode ? "border-warn-300/30 bg-warn-300/10 text-warn-100" : "border-warn-200 bg-warn-50 text-warn-800" : darkMode ? "border-white/10 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
                   {warning.message}
                 </div>
               )) : null}
@@ -1964,11 +1948,11 @@ export function RoutePlanningView({
                 step="5"
                 value={Math.round(depthShadingOpacity * 100)}
                 onChange={(event) => setDepthShadingOpacity(Number(event.target.value) / 100)}
-                className="mt-3 w-full accent-cyan-500"
+                className="mt-3 w-full accent-navy-500"
               />
             </div>
             {(overlayToggles.depth && !depthDataConnected) ? (
-              <div className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${darkMode ? "border-amber-300/30 bg-amber-300/10 text-amber-100" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+              <div className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${darkMode ? "border-warn-300/30 bg-warn-300/10 text-warn-100" : "border-warn-200 bg-warn-50 text-warn-800"}`}>
                 {DEPTH_LAYER_UNAVAILABLE_MESSAGE}
               </div>
             ) : null}

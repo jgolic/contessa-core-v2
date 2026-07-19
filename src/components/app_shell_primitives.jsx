@@ -17,7 +17,7 @@ export function ShellControlButton({
   return (
     <Button
       variant="outline"
-      className={`app-card-hover app-panel app-panel-soft min-h-[52px] w-full min-w-0 rounded-2xl px-4 py-3 text-sm font-medium shadow-[0_16px_36px_-30px_rgba(18,47,40,0.18)] md:px-4 md:py-3 ${baseClassName} ${className}`.trim()}
+      className={`app-card-hover app-panel app-panel-soft min-h-[52px] w-full min-w-0 rounded-2xl px-4 py-3 text-sm font-medium  md:px-4 md:py-3 ${baseClassName} ${className}`.trim()}
       {...props}
     >
       {children}
@@ -34,7 +34,7 @@ export function AlertInboxButton({
 }) {
   const activeClassName = darkMode
     ? "app-alert-strong-dark border-[#6d5721]/70 text-[#f6df94] hover:border-[#8b7130]"
-    : "border-[#ead59a] bg-[linear-gradient(135deg,rgba(255,251,233,0.98),rgba(255,242,205,0.92))] text-[#7a5b18] hover:border-[#dfc57d]";
+    : "border-[#ead59a] bg-[none] text-[#7a5b18] hover:border-[#dfc57d]";
   const idleClassName = darkMode
     ? "app-control-block-dark vessel-card-dark vessel-label-dark hover:border-vessel hover:bg-[var(--vessel-card-dark-strong)]"
     : "app-control-block border-slate-200/80 bg-white/90 text-slate-700 hover:border-vessel hover:bg-white";
@@ -43,7 +43,7 @@ export function AlertInboxButton({
     <Button
       type="button"
       variant="outline"
-      className={`app-card-hover app-panel relative min-h-[52px] w-full min-w-0 rounded-2xl px-3 py-3 text-sm font-medium shadow-[0_16px_36px_-30px_rgba(18,47,40,0.18)] md:px-3 md:py-3 ${notificationCount > 0 ? `app-panel-active ${activeClassName}` : `app-panel-soft ${idleClassName}`} ${className}`.trim()}
+      className={`app-card-hover app-panel relative min-h-[52px] w-full min-w-0 rounded-2xl px-3 py-3 text-sm font-medium  md:px-3 md:py-3 ${notificationCount > 0 ? `app-panel-active ${activeClassName}` : `app-panel-soft ${idleClassName}`} ${className}`.trim()}
       aria-label={notificationCount > 0 ? `${notificationCount} active alerts` : "Notifications"}
       {...props}
     >
@@ -68,11 +68,11 @@ export function SectionNavCard({
   const moduleCardBase =
     "group app-card-hover app-panel h-full min-h-[82px] cursor-pointer overflow-hidden rounded-[22px] border transition-all duration-200 md:rounded-[22px]";
   const moduleCardInactive = darkMode
-    ? "app-panel-soft app-dark-card border-white/10 text-slate-100 shadow-[0_18px_50px_rgba(0,0,0,0.35)] hover:border-[var(--vessel-primary-dark)] hover:bg-slate-800/80"
-    : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_18px_50px_rgba(15,23,42,0.06)] hover:border-[var(--vessel-border)] hover:bg-white";
+    ? "app-panel-soft app-dark-card border-white/10 text-slate-100  hover:border-[var(--vessel-primary-dark)] hover:bg-slate-800/80"
+    : "app-panel-soft border-slate-200/80 bg-white/90 text-slate-900  hover:border-[var(--vessel-border)] hover:bg-white";
   const moduleCardActive = darkMode
-    ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] text-cyan-100 shadow-[0_0_24px_var(--vessel-glow-dark)]"
-    : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 shadow-[0_0_24px_rgba(var(--vessel-primary-rgb),0.12)]";
+    ? "app-panel-active app-dark-inner border-[var(--vessel-primary-dark)] text-navy-100 "
+    : "app-panel-active border-[var(--vessel-border)] bg-[var(--vessel-primary-soft)] text-slate-900 ";
 
   return (
     <Card className={`${moduleCardBase} ${active ? moduleCardActive : moduleCardInactive}`}>
@@ -86,11 +86,11 @@ export function SectionNavCard({
         </div>
         <div className="flex items-center gap-2">
           {Icon ? (
-            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border border-white/10 bg-slate-800 text-cyan-100" : "vessel-icon-chip"}`}>
+            <div className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] ${active ? darkMode ? "border border-navy-300/40 bg-navy-300/15 text-navy-100" : "border border-navy-300 bg-navy-50 text-navy-800" : darkMode ? "border border-white/10 bg-slate-800 text-navy-100" : "vessel-icon-chip"}`}>
               <Icon className="h-4 w-4" />
             </div>
           ) : null}
-          <div className={`hidden rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm lg:block ${active ? darkMode ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
+          <div className={`hidden rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em]  lg:block ${active ? darkMode ? "border-navy-300/40 bg-navy-300/15 text-navy-100" : "border-navy-300 bg-navy-50 text-navy-800" : darkMode ? "border-white/10 bg-slate-800 text-slate-100" : "border-slate-300 bg-white text-slate-800"}`}>
             {active ? "Active" : "Open"}
           </div>
         </div>
@@ -110,20 +110,20 @@ export function BottomNavButton({
   return (
     <button
       type="button"
-      className={`group app-card-hover app-panel flex min-h-[54px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border px-1 py-2 text-center shadow-[0_14px_30px_-26px_rgba(18,47,40,0.18)] transition active:scale-[0.96] min-[390px]:min-h-[58px] min-[390px]:px-1.5 sm:px-2 ${
+      className={`group app-card-hover app-panel flex min-h-[54px] w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border px-1 py-2 text-center  transition active:scale-[0.96] min-[390px]:min-h-[58px] min-[390px]:px-1.5 sm:px-2 ${
         active
           ? darkMode
             ? "app-panel-active vessel-active-dark"
-            : "app-panel-active border-teal-300 bg-teal-50 text-teal-900 shadow-[0_14px_34px_rgba(13,148,136,0.14)]"
+            : "app-panel-active border-navy-300 bg-navy-50 text-navy-900 "
           : darkMode
             ? "app-panel-soft app-dark-card border text-slate-100"
-            : "border-slate-200/80 bg-white/90 text-[#365248] shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+            : "border-slate-200/80 bg-white/90 text-[#365248] "
       }`}
       aria-current={active ? "page" : undefined}
       {...props}
     >
       {Icon ? (
-        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? darkMode ? "border border-cyan-300/35 bg-cyan-300/15 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800" : darkMode ? "border border-white/10 bg-slate-800 text-cyan-100" : "border border-teal-300 bg-teal-50 text-teal-800"}`}>
+        <span className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xl min-[390px]:h-6 min-[390px]:w-6 ${active ? darkMode ? "border border-navy-300/35 bg-navy-300/15 text-navy-100" : "border border-navy-300 bg-navy-50 text-navy-800" : darkMode ? "border border-white/10 bg-slate-800 text-navy-100" : "border border-navy-300 bg-navy-50 text-navy-800"}`}>
           <Icon className="h-3 w-3 min-[390px]:h-3.5 min-[390px]:w-3.5" />
         </span>
       ) : null}

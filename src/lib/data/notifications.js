@@ -1,6 +1,6 @@
 import {
   buildBoatExpenseSummaryItems,
-  buildCertificateAlerts,
+  buildCertificateNotices,
   buildMaintenanceAlerts,
   buildOperationalNotifications,
 } from "../../contessa_app_data.mjs";
@@ -15,7 +15,7 @@ export function getNotificationsForVessel(vesselSlug, source = {}) {
   const crewProfiles = getCrewForVessel(normalizedSlug, vessel);
   const crewExpenses = getVesselRecords(normalizedSlug, vessel, "crewExpenses");
   const maintenanceItems = getVesselRecords(normalizedSlug, vessel, "maintenanceItems");
-  const certificateAlerts = buildCertificateAlerts(crewProfiles);
+  const certificateNotices = buildCertificateNotices(crewProfiles);
   const maintenanceAlerts = buildMaintenanceAlerts(maintenanceItems);
   const boatExpenses = buildBoatExpenseSummaryItems(tasks);
 
@@ -24,7 +24,7 @@ export function getNotificationsForVessel(vesselSlug, source = {}) {
     boatExpenses,
     crewExpenses,
     maintenanceAlerts,
-    certificateAlerts,
+    certificateNotices,
   });
 
   const blockedTasks = tasks
