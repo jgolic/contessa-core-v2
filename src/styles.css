@@ -1,56 +1,60 @@
 :root {
   color-scheme: light;
-  --app-sea-ink: #1c2334;
-  --app-sea-soft: #6b6f7c;
-  --app-glow: rgba(201, 169, 106, 0.10);
-  --app-bg-light:
-    var(--paper-2);
-  --app-bg-dark:
-    var(--paper-2);
-  --app-card-light: rgba(255, 255, 255, 0.90);
-  --app-card-soft-light: rgba(252, 250, 244, 0.80);
-  --app-card-dark: rgba(10, 15, 29, 0.62);
-  --app-card-soft-dark: rgba(255, 255, 255, 0.04);
-  --app-border-light: rgba(28, 35, 52, 0.16);
-  --app-border-dark: rgba(201, 169, 106, 0.14);
-  --app-shadow-light: 0 18px 50px rgba(28, 35, 52, 0.08);
-  --app-shadow-dark: 0 24px 60px rgba(0, 0, 0, 0.42);
-  --app-shadow-dark-glow: 0 0 24px rgba(201, 169, 106, 0.06);
-  --app-accent: #8f6e36;
-  --app-warning: #c6a35b;
-  --app-danger: #b1473f;
-  --vessel-primary: #8f6e36;
-  --vessel-primary-soft: rgba(143, 110, 54, 0.12);
-  --vessel-primary-muted: #a98b4f;
-  --vessel-secondary: #a98b4f;
-  --vessel-accent: #c9a96a;
-  --vessel-accent-soft: rgba(201, 169, 106, 0.14);
-  --vessel-border: rgba(143, 110, 54, 0.24);
-  --vessel-ring: rgba(201, 169, 106, 0.30);
-  --vessel-primary-rgb: 143, 110, 54;
-  --vessel-secondary-rgb: 169, 139, 79;
-  --vessel-accent-rgb: 201, 169, 106;
-  --vessel-bg-start: #f7f4ec;
-  --vessel-bg-end: #fcfaf4;
-  --vessel-bg-light:
-    var(--paper-2);
-  --vessel-bg-dark:
-    var(--paper-2);
-  --vessel-card: rgba(255, 255, 255, 0.90);
-  --vessel-card-strong: rgba(255, 255, 255, 0.94);
-  --vessel-card-light: rgba(255, 255, 255, 0.90);
-  --vessel-card-dark: rgba(10, 15, 29, 0.62);
-  --vessel-bg-dark-start: #04060d;
-  --vessel-bg-dark-end: #0a1120;
-  --vessel-card-dark-strong: rgba(14, 20, 38, 0.90);
-  --vessel-border-dark: rgba(201, 169, 106, 0.20);
-  --vessel-text-accent-dark: #e6cf9f;
-  --vessel-text-primary-dark: #f4f0e6;
-  --vessel-text-secondary-dark: rgba(229, 223, 209, 0.78);
-  --vessel-primary-dark: #c9a96a;
-  --vessel-primary-soft-dark: rgba(201, 169, 106, 0.12);
-  --vessel-glow-dark: rgba(201, 169, 106, 0.15);
-  --vessel-text-accent: #7d6031;
+  --paper: #f6f3ec;
+  --paper-2: #ede8dc;
+  --hairline: #ddd5c4;
+  --navy: #0e1f38;
+  --navy-soft: #64708a;
+  --accent: #e8442e;
+  --ok: #3d7a5c;
+  --warn: #b7822e;
+  --app-ink: var(--navy);
+  --app-ink-soft: var(--navy-soft);
+  --app-glow: transparent;
+  --app-bg-light: var(--paper);
+  --app-bg-dark: var(--paper);
+  --app-card-light: var(--paper-2);
+  --app-card-soft-light: var(--paper-2);
+  --app-card-dark: var(--paper-2);
+  --app-card-soft-dark: var(--paper-2);
+  --app-border-light: var(--hairline);
+  --app-border-dark: var(--hairline);
+  --app-shadow-light: none;
+  --app-shadow-dark: none;
+  --app-shadow-dark-glow: none;
+  --app-accent: var(--accent);
+  --app-warning: var(--warn);
+  --app-danger: var(--accent);
+  --vessel-primary: var(--accent);
+  --vessel-primary-soft: var(--paper-2);
+  --vessel-primary-muted: var(--hairline);
+  --vessel-secondary: var(--navy);
+  --vessel-accent: var(--navy);
+  --vessel-accent-soft: var(--paper-2);
+  --vessel-border: var(--hairline);
+  --vessel-ring: var(--navy);
+  --vessel-primary-rgb: 232, 68, 46;
+  --vessel-secondary-rgb: 14, 31, 56;
+  --vessel-accent-rgb: 14, 31, 56;
+  --vessel-bg-start: var(--paper);
+  --vessel-bg-end: var(--paper);
+  --vessel-bg-light: var(--paper);
+  --vessel-bg-dark: var(--paper);
+  --vessel-card: var(--paper-2);
+  --vessel-card-strong: var(--paper);
+  --vessel-card-light: var(--paper-2);
+  --vessel-card-dark: var(--paper-2);
+  --vessel-bg-dark-start: var(--paper);
+  --vessel-bg-dark-end: var(--paper);
+  --vessel-card-dark-strong: var(--paper);
+  --vessel-border-dark: var(--hairline);
+  --vessel-text-accent-dark: var(--navy);
+  --vessel-text-primary-dark: var(--navy);
+  --vessel-text-secondary-dark: var(--navy-soft);
+  --vessel-primary-dark: var(--accent);
+  --vessel-primary-soft-dark: var(--paper-2);
+  --vessel-glow-dark: transparent;
+  --vessel-text-accent: var(--navy);
   --app-space-1: 4px;
   --app-space-2: 8px;
   --app-space-3: 12px;
@@ -65,13 +69,12 @@
   --app-radius-md: 20px;
   --app-radius-lg: 24px;
   --app-radius-xl: 30px;
-  --app-graphite: #0b0e17;
-  --app-navy: #060b18;
-  --app-accent: #c9a96a;
-  --app-accent-bright: #e6cf9f;
-  --app-safe: #3d9477;
-  --app-caution: #a87722;
-  --app-critical: #b1473f;
+  --app-graphite: var(--navy);
+  --app-navy: var(--navy);
+  --app-accent-bright: var(--accent);
+  --app-safe: var(--ok);
+  --app-caution: var(--warn);
+  --app-critical: var(--accent);
   --font-vessel-display: var(--font-display, Georgia, "Times New Roman", serif);
 }
 
@@ -98,7 +101,7 @@ body {
   min-height: 100vh;
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--vessel-bg-light, var(--app-bg-light));
-  color: var(--app-sea-ink);
+  color: var(--app-ink);
   line-height: 1.58;
   overflow-x: hidden;
   max-width: 100%;
@@ -1208,33 +1211,33 @@ select {
   display: block;
   height: 100%;
   width: 100%;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.03));
+  filter: none;
 }
 
 .logo-accent-triangle {
-  stroke: #C6A35B;
+  stroke: var(--accent);
 }
 
 .brand-title {
-  color: #7f8c86;
+  color: var(--navy);
 }
 
 .brand-wordmark {
   display: inline-block;
-  font-family: "Manrope", "Inter", "Segoe UI", sans-serif;
+  font-family: var(--font-display), Georgia, serif;
   font-size: clamp(3rem, 8vw, 4.75rem);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.055em;
   line-height: 0.96;
 }
 
 .brand-wordmark--light {
-  color: #586c64;
+  color: var(--navy);
   text-shadow: none;
 }
 
 .brand-wordmark--dark {
-  color: #d8e0dc;
+  color: var(--paper);
   text-shadow: none;
 }
 
@@ -1247,24 +1250,11 @@ select {
 }
 
 .brand-wordmark-image--light {
-  filter:
-    brightness(0.94)
-    contrast(1.02)
-    saturate(0.9)
-    drop-shadow(0 1px 2px rgba(255, 255, 255, 0.18))
-    drop-shadow(0 10px 18px rgba(20, 42, 36, 0.08));
+  filter: none;
 }
 
 .brand-wordmark-image--dark {
-  filter:
-    grayscale(0.12)
-    brightness(1.18)
-    contrast(0.84)
-    saturate(0.7)
-    sepia(0.18)
-    hue-rotate(-14deg)
-    drop-shadow(0 2px 7px rgba(255, 248, 232, 0.06))
-    drop-shadow(0 10px 22px rgba(0, 0, 0, 0.16));
+  filter: none;
   opacity: 0.955;
 }
 
@@ -1366,7 +1356,7 @@ select {
 }
 
 .app-surface-title {
-  color: var(--app-sea-ink);
+  color: var(--app-ink);
   font-family: "Manrope", "Inter", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;

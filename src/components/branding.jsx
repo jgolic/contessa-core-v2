@@ -2,8 +2,8 @@ export const APP_BRAND_NAME = "Contessa";
 export const APP_PRODUCT_NAME = "Contessa Operations";
 
 function ContessaSymbol({
-  stroke = "#7F8C86",
-  accent = "#C6A35B",
+  stroke = "#0E1F38",
+  accent = "#E8442E",
   strokeWidth = 10,
   accentWidth = 9,
   accentEnabled = true,

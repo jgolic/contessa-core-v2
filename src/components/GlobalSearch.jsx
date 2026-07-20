@@ -386,7 +386,7 @@ export default function GlobalSearch({
   const iconClass =
     "border-[rgba(143,110,54,0.32)] bg-[rgba(233,212,156,0.35)] text-[#7d5f2e] hover:border-[rgba(125,95,46,0.55)] focus:ring-[rgba(168,131,74,0.35)]";
   const inputTextClass =
-    "text-slate-950 placeholder:text-slate-500 caret-[#8f6e36] selection:bg-[rgba(201,169,106,0.30)]";
+    "text-slate-950 placeholder:text-slate-500 caret-[var(--navy)] selection:bg-[var(--paper-2)]";
   const resultsPanelClass =
     "search-popover-light border-[rgba(143,110,54,0.25)] bg-white text-slate-950 ";
   const resultRowClass = (active) =>
