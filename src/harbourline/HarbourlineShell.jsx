@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ContessaUiLogo } from "../components/branding.jsx";
+import { useAutoFitSingleLine } from "../hooks/useAutoFitSingleLine.js";
 import { getFleetVesselStatus } from "../lib/fleet_status.mjs";
 
 /* ------------------------------------------------------------------ */
@@ -120,7 +121,7 @@ function useClock() {
   return now;
 }
 
-function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
+function RailItem({ icon: ItemIcon, label, index, count, active = false, onClick }) {
   return (
     <button
       type="button"
@@ -136,6 +137,7 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
           active ? "opacity-100" : "opacity-0"
         }`}
       />
+      <span className="harbourline-rail-index" aria-hidden="true">{index}</span>
       <span className="relative">
         <ItemIcon className="h-[21px] w-[21px]" />
         {count ? (
@@ -144,7 +146,7 @@ function RailItem({ icon: ItemIcon, label, count, active = false, onClick }) {
           </span>
         ) : null}
       </span>
-      <span className="text-[8.5px] font-bold uppercase tracking-[0.18em]">{label}</span>
+      <span className="harbourline-rail-label text-[8.5px] font-bold uppercase tracking-[0.18em]">{label}</span>
     </button>
   );
 }
@@ -193,6 +195,7 @@ function VesselSwitcher({
   onOpenChange,
 }) {
   const switcherRef = useRef(null);
+  const vesselTitleRef = useAutoFitSingleLine(vesselTitle, { minFontSize: 8, maxFontSize: 17 });
   const activeVessel = fleetVessels.find((vessel) => vessel?.id === activeVesselId) || {};
   const activeStatus = getFleetVesselStatus(fleetMetricsByVessel?.[activeVesselId] || {}, activeVessel);
 
@@ -229,7 +232,7 @@ function VesselSwitcher({
         <VesselStatusLamp level={activeStatus.level} className="shrink-0" />
         <span className="min-w-0">
           <span className="flex min-w-0 items-baseline gap-2">
-            <span className="harbourline-heading block truncate text-[clamp(0.84rem,2.5vw,1.08rem)] tracking-[0.055em] text-[var(--fog)]">
+            <span ref={vesselTitleRef} className="harbourline-vessel-title harbourline-heading block min-w-0 flex-1 truncate tracking-[0.055em] text-[var(--fog)]">
               {vesselTitle}
             </span>
             {vesselIdentifier ? (
@@ -238,7 +241,9 @@ function VesselSwitcher({
               </span>
             ) : null}
           </span>
-          <span className="mt-0.5 flex items-center gap-2 truncate text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--fog-soft)]">
+          <span className="harbourline-vessel-register mt-0.5 flex items-center gap-2 truncate text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--fog-soft)]">
+            <span className="hidden lg:inline">Watch register</span>
+            <span className="hidden lg:inline" aria-hidden="true">/</span>
             <span className="truncate">{activeStatus.label}</span>
             {modeLabel ? <span className="hidden truncate sm:inline">/ {modeLabel}</span> : null}
           </span>
@@ -412,12 +417,18 @@ export default function HarbourlineShell({
           <ContessaUiLogo className="h-9 w-9" />
         </button>
 
-        <div className="mt-6 flex w-full flex-1 flex-col items-stretch justify-center gap-1">
-          {railItems.map((item) => (
+        <div className="harbourline-rail-register mt-5 w-full px-3" aria-hidden="true">
+          <span>CT</span>
+          <span>OPS</span>
+        </div>
+
+        <div className="mt-3 flex w-full flex-1 flex-col items-stretch justify-center gap-1">
+          {railItems.map((item, index) => (
             <RailItem
               key={item.key}
               icon={item.icon}
               label={item.label}
+              index={String(index + 1).padStart(2, "0")}
               count={shownCount(item.count)}
               active={activeModule === item.key}
               onClick={navigate(item.onClick)}

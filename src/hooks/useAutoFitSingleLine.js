@@ -18,6 +18,8 @@ export function useAutoFitSingleLine(value, {
 
     const measureTextWidth = (fontSize) => {
       const styles = window.getComputedStyle(element);
+      const currentFontSize = Number.parseFloat(styles.fontSize) || fontSize;
+      const currentLetterSpacing = Number.parseFloat(styles.letterSpacing);
       const probe = document.createElement("span");
       probe.textContent = element.textContent || value || "";
       Object.assign(probe.style, {
@@ -38,7 +40,9 @@ export function useAutoFitSingleLine(value, {
         fontVariant: styles.fontVariant,
         fontKerning: styles.fontKerning,
         fontFeatureSettings: styles.fontFeatureSettings,
-        letterSpacing: styles.letterSpacing,
+        letterSpacing: Number.isFinite(currentLetterSpacing)
+          ? `${currentLetterSpacing * (fontSize / currentFontSize)}px`
+          : styles.letterSpacing,
         textTransform: styles.textTransform,
       });
       document.body.appendChild(probe);
@@ -56,7 +60,11 @@ export function useAutoFitSingleLine(value, {
         let high = maxFontSize;
         element.style.setProperty("--auto-fit-font-size", `${high}px`);
 
-        const availableWidth = element.clientWidth - 2;
+        const availableWidth = Math.min(
+          element.getBoundingClientRect().width || Number.POSITIVE_INFINITY,
+          container?.getBoundingClientRect().width || Number.POSITIVE_INFINITY,
+          Math.max(document.documentElement.clientWidth - 32, 0) || Number.POSITIVE_INFINITY,
+        ) - 2;
         if (availableWidth <= 0) return;
 
         for (let step = 0; step < 9; step += 1) {

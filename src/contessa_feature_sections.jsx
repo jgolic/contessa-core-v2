@@ -1123,7 +1123,7 @@ export function ObjectivesView({
 
   return (
     <>
-      <div className="mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-center md:justify-between">
+      <div className="task-workbench-toolbar mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-center md:justify-between">
         <Input
           placeholder="Search tasks..."
           value={search}
@@ -1178,21 +1178,21 @@ export function ObjectivesView({
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(520px,680px)] xl:items-start">
-        <Card className={`app-panel app-panel-soft  ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"} rounded-2xl md:rounded-lg`}>
+        <Card className={`task-workbench-list app-panel app-panel-soft ${theme.card} ${mobileTaskPane === "details" ? "hidden md:block" : "block"}`}>
           <CardContent className="p-4">
             {visibleTasks.length === 0 ? (
               <div className={`app-empty-state rounded-xl border border-dashed text-center text-sm ${theme.textSecondary} ${darkMode ? "border-[#31443a] bg-[#0e171c]" : "border-[#c9ded3] bg-[#f7faf8]"}`}>
                 No tasks match this view.
               </div>
             ) : (
-              <div className="rounded-[22px] border border-[var(--mb-line)] bg-[rgba(255,255,255,0.45)] p-3">
-                <div className="task-board-scroll flex gap-2 overflow-x-auto pb-3">
+              <div className="task-board-register border border-[var(--mb-line)] p-3">
+                <div className="task-board-scroll task-board-filters flex gap-2 overflow-x-auto pb-3">
                   {taskBoardOptions.map((option) => (
                     <button
                       key={option.key}
                       type="button"
                       onClick={() => setTaskBoardView(option.key)}
-                      className={`inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-200 active:scale-[0.98] ${taskBoardView === option.key ? "vessel-active border-transparent" : "border-[var(--mb-line)] bg-[var(--mb-panel)] text-[var(--mb-soft)] hover:border-[var(--mb-accent-hover)] hover:bg-[var(--mb-accent-tint)] hover:text-[var(--mb-accent-bright)]"}`}
+                      className={`task-board-filter inline-flex min-h-[42px] shrink-0 items-center justify-center gap-2 border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors duration-200 ${taskBoardView === option.key ? "vessel-active border-transparent" : "border-[var(--mb-line)] bg-[var(--mb-panel)] text-[var(--mb-soft)] hover:border-[var(--mb-accent-hover)] hover:bg-[var(--mb-accent-tint)] hover:text-[var(--mb-accent-bright)]"}`}
                     >
                       <span className="whitespace-nowrap">{option.label}</span>
                       <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] ${taskBoardView === option.key ? "bg-white/20 text-white" : "bg-[var(--mb-accent-tint)] text-[var(--mb-accent-bright)]"}`}>
@@ -1224,7 +1224,7 @@ export function ObjectivesView({
                         window.setTimeout(() => taskCard.classList.remove("jump-highlight-active"), 1900);
                         handleSelectTask(task.id);
                       }}
-                      className={`jump-highlight-target group relative overflow-hidden p-4 pl-5 text-left active:scale-[0.99] ${selectedId === task.id ? "vessel-active rounded-[14px]" : "rv-row"}`}
+                      className={`task-board-entry jump-highlight-target group relative overflow-hidden p-4 pl-5 text-left ${selectedId === task.id ? "vessel-active" : "rv-row"}`}
                     >
                       <span className={`rv-row-tick ${taskTickClass(task)}`} />
                       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
@@ -1271,10 +1271,10 @@ export function ObjectivesView({
 
         <div
           ref={taskDetailsRevealRef}
-          className={`ui-reveal-target rv-sticky-detail rounded-2xl md:rounded-lg ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
+          className={`task-detail-pane ui-reveal-target rv-sticky-detail ${mobileTaskPane === "list" ? "hidden md:block" : "block"}`}
           style={{ "--reveal-radius": "22px" }}
         >
-          <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"}  ${theme.card} rounded-2xl md:rounded-lg`}>
+          <Card className={`app-panel ${selectedTask ? "app-panel-active xl:min-h-[640px]" : "app-panel-soft"} ${theme.card}`}>
             <CardContent className="p-4 md:p-6">
               <TaskDetails
                 selectedTask={selectedTask}

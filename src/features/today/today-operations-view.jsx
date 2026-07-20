@@ -1101,25 +1101,30 @@ export function TodayOperationsView({
       <div id="dashboard-section" data-jump-target style={{ "--jump-radius": "28px" }} className="jump-highlight-target relative z-[5] rounded-[28px] scroll-mt-24 md:scroll-mt-28">
 
         <section className="neo-hero relative my-4 overflow-visible px-5 py-8 sm:px-7 md:px-10 md:py-10 xl:px-12">
+          <div className="neo-hero-register" aria-hidden="true">
+            <span>CONTESSA / WATCH FOLIO</span>
+            <span>{String(currentVessel?.id || "active-vessel").replace(/-/g, " ")} / {currentRoleLabel}</span>
+          </div>
           <div className="relative z-10 grid items-center gap-9 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)] xl:gap-12">
-            <div className="min-w-0">
+            <div className="neo-hero-vessel min-w-0">
               <div data-mb-hero className="flex flex-wrap items-center gap-3">
                 <span className="neo-live-chip inline-flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.24em]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
-                  Live command
+                  Watch active
                 </span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.26em] text-[var(--mb-muted)]">Motor yacht / bridge OS</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.26em] text-[var(--mb-muted)]">Vessel operations register</span>
               </div>
 
               <h1
                 ref={heroNameRef}
                 data-mb-hero
+                style={{ "--hero-fit-font-size": `${125 / Math.max(heroName.length, 1)}cqw` }}
                 className="neo-vessel-title vessel-display-title mt-6 whitespace-nowrap font-semibold leading-[0.78] tracking-[-0.035em]"
               >
                 {heroName}
               </h1>
 
-              <div data-mb-hero className="mt-7 grid max-w-3xl gap-6 border-l border-[var(--mb-line-strong)] pl-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:pl-7">
+              <div data-mb-hero className="neo-hero-brief mt-7 grid max-w-3xl gap-6 border-l border-[var(--mb-line-strong)] pl-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:pl-7">
                 <div>
                   <p className="max-w-2xl text-[15px] leading-7 text-[var(--mb-muted)] md:text-[17px] md:leading-8">{heroStatement}</p>
                   {heroOnDeck ? (
@@ -1127,7 +1132,7 @@ export function TodayOperationsView({
                   ) : null}
                 </div>
                 <div className="min-w-0 md:text-right">
-                  <div className="text-[9px] font-bold uppercase tracking-[0.23em] text-[var(--mb-muted)]">Pending spend</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.23em] text-[var(--mb-muted)]">Spend awaiting command</div>
                   <div className="mt-1 font-mono text-[1.55rem] font-semibold tracking-[-0.04em] text-[var(--navy)]">{pendingSpendLabel}</div>
                 </div>
               </div>
@@ -1143,7 +1148,7 @@ export function TodayOperationsView({
             <aside data-mb-hero className="neo-command-card min-w-0 rounded-[10px] border p-5 md:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div className="min-w-0">
-                  <div className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-[var(--mb-muted)]">Operational pulse</div>
+                  <div className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-[var(--mb-muted)]">Folio 01 / watch condition</div>
                   <h2 className="mt-2 font-sans text-xl font-semibold tracking-[-0.04em] text-[var(--mb-ink)]">{vesselStateConfig.label}</h2>
                   <p className="mt-2 text-xs leading-5 text-[var(--mb-muted)]">{currentRoleLabel} view / intelligence updated from the active vessel workspace.</p>
                 </div>
@@ -1160,7 +1165,7 @@ export function TodayOperationsView({
               </div>
 
               <div className="mt-5">
-                <div className="text-[8.5px] font-extrabold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Fast launch</div>
+                <div className="text-[8.5px] font-extrabold uppercase tracking-[0.24em] text-[var(--mb-muted)]">Direct entries</div>
                 <div className="mt-3 grid gap-2">
                   {visibleQuickActions.map((action, index) => (
                     <button
@@ -1179,8 +1184,8 @@ export function TodayOperationsView({
 
               <button type="button" onClick={() => setDailyReportOpen(true)} className="neo-brief-button mt-5 flex min-h-12 w-full items-center justify-between rounded-[16px] px-4 py-3 text-left">
                 <span>
-                  <span className="block text-[8px] font-bold uppercase tracking-[0.22em] opacity-70">Captain brief</span>
-                  <span className="mt-1 block text-sm font-semibold">Open daily report</span>
+                  <span className="block text-[8px] font-bold uppercase tracking-[0.22em] opacity-70">Watch brief</span>
+                  <span className="mt-1 block text-sm font-semibold">Open captain report</span>
                 </span>
                 <span className="flex h-8 w-8 items-center justify-center rounded-full border border-current/30" aria-hidden="true">↗</span>
               </button>
@@ -1199,7 +1204,7 @@ export function TodayOperationsView({
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mb-line-strong)] transition-colors group-hover:border-[var(--mb-accent-hover)]">
               <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 animate-bounce [animation-duration:2.2s]"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
-            Enter operations
+            Open watch ledger
           </button>
         </section>
 

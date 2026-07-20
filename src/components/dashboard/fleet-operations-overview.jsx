@@ -160,9 +160,6 @@ export function FleetOperationsOverview({
   const leadRecord = visibleRecords[0] || null;
   const remainingRecords = leadRecord ? visibleRecords.slice(1) : [];
   const roleLabel = String(currentRole).toLowerCase() === "owner" ? "Owner" : "Fleet manager";
-  const vesselWord = model.totals.vessels === 1 ? "vessel" : "vessels";
-  const needWord = model.totals.attention === 1 ? "needs" : "need";
-
   const handleIssueOpen = (issue) => {
     if (onOpenIssue) onOpenIssue(issue);
     else onSwitchVessel?.(issue.vesselId);
@@ -175,14 +172,14 @@ export function FleetOperationsOverview({
         <div className="fleet-home-hero-content">
           <div className="fleet-home-eyebrow">
             <span className="fleet-home-live-dot" aria-hidden="true" />
-            {roleLabel} command
+            Fleet registry / {roleLabel}
           </div>
           <h1 className="fleet-home-headline">
-            <span>{model.totals.vessels} {vesselWord}.</span>
-            <span>{model.totals.attention} {needWord} you.</span>
+            <span>{model.totals.vessels} hulls.</span>
+            <span>{model.totals.attention} live signals.</span>
           </h1>
           <p className="fleet-home-intro">
-            One operating picture across yachts, tenders, and speedboats. Work is ranked by consequence so the next decision is always clear.
+            One watch ledger across yachts, tenders, and speedboats. Every open item is indexed by vessel, consequence, and the next decision required.
           </p>
 
           <div className="fleet-home-hero-actions">
@@ -207,8 +204,8 @@ export function FleetOperationsOverview({
       <div className="fleet-home-deck">
         <div className="fleet-home-section-heading">
           <div>
-            <div className="fleet-home-kicker">Fleet readiness</div>
-            <h2>Every vessel, ranked by attention.</h2>
+            <div className="fleet-home-kicker">Registry / readiness</div>
+            <h2>Every hull, indexed by attention.</h2>
           </div>
           <label className="fleet-home-search">
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -260,8 +257,8 @@ export function FleetOperationsOverview({
         <div className="fleet-home-ledger-section">
           <div className="fleet-home-section-heading fleet-home-section-heading--ledger">
             <div>
-              <div className="fleet-home-kicker">Needs attention</div>
-              <h2>One queue. No blind spots.</h2>
+              <div className="fleet-home-kicker">Watch ledger / signals</div>
+              <h2>One sequence. No blind spots.</h2>
             </div>
             <p>Operational signals stay tagged to their vessel and ordered by severity.</p>
           </div>

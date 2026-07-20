@@ -934,3 +934,681 @@ input[type="number"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* CONTESSA WATCH REGISTER
+   A vessel-specific editorial system: indexed modules, folio rules and
+   operational rows replace the familiar rounded dashboard-card language. */
+
+.app-page-frame {
+  width: 100%;
+  max-width: 1720px;
+  margin-inline: auto;
+}
+
+.app-module-stage {
+  position: relative;
+  min-width: 0;
+}
+
+.harbourline-command-header,
+.harbourline-rail,
+.harbourline-mobile-dock {
+  border-radius: 2px !important;
+}
+
+.harbourline-command-header {
+  min-height: 64px;
+  border-width: 0 0 1px !important;
+  padding-block: 8px !important;
+}
+
+.harbourline-rail {
+  border-width: 0 1px 0 0 !important;
+}
+
+.harbourline-logo-button,
+.harbourline-vessel-mark {
+  border-radius: 1px !important;
+}
+
+.harbourline-logo-button {
+  border-width: 0 0 1px !important;
+}
+
+.harbourline-rail-register {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(246 243 236 / 16%);
+  padding-bottom: 9px;
+  color: var(--chrome-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.harbourline-rail-item {
+  min-height: 63px;
+  border-top: 1px solid rgb(246 243 236 / 10%);
+}
+
+.harbourline-rail-item::after {
+  inset: 0 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.harbourline-rail-item:hover::after,
+.harbourline-rail-item[aria-current="page"]::after {
+  background: rgb(246 243 236 / 6%) !important;
+}
+
+.harbourline-rail-index {
+  position: absolute;
+  top: 7px;
+  right: 12px;
+  color: var(--chrome-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.harbourline-rail-item[aria-current="page"] .harbourline-rail-index {
+  color: var(--accent);
+}
+
+.harbourline-rail-label {
+  font-size: 8px !important;
+}
+
+.harbourline-vessel-switcher-button {
+  border-radius: 1px !important;
+}
+
+.harbourline-vessel-register {
+  font-family: var(--font-mono), monospace;
+}
+
+.harbourline-command-header .harbourline-heading,
+.harbourline-command-header .harbourline-vessel-title {
+  color: var(--paper) !important;
+  -webkit-text-fill-color: var(--paper) !important;
+}
+
+.harbourline-vessel-title {
+  width: 100%;
+  font-size: var(--auto-fit-font-size, clamp(0.84rem, 2.5vw, 1.08rem)) !important;
+  white-space: nowrap;
+}
+
+.harbourline-header-secondary,
+.neo-header-task-action {
+  border-radius: 2px !important;
+}
+
+.neo-header-task-action {
+  display: inline-flex;
+  min-height: 42px;
+  min-width: max-content;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.9rem;
+  white-space: nowrap;
+}
+
+.rv-masthead {
+  position: relative;
+  margin-bottom: clamp(1.5rem, 3vw, 2.75rem);
+  border-bottom: 1px solid var(--hairline);
+  padding: 0 !important;
+}
+
+.rv-masthead-register,
+.neo-hero-register {
+  display: flex;
+  min-height: 29px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--navy-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.rv-masthead-register span:last-child,
+.neo-hero-register span:last-child {
+  color: var(--navy);
+  text-align: right;
+}
+
+.rv-masthead-layout {
+  min-height: 176px;
+  align-items: end;
+  padding: clamp(1.25rem, 3vw, 2.5rem) 0 1.5rem;
+}
+
+.rv-masthead-copy {
+  max-width: 760px;
+  border-left: 3px solid var(--navy);
+  padding-left: clamp(1rem, 2.5vw, 2rem);
+}
+
+.rv-masthead-title {
+  font-size: clamp(2.65rem, 6vw, 5.6rem) !important;
+  font-weight: 600 !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.rv-masthead-kicker {
+  color: var(--accent) !important;
+}
+
+.rv-masthead-sub {
+  max-width: 62ch;
+  margin-top: 0.8rem !important;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.rv-tabs {
+  gap: 0 !important;
+  border-block: 1px solid var(--hairline);
+}
+
+.rv-tab {
+  min-height: 46px;
+  border-left: 0 !important;
+  border-right: 1px solid var(--hairline) !important;
+  padding-inline: 1rem;
+}
+
+.rv-tab:first-child {
+  border-left: 1px solid var(--hairline) !important;
+}
+
+.rv-tab[aria-selected="true"] {
+  border-bottom: 3px solid var(--accent) !important;
+  background: var(--paper) !important;
+}
+
+.neo-hero {
+  min-height: min(720px, calc(100dvh - 112px));
+  margin-top: 1rem !important;
+  border: 1px solid var(--hairline) !important;
+  padding-top: 4.6rem !important;
+}
+
+.neo-hero > .relative.grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.neo-hero-register {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  padding-inline: clamp(1.25rem, 3.2vw, 3rem);
+}
+
+.neo-vessel-title {
+  margin-top: clamp(2rem, 4.5vw, 4.5rem) !important;
+  font-size: min(var(--auto-fit-font-size, 12.5rem), var(--hero-fit-font-size, 12.5rem)) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.055em !important;
+  line-height: 0.7 !important;
+}
+
+.neo-hero-vessel {
+  container-type: inline-size;
+}
+
+.neo-search-shell,
+.neo-search-shell [data-global-search-root],
+.neo-search-shell [data-global-search-input] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.neo-live-chip {
+  position: relative;
+  padding-left: 14px;
+  color: var(--navy) !important;
+}
+
+.neo-live-chip::before {
+  position: absolute;
+  inset: -2px auto -2px 0;
+  width: 3px;
+  background: var(--ok);
+  content: "";
+}
+
+.neo-live-chip > span {
+  display: none;
+}
+
+.neo-hero-brief {
+  border-left-width: 3px !important;
+  border-left-color: var(--navy) !important;
+}
+
+.neo-command-card {
+  position: relative;
+  border-radius: 1px !important;
+  border-top: 4px solid var(--navy) !important;
+  background: var(--paper-2) !important;
+}
+
+.neo-command-card::after {
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  color: var(--hairline);
+  content: "01";
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 4.5rem;
+  font-style: italic;
+  line-height: 0.8;
+  pointer-events: none;
+}
+
+.neo-command-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.neo-pulse-metric {
+  min-height: 92px;
+  padding-block: 1.2rem !important;
+}
+
+.neo-quick-action {
+  min-height: 50px !important;
+  border-width: 1px 0 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-inline: 0.25rem !important;
+}
+
+.neo-quick-action:last-child {
+  border-bottom: 1px solid var(--hairline) !important;
+}
+
+.neo-quick-action:hover {
+  padding-left: 0.75rem !important;
+}
+
+.neo-brief-button {
+  border-radius: 1px !important;
+}
+
+.neo-descend > span,
+.mb-ledger-row > button:last-child,
+.mb-ledger-row > span:last-child {
+  border-radius: 1px !important;
+}
+
+.search-command-card,
+.neo-search-shell input,
+.fleet-home-search,
+input,
+select,
+textarea {
+  border-radius: 2px !important;
+}
+
+.app-card,
+.app-card-soft,
+.app-panel,
+.app-panel-soft,
+.app-panel-active,
+.app-hero-surface,
+.app-section-shell,
+.app-control-block,
+.app-dark-panel,
+.app-dark-card,
+.app-dark-inner,
+.mb-glass,
+.rv-row,
+.fleet-summary-metric,
+.fleet-vessel-row,
+.fleet-home-kpi,
+.fleet-home-vessel-card,
+.fleet-home-ledger,
+[data-ui="card"] {
+  border-radius: 2px !important;
+}
+
+.app-dialog-surface,
+[data-slot="dialog-content"],
+[role="dialog"],
+.task-create-dialog,
+.harbourline-vessel-menu,
+.harbourline-shell-panel {
+  border-radius: 2px !important;
+  border-top: 4px solid var(--navy) !important;
+}
+
+.mb-ledger-row,
+.jump-highlight-target.mb-ledger-row {
+  border-radius: 0 !important;
+}
+
+.mb-index-numeral {
+  color: var(--navy-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(1.6rem, 3vw, 2.6rem) !important;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.08em;
+}
+
+.task-clarity-strip {
+  border-radius: 2px;
+}
+
+.task-clarity-metric {
+  min-height: 82px;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.task-clarity-metric strong {
+  font-size: 2rem;
+}
+
+.task-workbench-toolbar {
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 1rem;
+}
+
+.task-workbench-list,
+.task-detail-pane,
+.task-board-register,
+.task-board-entry,
+.manifest-entry-card,
+.manifest-empty-state,
+.manifest-drawer {
+  border-radius: 1px !important;
+}
+
+.task-workbench-list,
+.task-detail-pane > .app-panel {
+  border-top: 4px solid var(--navy) !important;
+}
+
+.task-board-register {
+  background: var(--paper) !important;
+}
+
+.task-board-filters {
+  gap: 0 !important;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.task-board-filter {
+  border-width: 0 1px 0 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.task-board-filter:first-child {
+  border-left: 1px solid var(--hairline) !important;
+}
+
+.task-board-filter[aria-pressed="true"],
+.task-board-filter.vessel-active {
+  border-bottom: 3px solid var(--accent) !important;
+  background: var(--paper-2) !important;
+  color: var(--navy) !important;
+}
+
+.task-board-entry {
+  border-top: 1px solid var(--hairline);
+}
+
+.task-board-entry:last-child {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.task-board-entry.vessel-active {
+  background: var(--paper-2) !important;
+  color: var(--navy) !important;
+}
+
+.manifest-entry-card {
+  border-width: 1px 0 !important;
+}
+
+.manifest-ledger-section {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.manifest-empty-state {
+  background: var(--paper) !important;
+}
+
+.manifest-drawer {
+  border-left: 4px solid var(--navy) !important;
+}
+
+.fleet-home {
+  border-radius: 1px;
+}
+
+.fleet-home-hero {
+  min-height: 650px;
+  border-bottom: 1px solid var(--hairline);
+  padding-top: clamp(3.25rem, 7vw, 7rem);
+}
+
+.fleet-home-hero::after {
+  position: absolute;
+  inset: 28px 28px auto auto;
+  color: var(--navy-soft);
+  content: "FLEET / MASTER REGISTER";
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.fleet-home-headline {
+  max-width: 9ch;
+  font-size: clamp(4.4rem, 8vw, 8.3rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.fleet-home-headline span:last-child {
+  margin-left: clamp(1rem, 5vw, 5rem);
+  color: var(--navy);
+  font-style: italic;
+}
+
+.fleet-home-kpi-grid {
+  border-color: var(--hairline);
+}
+
+.fleet-home-kpi {
+  min-height: 180px;
+  border-color: var(--hairline);
+  border-radius: 0 !important;
+  background: var(--paper) !important;
+}
+
+.fleet-home-kpi:nth-child(2),
+.fleet-home-kpi:nth-child(3) {
+  background: var(--paper-2) !important;
+}
+
+.fleet-home-kpi-value {
+  font-size: clamp(2rem, 3.5vw, 3.75rem);
+  font-weight: 500;
+}
+
+.fleet-home-kpi--money .fleet-home-kpi-value {
+  font-size: clamp(1.55rem, 2.8vw, 2.35rem);
+  letter-spacing: -0.08em;
+}
+
+.fleet-home-deck {
+  padding-top: clamp(3rem, 6vw, 6.5rem);
+}
+
+.fleet-home-section-heading {
+  border-top: 4px solid var(--navy);
+  padding-top: 1rem;
+}
+
+.fleet-home-section-heading h2 {
+  max-width: 13ch;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+
+.fleet-home-vessel-card {
+  border-top: 4px solid var(--navy) !important;
+}
+
+.fleet-home-vessel-card[class*="critical"],
+.fleet-home-vessel-card[class*="attention"] {
+  border-left-color: var(--accent) !important;
+}
+
+.fleet-home-ledger {
+  border-top: 4px solid var(--navy) !important;
+}
+
+.fleet-home-filter {
+  border-radius: 0 !important;
+}
+
+@media (min-width: 1024px) {
+  .app-module-stage {
+    margin-top: 18px;
+    border-left: 1px solid var(--hairline);
+    padding-left: clamp(1.2rem, 2.2vw, 2.5rem);
+  }
+
+  .app-module-stage::before {
+    position: absolute;
+    top: 8px;
+    left: -20px;
+    color: var(--navy-soft);
+    content: "WATCH / " attr(data-active-module);
+    font-family: var(--font-mono), monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: left top;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1280px) {
+  .neo-hero > .relative.grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.55fr) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .neo-hero {
+    min-height: 0;
+  }
+
+  .fleet-home-hero {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .harbourline-command-header {
+    min-height: 56px;
+  }
+
+  .harbourline-mobile-dock {
+    border-width: 1px 0 0 !important;
+  }
+
+  .rv-masthead-register,
+  .neo-hero-register {
+    font-size: 7px;
+    letter-spacing: 0.11em;
+  }
+
+  .neo-hero-register span:last-child {
+    max-width: 46%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rv-masthead-layout {
+    min-height: 0;
+    padding-top: 1.5rem;
+  }
+
+  .rv-masthead-copy {
+    border-left-width: 2px;
+  }
+
+  .rv-masthead-title {
+    font-size: clamp(2.35rem, 13vw, 4.1rem) !important;
+  }
+
+  .neo-hero {
+    margin-inline: -4px;
+    padding-top: 4rem !important;
+  }
+
+  .neo-vessel-title {
+    margin-top: 2rem !important;
+  }
+
+  .neo-command-card {
+    margin-top: 0.5rem;
+  }
+
+  .fleet-home-hero::after {
+    top: 16px;
+    right: 16px;
+  }
+
+  .fleet-home-headline {
+    font-size: clamp(3.2rem, 17vw, 5.5rem);
+  }
+
+  .fleet-home-headline span:last-child {
+    margin-left: 0.6rem;
+  }
+
+  .fleet-home-kpi {
+    min-height: 128px;
+  }
+
+  .fleet-home-section-heading h2 {
+    font-size: clamp(2.3rem, 12vw, 4rem);
+  }
+
+  .task-clarity-metric {
+    min-height: 70px;
+    align-items: start;
+    flex-direction: column;
+  }
+}

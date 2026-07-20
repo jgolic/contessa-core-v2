@@ -5,10 +5,23 @@
 
 export function ModuleMasthead({ kicker, title, subtitle, tabs = [], actions = null }) {
   const hasTabs = Array.isArray(tabs) && tabs.length > 0;
+  const registerCode = String(kicker || title || "Operations")
+    .replace(/[^a-z0-9 ]/gi, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word.slice(0, 3).toUpperCase())
+    .join("-");
+
   return (
     <header className="rv-masthead">
+      <div className="rv-masthead-register" aria-hidden="true">
+        <span>CONTESSA / OPERATIONS REGISTER</span>
+        <span>{registerCode || "OPS"}</span>
+      </div>
       <div className="rv-masthead-layout">
-        <div className="min-w-0">
+        <div className="rv-masthead-copy min-w-0">
           <div className="rv-masthead-kicker">{kicker}</div>
           <h2 className="rv-masthead-title mt-2">{title}</h2>
           {subtitle ? <p className="rv-masthead-sub mt-1.5">{subtitle}</p> : null}

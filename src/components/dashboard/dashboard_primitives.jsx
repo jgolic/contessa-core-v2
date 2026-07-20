@@ -60,7 +60,7 @@ export function SectionAccordion({
       id={id}
       data-jump-target
       style={{ "--jump-radius": "14px" }}
-      className="jump-highlight-target mb-ledger-row group min-w-0 rounded-[14px]"
+      className="manifest-ledger-section jump-highlight-target mb-ledger-row group min-w-0"
     >
       <div className="flex min-w-0 items-center gap-4 py-4 md:gap-6 md:py-5">
         <button type="button" onClick={toggle} className="flex min-w-0 flex-1 items-baseline gap-3 text-left md:gap-5">
@@ -146,7 +146,7 @@ export function CompactItemCard({
         if (htmlId) flashJumpHighlight(event.currentTarget);
         onClick?.(event);
       }}
-      className={`jump-highlight-target group relative w-full min-w-0 rounded-[14px] border px-4 py-3.5 text-left transition-all duration-300 ${
+      className={`manifest-entry-card jump-highlight-target group relative w-full min-w-0 border px-4 py-3.5 text-left transition-all duration-300 ${
         selected
           ? "border-[var(--mb-accent-hover)] bg-[var(--mb-accent-tint)]"
           : "border-[var(--mb-line)] bg-[var(--mb-panel)] hover:border-[var(--mb-accent-hover)] hover:bg-[var(--mb-accent-tint)]"
@@ -182,7 +182,7 @@ export function DashboardEmptyState({
   secondaryContent = null,
 }) {
   return (
-    <div className="rounded-[14px] border border-dashed border-[var(--mb-line-strong)] px-5 py-6 text-center">
+    <div className="manifest-empty-state border border-dashed border-[var(--mb-line-strong)] px-5 py-6 text-center">
       <div className="harbourline-heading text-lg italic text-[var(--mb-ink)]">{title}</div>
       <p className="mx-auto mt-2 max-w-md text-[13px] leading-6 text-[var(--mb-muted)]">{message}</p>
       {secondaryContent ? <div className="mt-3 text-[var(--mb-muted)]">{secondaryContent}</div> : null}
@@ -227,7 +227,7 @@ export function DetailDrawer({
       />
       <div
         ref={revealRef}
-        className="mb-glass ui-reveal-target absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] overflow-y-auto overflow-x-hidden rounded-[24px] border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:inset-y-3 md:left-auto md:right-3 md:w-[480px] md:p-6"
+        className="manifest-drawer mb-glass ui-reveal-target absolute inset-x-2 bottom-2 top-auto max-h-[92dvh] overflow-y-auto overflow-x-hidden border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:inset-y-3 md:left-auto md:right-3 md:w-[480px] md:p-6"
         style={{ "--reveal-radius": "24px", position: "absolute" }}
       >
         <div className="flex items-start justify-between gap-4">
